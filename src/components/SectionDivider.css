@@ -1,0 +1,31 @@
+.section-divider{
+    position:relative;
+    height:120px;
+    max-width:1180px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .section-divider::before{
+    content:'';
+    position:absolute;
+    left:0; right:0; top:50%;
+    height:1px;
+    background: linear-gradient(90deg, transparent 0%, var(--line) 20%, var(--line) 80%, transparent 100%);
+  }
+  .section-divider .divider-badge{
+    position:relative;
+    z-index:2;
+    display:flex; align-items:center; justify-content:center;
+    width:56px; height:56px;
+    border-radius:16px;
+    background: linear-gradient(135deg, var(--mint), var(--mint-dark));
+    box-shadow: 0 12px 24px -8px rgba(22,199,132,0.4);
+    transform: rotate(45deg);
+  }
+  .section-divider .divider-badge svg{
+    width:24px; height:24px;
+    stroke:#fff;
+    transform: rotate(-45deg);
+  }

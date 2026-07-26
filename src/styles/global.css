@@ -1,0 +1,37 @@
+:root{
+    --navy:        #0B1F2B;
+    --navy-soft:   #14303F;
+    --mint:        #16C784;
+    --mint-dark:   #0FA86D;
+    --mint-pale:   #E6FBF3;
+    --grey-text:   #64748A;
+    --line:        #EDF1F4;
+    --bg:          #FFFFFF;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    font-family:'Inter', sans-serif;
+    background: var(--bg);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    color: var(--grey-text);
+    font-size:13.5px;
+    font-weight:600;
+    letter-spacing:0.4px;
+    text-transform:uppercase;
+    margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:6px; height:6px;
+    border-radius:50%;
+    background: var(--mint);
+  }

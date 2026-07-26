@@ -1,0 +1,80 @@
+import { useState, useEffect } from 'react';
+import './FeeCollectionModal.css';
+
+const METHODS = ['Cash', 'Bangi (Bank)', 'EVC/Zaad (Mobile Money)'];
+
+function FeeCollectionModal({ isOpen, onClose, onCollect, rows }) {
+  const [rowId, setRowId] = useState(rows[0]?.id);
+  const [amount, setAmount] = useState('');
+  const [method, setMethod] = useState(METHODS[0]);
+  const [date, setDate] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setRowId(rows[0]?.id);
+      setAmount('');
+      setMethod(METHODS[0]);
+      setDate('');
+    }
+  }, [isOpen, rows]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onCollect({ rowId, amount: Number(amount) || 0, method, date });
+    onClose();
+  };
+
+  return (
+    <div className="fcm-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="fcm-modal">
+        <div className="fcm-header">
+          <div>
+            <h2>Lacag-Qabo</h2>
+            <p>Diiwaan geli lacagta la helay</p>
+          </div>
+          <button className="fcm-close" onClick={onClose} type="button">
+            <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="fcm-body">
+            <div className="fcm-grid">
+              <div className="fcm-field full">
+                <label>Fasalka / Qoyska *</label>
+                <select value={rowId} onChange={(e) => setRowId(Number(e.target.value))}>
+                  {rows.map((r) => (
+                    <option key={r.id} value={r.id}>{r.name} {r.shift ? `- ${r.shift}` : ''} (Baaqi: ${r.balance})</option>
+                  ))}
+                </select>
+              </div>
+              <div className="fcm-field">
+                <label>Qadarka ($) *</label>
+                <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Tusaale: 50" required />
+              </div>
+              <div className="fcm-field">
+                <label>Habka Bixinta</label>
+                <select value={method} onChange={(e) => setMethod(e.target.value)}>
+                  {METHODS.map((m) => <option key={m}>{m}</option>)}
+                </select>
+              </div>
+              <div className="fcm-field full">
+                <label>Taariikhda</label>
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          <div className="fcm-footer">
+            <button type="button" className="btn-secondary" onClick={onClose}>Jooji</button>
+            <button type="submit" className="btn-primary">Xaqiiji Lacag-Qabashada</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default FeeCollectionModal;

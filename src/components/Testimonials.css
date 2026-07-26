@@ -1,0 +1,109 @@
+.testimonials{
+  padding: 100px 40px 120px;
+  max-width:1180px;
+  margin:0 auto;
+}
+
+.testimonials-head{
+  text-align:center;
+  max-width:620px;
+  margin:0 auto 56px;
+}
+.testimonials-head .eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  color: var(--grey-text); font-size:13.5px; font-weight:600;
+  letter-spacing:0.4px; text-transform:uppercase; margin-bottom:16px;
+}
+.testimonials-head .eyebrow::before{ content:''; width:6px; height:6px; border-radius:50%; background: var(--mint); }
+.testimonials-head h2{
+  font-family:'Poppins', sans-serif;
+  font-weight:800;
+  font-size:38px;
+  color: var(--navy);
+  line-height:1.25;
+  letter-spacing:-0.5px;
+  margin-bottom:16px;
+}
+.testimonials-head h2 .highlight{ color: var(--mint); }
+.testimonials-head p{
+  font-size:16px;
+  color: var(--grey-text);
+  line-height:1.65;
+}
+
+.testimonials-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap:24px;
+}
+
+.testimonial-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:32px 28px;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.testimonial-card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px -20px rgba(11,31,43,0.16);
+}
+
+.quote-mark{
+  width:34px; height:34px;
+  color: var(--mint-pale);
+  margin-bottom:8px;
+}
+
+.stars{
+  display:flex;
+  gap:3px;
+  margin-bottom:16px;
+}
+.stars svg{
+  width:15px; height:15px;
+  color: var(--mint);
+}
+
+.quote-text{
+  font-size:14.5px;
+  color: var(--navy);
+  line-height:1.7;
+  margin-bottom:26px;
+}
+
+.testimonial-author{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding-top:20px;
+  border-top:1px solid var(--line);
+}
+.author-avatar{
+  width:44px; height:44px;
+  border-radius:12px;
+  background: linear-gradient(135deg, var(--mint), var(--mint-dark));
+  display:flex; align-items:center; justify-content:center;
+  color:#fff;
+  font-family:'Poppins', sans-serif;
+  font-weight:700;
+  font-size:14.5px;
+  flex-shrink:0;
+}
+.author-name{
+  font-family:'Poppins', sans-serif;
+  font-weight:700;
+  font-size:14px;
+  color: var(--navy);
+  margin-bottom:2px;
+}
+.author-role{
+  font-size:12.5px;
+  color: var(--grey-text);
+}
+
+@media (max-width: 920px){
+  .testimonials{ padding: 70px 24px 80px; }
+  .testimonials-head h2{ font-size:28px; }
+}

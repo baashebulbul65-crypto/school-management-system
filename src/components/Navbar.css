@@ -1,0 +1,58 @@
+.navbar-outer{
+    padding: 22px 40px 0;
+  }
+  .navbar{
+    background: var(--bg);
+    padding: 0 32px;
+    height:78px;
+    max-width:1180px;
+    margin: 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border: 1px solid var(--line);
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 4px 12px -6px rgba(11,31,43,0.08);
+    position:relative;
+    z-index:10;
+  }
+  .brand{ display:flex; align-items:center; gap:9px; }
+  .brand-mark{ width:34px; height:34px; flex-shrink:0; }
+  .brand-name{
+    font-family:'Poppins', sans-serif;
+    font-weight:700;
+    font-size:23px;
+    color: var(--navy);
+    letter-spacing:-0.3px;
+  }
+  .brand-name .dot{ color: var(--mint); }
+  .nav-links{ display:flex; align-items:center; gap:40px; list-style:none; }
+  .nav-links li a{
+    text-decoration:none;
+    color: var(--navy);
+    font-size:15.5px;
+    font-weight:500;
+    position:relative;
+    padding:6px 2px;
+  }
+  .nav-links li a::after{
+    content:''; position:absolute; left:0; bottom:-4px;
+    width:0%; height:2px; background: var(--mint); border-radius:2px;
+    transition: width 0.25s ease;
+  }
+  .nav-links li a:hover::after{ width:100%; }
+  .cta-btn{
+    display:flex; align-items:center; gap:10px;
+    background: var(--navy); color:#fff; border:none;
+    padding:13px 22px; border-radius:12px;
+    font-weight:600; font-size:14.5px; cursor:pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .cta-btn:hover{ background: var(--navy-soft); transform: translateY(-1px); }
+  .cta-btn svg{ width:16px; height:16px; stroke: var(--mint); }
+  .hamburger{
+    display:none; width:38px; height:38px; border-radius:10px;
+    background: var(--line); flex-direction:column; justify-content:center;
+    align-items:center; gap:4px; cursor:pointer; border:none;
+  }
+  .hamburger span{ width:18px; height:2px; background: var(--navy); border-radius:2px; }

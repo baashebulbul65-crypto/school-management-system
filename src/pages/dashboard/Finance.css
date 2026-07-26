@@ -1,0 +1,297 @@
+.fin-summary-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.fin-summary-card{
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-left: 4px solid var(--line);
+}
+.fin-summary-label{
+  font-size: 12px;
+  color: var(--grey-text);
+  font-weight: 600;
+}
+.fin-summary-value{
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  color: var(--navy);
+}
+.fin-summary-card.income{ border-left-color: var(--mint); }
+.fin-summary-card.expense{ border-left-color: #E5533F; }
+.fin-summary-card.pending{ border-left-color: #E8B93B; }
+.fin-summary-card.profit{ border-left-color: var(--mint-dark); }
+.fin-summary-card.profit .fin-summary-value{ color: var(--mint-dark); }
+.fin-summary-card.loss{ border-left-color: #E5533F; }
+.fin-summary-card.loss .fin-summary-value{ color: #C0392B; }
+
+/* Due date alerts */
+.fin-alerts{
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #FFF7E0;
+  border: 1px solid #F0D68A;
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+.fin-alerts-icon{
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: #FDECC8;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.fin-alerts-icon svg{ width: 18px; height: 18px; stroke: #C99A1F; }
+.fin-alerts-text strong{ font-size: 13.5px; color: var(--navy); display: block; margin-bottom: 3px; }
+.fin-alerts-text p{ font-size: 12.5px; color: var(--grey-text); }
+
+/* Tabs */
+.fin-tabs{
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+  scrollbar-width: none;
+}
+.fin-tabs::-webkit-scrollbar{ display: none; }
+.fin-tab{
+  white-space: nowrap;
+  background: none;
+  border: none;
+  padding: 12px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--grey-text);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.fin-tab:hover{ color: var(--navy); }
+.fin-tab.active{ color: var(--navy); border-bottom-color: var(--mint); }
+
+.fin-card-title{
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--navy);
+  margin-bottom: 18px;
+}
+
+.fin-card-toolbar{
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+/* Expense category breakdown bars */
+.fin-category-list{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.fin-category-row{
+  display: grid;
+  grid-template-columns: 120px 1fr 70px;
+  align-items: center;
+  gap: 14px;
+}
+.fin-category-name{
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.fin-category-bar{
+  height: 10px;
+  background: #F1F4F6;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.fin-category-fill{
+  height: 100%;
+  background: linear-gradient(90deg, var(--mint), var(--mint-dark));
+  border-radius: 999px;
+}
+.fin-category-amount{
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: right;
+}
+
+@media (max-width: 640px){
+  .fin-category-row{ grid-template-columns: 90px 1fr 60px; gap: 8px; }
+  .page-header{ flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+
+@media print{
+  .navbar-outer, .sidebar, .topbar, .btn-secondary, .btn-primary, .fin-tabs, .row-action-btn{
+    display: none !important;
+  }
+}
+
+/* ===== XISAABAADKA (Accounting dashboard) ===== */
+.acc-toolbar{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.acc-toggle{
+  display: inline-flex;
+  background: #F1F4F6;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 2px;
+}
+.acc-toggle-btn{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  padding: 10px 18px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--grey-text);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.acc-toggle-btn svg{ width: 15px; height: 15px; }
+.acc-toggle-btn.active{
+  background: #fff;
+  color: var(--navy);
+  box-shadow: 0 4px 10px rgba(11,31,43,0.1);
+}
+.acc-month-picker{
+  padding: 10px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 11px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--navy);
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  cursor: pointer;
+}
+.acc-month-picker:focus{ border-color: var(--mint); box-shadow: 0 0 0 4px var(--mint-pale); }
+
+.acc-summary-row{
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  gap: 16px;
+  margin-bottom: 18px;
+  align-items: stretch;
+}
+.acc-summary-cards{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.acc-card{
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.acc-card-icon{
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.acc-card-icon svg{ width: 18px; height: 18px; stroke: currentColor; }
+.acc-card-icon.blue{ background: #E8F1FE; color: #2563EB; }
+.acc-card-icon.green{ background: var(--mint-pale); color: var(--mint-dark); }
+.acc-card-icon.red{ background: #FDECEA; color: #C0392B; }
+.acc-card-icon.teal{ background: #E6F7F6; color: #0D9488; }
+.acc-card-icon.orange{ background: #FFF1E0; color: #D97706; }
+.acc-card-icon.purple{ background: #F3E8FD; color: #9333EA; }
+
+.acc-card-label{ font-size: 11.5px; color: var(--grey-text); font-weight: 600; margin-bottom: 3px; }
+.acc-card-value{ font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 15px; color: var(--navy); }
+.acc-card-value span{ font-size: 11px; font-weight: 500; color: var(--grey-text); }
+.acc-card-value.success{ color: var(--mint-dark); }
+.acc-card-value.danger{ color: #C0392B; }
+
+.acc-stats-box{
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px 10px;
+}
+.acc-stat{ display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; }
+.acc-stat strong{ font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 18px; color: var(--navy); }
+.acc-stat span{ font-size: 10.5px; color: var(--grey-text); font-weight: 600; }
+
+.acc-filter-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.acc-filter-select{
+  padding: 10px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 11px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--navy);
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  cursor: pointer;
+  min-width: 180px;
+}
+.acc-collect-btn{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--mint);
+  color: var(--navy);
+  border: none;
+  padding: 11px 20px;
+  border-radius: 11px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.acc-collect-btn:hover{ background: var(--mint-dark); color: #fff; transform: translateY(-1px); }
+.acc-collect-btn svg{ width: 16px; height: 16px; }
+
+@media (max-width: 900px){
+  .acc-summary-row{ grid-template-columns: 1fr; }
+  .acc-summary-cards{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px){
+  .acc-summary-cards{ grid-template-columns: 1fr; }
+  .acc-stats-box{ grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Xisaabaadka table — clickable rows + total footer */
+.acc-row-clickable{ cursor: pointer; transition: background 0.15s ease; }
+.acc-row-clickable:hover{ background: #F7F9FA; }
+.acc-baaqi-owed{ color: #C0392B; font-weight: 700; }
+.acc-total-row{ background: #EAF1FB; font-weight: 700; }
+.acc-total-row td{ color: var(--navy); border-top: 2px solid var(--line); }
