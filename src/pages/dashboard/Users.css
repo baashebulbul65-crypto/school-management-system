@@ -1,0 +1,26 @@
+.users-role-badge{
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+.users-role-badge.navy{ background: #E9EDF0; color: var(--navy); }
+.users-role-badge.purple{ background: #F3E8FD; color: #9333EA; }
+.users-role-badge.teal{ background: #E6F7F6; color: #0D9488; }
+.users-role-badge.blue{ background: #E8F1FE; color: #2563EB; }
+.users-role-badge.green{ background: var(--mint-pale); color: var(--mint-dark); }
+
+.users-status-btn{
+  border: none;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.users-status-btn:hover{ transform: translateY(-1px); }
+.users-status-btn.active{ background: var(--mint-pale); color: var(--mint-dark); }
+.users-status-btn.suspended{ background: #FDECEA; color: #C0392B; }

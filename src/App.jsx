@@ -14,6 +14,8 @@ import Exams from './pages/dashboard/Exams';
 import ParentPortal from './pages/parent/ParentPortal';
 import Reports from './pages/dashboard/Reports';
 import Notifications from './pages/dashboard/Notifications';
+import Settings from './pages/dashboard/Settings';
+import Users from './pages/dashboard/Users';
 import './styles/global.css';
 
 function App() {
@@ -41,7 +43,8 @@ function App() {
         <Route path="exams" element={<Exams />} />
         <Route path="reports" element={<RequireRole allow={['owner']}><Reports /></RequireRole>} />
         <Route path="notifications" element={<Notifications />} />
-        {/* reports, settings — waxaa la dhisi doonaa qaybaha xiga */}
+        <Route path="settings" element={<RequireRole allow={['owner']}><Settings /></RequireRole>} />
+        <Route path="users" element={<RequireRole allow={['owner']}><Users /></RequireRole>} />
       </Route>
 
       {/* Parent Portal — waalidka/ardayga (la ilaaliyaa) */}
