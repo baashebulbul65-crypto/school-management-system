@@ -55,13 +55,30 @@ service cloud.firestore {
     }
 
     // ===== students =====
-    // Akhris: Shaqaalaha dugsigaas + Waalid/Arday kasta oo isku dugsi ah (si
-    // loo taageero raadinta Diiwaan ID marka ilmo la xirayo — fiiri README
-    // "Xaddidaad la yaqaan" ee ku saabsan tan).
+    // Akhris: Shaqaalaha dugsigaas + kaliya Waalidka runtida ah ee ilmahan
+    // (childrenIds). Raadinta Diiwaan ID marka ilmo la xirayo waxay isticmaashaa
+    // collection-ka 'studentLookup' (fiiri hoos) — ma aha in Waalid kasta
+    // uu akhrin karo dhammaan xogta ardayda dugsiga (magac, taleefan, lacag,
+    // natiijooyin, iwm) sida hore laga sameyn jiray.
     match /students/{studentDocId} {
-      allow read: if isStaffOf(resource.data.schoolCode) || isSameSchoolParent(resource.data.schoolCode);
+      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, studentDocId);
       allow create: if isStaffOf(request.resource.data.schoolCode);
-      allow update, delete: if isStaffOf(resource.data.schoolCode);
+      allow update: if isStaffOf(resource.data.schoolCode);
+      // Tirtiridda joogtada ah (permanent delete, "Trash") waa mid aan la soo
+      // celin karin — waxaa loo xaddidayaa 'owner' kaliya, si la mid ah sida
+      // bogga "Trash" ee UI-gu owner-only u yahay.
+      allow delete: if isStaffOf(resource.data.schoolCode) && me().role == 'owner';
+    }
+
+    // ===== studentLookup =====
+    // Doc gaaban oo kaliya leh {schoolCode, studentId, studentDocId} — waxaa
+    // loo isticmaalaa raadinta Diiwaan ID (waalid marka ilmo la xirayo) iyada
+    // oo aan loo baahnayn in Waalidku helo full document-ka ardayga ee
+    // 'students'. Doc ID-gu waa deterministic: schoolCode_studentId.
+    match /studentLookup/{lookupId} {
+      allow read: if isStaffOf(resource.data.schoolCode) || isSameSchoolParent(resource.data.schoolCode);
+      allow create, update: if isStaffOf(request.resource.data.schoolCode);
+      allow delete: if isStaffOf(resource.data.schoolCode);
     }
 
     // ===== attendanceRecords ===== (doc id: "{date}_{studentId}")

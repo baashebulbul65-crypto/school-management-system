@@ -7,6 +7,7 @@ import {
   collection,
   doc,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   getDoc,
@@ -19,6 +20,13 @@ import {
 import { db } from './config';
 
 const COLLECTION = 'students';
+const LOOKUP_COLLECTION = 'studentLookup';
+
+// Doc ID deterministic ah — u oggolaanaya inaan si toos ah (getDoc) ugu heli
+// karno raadinta, iyada oo aan loo baahnayn query/index (fiiri firestore.rules).
+function lookupDocId(schoolCode, studentId) {
+  return `${encodeURIComponent(schoolCode)}_${encodeURIComponent(studentId)}`;
+}
 
 export function subscribeToStudents(schoolCode, onChange, onError) {
   const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode));
@@ -35,6 +43,13 @@ export function subscribeToStudents(schoolCode, onChange, onError) {
 
 export async function createStudentDoc(schoolCode, data) {
   const docRef = await addDoc(collection(db, COLLECTION), { ...data, schoolCode });
+  if (data.studentId) {
+    await setDoc(doc(db, LOOKUP_COLLECTION, lookupDocId(schoolCode, data.studentId)), {
+      schoolCode,
+      studentId: data.studentId,
+      studentDocId: docRef.id,
+    });
+  }
   return docRef.id;
 }
 
@@ -54,20 +69,44 @@ export async function restoreStudentDoc(studentId) {
 }
 
 export async function deleteStudentDoc(studentId) {
-  await deleteDoc(doc(db, COLLECTION, studentId));
+  const ref = doc(db, COLLECTION, studentId);
+  const snap = await getDoc(ref);
+  if (snap.exists()) {
+    const { schoolCode, studentId: humanId } = snap.data();
+    if (schoolCode && humanId) {
+      await deleteDoc(doc(db, LOOKUP_COLLECTION, lookupDocId(schoolCode, humanId))).catch(() => {});
+    }
+  }
+  await deleteDoc(ref);
 }
 
 // Waxaa loo isticmaalaa xiriirinta waalid/arday — barbardhigga Diiwaan ID-ga la
-// geliyay iyo studentId-ga dhabta ah ee dugsigan.
+// geliyay iyo studentId-ga dhabta ah ee dugsigan. Waxay akhridaa collection-ka
+// gaaban 'studentLookup' halkii ay ka akhrin lahayd 'students' oo buuxa, si
+// waalidku uusan u helin xogta gaarka ah ee ardayda kale (fiiri firestore.rules).
 export async function findStudentByStudentId(schoolCode, studentId) {
-  const q = query(
-    collection(db, COLLECTION),
-    where('schoolCode', '==', schoolCode),
-    where('studentId', '==', studentId)
-  );
+  const snap = await getDoc(doc(db, LOOKUP_COLLECTION, lookupDocId(schoolCode, studentId)));
+  if (!snap.exists()) return null;
+  const data = snap.data();
+  return { id: data.studentDocId, studentId: data.studentId };
+}
+
+// Hal mar loo isticmaalo — u abuurta lookup doc-yada ardayda hore loo abuuray
+// ka hor intaan collection-ka 'studentLookup' la darin (fiiri SchoolDataContext).
+export async function backfillStudentLookups(schoolCode) {
+  const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode));
   const snap = await getDocs(q);
-  if (snap.empty) return null;
-  return { id: snap.docs[0].id, ...snap.docs[0].data() };
+  await Promise.all(
+    snap.docs.map((d) => {
+      const data = d.data();
+      if (!data.studentId) return null;
+      return setDoc(doc(db, LOOKUP_COLLECTION, lookupDocId(schoolCode, data.studentId)), {
+        schoolCode,
+        studentId: data.studentId,
+        studentDocId: d.id,
+      });
+    })
+  );
 }
 
 // Waxaa loo isticmaalaa ParentPortal — soo qaadista ilmaha (childrenIds) waalidku

@@ -4,9 +4,9 @@
 // qoraan halkan, si xogtu u ahaato mid isku mid ah meel kasta oo ay ka muuqato
 // (tusaale: Overview-ka, Attendance-ka, iyo Students-ka oo dhan isku tiro isticmaala).
 
-import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from './AuthContext';
-import { subscribeToStudents, createStudentDoc, updateStudentDoc, softDeleteStudentDoc, restoreStudentDoc, deleteStudentDoc } from '../firebase/students';
+import { subscribeToStudents, createStudentDoc, updateStudentDoc, softDeleteStudentDoc, restoreStudentDoc, deleteStudentDoc, backfillStudentLookups } from '../firebase/students';
 import { subscribeToAttendanceByDate, setStudentAttendanceRecord } from '../firebase/attendance';
 import { subscribeToExamMarks, setExamMarkRecord } from '../firebase/examMarks';
 import { subscribeToQuranProgressByDate, setQuranProgressRecord } from '../firebase/quranProgress';
@@ -592,6 +592,18 @@ export function SchoolDataProvider({ children }) {
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
+
+  // Hal mar per school — u abuurta 'studentLookup' doc-yada ardayda hore loo
+  // abuuray ka hor intaan collection-kaas la darin (fiiri students.js).
+  const backfilledSchoolRef = useRef(null);
+  useEffect(() => {
+    if (!profile?.schoolCode || profile.accountType !== 'staff') return;
+    if (backfilledSchoolRef.current === profile.schoolCode) return;
+    backfilledSchoolRef.current = profile.schoolCode;
+    backfillStudentLookups(profile.schoolCode).catch((err) =>
+      console.error('Khalad ayaa dhacay markii lookup-ka ardayda la buuxinayay:', err)
+    );
+  }, [profile?.schoolCode, profile?.accountType]);
 
   const notifyIfFeeOverdue = async (studentId, payload) => {
     if (payload.fee !== 'overdue' || !profile?.schoolCode) return;
