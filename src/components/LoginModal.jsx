@@ -12,6 +12,7 @@ const ERROR_KEYS = {
   'auth/email-already-in-use': 'emailInUse',
   'auth/weak-password': 'weakPassword',
   NOOCA_AKOONKA_KHALDAN: 'wrongRole',
+  ACCOUNT_LA_JOOJIYAY: 'accountSuspended',
 };
 
 function LoginModal({ isOpen, onClose, onLoginSuccess }) {

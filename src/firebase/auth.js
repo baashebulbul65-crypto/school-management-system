@@ -25,10 +25,19 @@ import { findStudentByStudentId } from './students';
 export async function loginStaff(email, password) {
   const result = await signInWithEmailAndPassword(auth, email, password);
   const profile = await getUserProfile(result.user.uid);
+  // Xayiraad UI-ga oo kaliya — ma aha xad-dhaaf (security boundary) dhab ah,
+  // xogta dhabta ah ee isticmaaluhu heli karo waxaa go'aamiya Firestore Rules
+  // (fiiri firebase/staff.js: removeStaffDoc). Halkan waxaa loogu talagalay
+  // in mar hore loo sheego shaqaale la joojiyay wax uusan la moodin inuu
+  // gali karo.
+  if (profile?.status === 'suspended') {
+    await signOut(auth);
+    throw new Error('ACCOUNT_LA_JOOJIYAY');
+  }
   return { user: result.user, profile };
 }
 
-export async function registerStaff({ email, password, fullName, schoolCode, role = 'owner' }) {
+export async function registerStaff({ email, password, fullName, schoolCode, role = 'owner', title = 'School Owner' }) {
   const result = await createUserWithEmailAndPassword(auth, email, password);
 
   await setDoc(doc(db, 'users', result.user.uid), {
@@ -37,7 +46,9 @@ export async function registerStaff({ email, password, fullName, schoolCode, rol
     email,
     schoolCode,
     role, // 'owner' | 'teacher' — (owner wuxuu matalaa School Owner/Principal/VP/Accountant/Receptionist)
+    title, // magaca la muujiyo bogga "Users" (fiiri firebase/staff.js)
     accountType: 'staff',
+    status: 'active',
     createdAt: serverTimestamp(),
   });
 

@@ -20,3 +20,18 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export default app;
+
+// App labaad, oo GOONI AH (secondary Firebase App instance) — waxaa loo
+// isticmaalaa KELIYA marka owner-ku abuurayo account cusub oo shaqaale ah
+// (fiiri firebase/staff.js: createStaffAccount). Haddii "createUserWithEmail
+// AndPassword" lagu wado app-ka koowaad (default), Firebase SDK-ku si toos
+// ah ayuu session-ka hadda jira (owner-ka) ugu beddeli lahaa account-ka
+// cusub — app-kan gooniga ah wuxuu ka fogeeyaa saameyntaas, si session-ka
+// owner-ku uusan u xumaan.
+let secondaryAppInstance = null;
+export function getSecondaryAuth() {
+  if (!secondaryAppInstance) {
+    secondaryAppInstance = initializeApp(firebaseConfig, 'Secondary');
+  }
+  return getAuth(secondaryAppInstance);
+}

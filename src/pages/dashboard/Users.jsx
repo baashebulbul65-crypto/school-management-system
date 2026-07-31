@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import UserFormModal from './UserFormModal';
+import { useAuth } from '../../context/AuthContext';
+import { subscribeToStaff, createStaffAccount, updateStaffDoc, setStaffStatus, removeStaffDoc } from '../../firebase/staff';
 import '../../styles/dashboard-shared.css';
 import './Users.css';
 
@@ -15,19 +17,11 @@ export const ROLE_OPTIONS = [
 
 // Doorka ilaalinta (permission tier): 'Teacher' oo kaliya ayaa xaddidan,
 // intiisa kale (Owner/Principal/VP/Accountant/Receptionist) waxay leeyihiin gelitaan buuxa.
+// Tan waa doorka DHABTA AH ee firestore.rules/RequireRole isticmaalaan — 'title'
+// waa magaca la muujiyo kaliya (cosmetic).
 function permissionTier(roleLabel) {
   return roleLabel === 'Teacher' ? 'teacher' : 'owner';
 }
-
-const INITIAL_USERS = [
-  { id: 1, fullName: 'Xasan Cabdulle Nuur', email: 'xasan@kayd.com', role: 'School Owner', status: 'active', joined: '2025-09-01' },
-  { id: 2, fullName: 'Sahra Maxamed Cige', email: 'sahra@kayd.com', role: 'Principal', status: 'active', joined: '2025-09-05' },
-  { id: 3, fullName: 'Cabdiqaadir Nuur Cali', email: 'cabdiqaadir@kayd.com', role: 'Vice Principal', status: 'active', joined: '2025-09-10' },
-  { id: 4, fullName: 'Zaynab Cali Warsame', email: 'zaynab@kayd.com', role: 'Accountant', status: 'active', joined: '2025-10-01' },
-  { id: 5, fullName: 'Halima Xuseen Nuur', email: 'halima@kayd.com', role: 'Receptionist', status: 'active', joined: '2025-10-12' },
-  { id: 6, fullName: 'Cali Xasan Warsame', email: 'cali.warsame@kayd.com', role: 'Teacher', status: 'active', joined: '2025-09-15' },
-  { id: 7, fullName: 'Faadumo Nuur Cige', email: 'faadumo.nuur@kayd.com', role: 'Teacher', status: 'suspended', joined: '2025-09-20' },
-];
 
 const ROLE_COLOR = {
   'School Owner': 'navy',
@@ -43,36 +37,77 @@ function initials(name) {
 }
 
 function Users() {
-  const [users, setUsers] = useState(INITIAL_USERS);
+  const { profile } = useAuth();
+  const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
 
-  const filtered = users.filter((u) => {
+  useEffect(() => {
+    if (!profile?.schoolCode) {
+      setUsers([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToStaff(
+      profile.schoolCode,
+      setUsers,
+      (err) => console.error('Khalad ayaa dhacay markii shaqaalaha laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode]);
+
+  // Doc-yada shaqaalaha hore loo abuuray (ka hor intaan 'title'/'status' la
+  // darin) ma laha labadaas field — u dhig default si UI-gu uusan u jabin.
+  const displayUsers = users.map((u) => ({
+    ...u,
+    title: u.title || (u.role === 'owner' ? 'School Owner' : 'Teacher'),
+    status: u.status || 'active',
+  }));
+
+  const filtered = displayUsers.filter((u) => {
     const matchesSearch = u.fullName.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
-    const matchesRole = roleFilter === 'all' || u.role === roleFilter;
+    const matchesRole = roleFilter === 'all' || u.title === roleFilter;
     return matchesSearch && matchesRole;
   });
 
   const openAddModal = () => { setEditingUser(null); setShowFormModal(true); };
   const openEditModal = (user) => { setEditingUser(user); setShowFormModal(true); };
 
-  const handleSaveUser = (payload, userId) => {
+  // Waxay soo tuurtaa (throw) khaladaadka — UserFormModal ayaa isaga qabta
+  // oo tusaya gudaha modal-ka, si aan modal-ku isugu xidhmin marka email-ku
+  // horeba loo isticmaalay iwm.
+  const handleSaveUser = async (payload, userId) => {
     if (userId) {
-      setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, ...payload } : u)));
+      await updateStaffDoc(userId, { fullName: payload.fullName, title: payload.title, role: permissionTier(payload.title) });
     } else {
-      setUsers((prev) => [...prev, { ...payload, id: Date.now(), status: 'active', joined: new Date().toISOString().split('T')[0] }]);
+      await createStaffAccount({
+        schoolCode: profile.schoolCode,
+        fullName: payload.fullName,
+        email: payload.email,
+        password: payload.password,
+        role: permissionTier(payload.title),
+        title: payload.title,
+      });
     }
   };
 
-  const toggleStatus = (userId) => {
-    setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status: u.status === 'active' ? 'suspended' : 'active' } : u)));
+  const toggleStatus = async (user) => {
+    try {
+      await setStaffStatus(user.id, user.status === 'active' ? 'suspended' : 'active');
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii xaaladda shaqaalaha la beddelayay:', err);
+    }
   };
 
-  const handleRemove = (userId, name) => {
+  const handleRemove = async (userId, name) => {
+    if (userId === profile?.uid) return;
     if (window.confirm(`Ma hubtaa inaad ka saarayso "${name}" nidaamka? Tallaabadan lama noqon karo.`)) {
-      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      try {
+        await removeStaffDoc(userId);
+      } catch (err) {
+        console.error('Khalad ayaa dhacay markii shaqaalaha la saarayay:', err);
+      }
     }
   };
 
@@ -128,19 +163,29 @@ function Users() {
                     </div>
                   </td>
                   <td className="cell-sub">{u.email}</td>
-                  <td><span className={`users-role-badge ${ROLE_COLOR[u.role]}`}>{u.role}</span></td>
+                  <td><span className={`users-role-badge ${ROLE_COLOR[u.title]}`}>{u.title}</span></td>
                   <td>
-                    <button className={`users-status-btn ${u.status}`} onClick={() => toggleStatus(u.id)}>
+                    <button
+                      className={`users-status-btn ${u.status}`}
+                      onClick={() => toggleStatus(u)}
+                      disabled={u.id === profile?.uid}
+                      title={u.id === profile?.uid ? 'Ma bedeli kartid xaaladdaada' : undefined}
+                    >
                       {u.status === 'active' ? 'Firfircoon' : 'La Joojiyay'}
                     </button>
                   </td>
-                  <td className="cell-sub">{u.joined}</td>
+                  <td className="cell-sub">{u.createdAt?.toDate ? u.createdAt.toDate().toISOString().split('T')[0] : ''}</td>
                   <td>
                     <div className="row-actions">
                       <button className="row-action-btn" title="Wax Ka Beddel" onClick={() => openEditModal(u)}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
                       </button>
-                      <button className="row-action-btn danger" title="Ka Saar" onClick={() => handleRemove(u.id, u.fullName)}>
+                      <button
+                        className="row-action-btn danger"
+                        title={u.id === profile?.uid ? 'Ma iska saari kartid nafta' : 'Ka Saar'}
+                        onClick={() => handleRemove(u.id, u.fullName)}
+                        disabled={u.id === profile?.uid}
+                      >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
                       </button>
                     </div>

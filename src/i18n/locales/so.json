@@ -594,6 +594,7 @@
       "emailInUse": "Akoonkan (School Code + Diiwaan ID) horeba waa la diiwaan geliyay — fadlan Gal halkii aad Diiwaan Geli lahayd.",
       "weakPassword": "Furaha Sirta waa inuu ka koobnaadaa ugu yaraan 6 xaraf.",
       "wrongRole": "Akoontaan uma dhigna doorka aad doorateen (Arday/Waalid).",
+      "accountSuspended": "Akoonkan waa la joojiyay. La xiriir maamulaha dugsigaaga.",
       "generic": "Wax baa qaldamay. Fadlan mar kale isku day.",
       "passwordMismatch": "Furaha Sirta iyo Xaqiijinta Furaha Sirta isku mid ma aha."
     },

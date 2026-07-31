@@ -38,11 +38,34 @@ service cloud.firestore {
     }
 
     // ===== users =====
-    // Isticmaale kastaa wuxuu kaliya akhriyi/beddeli karaa profile-kiisa.
+    // Isticmaale kastaa wuxuu akhriyi/beddeli karaa profile-kiisa. Waxaa sidoo
+    // kale u ogolaaday 'owner' inuu maamulo (abuur/akhri/beddel/saar) shaqaalaha
+    // kale ee isla dugsigiisa (bogga "Users") — fiiri firebase/staff.js.
     match /users/{userId} {
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow read, update: if isSignedIn() && request.auth.uid == userId;
-      allow delete: if false;
+      allow create: if isSignedIn() && (
+        request.auth.uid == userId
+        || (me().accountType == 'staff' && me().role == 'owner'
+            && me().schoolCode == request.resource.data.schoolCode
+            && request.resource.data.accountType == 'staff')
+      );
+      allow read: if isSignedIn() && (
+        request.auth.uid == userId
+        || (me().accountType == 'staff' && me().role == 'owner'
+            && me().schoolCode == resource.data.schoolCode && resource.data.accountType == 'staff')
+      );
+      allow update: if isSignedIn() && (
+        request.auth.uid == userId
+        || (me().accountType == 'staff' && me().role == 'owner'
+            && me().schoolCode == resource.data.schoolCode && resource.data.accountType == 'staff'
+            && request.resource.data.schoolCode == resource.data.schoolCode)
+      );
+      // Ma tirtiro Firebase Auth account-ka (SDK-ga browser-ku uma oggola —
+      // waa loo baahan yahay Admin SDK/backend), laakiin tirtiridda doc-kan
+      // waa in ay xannibto gelitaanka oo dhan (fiiri firebase/staff.js:
+      // removeStaffDoc) — ma iska saari karo naftaada.
+      allow delete: if isSignedIn() && me().accountType == 'staff' && me().role == 'owner'
+        && me().schoolCode == resource.data.schoolCode && resource.data.accountType == 'staff'
+        && request.auth.uid != userId;
     }
 
     // ===== schools (magaca, logo-ga, fees-by-grade, sanadka waxbarasho,

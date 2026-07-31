@@ -6,11 +6,12 @@ const EMPTY_FORM = { fullName: '', email: '', role: 'Teacher', password: '' };
 function UserFormModal({ isOpen, onClose, onSave, user, roleOptions }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const isEditing = !!user;
 
   useEffect(() => {
     if (user) {
-      setForm({ fullName: user.fullName, email: user.email, role: user.role, password: '' });
+      setForm({ fullName: user.fullName, email: user.email, role: user.title, password: '' });
     } else {
       setForm(EMPTY_FORM);
     }
@@ -21,7 +22,7 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions }) {
 
   const update = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!isEditing && form.password.length < 6) {
@@ -29,9 +30,23 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions }) {
       return;
     }
 
-    const payload = { fullName: form.fullName, email: form.email, role: form.role };
-    onSave(payload, user?.id);
-    onClose();
+    const payload = { fullName: form.fullName, email: form.email, title: form.role, password: form.password };
+    setSubmitting(true);
+    setError('');
+    try {
+      await onSave(payload, user?.id);
+      onClose();
+    } catch (err) {
+      setError(
+        err.code === 'auth/email-already-in-use'
+          ? 'Email-kan horeba waa la isticmaalayaa.'
+          : err.code === 'auth/invalid-email'
+          ? 'Email-ku ma saxna.'
+          : 'Khalad ayaa dhacay. Fadlan isku day mar kale.'
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -80,9 +95,9 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions }) {
           </div>
 
           <div className="ufm-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>Jooji</button>
-            <button type="submit" className="btn-primary">
-              {isEditing ? 'Kaydi Isbeddelka' : 'Ku Dar Shaqaalaha'}
+            <button type="button" className="btn-secondary" onClick={onClose} disabled={submitting}>Jooji</button>
+            <button type="submit" className="btn-primary" disabled={submitting}>
+              {submitting ? '...' : isEditing ? 'Kaydi Isbeddelka' : 'Ku Dar Shaqaalaha'}
             </button>
           </div>
         </form>
