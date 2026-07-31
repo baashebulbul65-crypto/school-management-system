@@ -2,11 +2,10 @@ rules_version = '2';
 
 // Fiiri README-ka qaybta "Firestore Rules" ka hor intaadan wax beddelin halkan.
 //
-// MUHIIM: Collection-yada 'classFees', 'familyFees' iyo 'staff' (liiska
-// macallimiinta/shaqaalaha ee bogga "Users") WELI kuma jiraan Firestore —
-// waa xog local ah (SEED_* / useState) oo ku jirta SchoolDataContext.jsx,
-// marka rules-kani looma baahna (weli). Marka la beddelo si ay Firestore
-// ugu kaydsadaan, waa in halkan loo daraa qaybo cusub oo la mid ah kuwa hoose.
+// MUHIIM: Collection-ka 'staff' (liiska macallimiinta/shaqaalaha ee bogga
+// "Users") WELI kuma jiro Firestore — 'users/{uid}' baa xogta shaqaalaha
+// dhabta ah ku haysa. Marka la beddelo, waa in halkan loo daraa qaybo
+// cusub oo la mid ah kuwa hoose.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -164,6 +163,41 @@ service cloud.firestore {
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readByParent']));
 
       allow delete: if false;
+    }
+
+    // ===== financeExpenses / financeIncome =====
+    match /financeExpenses/{expenseId} {
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow update, delete: if false;
+    }
+    match /financeIncome/{incomeId} {
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow update, delete: if false;
+    }
+
+    // ===== classFees / familyFees ===== — qeexidda safka (name/students/
+    // total/discount) KALIYA, balance-ku KUMA jiro halkan (waxaa laga soo
+    // xisaabiyaa "feePayments" ee hoose, fiiri SchoolDataContext.jsx).
+    match /classFees/{rowId} {
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow update, delete: if false;
+    }
+    match /familyFees/{rowId} {
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow update, delete: if false;
+    }
+
+    // ===== feePayments ===== — diiwaan (ledger) bixin kasta, APPEND-ONLY:
+    // marna lama badali karo, lamana tirtiri karo (sixitaanku waxaa lagu
+    // sameeyaa diiwaan celceliya, ma aha in taariikhda la tafatiro).
+    match /feePayments/{paymentId} {
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow update, delete: if false;
     }
 
     // ===== notifications =====

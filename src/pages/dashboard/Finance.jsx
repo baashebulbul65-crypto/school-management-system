@@ -5,26 +5,13 @@ import { useSchoolData } from '../../context/SchoolDataContext';
 import FinanceDonutChart from '../../components/dashboard/FinanceDonutChart';
 import FinanceEntryModal from './FinanceEntryModal';
 import FeeCollectionModal from './FeeCollectionModal';
+import AddFeeRowModal from './AddFeeRowModal';
 import ClassDetailModal from './ClassDetailModal';
 import '../../styles/dashboard-shared.css';
 import './Finance.css';
 
 // Tirooyin dheeraad ah oo la xiriira xisaabaadka (stats box-ka midig)
 const EXTRA_STATS = { paymentsCount: 139, discountRecipients: 8, scholarshipCount: 71, unpaidCount: 0 };
-
-const EXPENSE_META = [
-  { id: 1, amount: 2400, date: '2026-06-28' },
-  { id: 2, amount: 340, date: '2026-07-05' },
-  { id: 3, amount: 210, date: '2026-07-08' },
-  { id: 4, amount: 180, date: '2026-07-12' },
-  { id: 5, amount: 95, date: '2026-07-01' },
-];
-
-const INCOME_META = [
-  { id: 1, amount: 4200, date: '2026-07-10' },
-  { id: 2, amount: 800, date: '2026-07-02' },
-  { id: 3, amount: 600, date: '2026-07-15' },
-];
 
 const SALARY_META = [
   { id: 1, amount: 420, status: 'pending' },
@@ -48,7 +35,10 @@ function Finance() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const { classFees, familyFees, collectClassFee, collectFamilyFee } = useSchoolData();
+  const {
+    classFees, familyFees, collectClassFee, collectFamilyFee, addClassFeeRow, addFamilyFeeRow,
+    expenses, income, addExpense, addIncome,
+  } = useSchoolData();
   const [activeTab, setActiveTab] = useState('accounting');
 
   // ----- Xisaabaadka state -----
@@ -56,20 +46,15 @@ function Finance() {
   const [monthValue, setMonthValue] = useState('2026-07');
   const [classFilter, setClassFilter] = useState('all');
   const [showCollectModal, setShowCollectModal] = useState(false);
+  const [showAddRowModal, setShowAddRowModal] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
 
-  // Xogta tijaabada ah (seed) — reactive turjumaad, isla mar ahaantaana kordhinaya xogta
-  // admin-ku gudaha foomka ku daro (mid kaliya oo aan la tarjumin, waa qoraal shakhsi ah)
-  const seedExpenses = t('finance.expenses.items', { returnObjects: true }).map((item, i) => ({ ...EXPENSE_META[i], ...item }));
-  const seedIncome = t('finance.income.items', { returnObjects: true }).map((item, i) => ({ ...INCOME_META[i], ...item }));
+  // Salary/Discounts/Documents WELI waa xog tijaabo ah (demo) — ma jiraan
+  // wali add-flow UI ah oo shaqeynaya (fiiri plan-ka: "Salary/Discounts/
+  // Documents tabs remain demo-only pending dedicated add-flows").
   const salary = t('finance.salary.items', { returnObjects: true }).map((item, i) => ({ ...SALARY_META[i], ...item }));
   const discounts = t('finance.discounts.items', { returnObjects: true }).map((item, i) => ({ ...DISCOUNTS_META[i], ...item }));
   const documents = t('finance.documents.items', { returnObjects: true }).map((item, i) => ({ ...DOCUMENTS_META[i], ...item }));
-
-  const [addedExpenses, setAddedExpenses] = useState([]);
-  const [addedIncome, setAddedIncome] = useState([]);
-  const expenses = [...seedExpenses, ...addedExpenses];
-  const income = [...seedIncome, ...addedIncome];
 
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [entryType, setEntryType] = useState('expenses');
@@ -96,9 +81,9 @@ function Finance() {
 
   const totalStudents = useMemo(() => activeRows.reduce((s, r) => s + r.students, 0), [activeRows]);
 
-  const handleCollectPayment = ({ rowId, amount }) => {
-    if (viewMode === 'class') collectClassFee(rowId, amount);
-    else collectFamilyFee(rowId, amount);
+  const handleCollectPayment = ({ rowId, amount, method, date }) => {
+    if (viewMode === 'class') collectClassFee(rowId, amount, method, date);
+    else collectFamilyFee(rowId, amount, method, date);
   };
 
   const handleCollectDetail = (rowId, amount) => {
@@ -106,7 +91,12 @@ function Finance() {
     else collectFamilyFee(rowId, amount);
   };
 
-  // ----- Kharashka/Dakhliga (sida hore) -----
+  const handleSaveFeeRow = (payload) => {
+    if (viewMode === 'class') addClassFeeRow(payload);
+    else addFamilyFeeRow(payload);
+  };
+
+  // ----- Kharashka/Dakhliga -----
   const expenseCategories = useMemo(() => {
     const grouped = {};
     expenses.forEach((e) => { grouped[e.category] = (grouped[e.category] || 0) + e.amount; });
@@ -114,14 +104,13 @@ function Finance() {
     return Object.entries(grouped).map(([category, amount]) => ({
       category, amount, percent: Math.round((amount / maxVal) * 100),
     }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [expenses.length, addedExpenses]);
+  }, [expenses]);
 
   const openEntryModal = (type) => { setEntryType(type); setShowEntryModal(true); };
 
   const handleSaveEntry = (payload, type) => {
-    if (type === 'expenses') setAddedExpenses((prev) => [...prev, { ...payload, id: Date.now() }]);
-    else if (type === 'income') setAddedIncome((prev) => [...prev, { ...payload, id: Date.now() }]);
+    if (type === 'expenses') addExpense(payload);
+    else if (type === 'income') addIncome(payload);
   };
 
   const handlePrint = () => window.print();
@@ -282,10 +271,16 @@ function Finance() {
                 {uniqueClassNames.map((n) => <option key={n} value={n}>{n}</option>)}
               </select>
             ) : <div />}
-            <button className="acc-collect-btn" onClick={() => setShowCollectModal(true)}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-              {t('finance.collectFee')}
-            </button>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button className="btn-secondary" onClick={() => setShowAddRowModal(true)} type="button">
+                <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                {t('finance.addFeeRow.button')}
+              </button>
+              <button className="acc-collect-btn" onClick={() => setShowCollectModal(true)} disabled={activeRows.length === 0}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                {t('finance.collectFee')}
+              </button>
+            </div>
           </div>
 
           {/* TABLE */}
@@ -494,6 +489,13 @@ function Finance() {
         onClose={() => setShowCollectModal(false)}
         onCollect={handleCollectPayment}
         rows={activeRows}
+      />
+
+      <AddFeeRowModal
+        isOpen={showAddRowModal}
+        onClose={() => setShowAddRowModal(false)}
+        onSave={handleSaveFeeRow}
+        viewMode={viewMode}
       />
 
       {selectedRow && (

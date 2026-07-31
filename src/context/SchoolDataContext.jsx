@@ -11,6 +11,13 @@ import { subscribeToTeachers, createTeacherDoc, updateTeacherDoc } from '../fire
 import { subscribeToClasses, createClassDoc, updateClassDoc, deleteClassDoc } from '../firebase/classes';
 import { subscribeToSubjects, createSubjectDoc, updateSubjectDoc, deleteSubjectDoc } from '../firebase/subjects';
 import { subscribeToExams, createExamDoc, updateExamDoc, deleteExamDoc } from '../firebase/exams';
+import {
+  subscribeToExpenses, createExpenseDoc,
+  subscribeToIncome, createIncomeDoc,
+  subscribeToClassFees, createClassFeeRowDoc,
+  subscribeToFamilyFees, createFamilyFeeRowDoc,
+  subscribeToFeePayments, createFeePaymentDoc,
+} from '../firebase/finance';
 import { subscribeToAttendanceByDate, setStudentAttendanceRecord } from '../firebase/attendance';
 import { subscribeToExamMarks, setExamMarkRecord } from '../firebase/examMarks';
 import { subscribeToQuranProgressByDate, setQuranProgressRecord } from '../firebase/quranProgress';
@@ -196,23 +203,6 @@ const DEMO_STUDENTS_SEED = [
   },
 ];
 
-const SEED_CLASS_FEES = [
-  { id: 1, name: 'Fasalka Sare ee Xasan', shift: 'Sabaxi', students: 46, total: 229, discount: 0, balance: 20 },
-  { id: 2, name: 'Fasalka Sare ee Xasan', shift: "Masaa'i", students: 27, total: 155, discount: 5, balance: 0 },
-  { id: 3, name: 'Fasal 2 - Amiina', shift: 'Sabaxi', students: 31, total: 110, discount: 0, balance: 15 },
-  { id: 4, name: 'Fasal 3 - Xaawo', shift: 'Sabaxi', students: 23, total: 150, discount: 0, balance: 0 },
-  { id: 5, name: 'Fasal 3 - Xaawo', shift: "Masaa'i", students: 34, total: 240, discount: 10, balance: 25 },
-  { id: 6, name: 'Fasal 4 - Cumar', shift: 'Sabaxi', students: 31, total: 153, discount: 0, balance: 0 },
-  { id: 7, name: 'Fasal 4 - Cumar', shift: "Masaa'i", students: 28, total: 132, discount: 3, balance: 18 },
-];
-
-const SEED_FAMILY_FEES = [
-  { id: 101, name: 'Qoyska Xasan Warsame', students: 3, total: 360, discount: 20, balance: 0 },
-  { id: 102, name: 'Qoyska Cabdi Nuur', students: 2, total: 240, discount: 0, balance: 45 },
-  { id: 103, name: 'Qoyska Maxamed Cige', students: 2, total: 220, discount: 15, balance: 0 },
-  { id: 104, name: 'Qoyska Yoonis Cali', students: 1, total: 120, discount: 0, balance: 30 },
-];
-
 const SEED_STAFF = [
   { id: 1, name: 'Xasan Cabdulle Nuur', sub: 'Maamule Guud' },
   { id: 2, name: 'Zaynab Cali Warsame', sub: 'Xisaabiye (Accountant)' },
@@ -243,8 +233,11 @@ export function SchoolDataProvider({ children }) {
   const [subjects, setSubjects] = useState([]);
   const [exams, setExams] = useState([]);
   const [examMarks, setExamMarks] = useState({});
-  const [classFees, setClassFees] = useState(SEED_CLASS_FEES);
-  const [familyFees, setFamilyFees] = useState(SEED_FAMILY_FEES);
+  const [classFeeRows, setClassFeeRows] = useState([]);
+  const [familyFeeRows, setFamilyFeeRows] = useState([]);
+  const [feePayments, setFeePayments] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+  const [income, setIncome] = useState([]);
   const [staff, setStaff] = useState(SEED_STAFF);
   const [otherAttendanceToday, setOtherAttendanceToday] = useState(SEED_ATTENDANCE_TODAY);
   const [studentAttendanceToday, setStudentAttendanceToday] = useState({});
@@ -488,6 +481,126 @@ export function SchoolDataProvider({ children }) {
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
+
+  // ===== XISAABAADKA (Firestore collections "financeExpenses"/"financeIncome"/
+  // "classFees"/"familyFees"/"feePayments") — staff-only, schoolCode-wide. =====
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setExpenses([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToExpenses(
+      profile.schoolCode,
+      setExpenses,
+      (err) => console.error('Khalad ayaa dhacay markii kharashaadka laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType]);
+
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setIncome([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToIncome(
+      profile.schoolCode,
+      setIncome,
+      (err) => console.error('Khalad ayaa dhacay markii dakhliga laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType]);
+
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setClassFeeRows([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToClassFees(
+      profile.schoolCode,
+      setClassFeeRows,
+      (err) => console.error('Khalad ayaa dhacay markii safafka lacagta fasalka laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType]);
+
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setFamilyFeeRows([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToFamilyFees(
+      profile.schoolCode,
+      setFamilyFeeRows,
+      (err) => console.error('Khalad ayaa dhacay markii safafka lacagta qoyska laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType]);
+
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setFeePayments([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToFeePayments(
+      profile.schoolCode,
+      setFeePayments,
+      (err) => console.error('Khalad ayaa dhacay markii bixinada lacagta laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType]);
+
+  // Balance-ka saf kasta waxaa laga soo xisaabiyaa (derive) isu geynta
+  // feePayments-ka la xiriira row-gaas — ma aha counter la kaydiyo, si loo
+  // xalliyo tartanka (race condition) iyo si loo hesho diiwaan (ledger)
+  // dhab ah oo bixin kasta. Shape-ku waa isku mid oo la wadaago
+  // Finance.jsx/Overview.jsx/ClassDetailModal.jsx iyagoo aan wax akhris ah
+  // ka beddelin.
+  const withDerivedBalance = (rows, feeType) =>
+    rows.map((r) => {
+      const paid = feePayments
+        .filter((p) => p.feeType === feeType && p.rowId === r.id)
+        .reduce((sum, p) => sum + p.amount, 0);
+      return { ...r, balance: Math.max(0, (r.total || 0) - (r.discount || 0) - paid) };
+    });
+
+  const classFees = useMemo(() => withDerivedBalance(classFeeRows, 'class'), [classFeeRows, feePayments]);
+  const familyFees = useMemo(() => withDerivedBalance(familyFeeRows, 'family'), [familyFeeRows, feePayments]);
+
+  const addExpense = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      await createExpenseDoc(profile.schoolCode, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii kharashka la darayay:', err);
+    }
+  };
+
+  const addIncome = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      await createIncomeDoc(profile.schoolCode, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii dakhliga la darayay:', err);
+    }
+  };
+
+  const addClassFeeRow = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      await createClassFeeRowDoc(profile.schoolCode, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii safka lacagta fasalka la darayay:', err);
+    }
+  };
+
+  const addFamilyFeeRow = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      await createFamilyFeeRowDoc(profile.schoolCode, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii safka lacagta qoyska la darayay:', err);
+    }
+  };
 
   // ===== BUUNDOOYINKA IMTIXAANADA (Firestore collection "examMarks") =====
   // Staff-only (schoolCode-wide) — waalidku wuxuu isticmaalaa
@@ -777,13 +890,27 @@ export function SchoolDataProvider({ children }) {
     }
   };
 
-  // ===== LACAGTA (FEES) =====
-  const collectClassFee = (rowId, amount) => {
-    setClassFees((prev) => prev.map((r) => (r.id === rowId ? { ...r, balance: Math.max(0, r.balance - amount) } : r)));
+  // ===== LACAGTA (FEES) — waxay qortaa diiwaan (feePayments), MA AHA in ay
+  // tirtirto/dhimato balance-ka si toos ah (fiiri withDerivedBalance kore). =====
+  const collectFee = async (feeType, rowId, amount, method, date) => {
+    if (!profile?.schoolCode || !amount) return;
+    try {
+      await createFeePaymentDoc({
+        schoolCode: profile.schoolCode,
+        feeType,
+        rowId,
+        amount,
+        method: method || '',
+        date: date || todayISODate(),
+        collectedBy: profile.uid,
+        collectedByName: profile.fullName || '',
+      });
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii lacagta la ururinayay:', err);
+    }
   };
-  const collectFamilyFee = (rowId, amount) => {
-    setFamilyFees((prev) => prev.map((r) => (r.id === rowId ? { ...r, balance: Math.max(0, r.balance - amount) } : r)));
-  };
+  const collectClassFee = (rowId, amount, method, date) => collectFee('class', rowId, amount, method, date);
+  const collectFamilyFee = (rowId, amount, method, date) => collectFee('family', rowId, amount, method, date);
 
   // ===== IMAANSHAHA MAANTA (Macallimiinta / Shaqaalaha — weli mock) =====
   const cycleAttendanceStatus = (category, id) => {
@@ -803,7 +930,8 @@ export function SchoolDataProvider({ children }) {
     classes, addClass, updateClass, removeClass,
     subjects, addSubject, updateSubject, removeSubject,
     exams, examMarks, addExam, updateExam, removeExam, updateExamMark,
-    classFees, familyFees, collectClassFee, collectFamilyFee,
+    classFees, familyFees, collectClassFee, collectFamilyFee, addClassFeeRow, addFamilyFeeRow,
+    expenses, income, addExpense, addIncome,
     staff,
     attendanceToday, cycleAttendanceStatus,
     quranProgressToday, setQuranProgress,

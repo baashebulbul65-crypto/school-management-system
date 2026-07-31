@@ -300,6 +300,19 @@
       "date": "Taariikhda",
       "confirm": "Xaqiiji Lacag-Qabashada"
     },
+    "addFeeRow": {
+      "button": "Ku Dar Saf Cusub",
+      "title": "Ku Dar Saf Cusub",
+      "subtitle": "Buuxi macluumaadka safka cusub",
+      "name": "Magaca (Fasalka/Qoyska) *",
+      "namePlaceholder": "Tusaale: Fasal 5 - Xaawo",
+      "shift": "Wakhtiga (Shift)",
+      "shiftPlaceholder": "Tusaale: Sabaxi",
+      "students": "Tirada Ardayda *",
+      "total": "Wadarta ($) *",
+      "discount": "Qiimo Dhimis ($)",
+      "submit": "Ku Dar Safka"
+    },
     "classDetail": {
       "back": "Noqo",
       "print": "Print",

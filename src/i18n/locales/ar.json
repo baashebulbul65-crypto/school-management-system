@@ -300,6 +300,19 @@
       "date": "التاريخ",
       "confirm": "تأكيد التحصيل"
     },
+    "addFeeRow": {
+      "button": "إضافة صف جديد",
+      "title": "إضافة صف جديد",
+      "subtitle": "املأ بيانات الصف الجديد",
+      "name": "الاسم (الفصل/العائلة) *",
+      "namePlaceholder": "مثال: الفصل 5 - حواء",
+      "shift": "الفترة (Shift)",
+      "shiftPlaceholder": "مثال: صباحي",
+      "students": "عدد الطلاب *",
+      "total": "الإجمالي ($) *",
+      "discount": "قيمة الخصم ($)",
+      "submit": "إضافة الصف"
+    },
     "classDetail": {
       "back": "رجوع",
       "print": "طباعة",

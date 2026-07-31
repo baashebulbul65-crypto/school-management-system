@@ -46,7 +46,7 @@ function FeeCollectionModal({ isOpen, onClose, onCollect, rows }) {
             <div className="fcm-grid">
               <div className="fcm-field full">
                 <label>{t('finance.collectModal.classOrFamily')}</label>
-                <select value={rowId} onChange={(e) => setRowId(Number(e.target.value))}>
+                <select value={rowId} onChange={(e) => setRowId(e.target.value)}>
                   {rows.map((r) => (
                     <option key={r.id} value={r.id}>{r.name} {r.shift ? `- ${r.shift}` : ''} ({t('finance.collectModal.balanceLabel')}: ${r.balance})</option>
                   ))}
