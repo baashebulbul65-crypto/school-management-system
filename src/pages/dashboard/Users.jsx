@@ -33,6 +33,7 @@ const ROLE_COLOR = {
 };
 
 function initials(name) {
+  if (!name) return '?';
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 }
 
@@ -66,7 +67,7 @@ function Users() {
   }));
 
   const filtered = displayUsers.filter((u) => {
-    const matchesSearch = u.fullName.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = (u.fullName || '').toLowerCase().includes(search.toLowerCase()) || (u.email || '').toLowerCase().includes(search.toLowerCase());
     const matchesRole = roleFilter === 'all' || u.title === roleFilter;
     return matchesSearch && matchesRole;
   });
@@ -159,11 +160,11 @@ function Users() {
                   <td>
                     <div className="cell-person">
                       <div className="cell-avatar">{initials(u.fullName)}</div>
-                      <span className="cell-name">{u.fullName}</span>
+                      <span className="cell-name">{u.fullName || '—'}</span>
                     </div>
                   </td>
-                  <td className="cell-sub">{u.email}</td>
-                  <td><span className={`users-role-badge ${ROLE_COLOR[u.title]}`}>{u.title}</span></td>
+                  <td className="cell-sub">{u.email || '—'}</td>
+                  <td><span className={`users-role-badge ${ROLE_COLOR[u.title] || 'navy'}`}>{u.title}</span></td>
                   <td>
                     <button
                       className={`users-status-btn ${u.status}`}
