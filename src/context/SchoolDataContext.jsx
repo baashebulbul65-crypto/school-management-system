@@ -18,7 +18,8 @@ import {
   subscribeToFamilyFees, createFamilyFeeRowDoc,
   subscribeToFeePayments, createFeePaymentDoc,
 } from '../firebase/finance';
-import { subscribeToAttendanceByDate, setStudentAttendanceRecord } from '../firebase/attendance';
+import { subscribeToAttendanceByDate, setStudentAttendanceRecord, subscribeToStaffAttendanceByDate, setStaffAttendanceRecord } from '../firebase/attendance';
+import { subscribeToStaffRoster, createStaffRosterDoc, updateStaffRosterDoc, deleteStaffRosterDoc } from '../firebase/staffRoster';
 import { subscribeToExamMarks, setExamMarkRecord } from '../firebase/examMarks';
 import { subscribeToQuranProgressByDate, setQuranProgressRecord } from '../firebase/quranProgress';
 import { subscribeToQuranTargets, createQuranTargetDoc, updateQuranTargetDoc } from '../firebase/quranTargets';
@@ -203,22 +204,6 @@ const DEMO_STUDENTS_SEED = [
   },
 ];
 
-const SEED_STAFF = [
-  { id: 1, name: 'Xasan Cabdulle Nuur', sub: 'Maamule Guud' },
-  { id: 2, name: 'Zaynab Cali Warsame', sub: 'Xisaabiye (Accountant)' },
-  { id: 3, name: 'Cumar Faarax Cige', sub: 'Ilaaliye (Security)' },
-  { id: 4, name: 'Halima Xuseen Nuur', sub: 'Kaaliye Maamul' },
-];
-
-// Xaaladda imaanshaha "MAANTA" ee macallimiinta/shaqaalaha — weli waa xog mock ah
-// (lama beddelin Firestore, maadaama codsigan kaliya ku saabsanaa ardayda). Ardayda
-// imaanshahoodu wuxuu ka imanayaa Firestore (collection "attendanceRecords") oo
-// hoos ku qoran.
-const SEED_ATTENDANCE_TODAY = {
-  teachers: { 1: 'present', 2: 'present', 3: 'late', 4: 'absent', 5: 'present' },
-  staff: { 1: 'present', 2: 'present', 3: 'present', 4: 'late' },
-};
-
 export function SchoolDataProvider({ children }) {
   const { profile } = useAuth();
   const [allStudents, setAllStudents] = useState([]);
@@ -238,8 +223,9 @@ export function SchoolDataProvider({ children }) {
   const [feePayments, setFeePayments] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [income, setIncome] = useState([]);
-  const [staff, setStaff] = useState(SEED_STAFF);
-  const [otherAttendanceToday, setOtherAttendanceToday] = useState(SEED_ATTENDANCE_TODAY);
+  const [staff, setStaff] = useState([]);
+  const [teacherAttendanceToday, setTeacherAttendanceToday] = useState({});
+  const [staffAttendanceToday, setStaffAttendanceToday] = useState({});
   const [studentAttendanceToday, setStudentAttendanceToday] = useState({});
 
   // ===== IMAANSHAHA ARDAYDA MAANTA (Firestore collection "attendanceRecords") =====
@@ -283,6 +269,88 @@ export function SchoolDataProvider({ children }) {
       }
     }
   };
+
+  // ===== SHAQAALAHA (Firestore collection "staffRoster") — liiska shaqaalaha
+  // aan macallimiinta ahayn (Maamule, Xisaabiye, Ilaaliye, iwm), loo isticmaalo
+  // bogga Attendance tabka "Staff". GOONI ah, kama socoto akoonada gelitaanka
+  // (fiiri firebase/staff.js oo uu isticmaalo bogga "Users"). =====
+  useEffect(() => {
+    if (!profile?.schoolCode) {
+      setStaff([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToStaffRoster(
+      profile.schoolCode,
+      setStaff,
+      (err) => console.error('Khalad ayaa dhacay markii shaqaalaha (roster) laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode]);
+
+  const addStaffMember = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      await createStaffRosterDoc(profile.schoolCode, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii shaqaalaha la darayay:', err);
+    }
+  };
+
+  const updateStaffMember = async (id, payload) => {
+    try {
+      await updateStaffRosterDoc(id, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii shaqaalaha wax laga beddelayay:', err);
+    }
+  };
+
+  const removeStaffMember = async (id) => {
+    try {
+      await deleteStaffRosterDoc(id);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii shaqaalaha la saarayay:', err);
+    }
+  };
+
+  // ===== IMAANSHAHA MACALLIMIINTA/SHAQAALAHA MAANTA (Firestore collection
+  // "staffAttendanceRecords") =====
+  useEffect(() => {
+    if (!profile?.schoolCode) {
+      setTeacherAttendanceToday({});
+      return undefined;
+    }
+    const unsubscribe = subscribeToStaffAttendanceByDate(
+      profile.schoolCode,
+      'teachers',
+      todayISODate(),
+      (records) => {
+        const map = {};
+        records.forEach((r) => { map[r.personId] = r.status; });
+        setTeacherAttendanceToday(map);
+      },
+      (err) => console.error('Khalad ayaa dhacay markii imaanshaha macallimiinta maanta laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode]);
+
+  useEffect(() => {
+    if (!profile?.schoolCode) {
+      setStaffAttendanceToday({});
+      return undefined;
+    }
+    const unsubscribe = subscribeToStaffAttendanceByDate(
+      profile.schoolCode,
+      'staff',
+      todayISODate(),
+      (records) => {
+        const map = {};
+        records.forEach((r) => { map[r.personId] = r.status; });
+        setStaffAttendanceToday(map);
+      },
+      (err) => console.error('Khalad ayaa dhacay markii imaanshaha shaqaalaha maanta laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode]);
 
   // ===== HORUMARKA QURAANKA MAANTA (Firestore collection "quranProgress") =====
   // Staff-only (schoolCode-wide) — waalidku wuxuu isticmaalaa
@@ -775,7 +843,7 @@ export function SchoolDataProvider({ children }) {
   const addTeacher = async (payload) => {
     if (!profile?.schoolCode) return;
     try {
-      const newId = await createTeacherDoc(profile.schoolCode, {
+      await createTeacherDoc(profile.schoolCode, {
         ...payload,
         teacherId: `TCH-${200 + teachers.length + 1}`,
         salary: [],
@@ -783,7 +851,6 @@ export function SchoolDataProvider({ children }) {
         documents: [],
         attendance: buildAttendanceCalendar(TEACHER_ATTENDANCE_PATTERN),
       });
-      setOtherAttendanceToday((prev) => ({ ...prev, teachers: { ...prev.teachers, [newId]: 'present' } }));
     } catch (err) {
       console.error('Khalad ayaa dhacay markii macallinka la darayay:', err);
     }
@@ -912,15 +979,23 @@ export function SchoolDataProvider({ children }) {
   const collectClassFee = (rowId, amount, method, date) => collectFee('class', rowId, amount, method, date);
   const collectFamilyFee = (rowId, amount, method, date) => collectFee('family', rowId, amount, method, date);
 
-  // ===== IMAANSHAHA MAANTA (Macallimiinta / Shaqaalaha — weli mock) =====
-  const cycleAttendanceStatus = (category, id) => {
-    setOtherAttendanceToday((prev) => ({
-      ...prev,
-      [category]: { ...prev[category], [id]: NEXT_STATUS[prev[category][id] || 'present'] },
-    }));
+  // ===== IMAANSHAHA MAANTA (Macallimiinta / Shaqaalaha) =====
+  const cycleAttendanceStatus = async (category, id) => {
+    if (!profile?.schoolCode) return;
+    const currentMap = category === 'teachers' ? teacherAttendanceToday : staffAttendanceToday;
+    const nextStatus = NEXT_STATUS[currentMap[id] || 'present'];
+    try {
+      await setStaffAttendanceRecord(profile.schoolCode, category, todayISODate(), id, nextStatus);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii imaanshaha maanta la cusbooneysiinayay:', err);
+    }
   };
 
-  const attendanceToday = { students: studentAttendanceToday, ...otherAttendanceToday };
+  const attendanceToday = {
+    students: studentAttendanceToday,
+    teachers: teacherAttendanceToday,
+    staff: staffAttendanceToday,
+  };
 
   const value = {
     students, studentsLoading, addStudent, updateStudent, deleteStudent, toggleStudentAttendanceDay, seedDemoStudents,
@@ -932,7 +1007,7 @@ export function SchoolDataProvider({ children }) {
     exams, examMarks, addExam, updateExam, removeExam, updateExamMark,
     classFees, familyFees, collectClassFee, collectFamilyFee, addClassFeeRow, addFamilyFeeRow,
     expenses, income, addExpense, addIncome,
-    staff,
+    staff, addStaffMember, updateStaffMember, removeStaffMember,
     attendanceToday, cycleAttendanceStatus,
     quranProgressToday, setQuranProgress,
     quranTargets, saveQuranTarget, recordQuranTargetOutcome,

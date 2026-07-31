@@ -142,6 +142,23 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ===== staffRoster ===== — liiska shaqaalaha aan macallimiinta ahayn
+    // (Maamule, Xisaabiye, Ilaaliye, iwm) ee bogga Attendance tabka "Staff" —
+    // shaqaale kastaa wuu maamuli karaa, la mid ah classes/subjects.
+    match /staffRoster/{rosterId} {
+      allow read, update, delete: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
+    }
+
+    // ===== staffAttendanceRecords ===== (doc id: "{category}_{date}_{personId}")
+    // Imaanshaha "maanta" ee macallimiinta/shaqaalaha — staff-only, ma jiro
+    // akhris waalid (kama duwana attendanceRecords ee ardayda).
+    match /staffAttendanceRecords/{recordId} {
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow create, update: if isStaffOf(request.resource.data.schoolCode);
+      allow delete: if false;
+    }
+
     // ===== examMarks ===== (doc id: "{examId}_{studentId}")
     match /examMarks/{recordId} {
       allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);

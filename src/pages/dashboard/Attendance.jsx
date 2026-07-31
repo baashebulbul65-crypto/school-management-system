@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import StaffMemberFormModal from './StaffMemberFormModal';
 import '../../styles/dashboard-shared.css';
 import './Attendance.css';
 
@@ -33,10 +34,15 @@ function initials(name) {
 
 function Attendance() {
   const { t } = useTranslation();
-  const { students, teachers, staff, attendanceToday, cycleAttendanceStatus, setStudentAttendanceStatus } = useSchoolData();
+  const {
+    students, teachers, staff, attendanceToday, cycleAttendanceStatus, setStudentAttendanceStatus,
+    addStaffMember, updateStaffMember, removeStaffMember,
+  } = useSchoolData();
   const [category, setCategory] = useState('students');
   const [period, setPeriod] = useState('daily');
   const [date] = useState(new Date().toISOString().split('T')[0]);
+  const [showStaffModal, setShowStaffModal] = useState(false);
+  const [editingStaffMember, setEditingStaffMember] = useState(null);
 
   const CATEGORIES = [
     { id: 'students', label: t('attendance.categories.students') },
@@ -121,6 +127,23 @@ function Attendance() {
     }
   };
 
+  const openAddStaffModal = () => { setEditingStaffMember(null); setShowStaffModal(true); };
+  const openEditStaffModal = (person) => { setEditingStaffMember({ id: person.id, name: person.name, sub: person.sub }); setShowStaffModal(true); };
+
+  const handleSaveStaffMember = (payload, memberId) => {
+    if (memberId) {
+      updateStaffMember(memberId, payload);
+    } else {
+      addStaffMember(payload);
+    }
+  };
+
+  const handleDeleteStaffMember = (memberId, name) => {
+    if (window.confirm(`Ma hubtaa inaad ka saarayso "${name}" liiska shaqaalaha?`)) {
+      removeStaffMember(memberId);
+    }
+  };
+
   return (
     <div>
       <div className="page-header">
@@ -132,16 +155,24 @@ function Attendance() {
       </div>
 
       {/* CATEGORY TABS */}
-      <div className="att-category-tabs">
-        {CATEGORIES.map((c) => (
-          <button
-            key={c.id}
-            className={`att-cat-tab ${category === c.id ? 'active' : ''}`}
-            onClick={() => setCategory(c.id)}
-          >
-            {c.label}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div className="att-category-tabs">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c.id}
+              className={`att-cat-tab ${category === c.id ? 'active' : ''}`}
+              onClick={() => setCategory(c.id)}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+        {category === 'staff' && (
+          <button className="btn-primary" onClick={openAddStaffModal}>
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Ku Dar Shaqaale
           </button>
-        ))}
+        )}
       </div>
 
       {/* TODAY SUMMARY */}
@@ -169,7 +200,12 @@ function Attendance() {
         <div className="data-table-wrap">
           <table className="data-table">
             <thead>
-              <tr><th>{t('attendance.table.name')}</th><th>{t('attendance.table.details')}</th><th>{t('attendance.table.status')}</th></tr>
+              <tr>
+                <th>{t('attendance.table.name')}</th>
+                <th>{t('attendance.table.details')}</th>
+                <th>{t('attendance.table.status')}</th>
+                {category === 'staff' && <th></th>}
+              </tr>
             </thead>
             <tbody>
               {list.map((p) => (
@@ -200,8 +236,23 @@ function Attendance() {
                       </button>
                     )}
                   </td>
+                  {category === 'staff' && (
+                    <td>
+                      <div className="row-actions">
+                        <button className="row-action-btn" title="Wax Ka Beddel" onClick={() => openEditStaffModal(p)}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
+                        </button>
+                        <button className="row-action-btn danger" title="Ka Saar" onClick={() => handleDeleteStaffMember(p.id, p.name)}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
+              {category === 'staff' && list.length === 0 && (
+                <tr><td colSpan="4" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>Wali shaqaale lama darin.</td></tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -243,6 +294,13 @@ function Attendance() {
           </div>
         </div>
       </div>
+
+      <StaffMemberFormModal
+        isOpen={showStaffModal}
+        onClose={() => setShowStaffModal(false)}
+        onSave={handleSaveStaffMember}
+        member={editingStaffMember}
+      />
     </div>
   );
 }

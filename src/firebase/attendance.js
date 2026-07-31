@@ -40,3 +40,33 @@ export function subscribeToStudentAttendanceHistory(schoolCode, studentId, onCha
     onError
   );
 }
+
+// Xogta imaanshaha "MAANTA" ee MACALLIMIINTA/SHAQAALAHA — collection GOONI ah
+// oo ka duwan "attendanceRecords" (kaas oo gaar u ah ardayda), maadaama
+// person-yadan aysan lahayn "studentId". Document ID kasta waa
+// "{category}_{date}_{personId}" ("category" waa 'teachers' ama 'staff').
+const STAFF_COLLECTION = 'staffAttendanceRecords';
+
+function staffRecordId(category, date, personId) {
+  return `${category}_${date}_${personId}`;
+}
+
+export function subscribeToStaffAttendanceByDate(schoolCode, category, date, onChange, onError) {
+  const q = query(
+    collection(db, STAFF_COLLECTION),
+    where('schoolCode', '==', schoolCode),
+    where('category', '==', category),
+    where('date', '==', date)
+  );
+  return onSnapshot(
+    q,
+    (snap) => onChange(snap.docs.map((d) => d.data())),
+    onError
+  );
+}
+
+export async function setStaffAttendanceRecord(schoolCode, category, date, personId, status) {
+  await setDoc(doc(db, STAFF_COLLECTION, staffRecordId(category, date, personId)), {
+    schoolCode, date, category, personId, status,
+  });
+}
