@@ -1,10 +1,12 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
-import { findSchoolByCode, updateSchoolLogo } from '../firebase/auth';
+import { subscribeToSchool, upsertSchoolSettings, updateSchoolLogo } from '../firebase/schools';
 import { validateLogoFile, fileToBase64 } from '../utils/logoImage';
 import i18n, { applyDirection } from '../i18n';
 
 const SettingsContext = createContext(null);
+
+const LANGUAGE_STORAGE_KEY = 'xarun_language';
 
 const DEFAULT_SETTINGS = {
   school: {
@@ -15,7 +17,7 @@ const DEFAULT_SETTINGS = {
     email: 'info@kayd.com',
     logo: null, // base64 data URI ee sawirka logo-ga dugsiga, lagu kaydiyay Firestore
   },
-  language: 'so', // 'so' | 'en' | 'ar'
+  language: 'so', // 'so' | 'en' | 'ar' — SHAKHSI AH (localStorage), ma aha Firestore, fiiri hoos
   currency: 'USD',
   timezone: 'Africa/Mogadishu',
   academicYear: { start: '2026-01-10', end: '2026-12-15' },
@@ -33,31 +35,64 @@ const DEFAULT_SETTINGS = {
   },
 };
 
+function readStoredLanguage() {
+  try {
+    return localStorage.getItem(LANGUAGE_STORAGE_KEY) || DEFAULT_SETTINGS.language;
+  } catch {
+    return DEFAULT_SETTINGS.language;
+  }
+}
+
 export function SettingsProvider({ children }) {
   const { profile } = useAuth();
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState(() => ({ ...DEFAULT_SETTINGS, language: readStoredLanguage() }));
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoError, setLogoError] = useState(null);
 
-  const updateSchool = (fields) => {
-    setSettings((prev) => ({ ...prev, school: { ...prev.school, ...fields } }));
+  // ===== Xogta dugsiga (Firestore doc "schools/{schoolCode}") — magaca,
+  // fees-by-grade, sanadka waxbarasho, notification prefs, iyo logo-ga.
+  // 'language' GA MAAHAN halkan (fiiri hoos). =====
+  useEffect(() => {
+    if (!profile?.schoolCode) return undefined;
+    const unsubscribe = subscribeToSchool(
+      profile.schoolCode,
+      (school) => {
+        if (!school) return;
+        setSettings((prev) => ({
+          ...prev,
+          school: {
+            name: school.name ?? prev.school.name,
+            code: school.code ?? prev.school.code,
+            address: school.address ?? prev.school.address,
+            phone: school.phone ?? prev.school.phone,
+            email: school.email ?? prev.school.email,
+            logo: school.logo ?? null,
+          },
+          currency: school.currency ?? prev.currency,
+          timezone: school.timezone ?? prev.timezone,
+          academicYear: school.academicYear ?? prev.academicYear,
+          feesByGrade: school.feesByGrade ?? prev.feesByGrade,
+          notificationPrefs: school.notificationPrefs ?? prev.notificationPrefs,
+        }));
+      },
+      (err) => console.error('Khalad ayaa dhacay markii settings-ka dugsiga laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode]);
+
+  const persistSchoolDoc = async (fields) => {
+    if (!profile?.schoolCode) return;
+    try {
+      await upsertSchoolSettings(profile.schoolCode, fields);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii settings-ka dugsiga la kaydinayay:', err);
+    }
   };
 
-  // Marka user-ku login-geeyo, soo qaad logo-ga dugsigiisa ee horey loo kaydiyay Firestore
-  useEffect(() => {
-    if (!profile?.schoolCode) return;
-    let cancelled = false;
-
-    findSchoolByCode(profile.schoolCode).then((school) => {
-      if (!cancelled && school?.logo) {
-        updateSchool({ logo: school.logo });
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [profile?.schoolCode]);
+  const updateSchool = (fields) => {
+    setSettings((prev) => ({ ...prev, school: { ...prev.school, ...fields } }));
+    persistSchoolDoc(fields);
+  };
 
   const uploadLogo = async (file) => {
     if (!profile?.schoolCode) {
@@ -69,7 +104,7 @@ export function SettingsProvider({ children }) {
       validateLogoFile(file);
       const base64 = await fileToBase64(file);
       await updateSchoolLogo(profile.schoolCode, base64);
-      updateSchool({ logo: base64 });
+      setSettings((prev) => ({ ...prev, school: { ...prev.school, logo: base64 } }));
       return base64;
     } catch (err) {
       setLogoError(err.message || 'Khalad ayaa dhacay markii sawirka la soo gelinayay.');
@@ -85,7 +120,7 @@ export function SettingsProvider({ children }) {
     setLogoError(null);
     try {
       await updateSchoolLogo(profile.schoolCode, null);
-      updateSchool({ logo: null });
+      setSettings((prev) => ({ ...prev, school: { ...prev.school, logo: null } }));
     } catch (err) {
       setLogoError(err.message || 'Khalad ayaa dhacay markii sawirka la tirtirayay.');
       throw err;
@@ -101,34 +136,56 @@ export function SettingsProvider({ children }) {
     applyDirection(settings.language);
   }, [settings.language]);
 
-  const updateLanguage = (language) => setSettings((prev) => ({ ...prev, language }));
-  const updateCurrency = (currency) => setSettings((prev) => ({ ...prev, currency }));
-  const updateTimezone = (timezone) => setSettings((prev) => ({ ...prev, timezone }));
+  // Luuqadda waa doorasho SHAKHSI AH (browser-kan kaliya, localStorage) — kuma
+  // kaydsana Firestore, si aan shaqaale kale (masalan owner-ka) uga bedelin
+  // luuqadda kuwa kale marka uu Settings-ka wax ka beddelo.
+  const updateLanguage = (language) => {
+    setSettings((prev) => ({ ...prev, language }));
+    try {
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+    } catch {
+      // localStorage ma heli karin (privacy mode, iwm) — dhib kuma yeelan doonto UI-ga.
+    }
+  };
+
+  const updateCurrency = (currency) => {
+    setSettings((prev) => ({ ...prev, currency }));
+    persistSchoolDoc({ currency });
+  };
+
+  const updateTimezone = (timezone) => {
+    setSettings((prev) => ({ ...prev, timezone }));
+    persistSchoolDoc({ timezone });
+  };
 
   const updateAcademicYear = (fields) => {
-    setSettings((prev) => ({ ...prev, academicYear: { ...prev.academicYear, ...fields } }));
+    const academicYear = { ...settings.academicYear, ...fields };
+    setSettings((prev) => ({ ...prev, academicYear }));
+    persistSchoolDoc({ academicYear });
   };
 
   const updateFee = (id, amount) => {
-    setSettings((prev) => ({
-      ...prev,
-      feesByGrade: prev.feesByGrade.map((f) => (f.id === id ? { ...f, amount } : f)),
-    }));
+    const feesByGrade = settings.feesByGrade.map((f) => (f.id === id ? { ...f, amount } : f));
+    setSettings((prev) => ({ ...prev, feesByGrade }));
+    persistSchoolDoc({ feesByGrade });
   };
 
   const addFeeGrade = (grade, amount) => {
-    setSettings((prev) => ({
-      ...prev,
-      feesByGrade: [...prev.feesByGrade, { id: Date.now(), grade, amount }],
-    }));
+    const feesByGrade = [...settings.feesByGrade, { id: Date.now(), grade, amount }];
+    setSettings((prev) => ({ ...prev, feesByGrade }));
+    persistSchoolDoc({ feesByGrade });
   };
 
   const removeFeeGrade = (id) => {
-    setSettings((prev) => ({ ...prev, feesByGrade: prev.feesByGrade.filter((f) => f.id !== id) }));
+    const feesByGrade = settings.feesByGrade.filter((f) => f.id !== id);
+    setSettings((prev) => ({ ...prev, feesByGrade }));
+    persistSchoolDoc({ feesByGrade });
   };
 
   const updateNotificationPref = (key, value) => {
-    setSettings((prev) => ({ ...prev, notificationPrefs: { ...prev.notificationPrefs, [key]: value } }));
+    const notificationPrefs = { ...settings.notificationPrefs, [key]: value };
+    setSettings((prev) => ({ ...prev, notificationPrefs }));
+    persistSchoolDoc({ notificationPrefs });
   };
 
   const value = {

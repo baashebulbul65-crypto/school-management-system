@@ -46,10 +46,15 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // ===== schools (magaca/logo-ga dugsiga) =====
-    match /schools/{schoolDocId} {
+    // ===== schools (magaca, logo-ga, fees-by-grade, sanadka waxbarasho,
+    // notification prefs ee dugsiga) — doc id-gu waa schoolCode-ka lafteeda
+    // (deterministic, fiiri firebase/schools.js). Akhris: qof kasta oo isku
+    // dugsi ah (shaqaale + waalid — magaca/logo-ga waa in waalidku sidoo
+    // kale arkaa). Qoris: owner kaliya, la mid ah bogga "Settings" ee UI-gu
+    // owner-only u yahay.
+    match /schools/{schoolCode} {
       allow read: if isSignedIn() && me().schoolCode == resource.data.schoolCode;
-      allow create, update: if isStaffOf(request.resource.data.schoolCode);
+      allow create, update: if isStaffOf(request.resource.data.schoolCode) && me().role == 'owner';
       allow delete: if false;
     }
 

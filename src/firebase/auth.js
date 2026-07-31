@@ -13,10 +13,6 @@ import {
   getDoc,
   setDoc,
   updateDoc,
-  query,
-  collection,
-  where,
-  getDocs,
   serverTimestamp,
   arrayUnion,
 } from 'firebase/firestore';
@@ -131,18 +127,7 @@ export async function getUserProfile(uid) {
   return snap.exists() ? snap.data() : null;
 }
 
-export async function findSchoolByCode(schoolCode) {
-  const q = query(collection(db, 'schools'), where('schoolCode', '==', schoolCode.trim()));
-  const snap = await getDocs(q);
-  if (snap.empty) return null;
-  return { id: snap.docs[0].id, ...snap.docs[0].data() };
-}
-
-export async function updateSchoolLogo(schoolCode, logoBase64) {
-  const school = await findSchoolByCode(schoolCode);
-  if (!school) throw new Error('SCHOOL_LAMA_HELIN');
-  await updateDoc(doc(db, 'schools', school.id), { logo: logoBase64 });
-}
+// Doc-ka dugsiga (magaca, logo-ga, fees, iwm) — fiiri firebase/schools.js.
 
 export function logout() {
   return signOut(auth);
