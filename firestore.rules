@@ -2,12 +2,11 @@ rules_version = '2';
 
 // Fiiri README-ka qaybta "Firestore Rules" ka hor intaadan wax beddelin halkan.
 //
-// MUHIIM: Collection-yada 'classes', 'teachers', 'subjects', 'exams',
-// 'classFees', 'familyFees' iyo 'staff' (liiska macallimiinta/shaqaalaha ee
-// bogga "Users") WELI kuma jiraan Firestore — waa xog local ah (SEED_* /
-// useState) oo ku jirta SchoolDataContext.jsx, marka rules-kani looma baahna
-// (weli). Marka la beddelo si ay Firestore ugu kaydsadaan, waa in halkan
-// loo daraa qaybo cusub oo la mid ah kuwa hoose.
+// MUHIIM: Collection-yada 'classFees', 'familyFees' iyo 'staff' (liiska
+// macallimiinta/shaqaalaha ee bogga "Users") WELI kuma jiraan Firestore —
+// waa xog local ah (SEED_* / useState) oo ku jirta SchoolDataContext.jsx,
+// marka rules-kani looma baahna (weli). Marka la beddelo si ay Firestore
+// ugu kaydsadaan, waa in halkan loo daraa qaybo cusub oo la mid ah kuwa hoose.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -79,6 +78,34 @@ service cloud.firestore {
       allow read: if isStaffOf(resource.data.schoolCode) || isSameSchoolParent(resource.data.schoolCode);
       allow create, update: if isStaffOf(request.resource.data.schoolCode);
       allow delete: if isStaffOf(resource.data.schoolCode);
+    }
+
+    // ===== teachers =====
+    // Akhris: shaqaale kasta (loo baahan yahay ClassWorkspace "jadwalka
+    // maanta" ee macallin kasta arki karo). Qorista (add/edit) waxaa loo
+    // xaddiday 'owner' kaliya, si la mid ah bogga "Macallimiinta" ee UI-gu
+    // owner-only u yahay.
+    match /teachers/{teacherId} {
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow create, update: if isStaffOf(request.resource.data.schoolCode) && me().role == 'owner';
+      allow delete: if false;
+    }
+
+    // ===== classes ===== — shaqaale kastaa wuu maamuli karaa (bogga
+    // "Fasallada" uma xayirna owner kaliya).
+    match /classes/{classDocId} {
+      allow read, create, update, delete: if isStaffOf(resource.data.schoolCode);
+    }
+
+    // ===== subjects ===== — la mid ah classes (shaqaale kastaa wuu maamuli karaa).
+    match /subjects/{subjectId} {
+      allow read, create, update, delete: if isStaffOf(resource.data.schoolCode);
+    }
+
+    // ===== exams ===== (qeexidda imtixaanka — fiiri examMarks ee buundada
+    // ardaygu ku qaatay) — shaqaale kastaa wuu maamuli karaa.
+    match /exams/{examId} {
+      allow read, create, update, delete: if isStaffOf(resource.data.schoolCode);
     }
 
     // ===== attendanceRecords ===== (doc id: "{date}_{studentId}")

@@ -7,6 +7,10 @@
 import { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { subscribeToStudents, createStudentDoc, updateStudentDoc, softDeleteStudentDoc, restoreStudentDoc, deleteStudentDoc, backfillStudentLookups } from '../firebase/students';
+import { subscribeToTeachers, createTeacherDoc, updateTeacherDoc } from '../firebase/teachers';
+import { subscribeToClasses, createClassDoc, updateClassDoc, deleteClassDoc } from '../firebase/classes';
+import { subscribeToSubjects, createSubjectDoc, updateSubjectDoc, deleteSubjectDoc } from '../firebase/subjects';
+import { subscribeToExams, createExamDoc, updateExamDoc, deleteExamDoc } from '../firebase/exams';
 import { subscribeToAttendanceByDate, setStudentAttendanceRecord } from '../firebase/attendance';
 import { subscribeToExamMarks, setExamMarkRecord } from '../firebase/examMarks';
 import { subscribeToQuranProgressByDate, setQuranProgressRecord } from '../firebase/quranProgress';
@@ -192,124 +196,6 @@ const DEMO_STUDENTS_SEED = [
   },
 ];
 
-const SEED_TEACHERS = [
-  {
-    id: 1,
-    teacherId: 'TCH-201',
-    fullName: 'Cali Xasan Warsame',
-    phone: '+252 61 111 2233',
-    email: 'cali.warsame@kayd.com',
-    qualification: 'BSc Xisaabta - Jaamacadda Muqdisho',
-    subject: 'Xisaabta',
-    assignedClasses: ['Form 1A', 'Form 2A'],
-    salary: [
-      { month: 'Juun 2026', amount: 420, status: 'paid', date: '2026-06-28' },
-      { month: 'Luulyo 2026', amount: 420, status: 'pending', date: '-' },
-    ],
-    timetable: [
-      { day: 'Isniin', time: '08:00 - 09:30', className: 'Form 1A', subject: 'Xisaabta' },
-      { day: 'Talaado', time: '10:00 - 11:30', className: 'Form 2A', subject: 'Xisaabta' },
-      { day: 'Arbaco', time: '08:00 - 09:30', className: 'Form 1A', subject: 'Xisaabta' },
-    ],
-    documents: [
-      { name: 'Shahaadada Jaamacadda', type: 'PDF', uploadDate: '2025-09-01' },
-      { name: 'CV-ga', type: 'PDF', uploadDate: '2025-09-01' },
-    ],
-    attendance: buildAttendanceCalendar(TEACHER_ATTENDANCE_PATTERN),
-    status: 'active',
-  },
-  {
-    id: 2,
-    teacherId: 'TCH-202',
-    fullName: 'Faadumo Nuur Cige',
-    phone: '+252 61 222 3344',
-    email: 'faadumo.nuur@kayd.com',
-    qualification: 'BA Ingiriisi - Jaamacadda Simad',
-    subject: 'Ingiriisi',
-    assignedClasses: ['Form 2A', 'Form 3A'],
-    salary: [{ month: 'Luulyo 2026', amount: 380, status: 'pending', date: '-' }],
-    timetable: [
-      { day: 'Isniin', time: '09:30 - 11:00', className: 'Form 2A', subject: 'Ingiriisi' },
-      { day: 'Khamiis', time: '08:00 - 09:30', className: 'Form 3A', subject: 'Ingiriisi' },
-    ],
-    documents: [{ name: 'Shahaadada Jaamacadda', type: 'PDF', uploadDate: '2025-08-15' }],
-    attendance: buildAttendanceCalendar(TEACHER_ATTENDANCE_PATTERN),
-    status: 'active',
-  },
-  {
-    id: 3,
-    teacherId: 'TCH-203',
-    fullName: 'Yoonis Cabdi Maxamed',
-    phone: '+252 61 333 4455',
-    email: 'yoonis.cabdi@kayd.com',
-    qualification: 'BA Cilmiga Bulshada',
-    subject: 'Cilmiga Bulshada',
-    assignedClasses: ['Form 3A'],
-    salary: [{ month: 'Luulyo 2026', amount: 350, status: 'paid', date: '2026-07-05' }],
-    timetable: [{ day: 'Talaado', time: '08:00 - 09:30', className: 'Form 3A', subject: 'Cilmiga Bulshada' }],
-    documents: [],
-    attendance: buildAttendanceCalendar(TEACHER_ATTENDANCE_PATTERN),
-    status: 'active',
-  },
-  {
-    id: 4,
-    teacherId: 'TCH-204',
-    fullName: 'Xamdi Maxamed Xuseen',
-    phone: '+252 61 444 5566',
-    email: 'xamdi.xuseen@kayd.com',
-    qualification: 'Diploma Cilmiga Diinta',
-    subject: 'Diinta Islaamka',
-    assignedClasses: ['Form 1A', 'Form 4A'],
-    salary: [{ month: 'Juun 2026', amount: 300, status: 'overdue', date: '-' }],
-    timetable: [{ day: 'Arbaco', time: '11:00 - 12:30', className: 'Form 4A', subject: 'Diinta Islaamka' }],
-    documents: [],
-    attendance: buildAttendanceCalendar(TEACHER_ATTENDANCE_PATTERN),
-    status: 'leave',
-  },
-  {
-    id: 5,
-    teacherId: 'TCH-205',
-    fullName: 'Cabdiraxman Xasan',
-    phone: '+252 61 555 6677',
-    email: 'cabdiraxman.xasan@kayd.com',
-    qualification: 'BSc Sayniska - Jaamacadda Banaadir',
-    subject: 'Sayniska',
-    assignedClasses: ['Form 4A'],
-    salary: [{ month: 'Luulyo 2026', amount: 400, status: 'paid', date: '2026-07-04' }],
-    timetable: [{ day: 'Khamiis', time: '10:00 - 11:30', className: 'Form 4A', subject: 'Sayniska' }],
-    documents: [{ name: 'Shahaadada Jaamacadda', type: 'PDF', uploadDate: '2025-09-10' }],
-    attendance: buildAttendanceCalendar(TEACHER_ATTENDANCE_PATTERN),
-    status: 'active',
-  },
-];
-
-const SEED_CLASSES = [
-  { id: 1, grade: 'Form 1', section: 'A', room: 'Qolka 101', capacity: 50, students: 45, classTeacher: 'Cali Xasan Warsame', subjects: ['Xisaab', 'Ingiriisi', 'Cilmiga Bulshada', 'Sayniska'] },
-  { id: 2, grade: 'Form 1', section: 'B', room: 'Qolka 102', capacity: 50, students: 40, classTeacher: 'Hodan Cabdi', subjects: ['Xisaab', 'Ingiriisi', 'Diinta Islaamka'] },
-  { id: 3, grade: 'Form 2', section: 'A', room: 'Qolka 201', capacity: 45, students: 42, classTeacher: 'Faadumo Nuur Cige', subjects: ['Xisaab', 'Ingiriisi', 'Taariikh'] },
-  { id: 4, grade: 'Form 2', section: 'B', room: 'Qolka 202', capacity: 45, students: 38, classTeacher: 'Maxamed Xuseen', subjects: ['Xisaab', 'Ingiriisi', 'Sayniska'] },
-  { id: 5, grade: 'Form 3', section: 'A', room: 'Qolka 301', capacity: 40, students: 38, classTeacher: 'Yoonis Cabdi Maxamed', subjects: ['Xisaab', 'Ingiriisi', 'Fiisigis', 'Kiimikada'] },
-  { id: 6, grade: 'Form 4', section: 'A', room: 'Qolka 401', capacity: 40, students: 40, classTeacher: 'Xamdi Maxamed Xuseen', subjects: ['Xisaab', 'Ingiriisi', 'Fiisigis', 'Kiimikada', 'Bayoolaji'] },
-];
-
-const SEED_SUBJECTS = [
-  { id: 1, name: 'Xisaabta', code: 'MATH-101', teacher: 'Cali Xasan Warsame', credit: 4, weeklyHours: 5 },
-  { id: 2, name: 'Ingiriisi', code: 'ENG-101', teacher: 'Faadumo Nuur Cige', credit: 4, weeklyHours: 5 },
-  { id: 3, name: 'Cilmiga Bulshada', code: 'SOC-101', teacher: 'Yoonis Cabdi Maxamed', credit: 3, weeklyHours: 3 },
-  { id: 4, name: 'Sayniska', code: 'SCI-101', teacher: 'Cabdiraxman Xasan', credit: 3, weeklyHours: 4 },
-  { id: 5, name: 'Diinta Islaamka', code: 'ISL-101', teacher: 'Xamdi Maxamed Xuseen', credit: 2, weeklyHours: 3 },
-  { id: 6, name: 'Fiisigis', code: 'PHY-201', teacher: 'Cabdiraxman Xasan', credit: 4, weeklyHours: 4 },
-];
-
-const SEED_EXAMS = [
-  { id: 1, type: 'Midterm', subject: 'Xisaabta', className: 'Form 1A', date: '2026-07-10', maxMarks: 100 },
-  { id: 2, type: 'Final', subject: 'Ingiriisi', className: 'Form 1A', date: '2026-07-22', maxMarks: 100 },
-  { id: 3, type: 'Quiz', subject: 'Sayniska', className: 'Form 2A', date: '2026-07-14', maxMarks: 20 },
-  { id: 4, type: 'Monthly', subject: 'Xisaabta', className: 'Form 2A', date: '2026-07-05', maxMarks: 50 },
-  { id: 5, type: 'Oral', subject: 'Ingiriisi', className: 'Form 3A', date: '2026-07-08', maxMarks: 30 },
-  { id: 6, type: 'Practical', subject: 'Fiisigis', className: 'Form 4A', date: '2026-07-16', maxMarks: 40 },
-];
-
 const SEED_CLASS_FEES = [
   { id: 1, name: 'Fasalka Sare ee Xasan', shift: 'Sabaxi', students: 46, total: 229, discount: 0, balance: 20 },
   { id: 2, name: 'Fasalka Sare ee Xasan', shift: "Masaa'i", students: 27, total: 155, discount: 5, balance: 0 },
@@ -352,10 +238,10 @@ export function SchoolDataProvider({ children }) {
   // waxaa isticmaala kaliya bogga "Xogta La Tirtiray" (Trash).
   const students = useMemo(() => allStudents.filter((s) => !s.isDeleted), [allStudents]);
   const deletedStudents = useMemo(() => allStudents.filter((s) => s.isDeleted), [allStudents]);
-  const [teachers, setTeachers] = useState(SEED_TEACHERS);
-  const [classes, setClasses] = useState(SEED_CLASSES);
-  const [subjects, setSubjects] = useState(SEED_SUBJECTS);
-  const [exams, setExams] = useState(SEED_EXAMS);
+  const [teachers, setTeachers] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [exams, setExams] = useState([]);
   const [examMarks, setExamMarks] = useState({});
   const [classFees, setClassFees] = useState(SEED_CLASS_FEES);
   const [familyFees, setFamilyFees] = useState(SEED_FAMILY_FEES);
@@ -547,6 +433,62 @@ export function SchoolDataProvider({ children }) {
     }
   };
 
+  // ===== MACALLIMIINTA (Firestore collection "teachers") =====
+  useEffect(() => {
+    if (!profile?.schoolCode) {
+      setTeachers([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToTeachers(
+      profile.schoolCode,
+      setTeachers,
+      (err) => console.error('Khalad ayaa dhacay markii macallimiinta laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode]);
+
+  // ===== FASALLADA (Firestore collection "classes") =====
+  useEffect(() => {
+    if (!profile?.schoolCode) {
+      setClasses([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToClasses(
+      profile.schoolCode,
+      setClasses,
+      (err) => console.error('Khalad ayaa dhacay markii fasallada laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode]);
+
+  // ===== MAADOOYINKA (Firestore collection "subjects") =====
+  useEffect(() => {
+    if (!profile?.schoolCode) {
+      setSubjects([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToSubjects(
+      profile.schoolCode,
+      setSubjects,
+      (err) => console.error('Khalad ayaa dhacay markii maadooyinka laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode]);
+
+  // ===== IMTIXAANADA - QEEXIDDA (Firestore collection "exams") =====
+  useEffect(() => {
+    if (!profile?.schoolCode) {
+      setExams([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToExams(
+      profile.schoolCode,
+      setExams,
+      (err) => console.error('Khalad ayaa dhacay markii imtixaanada laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode]);
+
   // ===== BUUNDOOYINKA IMTIXAANADA (Firestore collection "examMarks") =====
   // Staff-only (schoolCode-wide) — waalidku wuxuu isticmaalaa
   // subscribeToStudentExamMarks (fiiri ParentPortal.jsx) oo gaar u ah
@@ -717,50 +659,115 @@ export function SchoolDataProvider({ children }) {
   };
 
   // ===== MACALLIMIINTA =====
-  const addTeacher = (payload) => {
-    const newTeacher = {
-      ...payload,
-      id: Date.now(),
-      teacherId: `TCH-${200 + teachers.length + 1}`,
-      salary: [],
-      timetable: [],
-      documents: [],
-      attendance: buildAttendanceCalendar(TEACHER_ATTENDANCE_PATTERN),
-    };
-    setTeachers((prev) => [...prev, newTeacher]);
-    setOtherAttendanceToday((prev) => ({ ...prev, teachers: { ...prev.teachers, [newTeacher.id]: 'present' } }));
+  const addTeacher = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      const newId = await createTeacherDoc(profile.schoolCode, {
+        ...payload,
+        teacherId: `TCH-${200 + teachers.length + 1}`,
+        salary: [],
+        timetable: [],
+        documents: [],
+        attendance: buildAttendanceCalendar(TEACHER_ATTENDANCE_PATTERN),
+      });
+      setOtherAttendanceToday((prev) => ({ ...prev, teachers: { ...prev.teachers, [newId]: 'present' } }));
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii macallinka la darayay:', err);
+    }
   };
 
-  const updateTeacher = (id, payload) => {
-    setTeachers((prev) => prev.map((t) => (t.id === id ? { ...t, ...payload } : t)));
+  const updateTeacher = async (id, payload) => {
+    try {
+      await updateTeacherDoc(id, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii macallinka wax laga beddelayay:', err);
+    }
   };
 
-  const toggleTeacherAttendanceDay = (teacherId, date) => {
-    setTeachers((prev) =>
-      prev.map((t) => {
-        if (t.id !== teacherId) return t;
-        return { ...t, attendance: t.attendance.map((a) => (a.date === date ? { ...a, status: NEXT_STATUS[a.status] } : a)) };
-      })
+  const toggleTeacherAttendanceDay = async (teacherId, date) => {
+    const teacher = teachers.find((t) => t.id === teacherId);
+    if (!teacher) return;
+    const nextAttendance = teacher.attendance.map((a) =>
+      a.date === date ? { ...a, status: NEXT_STATUS[a.status] } : a
     );
+    try {
+      await updateTeacherDoc(teacherId, { attendance: nextAttendance });
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii imaanshaha macallinka la cusbooneysiinayay:', err);
+    }
   };
 
   // ===== FASALLADA =====
-  const addClass = (payload) => setClasses((prev) => [...prev, { ...payload, id: Date.now(), students: 0 }]);
-  const updateClass = (id, payload) => setClasses((prev) => prev.map((c) => (c.id === id ? { ...c, ...payload } : c)));
-  const removeClass = (id) => setClasses((prev) => prev.filter((c) => c.id !== id));
+  const addClass = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      await createClassDoc(profile.schoolCode, { ...payload, students: 0 });
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii fasalka la darayay:', err);
+    }
+  };
+  const updateClass = async (id, payload) => {
+    try {
+      await updateClassDoc(id, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii fasalka wax laga beddelayay:', err);
+    }
+  };
+  const removeClass = async (id) => {
+    try {
+      await deleteClassDoc(id);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii fasalka la tirtirayay:', err);
+    }
+  };
 
   // ===== MAADOOYINKA =====
-  const addSubject = (payload) => setSubjects((prev) => [...prev, { ...payload, id: Date.now() }]);
-  const updateSubject = (id, payload) => setSubjects((prev) => prev.map((s) => (s.id === id ? { ...s, ...payload } : s)));
-  const removeSubject = (id) => setSubjects((prev) => prev.filter((s) => s.id !== id));
+  const addSubject = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      await createSubjectDoc(profile.schoolCode, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii maadada la darayay:', err);
+    }
+  };
+  const updateSubject = async (id, payload) => {
+    try {
+      await updateSubjectDoc(id, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii maadada wax laga beddelayay:', err);
+    }
+  };
+  const removeSubject = async (id) => {
+    try {
+      await deleteSubjectDoc(id);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii maadada la tirtirayay:', err);
+    }
+  };
 
   // ===== IMTIXAANADA =====
-  const addExam = (payload) => {
-    const newExam = { ...payload, id: Date.now() };
-    setExams((prev) => [...prev, newExam]);
+  const addExam = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      await createExamDoc(profile.schoolCode, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii imtixaanka la darayay:', err);
+    }
   };
-  const updateExam = (id, payload) => setExams((prev) => prev.map((e) => (e.id === id ? { ...e, ...payload } : e)));
-  const removeExam = (id) => setExams((prev) => prev.filter((e) => e.id !== id));
+  const updateExam = async (id, payload) => {
+    try {
+      await updateExamDoc(id, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii imtixaanka wax laga beddelayay:', err);
+    }
+  };
+  const removeExam = async (id) => {
+    try {
+      await deleteExamDoc(id);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii imtixaanka la tirtirayay:', err);
+    }
+  };
   const updateExamMark = async (examId, studentId, value) => {
     if (!profile?.schoolCode) return;
     try {
