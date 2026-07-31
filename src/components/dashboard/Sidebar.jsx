@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
+import { useSchoolData } from '../../context/SchoolDataContext';
 import './Sidebar.css';
 
 // roles: haddii la reebo (undefined), dhammaan school-staff-ku way arki karaan.
@@ -14,6 +16,9 @@ const NAV_ITEMS = [
       )},
       { to: '/dashboard/notifications', label: 'Ogeysiisyada', icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg>
+      )},
+      { to: '/dashboard/messages', label: 'Fariimaha', icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       )},
     ],
   },
@@ -62,6 +67,9 @@ const NAV_ITEMS = [
       { to: '/dashboard/settings', label: 'Dejinta', roles: ['owner'], icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       )},
+      { to: '/dashboard/trash', label: 'Xogta La Tirtiray', roles: ['owner'], icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
+      )},
     ],
   },
 ];
@@ -81,7 +89,20 @@ function canSee(item, effectiveRole) {
 function Sidebar({ isOpen, onClose }) {
   const { profile, logout } = useAuth();
   const { settings } = useSettings();
+  const { staffMessages, classes, deletedStudents } = useSchoolData();
   const effectiveRole = normalizeRole(profile?.role);
+
+  // Macallinku wuxuu kaliya arkaa fariimaha fasalladiisa (barbardhig magac —
+  // classTeacher waa qoraal magac ah, ma aha uid); Owner-ku wuxuu arkaa dhammaantood.
+  const myClassNames = useMemo(() => {
+    if (profile?.role !== 'teacher') return null;
+    return classes.filter((c) => c.classTeacher === profile.fullName).map((c) => `${c.grade}${c.section}`);
+  }, [classes, profile?.role, profile?.fullName]);
+
+  const unreadMessagesCount = useMemo(() => {
+    const relevant = myClassNames ? staffMessages.filter((m) => myClassNames.includes(m.className)) : staffMessages;
+    return relevant.filter((m) => m.senderRole === 'parent' && !m.readByStaff).length;
+  }, [staffMessages, myClassNames]);
 
   return (
     <>
@@ -89,11 +110,15 @@ function Sidebar({ isOpen, onClose }) {
 
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-brand">
-          <svg viewBox="0 0 40 40" fill="none">
-            <path d="M8 30 C8 18, 16 8, 28 8" stroke="#16C784" strokeWidth="4" strokeLinecap="round" fill="none"/>
-            <circle cx="30" cy="8" r="3" fill="#0B1F2B"/>
-            <path d="M8 30 H24" stroke="#0B1F2B" strokeWidth="4" strokeLinecap="round"/>
-          </svg>
+          {settings.school.logo ? (
+            <img className="sidebar-brand-logo" src={settings.school.logo} alt={settings.school.name} />
+          ) : (
+            <svg viewBox="0 0 40 40" fill="none">
+              <path d="M8 30 C8 18, 16 8, 28 8" stroke="#16C784" strokeWidth="4" strokeLinecap="round" fill="none"/>
+              <circle cx="30" cy="8" r="3" fill="#0B1F2B"/>
+              <path d="M8 30 H24" stroke="#0B1F2B" strokeWidth="4" strokeLinecap="round"/>
+            </svg>
+          )}
           <span>{settings.school.name}<span className="dot">.</span></span>
         </div>
 
@@ -115,6 +140,12 @@ function Sidebar({ isOpen, onClose }) {
                   >
                     <span className="nav-icon">{item.icon}</span>
                     {item.label}
+                    {item.to === '/dashboard/messages' && unreadMessagesCount > 0 && (
+                      <span className="nav-item-badge">{unreadMessagesCount}</span>
+                    )}
+                    {item.to === '/dashboard/trash' && deletedStudents.length > 0 && (
+                      <span className="nav-item-badge">{deletedStudents.length}</span>
+                    )}
                   </NavLink>
                 ))}
               </div>

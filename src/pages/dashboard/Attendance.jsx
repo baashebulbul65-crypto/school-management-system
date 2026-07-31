@@ -1,115 +1,134 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSchoolData } from '../../context/SchoolDataContext';
 import '../../styles/dashboard-shared.css';
 import './Attendance.css';
 
-const CATEGORIES = [
-  { id: 'students', label: 'Ardayda' },
-  { id: 'teachers', label: 'Macallimiinta' },
-  { id: 'staff', label: 'Shaqaalaha' },
-];
+const VALUE_CLS = { present: 'success', absent: 'danger', late: 'warning', leave: 'warning', sick: 'danger' };
 
-const PERIODS = [
-  { id: 'daily', label: 'Maalinlaha' },
-  { id: 'weekly', label: 'Toddobaadlaha' },
-  { id: 'monthly', label: 'Bishii' },
-  { id: 'yearly', label: 'Sannadlaha' },
-];
-
-const STUDENTS = [
-  { id: 1, name: 'Ismaaciil Cabdi Xasan', sub: 'Form 1A · STU-1042', status: 'present' },
-  { id: 2, name: 'Xaawo Maxamed Cali', sub: 'Form 2A · STU-1043', status: 'present' },
-  { id: 3, name: 'Cabdiraxman Yoonis', sub: 'Form 1A · STU-1044', status: 'absent' },
-  { id: 4, name: 'Sacdiyo Xasan Nuur', sub: 'Form 3A · STU-1045', status: 'late' },
-  { id: 5, name: 'Maxamed Xuseen Cige', sub: 'Form 4A · STU-1046', status: 'present' },
-  { id: 6, name: 'Amiina Cabdulle', sub: 'Form 2A · STU-1047', status: 'present' },
-];
-
-const TEACHERS = [
-  { id: 1, name: 'Cali Xasan Warsame', sub: 'Xisaabta · TCH-201', status: 'present' },
-  { id: 2, name: 'Faadumo Nuur Cige', sub: 'Ingiriisi · TCH-202', status: 'present' },
-  { id: 3, name: 'Yoonis Cabdi Maxamed', sub: 'Cilmiga Bulshada · TCH-203', status: 'late' },
-  { id: 4, name: 'Xamdi Maxamed Xuseen', sub: 'Diinta Islaamka · TCH-204', status: 'absent' },
-  { id: 5, name: 'Cabdiraxman Xasan', sub: 'Sayniska · TCH-205', status: 'present' },
-];
-
-const STAFF = [
-  { id: 1, name: 'Xasan Cabdulle Nuur', sub: 'Maamule Guud', status: 'present' },
-  { id: 2, name: 'Zaynab Cali Warsame', sub: 'Xisaabiye (Accountant)', status: 'present' },
-  { id: 3, name: 'Cumar Faarax Cige', sub: 'Ilaaliye (Security)', status: 'present' },
-  { id: 4, name: 'Halima Xuseen Nuur', sub: 'Kaaliye Maamul', status: 'late' },
-];
-
-// Warbixin tijaabo ah oo xilliyada kala duwan (Daily/Weekly/Monthly/Yearly)
-const REPORT_STATS = {
+// Warbixin tijaabo ah oo xilliyada dhaafay (weekly/monthly/yearly) — ma jirto xog
+// taariikheed oo dhab ah (backend), "daily" waxaa laga soo xisaabiyaa xogta nool
+// ee hoos ku qoran (isla liiska calaamadinta ee sare).
+const STATIC_REPORT_STATS = {
   students: {
-    daily: { present: 5, absent: 1, late: 1, total: 7, rate: 71 },
     weekly: { present: 32, absent: 4, late: 3, total: 39, rate: 82 },
     monthly: { present: 138, absent: 14, late: 10, total: 162, rate: 85 },
     yearly: { present: 1620, absent: 145, late: 98, total: 1863, rate: 87 },
   },
   teachers: {
-    daily: { present: 3, absent: 1, late: 1, total: 5, rate: 60 },
     weekly: { present: 22, absent: 2, late: 3, total: 27, rate: 81 },
     monthly: { present: 96, absent: 6, late: 8, total: 110, rate: 87 },
     yearly: { present: 1150, absent: 62, late: 78, total: 1290, rate: 89 },
   },
   staff: {
-    daily: { present: 3, absent: 0, late: 1, total: 4, rate: 75 },
     weekly: { present: 18, absent: 1, late: 2, total: 21, rate: 86 },
     monthly: { present: 78, absent: 4, late: 6, total: 88, rate: 89 },
     yearly: { present: 940, absent: 38, late: 52, total: 1030, rate: 91 },
   },
 };
 
-const DATA_BY_CATEGORY = { students: STUDENTS, teachers: TEACHERS, staff: STAFF };
-
 function initials(name) {
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 }
 
-function statusLabel(status) {
-  if (status === 'present') return 'Joog';
-  if (status === 'late') return 'Daahid';
-  return 'Maqan';
-}
-
 function Attendance() {
+  const { t } = useTranslation();
+  const { students, teachers, staff, attendanceToday, cycleAttendanceStatus, setStudentAttendanceStatus } = useSchoolData();
   const [category, setCategory] = useState('students');
   const [period, setPeriod] = useState('daily');
-  const [date, setDate] = useState('2026-07-20');
-  const [people, setPeople] = useState(DATA_BY_CATEGORY);
+  const [date] = useState(new Date().toISOString().split('T')[0]);
 
-  const list = people[category];
-  const stats = REPORT_STATS[category][period];
+  const CATEGORIES = [
+    { id: 'students', label: t('attendance.categories.students') },
+    { id: 'teachers', label: t('attendance.categories.teachers') },
+    { id: 'staff', label: t('attendance.categories.staff') },
+  ];
+
+  const PERIODS = [
+    { id: 'daily', label: t('attendance.periods.daily') },
+    { id: 'weekly', label: t('attendance.periods.weekly') },
+    { id: 'monthly', label: t('attendance.periods.monthly') },
+    { id: 'yearly', label: t('attendance.periods.yearly') },
+  ];
+
+  // Ardayda hadda waxay leeyihiin 4 xaalado (Joog/Maqan/Fasax/Buka), Macallimiinta iyo
+  // Shaqaalaha waxay wali isticmaalaan 3-da xaalado ee hore (Joog/Maqan/Daahid).
+  const STATUS_DEFS = {
+    students: [
+      { key: 'present', label: t('common.present') },
+      { key: 'absent', label: t('common.absent') },
+      { key: 'leave', label: t('common.leave') },
+      { key: 'sick', label: t('common.sick') },
+    ],
+    teachers: [
+      { key: 'present', label: t('common.present') },
+      { key: 'absent', label: t('common.absent') },
+      { key: 'late', label: t('common.late') },
+    ],
+    staff: [
+      { key: 'present', label: t('common.present') },
+      { key: 'absent', label: t('common.absent') },
+      { key: 'late', label: t('common.late') },
+    ],
+  };
+
+  const statusDefs = STATUS_DEFS[category];
+
+  const list = useMemo(() => {
+    if (category === 'students') {
+      return students.map((s) => ({
+        id: s.id,
+        name: s.fullName,
+        sub: `${s.className} · ${s.studentId}`,
+        className: s.className,
+        status: attendanceToday.students[s.id] || 'present',
+      }));
+    }
+    if (category === 'teachers') {
+      return teachers.map((t2) => ({
+        id: t2.id,
+        name: t2.fullName,
+        sub: `${t2.subject} · ${t2.teacherId}`,
+        status: attendanceToday.teachers[t2.id] || 'present',
+      }));
+    }
+    return staff.map((s) => ({
+      id: s.id,
+      name: s.name,
+      sub: s.sub,
+      status: attendanceToday.staff[s.id] || 'present',
+    }));
+  }, [category, students, teachers, staff, attendanceToday]);
 
   const todayCounts = useMemo(() => {
-    const present = list.filter((p) => p.status === 'present').length;
-    const absent = list.filter((p) => p.status === 'absent').length;
-    const late = list.filter((p) => p.status === 'late').length;
-    return { present, absent, late, total: list.length };
-  }, [list]);
+    const counts = { total: list.length };
+    statusDefs.forEach((def) => {
+      counts[def.key] = list.filter((p) => p.status === def.key).length;
+    });
+    return counts;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [list, category]);
 
-  const cycleStatus = (id) => {
-    const next = { present: 'absent', absent: 'late', late: 'present' };
-    setPeople((prev) => ({
-      ...prev,
-      [category]: prev[category].map((p) => (p.id === id ? { ...p, status: next[p.status] } : p)),
-    }));
+  const stats = period === 'daily'
+    ? { ...todayCounts, rate: todayCounts.total ? Math.round((todayCounts.present / todayCounts.total) * 100) : 0 }
+    : STATIC_REPORT_STATS[category][period];
+
+  const handleMark = (person, statusKey) => {
+    if (category === 'students') {
+      setStudentAttendanceStatus(person.id, person.className, statusKey);
+    } else {
+      cycleAttendanceStatus(category, person.id);
+    }
   };
 
   return (
     <div>
       <div className="page-header">
         <div className="page-header-text">
-          <h2>Imaanshaha</h2>
-          <p>La soco oo maamul imaanshaha ardayda, macallimiinta, iyo shaqaalaha.</p>
+          <h2>{t('attendance.pageTitle')}</h2>
+          <p>{t('attendance.pageSubtitle')}</p>
         </div>
-        <input
-          type="date"
-          className="attendance-date-picker"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
+        <input type="date" className="attendance-date-picker" value={date} disabled />
       </div>
 
       {/* CATEGORY TABS */}
@@ -127,34 +146,30 @@ function Attendance() {
 
       {/* TODAY SUMMARY */}
       <div className="att-summary-grid">
-        <div className="att-summary-card present">
-          <span className="att-summary-value">{todayCounts.present}</span>
-          <span className="att-summary-label">Joog Maanta</span>
-        </div>
-        <div className="att-summary-card absent">
-          <span className="att-summary-value">{todayCounts.absent}</span>
-          <span className="att-summary-label">Maqan Maanta</span>
-        </div>
-        <div className="att-summary-card late">
-          <span className="att-summary-value">{todayCounts.late}</span>
-          <span className="att-summary-label">Daahid Maanta</span>
-        </div>
+        {statusDefs.map((def) => (
+          <div className={`att-summary-card ${def.key}`} key={def.key}>
+            <span className="att-summary-value">{todayCounts[def.key]}</span>
+            <span className="att-summary-label">{def.label} {t('attendance.today')}</span>
+          </div>
+        ))}
         <div className="att-summary-card total">
           <span className="att-summary-value">{todayCounts.total}</span>
-          <span className="att-summary-label">Wadarta</span>
+          <span className="att-summary-label">{t('attendance.total')}</span>
         </div>
       </div>
 
       {/* MARKING TABLE */}
       <div className="dash-card">
         <div className="att-card-head">
-          <h3>Calaamadinta Imaanshaha — {date}</h3>
-          <p className="att-note">Guji xaaladda si aad u wareejiso: Joog → Maqan → Daahid</p>
+          <h3>{t('attendance.markingTitle', { date })}</h3>
+          <p className="att-note">
+            {category === 'students' ? t('attendance.noteStudents') : t('attendance.noteOthers')}
+          </p>
         </div>
         <div className="data-table-wrap">
           <table className="data-table">
             <thead>
-              <tr><th>Magaca</th><th>Faahfaahin</th><th>Xaaladda</th></tr>
+              <tr><th>{t('attendance.table.name')}</th><th>{t('attendance.table.details')}</th><th>{t('attendance.table.status')}</th></tr>
             </thead>
             <tbody>
               {list.map((p) => (
@@ -167,9 +182,23 @@ function Attendance() {
                   </td>
                   <td className="cell-sub">{p.sub}</td>
                   <td>
-                    <button className={`att-status-btn ${p.status}`} onClick={() => cycleStatus(p.id)}>
-                      {statusLabel(p.status)}
-                    </button>
+                    {category === 'students' ? (
+                      <div className="att-status-btn-group">
+                        {statusDefs.map((def) => (
+                          <button
+                            key={def.key}
+                            className={`att-status-btn ${def.key}${p.status === def.key ? ' active' : ''}`}
+                            onClick={() => handleMark(p, def.key)}
+                          >
+                            {def.label}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <button className={`att-status-btn ${p.status}`} onClick={() => handleMark(p, null)}>
+                        {statusDefs.find((d) => d.key === p.status)?.label || p.status}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -181,7 +210,7 @@ function Attendance() {
       {/* REPORTS */}
       <div className="dash-card">
         <div className="att-card-head">
-          <h3>Warbixinnada</h3>
+          <h3>{t('attendance.reportsTitle')}</h3>
           <div className="att-period-tabs">
             {PERIODS.map((p) => (
               <button
@@ -196,27 +225,21 @@ function Attendance() {
         </div>
 
         <div className="att-report-grid">
-          <div className="att-report-stat">
-            <span className="att-report-value success">{stats.present}</span>
-            <span className="att-report-label">Joog</span>
-          </div>
-          <div className="att-report-stat">
-            <span className="att-report-value danger">{stats.absent}</span>
-            <span className="att-report-label">Maqan</span>
-          </div>
-          <div className="att-report-stat">
-            <span className="att-report-value warning">{stats.late}</span>
-            <span className="att-report-label">Daahid</span>
-          </div>
+          {statusDefs.map((def) => (
+            <div className="att-report-stat" key={def.key}>
+              <span className={`att-report-value ${VALUE_CLS[def.key]}`}>{stats[def.key] ?? 0}</span>
+              <span className="att-report-label">{def.label}</span>
+            </div>
+          ))}
           <div className="att-report-stat">
             <span className="att-report-value">{stats.total}</span>
-            <span className="att-report-label">Wadarta</span>
+            <span className="att-report-label">{t('attendance.total')}</span>
           </div>
           <div className="att-report-rate">
             <div className="att-report-rate-bar">
               <div className="att-report-rate-fill" style={{ width: `${stats.rate}%` }}></div>
             </div>
-            <span>{stats.rate}% Heerka Imaanshaha</span>
+            <span>{stats.rate}{t('attendance.attendanceRate')}</span>
           </div>
         </div>
       </div>

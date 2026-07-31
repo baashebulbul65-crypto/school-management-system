@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './SubjectFormModal.css';
 
 const EMPTY_FORM = {
@@ -10,6 +11,7 @@ const EMPTY_FORM = {
 };
 
 function SubjectFormModal({ isOpen, onClose, onSave, subject }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
   const isEditing = !!subject;
@@ -37,7 +39,7 @@ function SubjectFormModal({ isOpen, onClose, onSave, subject }) {
     e.preventDefault();
 
     if (!form.teacher.trim()) {
-      setError('Maadadu waa in ay leedahay Macallin (Teacher) loo xilsaaray.');
+      setError(t('subjects.form.errorNoTeacher'));
       return;
     }
 
@@ -58,8 +60,8 @@ function SubjectFormModal({ isOpen, onClose, onSave, subject }) {
       <div className="sjfm-modal">
         <div className="sjfm-header">
           <div>
-            <h2>{isEditing ? 'Wax Ka Beddel Maadada' : 'Ku Dar Maadada Cusub'}</h2>
-            <p>{isEditing ? subject.code : 'Buuxi macluumaadka maadada cusub'}</p>
+            <h2>{isEditing ? t('subjects.form.editTitle') : t('subjects.form.addTitle')}</h2>
+            <p>{isEditing ? subject.code : t('subjects.form.fillInfo')}</p>
           </div>
           <button className="sjfm-close" onClick={onClose} type="button">
             <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -73,33 +75,33 @@ function SubjectFormModal({ isOpen, onClose, onSave, subject }) {
 
             <div className="sjfm-grid">
               <div className="sjfm-field full">
-                <label>Magaca Maadada (Subject Name) *</label>
-                <input type="text" value={form.name} onChange={update('name')} placeholder="Tusaale: Xisaabta" required />
+                <label>{t('subjects.form.fields.name')}</label>
+                <input type="text" value={form.name} onChange={update('name')} placeholder={t('subjects.form.placeholders.name')} required />
               </div>
               <div className="sjfm-field">
-                <label>Code *</label>
-                <input type="text" value={form.code} onChange={update('code')} placeholder="Tusaale: MATH-101" required />
+                <label>{t('subjects.form.fields.code')}</label>
+                <input type="text" value={form.code} onChange={update('code')} placeholder={t('subjects.form.placeholders.code')} required />
               </div>
               <div className="sjfm-field">
-                <label>Macallinka (Teacher) *</label>
-                <input type="text" value={form.teacher} onChange={update('teacher')} placeholder="Tusaale: Cali Xasan Warsame" required />
+                <label>{t('subjects.form.fields.teacher')}</label>
+                <input type="text" value={form.teacher} onChange={update('teacher')} placeholder={t('subjects.form.placeholders.teacher')} required />
               </div>
               <div className="sjfm-field">
-                <label>Credit</label>
-                <input type="number" value={form.credit} onChange={update('credit')} placeholder="Tusaale: 4" />
+                <label>{t('subjects.form.fields.credit')}</label>
+                <input type="number" value={form.credit} onChange={update('credit')} placeholder={t('subjects.form.placeholders.credit')} />
               </div>
               <div className="sjfm-field">
-                <label>Saacadaha Toddobaadka (Weekly Hours)</label>
-                <input type="number" value={form.weeklyHours} onChange={update('weeklyHours')} placeholder="Tusaale: 5" />
+                <label>{t('subjects.form.fields.weeklyHours')}</label>
+                <input type="number" value={form.weeklyHours} onChange={update('weeklyHours')} placeholder={t('subjects.form.placeholders.weeklyHours')} />
               </div>
             </div>
 
           </div>
 
           <div className="sjfm-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>Jooji</button>
+            <button type="button" className="btn-secondary" onClick={onClose}>{t('common.cancel')}</button>
             <button type="submit" className="btn-primary">
-              {isEditing ? 'Kaydi Isbeddelka' : 'Ku Dar Maadada'}
+              {isEditing ? t('common.save') : t('subjects.form.submitAdd')}
             </button>
           </div>
         </form>

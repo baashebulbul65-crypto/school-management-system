@@ -12,13 +12,16 @@ import {
   doc,
   getDoc,
   setDoc,
+  updateDoc,
   query,
   collection,
   where,
   getDocs,
   serverTimestamp,
+  arrayUnion,
 } from 'firebase/firestore';
 import { auth, db } from './config';
+import { findStudentByStudentId } from './students';
 
 /* ============================================================
    SHAQAALE LOGIN  (Maamule / Macallin) — G-Mail + Password
@@ -78,20 +81,40 @@ export async function registerStudentOrParent({
   role, // 'arday' | 'waalid'
   fullName,
 }) {
-  const pseudoEmail = buildStudentPseudoEmail(schoolCode, diiwaanId);
+  const cleanSchoolCode = schoolCode.trim();
+  const cleanDiiwaanId = diiwaanId.trim();
+  const pseudoEmail = buildStudentPseudoEmail(cleanSchoolCode, cleanDiiwaanId);
   const result = await createUserWithEmailAndPassword(auth, pseudoEmail, password);
+
+  // Xiriirinta ilmaha 1aad: Diiwaan ID-ga la geliyay waxaa lagu barbardhigaa
+  // studentId-ga dhabta ah ee dugsigan — haddii la helo, waa lagu xiraa.
+  const matchedStudent = await findStudentByStudentId(cleanSchoolCode, cleanDiiwaanId);
 
   await setDoc(doc(db, 'users', result.user.uid), {
     uid: result.user.uid,
     fullName,
-    schoolCode: schoolCode.trim(),
-    diiwaanId: diiwaanId.trim(),
+    schoolCode: cleanSchoolCode,
+    diiwaanId: cleanDiiwaanId,
     role, // 'arday' | 'waalid'
     accountType: 'student-parent',
+    childrenIds: matchedStudent ? [matchedStudent.id] : [],
     createdAt: serverTimestamp(),
   });
 
-  return result.user;
+  return { user: result.user, childFound: !!matchedStudent };
+}
+
+// "Ku Dar Ilmo Kale" — ParentPortal marka waalidku rabo inuu ku daro ilmo labaad
+// (ama saddexaad, iwm) akoonkiisa horeba u jiray.
+export async function addChildToParent(uid, schoolCode, diiwaanId) {
+  const matchedStudent = await findStudentByStudentId(schoolCode.trim(), diiwaanId.trim());
+  if (!matchedStudent) {
+    throw new Error('ARDAY_LAMA_HELIN');
+  }
+  await updateDoc(doc(db, 'users', uid), {
+    childrenIds: arrayUnion(matchedStudent.id),
+  });
+  return matchedStudent;
 }
 
 /* ============================================================
@@ -107,6 +130,12 @@ export async function findSchoolByCode(schoolCode) {
   const snap = await getDocs(q);
   if (snap.empty) return null;
   return { id: snap.docs[0].id, ...snap.docs[0].data() };
+}
+
+export async function updateSchoolLogo(schoolCode, logoBase64) {
+  const school = await findSchoolByCode(schoolCode);
+  if (!school) throw new Error('SCHOOL_LAMA_HELIN');
+  await updateDoc(doc(db, 'schools', school.id), { logo: logoBase64 });
 }
 
 export function logout() {

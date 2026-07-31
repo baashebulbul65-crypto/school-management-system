@@ -7,8 +7,10 @@ import Overview from './pages/dashboard/Overview';
 import Students from './pages/dashboard/Students';
 import Teachers from './pages/dashboard/Teachers';
 import Classes from './pages/dashboard/Classes';
+import ClassWorkspace from './pages/dashboard/ClassWorkspace';
 import Subjects from './pages/dashboard/Subjects';
 import Attendance from './pages/dashboard/Attendance';
+import Messages from './pages/dashboard/Messages';
 import Finance from './pages/dashboard/Finance';
 import Exams from './pages/dashboard/Exams';
 import ParentPortal from './pages/parent/ParentPortal';
@@ -16,6 +18,7 @@ import Reports from './pages/dashboard/Reports';
 import Notifications from './pages/dashboard/Notifications';
 import Settings from './pages/dashboard/Settings';
 import Users from './pages/dashboard/Users';
+import Trash from './pages/dashboard/Trash';
 import './styles/global.css';
 
 function App() {
@@ -37,14 +40,17 @@ function App() {
         <Route path="students" element={<Students />} />
         <Route path="teachers" element={<RequireRole allow={['owner']}><Teachers /></RequireRole>} />
         <Route path="classes" element={<Classes />} />
+        <Route path="classes/:classId" element={<ClassWorkspace />} />
         <Route path="subjects" element={<Subjects />} />
         <Route path="attendance" element={<Attendance />} />
+        <Route path="messages" element={<Messages />} />
         <Route path="finance" element={<RequireRole allow={['owner']}><Finance /></RequireRole>} />
         <Route path="exams" element={<Exams />} />
         <Route path="reports" element={<RequireRole allow={['owner']}><Reports /></RequireRole>} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="settings" element={<RequireRole allow={['owner']}><Settings /></RequireRole>} />
         <Route path="users" element={<RequireRole allow={['owner']}><Users /></RequireRole>} />
+        <Route path="trash" element={<RequireRole allow={['owner']}><Trash /></RequireRole>} />
       </Route>
 
       {/* Parent Portal — waalidka/ardayga (la ilaaliyaa) */}

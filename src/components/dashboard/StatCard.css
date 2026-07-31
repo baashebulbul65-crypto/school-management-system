@@ -62,3 +62,21 @@
   font-size:13.5px;
   color: var(--grey-text);
 }
+
+.stat-card-clickable{
+  width:100%;
+  text-align:start;
+  cursor:pointer;
+  font-family:inherit;
+}
+.stat-card-clickable:focus-visible{
+  outline:2px solid var(--mint);
+  outline-offset:2px;
+}
+
+.stat-card-action{
+  margin-top:12px;
+  font-size:12.5px;
+  font-weight:700;
+  color: var(--mint-dark);
+}

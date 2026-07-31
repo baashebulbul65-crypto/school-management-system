@@ -20,13 +20,13 @@ function permissionTier(roleLabel) {
 }
 
 const INITIAL_USERS = [
-  { id: 1, fullName: 'Xasan Cabdulle Nuur', email: 'xasan@xarun.com', role: 'School Owner', status: 'active', joined: '2025-09-01' },
-  { id: 2, fullName: 'Sahra Maxamed Cige', email: 'sahra@xarun.com', role: 'Principal', status: 'active', joined: '2025-09-05' },
-  { id: 3, fullName: 'Cabdiqaadir Nuur Cali', email: 'cabdiqaadir@xarun.com', role: 'Vice Principal', status: 'active', joined: '2025-09-10' },
-  { id: 4, fullName: 'Zaynab Cali Warsame', email: 'zaynab@xarun.com', role: 'Accountant', status: 'active', joined: '2025-10-01' },
-  { id: 5, fullName: 'Halima Xuseen Nuur', email: 'halima@xarun.com', role: 'Receptionist', status: 'active', joined: '2025-10-12' },
-  { id: 6, fullName: 'Cali Xasan Warsame', email: 'cali.warsame@xarun.com', role: 'Teacher', status: 'active', joined: '2025-09-15' },
-  { id: 7, fullName: 'Faadumo Nuur Cige', email: 'faadumo.nuur@xarun.com', role: 'Teacher', status: 'suspended', joined: '2025-09-20' },
+  { id: 1, fullName: 'Xasan Cabdulle Nuur', email: 'xasan@kayd.com', role: 'School Owner', status: 'active', joined: '2025-09-01' },
+  { id: 2, fullName: 'Sahra Maxamed Cige', email: 'sahra@kayd.com', role: 'Principal', status: 'active', joined: '2025-09-05' },
+  { id: 3, fullName: 'Cabdiqaadir Nuur Cali', email: 'cabdiqaadir@kayd.com', role: 'Vice Principal', status: 'active', joined: '2025-09-10' },
+  { id: 4, fullName: 'Zaynab Cali Warsame', email: 'zaynab@kayd.com', role: 'Accountant', status: 'active', joined: '2025-10-01' },
+  { id: 5, fullName: 'Halima Xuseen Nuur', email: 'halima@kayd.com', role: 'Receptionist', status: 'active', joined: '2025-10-12' },
+  { id: 6, fullName: 'Cali Xasan Warsame', email: 'cali.warsame@kayd.com', role: 'Teacher', status: 'active', joined: '2025-09-15' },
+  { id: 7, fullName: 'Faadumo Nuur Cige', email: 'faadumo.nuur@kayd.com', role: 'Teacher', status: 'suspended', joined: '2025-09-20' },
 ];
 
 const ROLE_COLOR = {

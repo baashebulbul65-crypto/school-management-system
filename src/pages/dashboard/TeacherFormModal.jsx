@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './TeacherFormModal.css';
 
 const EMPTY_FORM = {
@@ -17,6 +18,7 @@ function initials(name) {
 }
 
 function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
   const isEditing = !!teacher;
@@ -52,7 +54,7 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
 
     // ===== VALIDATION: macallin kastaa waa in uu leeyahay ugu yaraan hal fasal =====
     if (classesArray.length === 0) {
-      setError('Macallinku waa in uu leeyahay ugu yaraan hal fasal oo loo xilsaaray.');
+      setError(t('teachers.form.errorNoClass'));
       return;
     }
 
@@ -68,8 +70,8 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
           <div className="tfm-header-left">
             <div className="tfm-avatar">{initials(form.fullName)}</div>
             <div>
-              <h2>{isEditing ? 'Wax Ka Beddel Macallinka' : 'Ku Dar Macallin Cusub'}</h2>
-              <p>{isEditing ? teacher.teacherId : 'Buuxi macluumaadka hoose'}</p>
+              <h2>{isEditing ? t('teachers.form.editTitle') : t('teachers.form.addTitle')}</h2>
+              <p>{isEditing ? teacher.teacherId : t('teachers.form.fillInfo')}</p>
             </div>
           </div>
           <button className="tfm-close" onClick={onClose} type="button">
@@ -82,58 +84,58 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
 
             {error && <div className="tfm-error">{error}</div>}
 
-            <div className="tfm-section-label">Macluumaadka Shakhsiga</div>
+            <div className="tfm-section-label">{t('teachers.form.sections.personal')}</div>
             <div className="tfm-grid">
               <div className="tfm-field full">
-                <label>Magaca Buuxa *</label>
-                <input type="text" value={form.fullName} onChange={update('fullName')} placeholder="Tusaale: Cali Xasan Warsame" required />
+                <label>{t('teachers.form.fields.fullName')}</label>
+                <input type="text" value={form.fullName} onChange={update('fullName')} placeholder={t('teachers.form.placeholders.fullName')} required />
               </div>
               <div className="tfm-field">
-                <label>Telefoonka</label>
-                <input type="text" value={form.phone} onChange={update('phone')} placeholder="+252 61 ..." />
+                <label>{t('teachers.form.fields.phone')}</label>
+                <input type="text" value={form.phone} onChange={update('phone')} placeholder={t('teachers.form.placeholders.phone')} />
               </div>
               <div className="tfm-field">
-                <label>Email</label>
-                <input type="email" value={form.email} onChange={update('email')} placeholder="tusaale@xarun.com" />
+                <label>{t('teachers.form.fields.email')}</label>
+                <input type="email" value={form.email} onChange={update('email')} placeholder={t('teachers.form.placeholders.email')} />
               </div>
               <div className="tfm-field full">
-                <label>Shahaadada (Qualification)</label>
-                <input type="text" value={form.qualification} onChange={update('qualification')} placeholder="Tusaale: BSc Xisaabta - Jaamacadda..." />
+                <label>{t('teachers.form.fields.qualification')}</label>
+                <input type="text" value={form.qualification} onChange={update('qualification')} placeholder={t('teachers.form.placeholders.qualification')} />
               </div>
             </div>
 
-            <div className="tfm-section-label">Waxbarasho</div>
+            <div className="tfm-section-label">{t('teachers.form.sections.academic')}</div>
             <div className="tfm-grid">
               <div className="tfm-field">
-                <label>Maadada *</label>
-                <input type="text" value={form.subject} onChange={update('subject')} placeholder="Tusaale: Xisaabta" required />
+                <label>{t('teachers.form.fields.subject')}</label>
+                <input type="text" value={form.subject} onChange={update('subject')} placeholder={t('teachers.form.placeholders.subject')} required />
               </div>
               <div className="tfm-field">
-                <label>Xaaladda</label>
+                <label>{t('teachers.form.fields.status')}</label>
                 <select value={form.status} onChange={update('status')}>
-                  <option value="active">Firfircoon</option>
-                  <option value="leave">Fasax</option>
+                  <option value="active">{t('common.status.active')}</option>
+                  <option value="leave">{t('common.leave')}</option>
                 </select>
               </div>
               <div className="tfm-field full">
-                <label>Fasallada Loo Xilsaaray * (kala sooc comma ,)</label>
+                <label>{t('teachers.form.fields.assignedClasses')}</label>
                 <input
                   type="text"
                   value={form.assignedClasses}
                   onChange={update('assignedClasses')}
-                  placeholder="Tusaale: Form 1A, Form 2A"
+                  placeholder={t('teachers.form.placeholders.assignedClasses')}
                   required
                 />
-                <span className="tfm-hint">Macallin kastaa waa in uu leeyahay ugu yaraan hal fasal.</span>
+                <span className="tfm-hint">{t('teachers.form.hint')}</span>
               </div>
             </div>
 
           </div>
 
           <div className="tfm-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>Jooji</button>
+            <button type="button" className="btn-secondary" onClick={onClose}>{t('common.cancel')}</button>
             <button type="submit" className="btn-primary">
-              {isEditing ? 'Kaydi Isbeddelka' : 'Ku Dar Macallinka'}
+              {isEditing ? t('common.save') : t('teachers.form.submitAdd')}
             </button>
           </div>
         </form>

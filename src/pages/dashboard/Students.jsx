@@ -1,198 +1,30 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useSchoolData } from '../../context/SchoolDataContext';
 import StudentProfileModal from './StudentProfileModal';
 import StudentFormModal from './StudentFormModal';
 import '../../styles/dashboard-shared.css';
 
-function buildAttendance() {
-  // 14 maalmood oo tijaabo ah
-  const days = ['2026-07-01','2026-07-02','2026-07-03','2026-07-06','2026-07-07','2026-07-08','2026-07-09','2026-07-10','2026-07-13','2026-07-14','2026-07-15','2026-07-16','2026-07-17','2026-07-20'];
-  const pattern = ['present','present','present','absent','present','present','late','present','present','present','absent','present','present','present'];
-  return days.map((date, i) => ({ date, status: pattern[i] }));
-}
-
-const STUDENTS = [
-  {
-    id: 1,
-    studentId: 'STU-1042',
-    fullName: 'Ismaaciil Cabdi Xasan',
-    gender: 'Wiil',
-    dob: '2011-03-14',
-    phone: '+252 61 111 2233',
-    parentName: 'Cabdi Xasan Warsame',
-    parentRelation: 'Aabo',
-    parentPhone: '+252 61 999 8877',
-    address: 'Xaafadda Hodan, Muqdisho',
-    className: 'Form 1A',
-    section: 'A',
-    rollNumber: 12,
-    subjects: ['Xisaab', 'Ingiriisi', 'Cilmiga Bulshada', 'Sayniska', 'Qur\u2019aan'],
-    status: 'active',
-    fee: 'paid',
-    attendance: buildAttendance(),
-    examResults: [
-      { subject: 'Xisaab', marks: 82, maxMarks: 100, grade: 'A' },
-      { subject: 'Ingiriisi', marks: 74, maxMarks: 100, grade: 'B' },
-      { subject: 'Sayniska', marks: 65, maxMarks: 100, grade: 'C' },
-    ],
-    fees: [
-      { term: 'Semester 1', amount: 120, date: '2026-01-10', status: 'paid' },
-      { term: 'Semester 2', amount: 120, date: '2026-06-10', status: 'paid' },
-    ],
-    behaviour: [
-      { note: 'Ka qayb qaatay tartanka akhriska - meesha 1aad', date: '2026-05-02', type: 'positive' },
-    ],
-    documents: [
-      { name: 'Shahaadada Dhalashada', type: 'PDF', uploadDate: '2026-01-05' },
-      { name: 'Sawirka Ardayga', type: 'JPG', uploadDate: '2026-01-05' },
-    ],
-  },
-  {
-    id: 2,
-    studentId: 'STU-1043',
-    fullName: 'Xaawo Maxamed Cali',
-    gender: 'Gabar',
-    dob: '2010-11-02',
-    phone: '+252 61 222 3344',
-    parentName: 'Maxamed Cali Nuur',
-    parentRelation: 'Aabo',
-    parentPhone: '+252 61 888 7766',
-    address: 'Xaafadda Wadajir, Muqdisho',
-    className: 'Form 2A',
-    section: 'A',
-    rollNumber: 5,
-    subjects: ['Xisaab', 'Ingiriisi', 'Taariikh', 'Sayniska'],
-    status: 'active',
-    fee: 'paid',
-    attendance: buildAttendance(),
-    examResults: [
-      { subject: 'Xisaab', marks: 91, maxMarks: 100, grade: 'A' },
-      { subject: 'Ingiriisi', marks: 88, maxMarks: 100, grade: 'A' },
-    ],
-    fees: [{ term: 'Semester 1', amount: 120, date: '2026-01-12', status: 'paid' }],
-    behaviour: [],
-    documents: [{ name: 'Shahaadada Dhalashada', type: 'PDF', uploadDate: '2026-01-06' }],
-  },
-  {
-    id: 3,
-    studentId: 'STU-1044',
-    fullName: 'Cabdiraxman Yoonis',
-    gender: 'Wiil',
-    dob: '2011-07-19',
-    phone: '',
-    parentName: 'Yoonis Cabdi Aadan',
-    parentRelation: 'Aabo',
-    parentPhone: '+252 61 555 4433',
-    address: 'Xaafadda Boondheere, Muqdisho',
-    className: 'Form 1A',
-    section: 'A',
-    rollNumber: 18,
-    subjects: ['Xisaab', 'Ingiriisi', 'Cilmiga Bulshada'],
-    status: 'active',
-    fee: 'pending',
-    attendance: buildAttendance(),
-    examResults: [{ subject: 'Xisaab', marks: 48, maxMarks: 100, grade: 'F' }],
-    fees: [{ term: 'Semester 2', amount: 120, date: '2026-06-15', status: 'pending' }],
-    behaviour: [
-      { note: 'Fasalka ka daahay 3 jeer bishan', date: '2026-06-20', type: 'negative' },
-    ],
-    documents: [],
-  },
-  {
-    id: 4,
-    studentId: 'STU-1045',
-    fullName: 'Sacdiyo Xasan Nuur',
-    gender: 'Gabar',
-    dob: '2009-09-30',
-    phone: '',
-    parentName: 'Xasan Nuur Cige',
-    parentRelation: 'Aabo',
-    parentPhone: '+252 61 444 3322',
-    address: 'Xaafadda Karaan, Muqdisho',
-    className: 'Form 3A',
-    section: 'A',
-    rollNumber: 9,
-    subjects: ['Xisaab', 'Ingiriisi', 'Sayniska', 'Taariikh'],
-    status: 'inactive',
-    fee: 'overdue',
-    attendance: buildAttendance(),
-    examResults: [{ subject: 'Ingiriisi', marks: 55, maxMarks: 100, grade: 'C' }],
-    fees: [{ term: 'Semester 2', amount: 120, date: '2026-06-01', status: 'overdue' }],
-    behaviour: [],
-    documents: [],
-  },
-  {
-    id: 5,
-    studentId: 'STU-1046',
-    fullName: 'Maxamed Xuseen Cige',
-    gender: 'Wiil',
-    dob: '2008-05-11',
-    phone: '+252 61 333 2211',
-    parentName: 'Xuseen Cige Faarax',
-    parentRelation: 'Aabo',
-    parentPhone: '+252 61 222 1100',
-    address: 'Xaafadda Dharkenley, Muqdisho',
-    className: 'Form 4A',
-    section: 'A',
-    rollNumber: 2,
-    subjects: ['Xisaab', 'Ingiriisi', 'Fiisigis', 'Kiimikada'],
-    status: 'active',
-    fee: 'paid',
-    attendance: buildAttendance(),
-    examResults: [
-      { subject: 'Fiisigis', marks: 77, maxMarks: 100, grade: 'B' },
-      { subject: 'Kiimikada', marks: 85, maxMarks: 100, grade: 'A' },
-    ],
-    fees: [{ term: 'Semester 2', amount: 150, date: '2026-06-08', status: 'paid' }],
-    behaviour: [],
-    documents: [{ name: 'Ratiga Fasalka Hore', type: 'PDF', uploadDate: '2026-02-01' }],
-  },
-  {
-    id: 6,
-    studentId: 'STU-1047',
-    fullName: 'Amiina Cabdulle',
-    gender: 'Gabar',
-    dob: '2010-01-22',
-    phone: '',
-    parentName: 'Cabdulle Warsame',
-    parentRelation: 'Aabo',
-    parentPhone: '+252 61 111 0099',
-    address: 'Xaafadda Yaaqshiid, Muqdisho',
-    className: 'Form 2A',
-    section: 'A',
-    rollNumber: 21,
-    subjects: ['Xisaab', 'Ingiriisi', 'Taariikh'],
-    status: 'active',
-    fee: 'pending',
-    attendance: buildAttendance(),
-    examResults: [{ subject: 'Taariikh', marks: 69, maxMarks: 100, grade: 'C' }],
-    fees: [{ term: 'Semester 2', amount: 120, date: '2026-06-18', status: 'pending' }],
-    behaviour: [],
-    documents: [],
-  },
-];
-
-const FEE_LABEL = {
-  paid: { label: 'La Bixiyay', cls: 'badge-success' },
-  pending: { label: 'Sugaya', cls: 'badge-warning' },
-  overdue: { label: 'Dib U Dhacay', cls: 'badge-danger' },
-};
-
-const STATUS_LABEL = {
-  active: { label: 'Firfircoon', cls: 'badge-success' },
-  inactive: { label: 'Firfircoona', cls: 'badge-neutral' },
-};
+const STATUS_CLS = { active: 'badge-success', inactive: 'badge-neutral' };
+const FEE_CLS = { paid: 'badge-success', pending: 'badge-warning', overdue: 'badge-danger' };
 
 function initials(name) {
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 }
 
 function Students() {
-  const [students, setStudents] = useState(STUDENTS);
+  const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { students, studentsLoading, addStudent, updateStudent, deleteStudent, toggleStudentAttendanceDay, seedDemoStudents } = useSchoolData();
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('all');
-  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
+
+  const selectedStudent = students.find((s) => s.id === selectedStudentId) || null;
 
   const classes = useMemo(() => ['all', ...new Set(students.map((s) => s.className))], [students]);
 
@@ -207,6 +39,14 @@ function Students() {
     setShowAddModal(true);
   };
 
+  useEffect(() => {
+    if (location.state?.openAdd) {
+      openAddModal();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state]);
+
   const openEditModal = (student) => {
     setEditingStudent(student);
     setShowAddModal(true);
@@ -214,56 +54,30 @@ function Students() {
 
   const handleSaveStudent = (payload, studentId) => {
     if (studentId) {
-      setStudents((prev) => prev.map((s) => (s.id === studentId ? { ...s, ...payload } : s)));
+      updateStudent(studentId, payload);
     } else {
-      const newStudent = {
-        ...payload,
-        id: Date.now(),
-        studentId: `STU-${1040 + students.length + 1}`,
-        attendance: buildAttendance(),
-        examResults: [],
-        fees: [],
-        behaviour: [],
-        documents: [],
-      };
-      setStudents((prev) => [...prev, newStudent]);
+      addStudent(payload);
     }
   };
 
-  const handleToggleAttendance = (studentId, date) => {
-    const nextStatus = { present: 'absent', absent: 'late', late: 'present' };
-    setStudents((prev) =>
-      prev.map((s) => {
-        if (s.id !== studentId) return s;
-        return {
-          ...s,
-          attendance: s.attendance.map((a) =>
-            a.date === date ? { ...a, status: nextStatus[a.status] } : a
-          ),
-        };
-      })
-    );
-    setSelectedStudent((prev) => {
-      if (!prev || prev.id !== studentId) return prev;
-      return {
-        ...prev,
-        attendance: prev.attendance.map((a) =>
-          a.date === date ? { ...a, status: nextStatus[a.status] } : a
-        ),
-      };
-    });
+  const handleDeleteStudent = (studentId, fullName) => {
+    const confirmed = window.confirm(t('common.confirmSoftDelete', { name: fullName }));
+    if (confirmed) {
+      deleteStudent(studentId);
+      if (selectedStudentId === studentId) setSelectedStudentId(null);
+    }
   };
 
   return (
     <div>
       <div className="page-header">
         <div className="page-header-text">
-          <h2>Ardayda</h2>
-          <p>Maamul dhammaan ardayda diiwaan gashan dugsiga.</p>
+          <h2>{t('students.pageTitle')}</h2>
+          <p>{t('students.pageSubtitle')}</p>
         </div>
         <button className="btn-primary" onClick={openAddModal}>
           <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          Ku Dar Arday Cusub
+          {t('students.addNew')}
         </button>
       </div>
 
@@ -273,14 +87,14 @@ function Students() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
             <input
               type="text"
-              placeholder="Raadi magaca ama ID-ga..."
+              placeholder={t('students.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <select className="filter-select" value={classFilter} onChange={(e) => setClassFilter(e.target.value)}>
             {classes.map((c) => (
-              <option key={c} value={c}>{c === 'all' ? 'Dhammaan Fasallada' : c}</option>
+              <option key={c} value={c}>{c === 'all' ? t('students.allClasses') : c}</option>
             ))}
           </select>
         </div>
@@ -289,12 +103,12 @@ function Students() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Arday</th>
-                <th>ID</th>
-                <th>Fasalka</th>
-                <th>Jinsiga</th>
-                <th>Xaaladda</th>
-                <th>Lacagta</th>
+                <th>{t('students.table.student')}</th>
+                <th>{t('students.table.id')}</th>
+                <th>{t('students.table.class')}</th>
+                <th>{t('students.table.gender')}</th>
+                <th>{t('students.table.status')}</th>
+                <th>{t('students.table.fee')}</th>
                 <th></th>
               </tr>
             </thead>
@@ -310,29 +124,47 @@ function Students() {
                   <td className="cell-sub">{s.studentId}</td>
                   <td>{s.className}</td>
                   <td>{s.gender}</td>
-                  <td><span className={`badge ${STATUS_LABEL[s.status].cls}`}>{STATUS_LABEL[s.status].label}</span></td>
-                  <td><span className={`badge ${FEE_LABEL[s.fee].cls}`}>{FEE_LABEL[s.fee].label}</span></td>
+                  <td><span className={`badge ${STATUS_CLS[s.status]}`}>{t(`common.status.${s.status}`)}</span></td>
+                  <td><span className={`badge ${FEE_CLS[s.fee]}`}>{t(`common.status.${s.fee}`)}</span></td>
                   <td>
                     <div className="row-actions">
-                      <button className="row-action-btn" title="Eeg" onClick={() => setSelectedStudent(s)}>
+                      <button className="row-action-btn" title={t('common.actions.view')} onClick={() => setSelectedStudentId(s.id)}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                       </button>
-                      <button className="row-action-btn" title="Wax Ka Beddel" onClick={() => openEditModal(s)}>
+                      <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(s)}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
+                      </button>
+                      <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteStudent(s.id, s.fullName)}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan="7" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>Wax lama helin.</td></tr>
+              {studentsLoading && (
+                <tr><td colSpan="7" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.loading')}</td></tr>
+              )}
+              {!studentsLoading && filtered.length === 0 && students.length === 0 && (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>
+                    {t('students.emptyNoStudents')}
+                    <div style={{ marginTop: 12 }}>
+                      <button type="button" className="btn-secondary" onClick={seedDemoStudents}>
+                        {t('students.seedDemo')}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )}
+              {!studentsLoading && filtered.length === 0 && students.length > 0 && (
+                <tr><td colSpan="7" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.noResults')}</td></tr>
               )}
             </tbody>
           </table>
         </div>
 
         <div className="table-pagination">
-          <span className="pagination-info">Muujinaya {filtered.length} ee {students.length} arday</span>
+          <span className="pagination-info">{t('students.pagination', { shown: filtered.length, total: students.length })}</span>
           <div className="pagination-controls">
             <button className="page-btn active">1</button>
           </div>
@@ -342,8 +174,8 @@ function Students() {
       {selectedStudent && (
         <StudentProfileModal
           student={selectedStudent}
-          onClose={() => setSelectedStudent(null)}
-          onToggleAttendance={handleToggleAttendance}
+          onClose={() => setSelectedStudentId(null)}
+          onToggleAttendance={toggleStudentAttendanceDay}
         />
       )}
 

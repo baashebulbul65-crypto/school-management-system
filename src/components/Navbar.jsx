@@ -10,7 +10,7 @@ function Navbar({ onOpenLogin }) {
             <circle cx="30" cy="8" r="3" fill="#0B1F2B"/>
             <path d="M8 30 H24" stroke="#0B1F2B" strokeWidth="4" strokeLinecap="round"/>
           </svg>
-          <span className="brand-name">Xarun<span className="dot">.</span></span>
+          <span className="brand-name">Kayd<span className="dot">.</span></span>
         </div>
 
         <ul className="nav-links">

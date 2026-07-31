@@ -4,7 +4,7 @@ const TESTIMONIALS = [
   {
     id: 1,
     quote:
-      'Xarun wuxuu inoo fududeeyay maamulka dugsigeenna gebi ahaanba. Xisaabaadka iyo imaanshaha ardayda hore ayaan u qaadan jiray saacado badan, hadda waxa ay igu qaadataa daqiiqado.',
+      'Kayd wuxuu inoo fududeeyay maamulka dugsigeenna gebi ahaanba. Xisaabaadka iyo imaanshaha ardayda hore ayaan u qaadan jiray saacado badan, hadda waxa ay igu qaadataa daqiiqado.',
     name: 'Ustaad Cabdiraxman Xasan',
     role: 'Maamule, Dugsiga Nuurul-Ilm',
     initials: 'CX',
@@ -20,7 +20,7 @@ const TESTIMONIALS = [
   {
     id: 3,
     quote:
-      'Waxaan isticmaalnaa Xarun ilaa laba dugsi. Nidaamku waa mid la isku halayn karo, taageeradooduna mar walba way dhaqso u jawaabaan.',
+      'Waxaan isticmaalnaa Kayd ilaa laba dugsi. Nidaamku waa mid la isku halayn karo, taageeradooduna mar walba way dhaqso u jawaabaan.',
     name: 'Ustaad Yoonis Cabdi',
     role: 'Milkiile, Dugsiyada Al-Maax',
     initials: 'YC',
@@ -33,7 +33,7 @@ function Testimonials() {
       <div className="testimonials-head">
         <div className="eyebrow">Waxa Ay Naga Yiraahdaan</div>
         <h2>Waxaa Isku Halaya Boqollaal <span className="highlight">Dugsi</span></h2>
-        <p>Dugsiyada iyo macallimiinta oo isticmaala Xarun maalin walba si ay u maamulaan xogtooda.</p>
+        <p>Dugsiyada iyo macallimiinta oo isticmaala Kayd maalin walba si ay u maamulaan xogtooda.</p>
       </div>
 
       <div className="testimonials-grid">

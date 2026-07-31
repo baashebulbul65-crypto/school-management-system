@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './ExamFormModal.css';
 
 const EMPTY_FORM = { type: 'Midterm', subject: '', className: '', date: '', maxMarks: '' };
 
 function ExamFormModal({ isOpen, onClose, onSave, exam, examTypes }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const isEditing = !!exam;
 
@@ -36,8 +38,8 @@ function ExamFormModal({ isOpen, onClose, onSave, exam, examTypes }) {
       <div className="exfm-modal">
         <div className="exfm-header">
           <div>
-            <h2>{isEditing ? 'Wax Ka Beddel Imtixaanka' : 'Abuur Imtixaan Cusub'}</h2>
-            <p>Buuxi macluumaadka hoose</p>
+            <h2>{isEditing ? t('exams.form.editTitle') : t('exams.form.addTitle')}</h2>
+            <p>{t('exams.form.fillInfo')}</p>
           </div>
           <button className="exfm-close" onClick={onClose} type="button">
             <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -48,34 +50,34 @@ function ExamFormModal({ isOpen, onClose, onSave, exam, examTypes }) {
           <div className="exfm-body">
             <div className="exfm-grid">
               <div className="exfm-field">
-                <label>Nooca Imtixaanka *</label>
+                <label>{t('exams.form.fields.type')}</label>
                 <select value={form.type} onChange={update('type')}>
-                  {examTypes.map((t) => <option key={t}>{t}</option>)}
+                  {examTypes.map((tp) => <option key={tp} value={tp}>{t(`exams.types.${tp}`, tp)}</option>)}
                 </select>
               </div>
               <div className="exfm-field">
-                <label>Maadada *</label>
-                <input type="text" value={form.subject} onChange={update('subject')} placeholder="Tusaale: Xisaabta" required />
+                <label>{t('exams.form.fields.subject')}</label>
+                <input type="text" value={form.subject} onChange={update('subject')} placeholder={t('exams.form.placeholders.subject')} required />
               </div>
               <div className="exfm-field">
-                <label>Fasalka *</label>
-                <input type="text" value={form.className} onChange={update('className')} placeholder="Tusaale: Form 1A" required />
+                <label>{t('exams.form.fields.className')}</label>
+                <input type="text" value={form.className} onChange={update('className')} placeholder={t('exams.form.placeholders.className')} required />
               </div>
               <div className="exfm-field">
-                <label>Taariikhda</label>
+                <label>{t('exams.form.fields.date')}</label>
                 <input type="date" value={form.date} onChange={update('date')} />
               </div>
               <div className="exfm-field full">
-                <label>Buundooyinka Guud (Max Marks) *</label>
-                <input type="number" value={form.maxMarks} onChange={update('maxMarks')} placeholder="Tusaale: 100" required />
+                <label>{t('exams.form.fields.maxMarks')}</label>
+                <input type="number" value={form.maxMarks} onChange={update('maxMarks')} placeholder={t('exams.form.placeholders.maxMarks')} required />
               </div>
             </div>
           </div>
 
           <div className="exfm-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>Jooji</button>
+            <button type="button" className="btn-secondary" onClick={onClose}>{t('common.cancel')}</button>
             <button type="submit" className="btn-primary">
-              {isEditing ? 'Kaydi Isbeddelka' : 'Abuur Imtixaanka'}
+              {isEditing ? t('common.save') : t('exams.form.submitAdd')}
             </button>
           </div>
         </form>

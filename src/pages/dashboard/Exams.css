@@ -24,7 +24,7 @@
   border-color: var(--mint);
   box-shadow: 0 0 0 4px var(--mint-pale);
 }
-.report-export-btn{ margin-left: auto; }
+.report-export-btn{ margin-inline-start: auto; }
 
 .marks-input{
   width: 90px;
@@ -93,7 +93,7 @@
 .report-stats{
   display: flex;
   gap: 24px;
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 .report-stats div{
   display: flex;
@@ -116,7 +116,7 @@
 
 @media (max-width: 640px){
   .report-card-header{ flex-wrap: wrap; }
-  .report-stats{ margin-left: 0; width: 100%; justify-content: flex-start; }
+  .report-stats{ margin-inline-start: 0; width: 100%; justify-content: flex-start; }
   .exam-select-row{ flex-direction: column; align-items: flex-start; }
-  .report-export-btn{ margin-left: 0; }
+  .report-export-btn{ margin-inline-start: 0; }
 }

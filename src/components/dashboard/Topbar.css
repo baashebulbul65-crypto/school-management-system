@@ -70,7 +70,7 @@
 .icon-btn:hover{ background:#E7ECEF; }
 .icon-btn svg{ width:18px; height:18px; stroke: var(--navy); }
 .notif-dot{
-  position:absolute; top:9px; right:10px;
+  position:absolute; top:9px; inset-inline-end:10px;
   width:7px; height:7px;
   border-radius:50%;
   background:#FF6B57;

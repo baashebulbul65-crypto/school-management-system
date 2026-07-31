@@ -13,7 +13,7 @@ function Footer() {
               <circle cx="30" cy="8" r="3" fill="#16C784"/>
               <path d="M8 30 H24" stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round"/>
             </svg>
-            <span>Xarun<span className="dot">.</span></span>
+            <span>Kayd<span className="dot">.</span></span>
           </div>
           <p>Nidaam maamul dugsi oo cloud-based ah, loogu talagalay dugsiyada Soomaaliyeed si ay xogtooda ugu maamulaan hal meel oo fudud.</p>
 
@@ -59,7 +59,7 @@ function Footer() {
             </li>
             <li>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16v16H4V4z"/><path d="M22 6l-10 7L2 6"/></svg>
-              hello@xarun.com
+              hello@kayd.com
             </li>
             <li>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -70,7 +70,7 @@ function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p>&copy; {year} Xarun. Dhammaan xuquuqda way dhowran tahay.</p>
+        <p>&copy; {year} Kayd. Dhammaan xuquuqda way dhowran tahay.</p>
         <div className="footer-legal">
           <a href="#">Sharciga Asturnaanta</a>
           <a href="#">Shuruudaha Adeegga</a>

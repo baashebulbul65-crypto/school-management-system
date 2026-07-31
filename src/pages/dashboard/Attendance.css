@@ -71,6 +71,8 @@
 .att-summary-card.present{ border-left-color: var(--mint); }
 .att-summary-card.absent{ border-left-color: #E5533F; }
 .att-summary-card.late{ border-left-color: #E8B93B; }
+.att-summary-card.leave{ border-left-color: #C99A1F; }
+.att-summary-card.sick{ border-left-color: #9333EA; }
 .att-summary-card.total{ border-left-color: var(--navy); }
 
 /* Card head */
@@ -107,6 +109,22 @@
 .att-status-btn.present{ background: var(--mint-pale); color: var(--mint-dark); }
 .att-status-btn.absent{ background: #FDECEA; color: #C0392B; }
 .att-status-btn.late{ background: #FFF7E0; color: #C99A1F; }
+.att-status-btn.leave{ background: #FFF7E0; color: #C99A1F; }
+.att-status-btn.sick{ background: #F3E8FD; color: #9333EA; }
+
+/* Group of quick-action buttons (Students: Joog/Maqan/Fasax/Buka) */
+.att-status-btn-group{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.att-status-btn-group .att-status-btn{
+  opacity: 0.45;
+}
+.att-status-btn-group .att-status-btn.active{
+  opacity: 1;
+  box-shadow: 0 0 0 1.5px currentColor inset;
+}
 
 /* Period tabs (reports) */
 .att-period-tabs{ display: flex; gap: 6px; }

@@ -3,7 +3,7 @@
 .nb-panel{
   position: absolute;
   top: calc(100% + 12px);
-  right: 0;
+  inset-inline-end: 0;
   width: 380px;
   max-width: 90vw;
   background: #fff;
@@ -60,7 +60,7 @@
   background: #fff;
   border-bottom: 1px solid #F4F6F7;
   cursor: pointer;
-  text-align: left;
+  text-align: start;
   position: relative;
   transition: background 0.15s ease;
 }

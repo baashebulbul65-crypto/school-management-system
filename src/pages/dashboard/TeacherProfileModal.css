@@ -230,5 +230,5 @@
 @media (max-width: 640px){
   .tpm-grid{ grid-template-columns: 1fr; }
   .tpm-header-top{ flex-wrap:wrap; }
-  .tpm-qr{ order:3; margin-left:auto; }
+  .tpm-qr{ order:3; margin-inline-start:auto; }
 }

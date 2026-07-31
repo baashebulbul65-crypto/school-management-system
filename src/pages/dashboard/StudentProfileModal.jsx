@@ -1,22 +1,12 @@
 import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { useTranslation } from 'react-i18next';
 import './StudentProfileModal.css';
-
-const TABS = [
-  { id: 'guud', label: 'Macluumaadka Guud' },
-  { id: 'waxbarasho', label: 'Waxbarasho' },
-  { id: 'imaanshaha', label: 'Imaanshaha' },
-  { id: 'natiijo', label: 'Natiijooyinka' },
-  { id: 'lacag', label: 'Lacagta' },
-  { id: 'anshax', label: 'Anshaxa' },
-  { id: 'dukumenti', label: 'Dukumentiyada' },
-];
 
 function initials(name) {
   return name ? name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase() : '';
 }
 
-// Helper Component-ka halkan lagu daray 👇
 function InfoRow({ label, value }) {
   return (
     <div className="spm-info-row">
@@ -27,9 +17,20 @@ function InfoRow({ label, value }) {
 }
 
 function StudentProfileModal({ student, onClose, onToggleAttendance }) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('guud');
 
   if (!student) return null;
+
+  const TABS = [
+    { id: 'guud', label: t('students.profile.tabs.general') },
+    { id: 'waxbarasho', label: t('students.profile.tabs.academic') },
+    { id: 'imaanshaha', label: t('students.profile.tabs.attendance') },
+    { id: 'natiijo', label: t('students.profile.tabs.results') },
+    { id: 'lacag', label: t('students.profile.tabs.fees') },
+    { id: 'anshax', label: t('students.profile.tabs.behaviour') },
+    { id: 'dukumenti', label: t('students.profile.tabs.documents') },
+  ];
 
   return (
     <div className="spm-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -47,12 +48,12 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
               <h2>{student.fullName}</h2>
               <p>{student.studentId} &middot; {student.className} - {student.section}</p>
               <span className={`badge ${student.status === 'active' ? 'badge-success' : 'badge-neutral'}`}>
-                {student.status === 'active' ? 'Firfircoon' : 'Aan Firfircoonayn'}
+                {t(`common.status.${student.status}`)}
               </span>
             </div>
             <div className="spm-qr">
               <QRCodeSVG value={student.studentId || ''} size={72} bgColor="transparent" fgColor="#0B1F2B" />
-              <span>QR Code</span>
+              <span>{t('students.profile.qrCode')}</span>
             </div>
           </div>
 
@@ -74,25 +75,25 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
 
           {activeTab === 'guud' && (
             <div className="spm-grid">
-              <InfoRow label="Magaca Buuxa" value={student.fullName} />
-              <InfoRow label="Student ID" value={student.studentId} />
-              <InfoRow label="Jinsiga" value={student.gender} />
-              <InfoRow label="Taariikhda Dhalashada" value={student.dob} />
-              <InfoRow label="Telefoonka" value={student.phone} />
-              <InfoRow label="Cinwaanka" value={student.address} />
-              <div className="spm-divider">Macluumaadka Waalidka</div>
-              <InfoRow label="Magaca Waalidka" value={student.parentName} />
-              <InfoRow label="Xiriirka" value={student.parentRelation} />
-              <InfoRow label="Telefoonka Waalidka" value={student.parentPhone} />
+              <InfoRow label={t('students.profile.info.fullName')} value={student.fullName} />
+              <InfoRow label={t('students.profile.info.studentId')} value={student.studentId} />
+              <InfoRow label={t('students.profile.info.gender')} value={student.gender} />
+              <InfoRow label={t('students.profile.info.dob')} value={student.dob} />
+              <InfoRow label={t('students.profile.info.phone')} value={student.phone} />
+              <InfoRow label={t('students.profile.info.address')} value={student.address} />
+              <div className="spm-divider">{t('students.profile.info.parentSection')}</div>
+              <InfoRow label={t('students.profile.info.parentName')} value={student.parentName} />
+              <InfoRow label={t('students.profile.info.relation')} value={student.parentRelation} />
+              <InfoRow label={t('students.profile.info.parentPhone')} value={student.parentPhone} />
             </div>
           )}
 
           {activeTab === 'waxbarasho' && (
             <div className="spm-grid">
-              <InfoRow label="Fasalka" value={student.className} />
-              <InfoRow label="Qaybta (Section)" value={student.section} />
-              <InfoRow label="Roll Number" value={student.rollNumber} />
-              <div className="spm-divider">Maadooyinka</div>
+              <InfoRow label={t('students.profile.info.className')} value={student.className} />
+              <InfoRow label={t('students.profile.info.section')} value={student.section} />
+              <InfoRow label={t('students.profile.info.rollNumber')} value={student.rollNumber} />
+              <div className="spm-divider">{t('students.profile.info.subjectsSection')}</div>
               <div className="spm-tags">
                 {student.subjects?.map((sub) => (
                   <span key={sub} className="spm-tag">{sub}</span>
@@ -103,7 +104,7 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
 
           {activeTab === 'imaanshaha' && (
             <div>
-              <p className="spm-note">Guji maalin kasta si aad u beddesho xaaladda imaanshaha (Present/Absent).</p>
+              <p className="spm-note">{t('students.profile.attendanceNote')}</p>
               <div className="attendance-grid">
                 {student.attendance?.map((a) => (
                   <button
@@ -114,7 +115,7 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
                   >
                     <span className="attendance-date">{a.date.split('-')[2]}</span>
                     <span className="attendance-status">
-                      {a.status === 'present' ? 'Joog' : a.status === 'late' ? 'Daahid' : 'Maqan'}
+                      {a.status === 'present' ? t('common.present') : a.status === 'late' ? t('common.late') : t('common.absent')}
                     </span>
                   </button>
                 ))}
@@ -126,7 +127,7 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
             <div className="data-table-wrap">
               <table className="data-table">
                 <thead>
-                  <tr><th>Maadada</th><th>Buundooyinka</th><th>Wadarta</th><th>Darajada</th></tr>
+                  <tr><th>{t('students.profile.table.subject')}</th><th>{t('students.profile.table.marks')}</th><th>{t('students.profile.table.total')}</th><th>{t('students.profile.table.grade')}</th></tr>
                 </thead>
                 <tbody>
                   {student.examResults?.map((r) => (
@@ -146,7 +147,7 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
             <div className="data-table-wrap">
               <table className="data-table">
                 <thead>
-                  <tr><th>Xilliga</th><th>Qadarka</th><th>Taariikhda</th><th>Xaaladda</th></tr>
+                  <tr><th>{t('students.profile.table.term')}</th><th>{t('students.profile.table.amount')}</th><th>{t('students.profile.table.date')}</th><th>{t('students.profile.table.status')}</th></tr>
                 </thead>
                 <tbody>
                   {student.fees?.map((f, i) => (
@@ -156,7 +157,7 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
                       <td className="cell-sub">{f.date}</td>
                       <td>
                         <span className={`badge ${f.status === 'paid' ? 'badge-success' : f.status === 'pending' ? 'badge-warning' : 'badge-danger'}`}>
-                          {f.status === 'paid' ? 'La Bixiyay' : f.status === 'pending' ? 'Sugaya' : 'Dib U Dhacay'}
+                          {t(`common.status.${f.status}`)}
                         </span>
                       </td>
                     </tr>
@@ -168,7 +169,7 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
 
           {activeTab === 'anshax' && (
             <div className="behaviour-list">
-              {(!student.behaviour || student.behaviour.length === 0) && <p className="spm-note">Wax faallo ah lama qorin.</p>}
+              {(!student.behaviour || student.behaviour.length === 0) && <p className="spm-note">{t('students.profile.noBehaviour')}</p>}
               {student.behaviour?.map((b, i) => (
                 <div key={i} className={`behaviour-item ${b.type}`}>
                   <span className="behaviour-dot"></span>
@@ -183,7 +184,7 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
 
           {activeTab === 'dukumenti' && (
             <div className="documents-list">
-              {(!student.documents || student.documents.length === 0) && <p className="spm-note">Wax dukumenti ah laguma soo shubin.</p>}
+              {(!student.documents || student.documents.length === 0) && <p className="spm-note">{t('students.profile.noDocuments')}</p>}
               {student.documents?.map((d, i) => (
                 <div key={i} className="document-row">
                   <div className="document-icon">
@@ -193,7 +194,7 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
                     <div className="document-name">{d.name}</div>
                     <div className="document-meta">{d.type} &middot; {d.uploadDate}</div>
                   </div>
-                  <button className="row-action-btn" title="Soo Deji">
+                  <button className="row-action-btn" title={t('common.actions.download')}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                   </button>
                 </div>

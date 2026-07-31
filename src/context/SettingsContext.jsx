@@ -1,14 +1,19 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { useAuth } from './AuthContext';
+import { findSchoolByCode, updateSchoolLogo } from '../firebase/auth';
+import { validateLogoFile, fileToBase64 } from '../utils/logoImage';
+import i18n, { applyDirection } from '../i18n';
 
 const SettingsContext = createContext(null);
 
 const DEFAULT_SETTINGS = {
   school: {
-    name: 'Xarun',
+    name: 'Kayd',
     code: 'XRN-2026',
     address: 'Hargeysa, Somaliland',
     phone: '+252 63 123 4567',
-    email: 'info@xarun.com',
+    email: 'info@kayd.com',
+    logo: null, // base64 data URI ee sawirka logo-ga dugsiga, lagu kaydiyay Firestore
   },
   language: 'so', // 'so' | 'en' | 'ar'
   currency: 'USD',
@@ -29,11 +34,72 @@ const DEFAULT_SETTINGS = {
 };
 
 export function SettingsProvider({ children }) {
+  const { profile } = useAuth();
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoError, setLogoError] = useState(null);
 
   const updateSchool = (fields) => {
     setSettings((prev) => ({ ...prev, school: { ...prev.school, ...fields } }));
   };
+
+  // Marka user-ku login-geeyo, soo qaad logo-ga dugsigiisa ee horey loo kaydiyay Firestore
+  useEffect(() => {
+    if (!profile?.schoolCode) return;
+    let cancelled = false;
+
+    findSchoolByCode(profile.schoolCode).then((school) => {
+      if (!cancelled && school?.logo) {
+        updateSchool({ logo: school.logo });
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [profile?.schoolCode]);
+
+  const uploadLogo = async (file) => {
+    if (!profile?.schoolCode) {
+      throw new Error('Lama helin school code-ka akoonkaaga.');
+    }
+    setLogoUploading(true);
+    setLogoError(null);
+    try {
+      validateLogoFile(file);
+      const base64 = await fileToBase64(file);
+      await updateSchoolLogo(profile.schoolCode, base64);
+      updateSchool({ logo: base64 });
+      return base64;
+    } catch (err) {
+      setLogoError(err.message || 'Khalad ayaa dhacay markii sawirka la soo gelinayay.');
+      throw err;
+    } finally {
+      setLogoUploading(false);
+    }
+  };
+
+  const removeLogo = async () => {
+    if (!profile?.schoolCode) return;
+    setLogoUploading(true);
+    setLogoError(null);
+    try {
+      await updateSchoolLogo(profile.schoolCode, null);
+      updateSchool({ logo: null });
+    } catch (err) {
+      setLogoError(err.message || 'Khalad ayaa dhacay markii sawirka la tirtirayay.');
+      throw err;
+    } finally {
+      setLogoUploading(false);
+    }
+  };
+
+  // Marka luuqadda la beddelo (Settings), turjumaadda (i18next) iyo direction-ka
+  // dukumeenka (LTR/RTL) ayaa si toos ah isu cusbooneysiinaya.
+  useEffect(() => {
+    i18n.changeLanguage(settings.language);
+    applyDirection(settings.language);
+  }, [settings.language]);
 
   const updateLanguage = (language) => setSettings((prev) => ({ ...prev, language }));
   const updateCurrency = (currency) => setSettings((prev) => ({ ...prev, currency }));
@@ -76,6 +142,10 @@ export function SettingsProvider({ children }) {
     addFeeGrade,
     removeFeeGrade,
     updateNotificationPref,
+    uploadLogo,
+    removeLogo,
+    logoUploading,
+    logoError,
   };
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

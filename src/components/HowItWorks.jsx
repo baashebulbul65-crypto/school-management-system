@@ -62,7 +62,7 @@ function HowItWorks() {
       <div className="hiw-head">
         <div className="eyebrow">Sida Uu U Shaqeeyo</div>
         <h2>Afar Tallaabo Oo Fudud Ah Ayaad Ku <span className="highlight">Bilaabaysaa</span></h2>
-        <p>Kama baahnid khibrad tignoolajiyadeed. Xarun waxa uu kaa dhigayaa mid fudud in aad dugsigaaga si dhakhso ah u maamusho.</p>
+        <p>Kama baahnid khibrad tignoolajiyadeed. Kayd waxa uu kaa dhigayaa mid fudud in aad dugsigaaga si dhakhso ah u maamusho.</p>
       </div>
 
       <div className="hiw-track">

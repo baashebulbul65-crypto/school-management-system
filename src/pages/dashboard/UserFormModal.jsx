@@ -59,7 +59,7 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions }) {
               </div>
               <div className="ufm-field full">
                 <label>Email *</label>
-                <input type="email" value={form.email} onChange={update('email')} placeholder="tusaale@xarun.com" required disabled={isEditing} />
+                <input type="email" value={form.email} onChange={update('email')} placeholder="tusaale@kayd.com" required disabled={isEditing} />
                 {isEditing && <span className="ufm-hint">Email-ka ma bedeli karto akoon hore.</span>}
               </div>
               <div className="ufm-field full">

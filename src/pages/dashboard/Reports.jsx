@@ -67,7 +67,7 @@ function Reports() {
   const handleExportPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(16);
-    doc.text('Xarun — Warbixinta Guud', 14, 18);
+    doc.text('Kayd — Warbixinta Guud', 14, 18);
     doc.setFontSize(10);
     doc.text(`Xilliga: ${term}`, 14, 25);
 
@@ -88,7 +88,7 @@ function Reports() {
       body: TOP_STUDENTS.map((s) => [s.name, s.className, s.gpa.toFixed(2)]),
     });
 
-    doc.save('xarun-warbixinta-guud.pdf');
+    doc.save('kayd-warbixinta-guud.pdf');
   };
 
   return (

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './FeeCollectionModal.css';
 
 const METHODS = ['Cash', 'Bangi (Bank)', 'EVC/Zaad (Mobile Money)'];
 
 function FeeCollectionModal({ isOpen, onClose, onCollect, rows }) {
+  const { t } = useTranslation();
   const [rowId, setRowId] = useState(rows[0]?.id);
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState(METHODS[0]);
@@ -31,8 +33,8 @@ function FeeCollectionModal({ isOpen, onClose, onCollect, rows }) {
       <div className="fcm-modal">
         <div className="fcm-header">
           <div>
-            <h2>Lacag-Qabo</h2>
-            <p>Diiwaan geli lacagta la helay</p>
+            <h2>{t('finance.collectModal.title')}</h2>
+            <p>{t('finance.collectModal.subtitle')}</p>
           </div>
           <button className="fcm-close" onClick={onClose} type="button">
             <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -43,33 +45,33 @@ function FeeCollectionModal({ isOpen, onClose, onCollect, rows }) {
           <div className="fcm-body">
             <div className="fcm-grid">
               <div className="fcm-field full">
-                <label>Fasalka / Qoyska *</label>
+                <label>{t('finance.collectModal.classOrFamily')}</label>
                 <select value={rowId} onChange={(e) => setRowId(Number(e.target.value))}>
                   {rows.map((r) => (
-                    <option key={r.id} value={r.id}>{r.name} {r.shift ? `- ${r.shift}` : ''} (Baaqi: ${r.balance})</option>
+                    <option key={r.id} value={r.id}>{r.name} {r.shift ? `- ${r.shift}` : ''} ({t('finance.collectModal.balanceLabel')}: ${r.balance})</option>
                   ))}
                 </select>
               </div>
               <div className="fcm-field">
-                <label>Qadarka ($) *</label>
-                <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Tusaale: 50" required />
+                <label>{t('finance.collectModal.amount')}</label>
+                <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder={t('finance.collectModal.amountPlaceholder')} required />
               </div>
               <div className="fcm-field">
-                <label>Habka Bixinta</label>
+                <label>{t('finance.collectModal.method')}</label>
                 <select value={method} onChange={(e) => setMethod(e.target.value)}>
-                  {METHODS.map((m) => <option key={m}>{m}</option>)}
+                  {METHODS.map((m) => <option key={m} value={m}>{t(`finance.collectModal.methods.${m}`)}</option>)}
                 </select>
               </div>
               <div className="fcm-field full">
-                <label>Taariikhda</label>
+                <label>{t('finance.collectModal.date')}</label>
                 <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
               </div>
             </div>
           </div>
 
           <div className="fcm-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>Jooji</button>
-            <button type="submit" className="btn-primary">Xaqiiji Lacag-Qabashada</button>
+            <button type="button" className="btn-secondary" onClick={onClose}>{t('common.cancel')}</button>
+            <button type="submit" className="btn-primary">{t('finance.collectModal.confirm')}</button>
           </div>
         </form>
       </div>

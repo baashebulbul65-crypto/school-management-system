@@ -39,9 +39,9 @@ function Features() {
   return (
     <section className="features">
       <div className="features-head">
-        <div className="eyebrow">Waxa Xarun Ku Sarreeyo</div>
+        <div className="eyebrow">Waxa Kayd Ku Sarreeyo</div>
         <h2>Dhammaan Waxa Aad U Baahan Tahay Hal <span className="highlight">Nidaam</span></h2>
-        <p>Ka bilow diiwaan gelinta ilaa xisaabaadka — Xarun wuxuu isugu keenaa dhammaan qaybaha maamulka dugsigaaga hal meel oo fudud.</p>
+        <p>Ka bilow diiwaan gelinta ilaa xisaabaadka — Kayd wuxuu isugu keenaa dhammaan qaybaha maamulka dugsigaaga hal meel oo fudud.</p>
       </div>
 
       <div className="features-grid">

@@ -1,8 +1,14 @@
 import './StatCard.css';
 
-function StatCard({ label, value, change, changeType = 'up', icon, accent = 'mint' }) {
+function StatCard({ label, value, change, changeType = 'up', icon, accent = 'mint', onClick, actionLabel }) {
+  const Wrapper = onClick ? 'button' : 'div';
+
   return (
-    <div className={`stat-card accent-${accent}`}>
+    <Wrapper
+      className={`stat-card accent-${accent}${onClick ? ' stat-card-clickable' : ''}`}
+      onClick={onClick}
+      type={onClick ? 'button' : undefined}
+    >
       <div className="stat-card-top">
         <div className="stat-icon">{icon}</div>
         {change && (
@@ -18,7 +24,8 @@ function StatCard({ label, value, change, changeType = 'up', icon, accent = 'min
       </div>
       <div className="stat-value">{value}</div>
       <div className="stat-label">{label}</div>
-    </div>
+      {onClick && <div className="stat-card-action">{actionLabel || 'Eeg Faahfaahin →'}</div>}
+    </Wrapper>
   );
 }
 

@@ -230,5 +230,5 @@
 @media (max-width: 640px){
   .spm-grid{ grid-template-columns: 1fr; }
   .spm-header-top{ flex-wrap:wrap; }
-  .spm-qr{ order:3; margin-left:auto; }
+  .spm-qr{ order:3; margin-inline-start:auto; }
 }

@@ -1,0 +1,93 @@
+.qtm-overlay{
+  position:fixed; inset:0;
+  background: rgba(11,31,43,0.55);
+  backdrop-filter: blur(4px);
+  display:flex; align-items:flex-start; justify-content:center;
+  z-index:1000;
+  padding: 40px 20px;
+  overflow-y:auto;
+}
+
+.qtm-modal{
+  width:100%;
+  max-width:480px;
+  background:#fff;
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow: 0 40px 80px -20px rgba(11,31,43,0.4);
+  animation: qtmIn 0.25s ease;
+}
+@keyframes qtmIn{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:translateY(0);} }
+
+.qtm-header{
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+  padding: 24px 26px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.qtm-header h2{
+  font-family:'Poppins', sans-serif;
+  font-weight:700;
+  font-size:17px;
+  color:#fff;
+  margin-bottom:2px;
+}
+.qtm-header p{ font-size:12.5px; color: rgba(255,255,255,0.6); }
+
+.qtm-close{
+  width:32px; height:32px;
+  border-radius:50%;
+  background: rgba(255,255,255,0.12);
+  border:none;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  flex-shrink:0;
+  transition: background 0.2s ease;
+}
+.qtm-close:hover{ background: rgba(255,255,255,0.22); }
+.qtm-close svg{ width:15px; height:15px; stroke:#fff; stroke-width:2.5; }
+
+.qtm-body{
+  padding: 26px;
+}
+
+.qtm-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:16px;
+}
+@media (max-width: 480px){
+  .qtm-grid{ grid-template-columns: 1fr; }
+}
+.qtm-field{ display:flex; flex-direction:column; gap:6px; }
+.qtm-field.full{ grid-column: 1 / -1; }
+.qtm-field label{
+  font-size:12.5px;
+  font-weight:600;
+  color: var(--navy);
+}
+.qtm-field input,
+.qtm-field select{
+  padding:11px 13px;
+  border:1.5px solid var(--line);
+  border-radius:10px;
+  font-size:13.5px;
+  font-family:'Inter', sans-serif;
+  color: var(--navy);
+  outline:none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.qtm-field input:focus,
+.qtm-field select:focus{
+  border-color: var(--mint);
+  box-shadow: 0 0 0 4px var(--mint-pale);
+}
+
+.qtm-footer{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  padding: 18px 26px;
+  border-top:1px solid var(--line);
+}

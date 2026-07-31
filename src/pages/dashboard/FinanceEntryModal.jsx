@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './FinanceEntryModal.css';
 
 const EXPENSE_CATEGORIES = ['Mushahar', 'Adeegyada', 'Qalabka', 'Dhismaha', 'Gaadiid', 'Dayactir', 'Kale'];
 
 function FinanceEntryModal({ isOpen, onClose, onSave, type }) {
+  const { t } = useTranslation();
   const isExpense = type === 'expenses';
 
   const EMPTY_FORM = isExpense
@@ -33,8 +35,8 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type }) {
       <div className="fem-modal">
         <div className="fem-header">
           <div>
-            <h2>{isExpense ? 'Ku Dar Kharash Cusub' : 'Ku Dar Dakhli Cusub'}</h2>
-            <p>Buuxi macluumaadka hoose</p>
+            <h2>{isExpense ? t('finance.entryModal.addExpenseTitle') : t('finance.entryModal.addIncomeTitle')}</h2>
+            <p>{t('finance.entryModal.fillInfo')}</p>
           </div>
           <button className="fem-close" onClick={onClose} type="button">
             <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -46,39 +48,39 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type }) {
             <div className="fem-grid">
               {isExpense ? (
                 <div className="fem-field">
-                  <label>Qaybta (Category) *</label>
+                  <label>{t('finance.entryModal.category')}</label>
                   <select value={form.category} onChange={update('category')}>
-                    {EXPENSE_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                    {EXPENSE_CATEGORIES.map((c) => <option key={c} value={c}>{t(`finance.entryModal.categories.${c}`)}</option>)}
                   </select>
                 </div>
               ) : (
                 <div className="fem-field">
-                  <label>Isha Dakhliga (Source) *</label>
-                  <input type="text" value={form.source} onChange={update('source')} placeholder="Tusaale: Fees Ardayda" required />
+                  <label>{t('finance.entryModal.source')}</label>
+                  <input type="text" value={form.source} onChange={update('source')} placeholder={t('finance.entryModal.sourcePlaceholder')} required />
                 </div>
               )}
 
               <div className="fem-field">
-                <label>Qadarka ($) *</label>
-                <input type="number" value={form.amount} onChange={update('amount')} placeholder="Tusaale: 200" required />
+                <label>{t('finance.entryModal.amount')}</label>
+                <input type="number" value={form.amount} onChange={update('amount')} placeholder={t('finance.entryModal.amountPlaceholder')} required />
               </div>
 
               <div className="fem-field full">
-                <label>Sharraxaad</label>
-                <input type="text" value={form.description} onChange={update('description')} placeholder="Faahfaahin gaaban" />
+                <label>{t('finance.entryModal.description')}</label>
+                <input type="text" value={form.description} onChange={update('description')} placeholder={t('finance.entryModal.descriptionPlaceholder')} />
               </div>
 
               <div className="fem-field">
-                <label>Taariikhda</label>
+                <label>{t('finance.entryModal.date')}</label>
                 <input type="date" value={form.date} onChange={update('date')} />
               </div>
             </div>
           </div>
 
           <div className="fem-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>Jooji</button>
+            <button type="button" className="btn-secondary" onClick={onClose}>{t('common.cancel')}</button>
             <button type="submit" className="btn-primary">
-              {isExpense ? 'Ku Dar Kharashka' : 'Ku Dar Dakhliga'}
+              {isExpense ? t('finance.entryModal.submitExpense') : t('finance.entryModal.submitIncome')}
             </button>
           </div>
         </form>

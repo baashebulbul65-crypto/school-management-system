@@ -1,45 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useTranslation } from 'react-i18next';
+import { useSchoolData } from '../../context/SchoolDataContext';
 import ExamFormModal from './ExamFormModal';
 import '../../styles/dashboard-shared.css';
 import './Exams.css';
 
 const EXAM_TYPES = ['Midterm', 'Final', 'Monthly', 'Quiz', 'Oral', 'Practical'];
-
-const TABS = [
-  { id: 'exams', label: 'Imtixaanada' },
-  { id: 'marks', label: 'Gelinta Buundooyinka' },
-  { id: 'results', label: 'Natiijooyinka & GPA' },
-  { id: 'reportcard', label: 'Report Card' },
-];
-
-const STUDENTS = [
-  { id: 1, name: 'Ismaaciil Cabdi Xasan', className: 'Form 1A' },
-  { id: 2, name: 'Cabdiraxman Yoonis', className: 'Form 1A' },
-  { id: 3, name: 'Xaawo Maxamed Cali', className: 'Form 2A' },
-  { id: 4, name: 'Amiina Cabdulle', className: 'Form 2A' },
-  { id: 5, name: 'Sacdiyo Xasan Nuur', className: 'Form 3A' },
-  { id: 6, name: 'Maxamed Xuseen Cige', className: 'Form 4A' },
-];
-
-const INITIAL_EXAMS = [
-  { id: 1, type: 'Midterm', subject: 'Xisaabta', className: 'Form 1A', date: '2026-07-10', maxMarks: 100 },
-  { id: 2, type: 'Final', subject: 'Ingiriisi', className: 'Form 1A', date: '2026-07-22', maxMarks: 100 },
-  { id: 3, type: 'Quiz', subject: 'Sayniska', className: 'Form 2A', date: '2026-07-14', maxMarks: 20 },
-  { id: 4, type: 'Monthly', subject: 'Xisaabta', className: 'Form 2A', date: '2026-07-05', maxMarks: 50 },
-  { id: 5, type: 'Oral', subject: 'Ingiriisi', className: 'Form 3A', date: '2026-07-08', maxMarks: 30 },
-  { id: 6, type: 'Practical', subject: 'Fiisigis', className: 'Form 4A', date: '2026-07-16', maxMarks: 40 },
-];
-
-const INITIAL_MARKS = {
-  1: { 1: 82, 2: 48 },
-  2: { 1: 74, 2: 55 },
-  3: { 3: 17, 4: 19 },
-  4: { 3: 40, 4: 44 },
-  5: { 5: 24 },
-  6: { 6: 34 },
-};
 
 function gradeFromPercent(pct) {
   if (pct >= 80) return { grade: 'A', gpa: 4.0 };
@@ -54,49 +22,78 @@ function initials(name) {
 }
 
 function Exams() {
-  const [exams, setExams] = useState(INITIAL_EXAMS);
-  const [marks, setMarks] = useState(INITIAL_MARKS);
+  const { t } = useTranslation();
+  const { students, exams, examMarks, addExam, updateExam, removeExam, updateExamMark } = useSchoolData();
   const [activeTab, setActiveTab] = useState('exams');
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingExam, setEditingExam] = useState(null);
   const [selectedExamId, setSelectedExamId] = useState(exams[0]?.id);
   const [resultsClass, setResultsClass] = useState('Form 1A');
-  const [reportStudentId, setReportStudentId] = useState(STUDENTS[0].id);
+  const [reportStudentId, setReportStudentId] = useState(students[0]?.id);
+  // Buundooyinka la qorayo hadda (kama bixin Firestore ilaa "onBlur") — si aan u
+  // yareyno qorista Firestore keystroke kasta, isla markaana looga fogaado in
+  // xogta soo socota (onSnapshot) ay kala jabiso wax qorista socota.
+  const [pendingMarks, setPendingMarks] = useState({});
 
-  const classes = useMemo(() => [...new Set(STUDENTS.map((s) => s.className))], []);
+  const TABS = [
+    { id: 'exams', label: t('exams.tabs.exams') },
+    { id: 'marks', label: t('exams.tabs.marks') },
+    { id: 'results', label: t('exams.tabs.results') },
+    { id: 'reportcard', label: t('exams.tabs.reportcard') },
+  ];
+
+  const classes = useMemo(() => [...new Set(students.map((s) => s.className))], [students]);
+
+  // Ardayda waxaa laga soo shubaa Firestore si aan degdeg ah u socon (async) —
+  // haddii aan la doorbidin arday weli, ama midkii la doortay uu tirtiran yahay,
+  // dib u dooro kan ugu horreeya ee liiska.
+  useEffect(() => {
+    if (students.length && !students.some((s) => s.id === reportStudentId)) {
+      setReportStudentId(students[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [students]);
 
   const openAddModal = () => { setEditingExam(null); setShowFormModal(true); };
   const openEditModal = (exam) => { setEditingExam(exam); setShowFormModal(true); };
 
   const handleSaveExam = (payload, examId) => {
     if (examId) {
-      setExams((prev) => prev.map((e) => (e.id === examId ? { ...e, ...payload } : e)));
+      updateExam(examId, payload);
     } else {
-      const newExam = { ...payload, id: Date.now() };
-      setExams((prev) => [...prev, newExam]);
-      setMarks((prev) => ({ ...prev, [newExam.id]: {} }));
+      addExam(payload);
     }
   };
 
   const handleDeleteExam = (examId, label) => {
-    if (window.confirm(`Ma hubtaa inaad tirtirayso imtixaanka "${label}"?`)) {
-      setExams((prev) => prev.filter((e) => e.id !== examId));
+    if (window.confirm(t('exams.confirmDelete', { label }))) {
+      removeExam(examId);
     }
   };
 
-  const updateMark = (examId, studentId, value) => {
-    setMarks((prev) => ({
-      ...prev,
-      [examId]: { ...prev[examId], [studentId]: value === '' ? '' : Number(value) },
-    }));
+  const markKey = (examId, studentId) => `${examId}_${studentId}`;
+
+  const handleMarkChange = (examId, studentId, value) => {
+    setPendingMarks((prev) => ({ ...prev, [markKey(examId, studentId)]: value }));
+  };
+
+  const commitMark = (examId, studentId) => {
+    const key = markKey(examId, studentId);
+    if (pendingMarks[key] === undefined) return;
+    updateExamMark(examId, studentId, pendingMarks[key]);
+    setPendingMarks((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
   };
 
   const selectedExam = exams.find((e) => e.id === selectedExamId);
-  const studentsForSelectedExam = selectedExam ? STUDENTS.filter((s) => s.className === selectedExam.className) : [];
+  const studentsForSelectedExam = selectedExam ? students.filter((s) => s.className === selectedExam.className) : [];
 
   // ===== RESULTS & GPA CALCULATION (per class) =====
   const classResults = useMemo(() => {
-    const studentsInClass = STUDENTS.filter((s) => s.className === resultsClass);
+    const studentsInClass = students.filter((s) => s.className === resultsClass);
     const examsInClass = exams.filter((e) => e.className === resultsClass);
 
     const rows = studentsInClass.map((student) => {
@@ -105,7 +102,7 @@ function Exams() {
       let totalGpa = 0;
 
       examsInClass.forEach((exam) => {
-        const mark = marks[exam.id]?.[student.id];
+        const mark = examMarks[exam.id]?.[student.id];
         if (mark !== undefined && mark !== '') {
           const pct = (mark / exam.maxMarks) * 100;
           const { gpa } = gradeFromPercent(pct);
@@ -130,13 +127,13 @@ function Exams() {
     }));
 
     return withPosition.sort((a, b) => a.position - b.position);
-  }, [resultsClass, exams, marks]);
+  }, [resultsClass, exams, examMarks, students]);
 
   // ===== REPORT CARD (per student) =====
-  const reportStudent = STUDENTS.find((s) => s.id === reportStudentId);
+  const reportStudent = students.find((s) => s.id === reportStudentId);
   const reportExams = exams.filter((e) => e.className === reportStudent?.className);
   const reportRows = reportExams.map((exam) => {
-    const mark = marks[exam.id]?.[reportStudent.id];
+    const mark = examMarks[exam.id]?.[reportStudent.id];
     const pct = mark !== undefined && mark !== '' ? (mark / exam.maxMarks) * 100 : null;
     const gradeInfo = pct !== null ? gradeFromPercent(pct) : null;
     return { exam, mark, gradeInfo };
@@ -150,46 +147,46 @@ function Exams() {
   const handleExportReportCard = () => {
     const doc = new jsPDF();
     doc.setFontSize(16);
-    doc.text('Xarun — Report Card', 14, 18);
+    doc.text(t('exams.pdf.title'), 14, 18);
     doc.setFontSize(11);
-    doc.text(`Ardayga: ${reportStudent.name}`, 14, 28);
-    doc.text(`Fasalka: ${reportStudent.className}`, 14, 35);
-    doc.text(`GPA Guud: ${reportGpa}`, 14, 42);
-    doc.text(`Booska Fasalka (Position): ${reportPosition || '—'}`, 14, 49);
+    doc.text(`${t('exams.pdf.student')}: ${reportStudent.fullName}`, 14, 28);
+    doc.text(`${t('exams.pdf.class')}: ${reportStudent.className}`, 14, 35);
+    doc.text(`${t('exams.pdf.overallGpa')}: ${reportGpa}`, 14, 42);
+    doc.text(`${t('exams.pdf.position')}: ${reportPosition || '—'}`, 14, 49);
 
     autoTable(doc, {
       startY: 58,
-      head: [['Maadada', 'Nooca', 'Buundooyinka', 'Darajada']],
+      head: [[t('exams.table.subject'), t('exams.table.type'), t('students.profile.table.marks'), t('students.profile.table.grade')]],
       body: reportRows.map((r) => [
         r.exam.subject,
         r.exam.type,
-        r.mark !== undefined && r.mark !== '' ? `${r.mark}/${r.exam.maxMarks}` : 'Lama gelin',
+        r.mark !== undefined && r.mark !== '' ? `${r.mark}/${r.exam.maxMarks}` : t('exams.notEntered'),
         r.gradeInfo ? r.gradeInfo.grade : '—',
       ]),
     });
 
-    doc.save(`report-card-${reportStudent.name.replace(/\s+/g, '-')}.pdf`);
+    doc.save(`report-card-${reportStudent.fullName.replace(/\s+/g, '-')}.pdf`);
   };
 
   return (
     <div>
       <div className="page-header">
         <div className="page-header-text">
-          <h2>Imtixaanada</h2>
-          <p>Maamul imtixaanada, buundooyinka, darajooyinka, GPA, iyo Report Card-yada.</p>
+          <h2>{t('exams.pageTitle')}</h2>
+          <p>{t('exams.pageSubtitle')}</p>
         </div>
         {activeTab === 'exams' && (
           <button className="btn-primary" onClick={openAddModal}>
             <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            Abuur Imtixaan Cusub
+            {t('exams.addNew')}
           </button>
         )}
       </div>
 
       <div className="fin-tabs">
-        {TABS.map((t) => (
-          <button key={t.id} className={`fin-tab ${activeTab === t.id ? 'active' : ''}`} onClick={() => setActiveTab(t.id)}>
-            {t.label}
+        {TABS.map((tb) => (
+          <button key={tb.id} className={`fin-tab ${activeTab === tb.id ? 'active' : ''}`} onClick={() => setActiveTab(tb.id)}>
+            {tb.label}
           </button>
         ))}
       </div>
@@ -200,22 +197,22 @@ function Exams() {
           <div className="data-table-wrap">
             <table className="data-table">
               <thead>
-                <tr><th>Nooca</th><th>Maadada</th><th>Fasalka</th><th>Taariikhda</th><th>Buundooyinka Guud</th><th></th></tr>
+                <tr><th>{t('exams.table.type')}</th><th>{t('exams.table.subject')}</th><th>{t('exams.table.class')}</th><th>{t('exams.table.date')}</th><th>{t('exams.table.maxMarks')}</th><th></th></tr>
               </thead>
               <tbody>
                 {exams.map((e) => (
                   <tr key={e.id}>
-                    <td><span className="badge badge-neutral">{e.type}</span></td>
+                    <td><span className="badge badge-neutral">{t(`exams.types.${e.type}`, e.type)}</span></td>
                     <td className="cell-name">{e.subject}</td>
                     <td>{e.className}</td>
                     <td className="cell-sub">{e.date}</td>
                     <td>{e.maxMarks}</td>
                     <td>
                       <div className="row-actions">
-                        <button className="row-action-btn" title="Wax Ka Beddel" onClick={() => openEditModal(e)}>
+                        <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(e)}>
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
                         </button>
-                        <button className="row-action-btn danger" title="Tirtir" onClick={() => handleDeleteExam(e.id, `${e.type} - ${e.subject}`)}>
+                        <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteExam(e.id, `${e.type} - ${e.subject}`)}>
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
                         </button>
                       </div>
@@ -232,7 +229,7 @@ function Exams() {
       {activeTab === 'marks' && (
         <div className="dash-card">
           <div className="exam-select-row">
-            <label>Dooro Imtixaanka:</label>
+            <label>{t('exams.selectExam')}</label>
             <select value={selectedExamId} onChange={(e) => setSelectedExamId(Number(e.target.value))}>
               {exams.map((e) => (
                 <option key={e.id} value={e.id}>{e.type} — {e.subject} ({e.className})</option>
@@ -242,17 +239,19 @@ function Exams() {
 
           <div className="data-table-wrap">
             <table className="data-table">
-              <thead><tr><th>Ardayga</th><th>Buundooyinka (ka badan {selectedExam?.maxMarks} ma noqon karto)</th><th>Boqolkiiba</th></tr></thead>
+              <thead><tr><th>{t('exams.marksTable.student')}</th><th>{t('exams.marksTable.marks', { max: selectedExam?.maxMarks })}</th><th>{t('exams.marksTable.percent')}</th></tr></thead>
               <tbody>
                 {studentsForSelectedExam.map((s) => {
-                  const mark = marks[selectedExamId]?.[s.id];
+                  const key = markKey(selectedExamId, s.id);
+                  const savedMark = examMarks[selectedExamId]?.[s.id];
+                  const mark = pendingMarks[key] !== undefined ? pendingMarks[key] : savedMark;
                   const pct = mark !== undefined && mark !== '' ? Math.round((mark / selectedExam.maxMarks) * 100) : null;
                   return (
                     <tr key={s.id}>
                       <td>
                         <div className="cell-person">
-                          <div className="cell-avatar">{initials(s.name)}</div>
-                          <span className="cell-name">{s.name}</span>
+                          <div className="cell-avatar">{initials(s.fullName)}</div>
+                          <span className="cell-name">{s.fullName}</span>
                         </div>
                       </td>
                       <td>
@@ -262,7 +261,8 @@ function Exams() {
                           min="0"
                           max={selectedExam?.maxMarks}
                           value={mark ?? ''}
-                          onChange={(ev) => updateMark(selectedExamId, s.id, ev.target.value)}
+                          onChange={(ev) => handleMarkChange(selectedExamId, s.id, ev.target.value)}
+                          onBlur={() => commitMark(selectedExamId, s.id)}
                           placeholder="—"
                         />
                       </td>
@@ -280,7 +280,7 @@ function Exams() {
       {activeTab === 'results' && (
         <div className="dash-card">
           <div className="exam-select-row">
-            <label>Dooro Fasalka:</label>
+            <label>{t('exams.selectClass')}</label>
             <select value={resultsClass} onChange={(e) => setResultsClass(e.target.value)}>
               {classes.map((c) => <option key={c}>{c}</option>)}
             </select>
@@ -289,7 +289,7 @@ function Exams() {
           <div className="data-table-wrap">
             <table className="data-table">
               <thead>
-                <tr><th>Booska</th><th>Ardayga</th><th>Imtixaanada La Qaatay</th><th>Celceliska %</th><th>GPA</th><th>Darajada</th></tr>
+                <tr><th>{t('exams.resultsTable.position')}</th><th>{t('exams.resultsTable.student')}</th><th>{t('exams.resultsTable.examsTaken')}</th><th>{t('exams.resultsTable.average')}</th><th>{t('exams.resultsTable.gpa')}</th><th>{t('exams.resultsTable.grade')}</th></tr>
               </thead>
               <tbody>
                 {classResults.map((r) => (
@@ -299,7 +299,7 @@ function Exams() {
                         #{r.position}
                       </span>
                     </td>
-                    <td className="cell-name">{r.student.name}</td>
+                    <td className="cell-name">{r.student.fullName}</td>
                     <td className="cell-sub">{r.examCount}</td>
                     <td>{r.avgPct ? r.avgPct.toFixed(1) : '0.0'}%</td>
                     <td><span className="badge badge-neutral">{r.avgGpa.toFixed(2)}</span></td>
@@ -320,38 +320,38 @@ function Exams() {
       {activeTab === 'reportcard' && reportStudent && (
         <div className="dash-card">
           <div className="exam-select-row">
-            <label>Dooro Ardayga:</label>
+            <label>{t('exams.selectStudent')}</label>
             <select value={reportStudentId} onChange={(e) => setReportStudentId(Number(e.target.value))}>
-              {STUDENTS.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.className})</option>)}
+              {students.map((s) => <option key={s.id} value={s.id}>{s.fullName} ({s.className})</option>)}
             </select>
             <button className="btn-primary report-export-btn" onClick={handleExportReportCard}>
               <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-              Export PDF
+              {t('exams.exportPdf')}
             </button>
           </div>
 
           <div className="report-card">
             <div className="report-card-header">
-              <div className="report-avatar">{initials(reportStudent.name)}</div>
+              <div className="report-avatar">{initials(reportStudent.fullName)}</div>
               <div>
-                <h3>{reportStudent.name}</h3>
+                <h3>{reportStudent.fullName}</h3>
                 <p>{reportStudent.className}</p>
               </div>
               <div className="report-stats">
-                <div><span>{reportGpa}</span><label>GPA</label></div>
-                <div><span>#{reportPosition || '—'}</span><label>Booska</label></div>
+                <div><span>{reportGpa}</span><label>{t('exams.gpaLabel')}</label></div>
+                <div><span>#{reportPosition || '—'}</span><label>{t('exams.positionLabel')}</label></div>
               </div>
             </div>
 
             <div className="data-table-wrap">
               <table className="data-table">
-                <thead><tr><th>Maadada</th><th>Nooca</th><th>Buundooyinka</th><th>Darajada</th></tr></thead>
+                <thead><tr><th>{t('exams.table.subject')}</th><th>{t('exams.table.type')}</th><th>{t('students.profile.table.marks')}</th><th>{t('students.profile.table.grade')}</th></tr></thead>
                 <tbody>
                   {reportRows.map((r, i) => (
                     <tr key={i}>
                       <td className="cell-name">{r.exam.subject}</td>
-                      <td><span className="badge badge-neutral">{r.exam.type}</span></td>
-                      <td>{r.mark !== undefined && r.mark !== '' ? `${r.mark}/${r.exam.maxMarks}` : 'Lama gelin'}</td>
+                      <td><span className="badge badge-neutral">{t(`exams.types.${r.exam.type}`, r.exam.type)}</span></td>
+                      <td>{r.mark !== undefined && r.mark !== '' ? `${r.mark}/${r.exam.maxMarks}` : t('exams.notEntered')}</td>
                       <td>
                         {r.gradeInfo ? (
                           <span className={`badge ${r.gradeInfo.grade === 'A' ? 'badge-success' : r.gradeInfo.grade === 'F' ? 'badge-danger' : 'badge-warning'}`}>

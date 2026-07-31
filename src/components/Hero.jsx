@@ -8,7 +8,7 @@ function Hero({ onOpenLogin }) {
 
       <div className="eyebrow">Nidaam Maamul Dugsi oo Cloud-Based ah</div>
       <h1>Si Fudud U Maamul Xogta <span className="highlight">Ardayda!</span></h1>
-      <p>Xarun waxa uu kaa caawinayaa inaad qaab fudud u maamusho xogta ardayda, macallimiinta, iyo macluumaadka dugsigaaga — dhammaan hal meel.</p>
+      <p>Kayd waxa uu kaa caawinayaa inaad qaab fudud u maamusho xogta ardayda, macallimiinta, iyo macluumaadka dugsigaaga — dhammaan hal meel.</p>
 
       <button className="hero-cta" onClick={onOpenLogin}>
         Gal Akoonkaaga

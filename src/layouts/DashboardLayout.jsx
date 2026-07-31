@@ -11,6 +11,7 @@ const PAGE_TITLES = {
   '/dashboard/classes': 'Fasallada',
   '/dashboard/subjects': 'Maadooyinka', // <--- Halkan ku dar!
   '/dashboard/attendance': 'Imaanshaha',
+  '/dashboard/messages': 'Fariimaha',
   '/dashboard/finance': 'Lacagta',
   '/dashboard/reports': 'Warbixinno',
   '/dashboard/settings': 'Dejinta',

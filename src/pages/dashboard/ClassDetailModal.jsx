@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import './ClassDetailModal.css';
 
 const SAMPLE_NAMES = [
@@ -32,6 +33,7 @@ function buildRoster(row) {
 }
 
 function ClassDetailModal({ row, monthValue, onClose, onCollected }) {
+  const { t } = useTranslation();
   const [roster, setRoster] = useState([]);
   const [sortBy, setSortBy] = useState('default');
 
@@ -70,18 +72,18 @@ function ClassDetailModal({ row, monthValue, onClose, onCollected }) {
       <div className="cdm-topbar">
         <button className="cdm-back" onClick={onClose}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Noqo
+          {t('finance.classDetail.back')}
         </button>
         <div className="cdm-title">{row.name} <span>{row.shift}</span></div>
         <div className="cdm-toolbar-right">
-          <button className="cdm-icon-btn" title="Print" onClick={handlePrint}>
+          <button className="cdm-icon-btn" title={t('finance.classDetail.print')} onClick={handlePrint}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
           </button>
           <div className="cdm-month">{monthValue}</div>
           <select className="cdm-sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="default">Kala saar...</option>
-            <option value="name">Magaca (A-Z)</option>
-            <option value="status">Xaaladda</option>
+            <option value="default">{t('finance.classDetail.sortDefault')}</option>
+            <option value="name">{t('finance.classDetail.sortName')}</option>
+            <option value="status">{t('finance.classDetail.sortStatus')}</option>
           </select>
         </div>
       </div>
@@ -89,33 +91,33 @@ function ClassDetailModal({ row, monthValue, onClose, onCollected }) {
       <div className="cdm-stats-row">
         <div className="cdm-stat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-          <div><strong>{stats.total}</strong><span>Total</span></div>
+          <div><strong>{stats.total}</strong><span>{t('finance.classDetail.stats.total')}</span></div>
         </div>
         <div className="cdm-stat green">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5"/></svg>
-          <div><strong>{stats.bixiyey}</strong><span>Bixiyey</span></div>
+          <div><strong>{stats.bixiyey}</strong><span>{t('finance.classDetail.stats.paid')}</span></div>
         </div>
         <div className="cdm-stat red">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          <div><strong>{stats.aanBixin}</strong><span>Aan Bixin</span></div>
+          <div><strong>{stats.aanBixin}</strong><span>{t('finance.classDetail.stats.unpaid')}</span></div>
         </div>
         <div className="cdm-stat blue">
           <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/></svg>
-          <div><strong>{stats.bilaash}</strong><span>Bilaash</span></div>
+          <div><strong>{stats.bilaash}</strong><span>{t('finance.classDetail.stats.free')}</span></div>
         </div>
         <div className="cdm-stat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg>
-          <div><strong>${stats.qiimoDhimista}</strong><span>Qiimo Dhimista</span></div>
+          <div><strong>${stats.qiimoDhimista}</strong><span>{t('finance.classDetail.stats.discountValue')}</span></div>
         </div>
         <div className="cdm-stat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>
-          <div><strong>{stats.aBaska}</strong><span>A.Baska</span></div>
+          <div><strong>{stats.aBaska}</strong><span>{t('finance.classDetail.stats.unpaidCount')}</span></div>
         </div>
       </div>
 
       <div className="cdm-table-wrap">
         <table className="cdm-table">
-          <thead><tr><th>Magaca Ardayga</th><th>Fii</th></tr></thead>
+          <thead><tr><th>{t('finance.classDetail.table.student')}</th><th>{t('finance.classDetail.table.fee')}</th></tr></thead>
           <tbody>
             {sortedRoster.map((s, i) => (
               <tr key={s.id}>
@@ -137,7 +139,7 @@ function ClassDetailModal({ row, monthValue, onClose, onCollected }) {
                       <span className="cdm-fii-status unpaid">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12"/></svg>
                       </span>
-                      <button className="cdm-collect-btn" onClick={() => handleCollect(s.id)}>Lacag Qabo</button>
+                      <button className="cdm-collect-btn" onClick={() => handleCollect(s.id)}>{t('finance.classDetail.collect')}</button>
                     </div>
                   )}
                 </td>

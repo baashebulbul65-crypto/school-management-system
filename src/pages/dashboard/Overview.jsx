@@ -1,101 +1,201 @@
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
+import { useSettings } from '../../context/SettingsContext';
+import { useSchoolData } from '../../context/SchoolDataContext';
 import StatCard from '../../components/dashboard/StatCard';
+import AbsentStudentsModal from '../../components/dashboard/AbsentStudentsModal';
+import AttendanceDonutChart from '../../components/dashboard/AttendanceDonutChart';
 import '../../styles/dashboard-shared.css';
 import './Overview.css';
 
-const RECENT_ACTIVITY = [
-  { id: 1, text: 'Arday cusub ayaa la diiwaan geliyay — Fasalka 3A', time: '10 daqiiqo kahor', type: 'success' },
-  { id: 2, text: 'Rasiid lacageed ayaa la sameeyay — $120', time: '45 daqiiqo kahor', type: 'success' },
-  { id: 3, text: 'Macallin cusub ayaa la diiwaan geliyay', time: '2 saacadood kahor', type: 'neutral' },
-  { id: 4, text: 'Imaanshaha maanta lama duubin — Fasalka 2B', time: '3 saacadood kahor', type: 'warning' },
-  { id: 5, text: 'Waalid ayaa fariin ka soo diray dugsiga', time: 'Shalay', time2: '', type: 'neutral' },
-];
+const ACTIVITY_TYPES = ['success', 'success', 'neutral', 'warning', 'neutral'];
 
-const CLASS_SNAPSHOT = [
-  { id: 1, name: 'Form 1A', students: 45, teacher: 'Ustaad Cali Xasan', fill: 90 },
-  { id: 2, name: 'Form 2A', students: 42, teacher: 'Ustaadha Faadumo Nuur', fill: 84 },
-  { id: 3, name: 'Form 3A', students: 38, teacher: 'Ustaad Yoonis Cabdi', fill: 76 },
-  { id: 4, name: 'Form 4A', students: 40, teacher: 'Ustaadha Xamdi Maxamed', fill: 80 },
-];
+function getGreetingKey() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'overview.greeting.morning';
+  if (hour < 17) return 'overview.greeting.afternoon';
+  return 'overview.greeting.evening';
+}
 
 function Overview() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { profile } = useAuth();
+  const { settings } = useSettings();
+  const { students, teachers, classes, subjects, exams, classFees, attendanceToday } = useSchoolData();
+  const [showAbsentModal, setShowAbsentModal] = useState(false);
+
+  const recentActivity = t('overview.recentActivity.items', { returnObjects: true }).map((item, i) => ({
+    ...item,
+    id: i,
+    type: ACTIVITY_TYPES[i] || 'neutral',
+  }));
+
+  const dayNames = t('common.dayNames', { returnObjects: true });
+  const monthNames = t('common.monthNames', { returnObjects: true });
+  const formatTodayLocalized = () => {
+    const d = new Date();
+    return `${dayNames[d.getDay()]}, ${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+  };
+
+  const totalStudents = students.length;
+  const totalTeachers = teachers.length;
+  const totalClasses = classes.length;
+  const totalSubjects = subjects.length;
+  const feeDueStudents = students.filter((s) => s.fee !== 'paid').length;
+
+  const feesCollected = useMemo(() => {
+    const wadar = classFees.reduce((s, r) => s + r.total, 0);
+    const dhimis = classFees.reduce((s, r) => s + r.discount, 0);
+    const baaqi = classFees.reduce((s, r) => s + r.balance, 0);
+    return wadar - dhimis - baaqi;
+  }, [classFees]);
+
+  const attendanceCounts = useMemo(() => {
+    const statusOf = (s) => attendanceToday.students[s.id] || 'present';
+    return {
+      present: students.filter((s) => statusOf(s) === 'present').length,
+      absent: students.filter((s) => statusOf(s) === 'absent').length,
+      leave: students.filter((s) => statusOf(s) === 'leave').length,
+      sick: students.filter((s) => statusOf(s) === 'sick').length,
+    };
+  }, [students, attendanceToday]);
+
+  const attendanceRate = students.length ? Math.round((attendanceCounts.present / students.length) * 100) : 0;
+
+  const absentStudents = useMemo(
+    () =>
+      students
+        .filter((s) => attendanceToday.students[s.id] === 'absent')
+        .map((s) => ({ id: s.id, name: s.fullName, className: s.className })),
+    [students, attendanceToday]
+  );
+
+  const upcomingExamsCount = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return exams.filter((e) => new Date(e.date) >= today).length;
+  }, [exams]);
+
+  const todayLabel = formatTodayLocalized();
+  const adminName = profile?.fullName || t('overview.defaultAdminName');
+
   return (
     <div>
-      <div className="page-header">
-        <div className="page-header-text">
-          <h2>Ku Soo Dhawoow, Xarun 👋</h2>
-          <p>Waa tan sida ay maanta u socoto dugsigaaga.</p>
+      <div className="dash-card overview-header">
+        <div className="overview-header-left">
+          {settings.school.logo ? (
+            <img className="overview-header-logo" src={settings.school.logo} alt={settings.school.name} />
+          ) : (
+            <div className="overview-header-logo overview-header-logo-fallback">
+              {settings.school.name?.slice(0, 2).toUpperCase() || 'XX'}
+            </div>
+          )}
+          <div>
+            <h2>{t(getGreetingKey(), { name: adminName })}</h2>
+            <p>{todayLabel} · {settings.school.name}</p>
+          </div>
         </div>
-        <button className="btn-primary">
-          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          Ku Dar Arday
-        </button>
+
+        <div className="overview-header-actions">
+          <button className="btn-primary" onClick={() => navigate('/dashboard/students', { state: { openAdd: true } })}>
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            {t('overview.actions.addStudent')}
+          </button>
+          <button className="btn-secondary" onClick={() => navigate('/dashboard/teachers', { state: { openAdd: true } })}>
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            {t('overview.actions.addTeacher')}
+          </button>
+          <button className="btn-secondary" onClick={() => navigate('/dashboard/finance', { state: { openCollect: true } })}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            {t('overview.actions.collectFee')}
+          </button>
+        </div>
       </div>
 
       <div className="stats-grid">
         <StatCard
-          label="Wadarta Ardayda"
-          value="1,248"
-          change="+4.2%"
-          changeType="up"
+          label={t('overview.stats.totalStudents')}
+          value={totalStudents}
           accent="mint"
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 14a4 4 0 100-8 4 4 0 000 8zM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>}
         />
         <StatCard
-          label="Macallimiinta"
-          value="64"
-          change="+2"
-          changeType="up"
+          label={t('overview.stats.totalTeachers')}
+          value={totalTeachers}
           accent="navy"
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16v12H8l-4 4V4z"/></svg>}
         />
         <StatCard
-          label="Dakhliga Bishan"
-          value="$18,420"
-          change="+12.5%"
-          changeType="up"
+          label={t('overview.stats.totalClasses')}
+          value={totalClasses}
           accent="gold"
+          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/></svg>}
+        />
+        <StatCard
+          label={t('overview.stats.totalSubjects')}
+          value={totalSubjects}
+          accent="coral"
+          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/><path d="M8 7h8M8 11h8"/></svg>}
+        />
+        <StatCard
+          label={t('overview.stats.feesCollected')}
+          value={`$${feesCollected.toLocaleString()}`}
+          accent="mint"
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>}
         />
         <StatCard
-          label="Imaanshaha Maanta"
-          value="94%"
-          change="-1.8%"
-          changeType="down"
-          accent="coral"
+          label={t('overview.stats.feeDueStudents')}
+          value={feeDueStudents}
+          accent="navy"
+          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>}
+        />
+        <StatCard
+          label={t('overview.stats.attendanceToday')}
+          value={`${attendanceRate}%`}
+          accent="gold"
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>}
+        />
+        <StatCard
+          label={t('overview.stats.upcomingExams')}
+          value={upcomingExamsCount}
+          accent="coral"
+          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>}
+        />
+        <StatCard
+          label={t('overview.stats.absentToday')}
+          value={absentStudents.length}
+          accent="coral"
+          onClick={() => setShowAbsentModal(true)}
+          actionLabel={t('overview.viewDetails')}
+          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M12.5 7a4 4 0 11-8 0 4 4 0 018 0zM17 8l4 4m0-4l-4 4"/></svg>}
         />
       </div>
 
       <div className="overview-grid">
         <div className="dash-card">
           <div className="dash-card-head">
-            <h3>Fasallada</h3>
-            <a href="/dashboard/classes" className="see-all-link">Dhammaan Eeg →</a>
+            <h3>{t('overview.attendanceCard.title')}</h3>
+            <a href="/dashboard/attendance" className="see-all-link">{t('overview.attendanceCard.viewAll')}</a>
           </div>
 
-          <div className="class-snapshot-list">
-            {CLASS_SNAPSHOT.map((c) => (
-              <div className="class-snapshot-row" key={c.id}>
-                <div className="cs-info">
-                  <div className="cs-name">{c.name}</div>
-                  <div className="cs-teacher">{c.teacher}</div>
-                </div>
-                <div className="cs-bar-wrap">
-                  <div className="cs-bar"><div className="cs-bar-fill" style={{ width: `${c.fill}%` }}></div></div>
-                </div>
-                <div className="cs-students">{c.students} Arday</div>
-              </div>
-            ))}
-          </div>
+          <AttendanceDonutChart
+            present={attendanceCounts.present}
+            absent={attendanceCounts.absent}
+            leave={attendanceCounts.leave}
+            sick={attendanceCounts.sick}
+          />
         </div>
 
         <div className="dash-card">
           <div className="dash-card-head">
-            <h3>Dhaqdhaqaaqa Dambe</h3>
+            <h3>{t('overview.recentActivity.title')}</h3>
           </div>
 
           <div className="activity-list">
-            {RECENT_ACTIVITY.map((a) => (
+            {recentActivity.map((a) => (
               <div className="activity-row" key={a.id}>
                 <span className={`activity-dot ${a.type}`}></span>
                 <div className="activity-text">
@@ -107,6 +207,13 @@ function Overview() {
           </div>
         </div>
       </div>
+
+      <AbsentStudentsModal
+        isOpen={showAbsentModal}
+        onClose={() => setShowAbsentModal(false)}
+        date={todayLabel}
+        students={absentStudents}
+      />
     </div>
   );
 }

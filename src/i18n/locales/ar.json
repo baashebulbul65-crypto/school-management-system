@@ -1,0 +1,648 @@
+{
+  "common": {
+    "close": "إغلاق",
+    "cancel": "إلغاء",
+    "save": "حفظ التغييرات",
+    "present": "حاضر",
+    "absent": "غائب",
+    "leave": "إجازة",
+    "sick": "مريض",
+    "late": "متأخر",
+    "students": "الطلاب",
+    "dayNames": ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
+    "monthNames": ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
+    "actions": {
+      "view": "عرض",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "download": "تحميل"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "paid": "تم الدفع",
+      "pending": "قيد الانتظار",
+      "overdue": "متأخر السداد"
+    },
+    "noResults": "لا توجد نتائج.",
+    "loading": "جارٍ التحميل...",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
+    "confirmSoftDelete": "هل أنت متأكد أنك تريد حذف {{name}}؟ ستبقى بياناته في \"العناصر المحذوفة\" لمدة 45 يومًا، ثم تُحذف نهائيًا (ويمكنك استعادته قبل ذلك)."
+  },
+  "overview": {
+    "defaultAdminName": "المدير",
+    "greeting": {
+      "morning": "صباح الخير، {{name}} 👋",
+      "afternoon": "مساء الخير، {{name}} 👋",
+      "evening": "مساء النور، {{name}} 👋"
+    },
+    "actions": {
+      "addStudent": "إضافة طالب جديد",
+      "addTeacher": "إضافة معلم",
+      "collectFee": "تحصيل الرسوم"
+    },
+    "stats": {
+      "totalStudents": "إجمالي الطلاب",
+      "totalTeachers": "إجمالي المعلمين",
+      "totalClasses": "إجمالي الفصول",
+      "totalSubjects": "إجمالي المواد",
+      "feesCollected": "الرسوم المحصلة",
+      "feeDueStudents": "الطلاب ذوو الرصيد المتبقي",
+      "attendanceToday": "الحضور اليوم",
+      "upcomingExams": "الامتحانات القادمة",
+      "absentToday": "الطلاب الغائبون اليوم"
+    },
+    "viewDetails": "عرض التفاصيل ←",
+    "attendanceCard": {
+      "title": "حالة الحضور اليوم",
+      "viewAll": "عرض الكل ←"
+    },
+    "recentActivity": {
+      "title": "النشاط الأخير",
+      "items": [
+        { "text": "تم تسجيل طالب جديد — الفصل 3A", "time": "قبل 10 دقائق" },
+        { "text": "تم إصدار إيصال دفع — $120", "time": "قبل 45 دقيقة" },
+        { "text": "تم تسجيل معلم جديد", "time": "قبل ساعتين" },
+        { "text": "لم يتم تسجيل الحضور اليوم — الفصل 2B", "time": "قبل 3 ساعات" },
+        { "text": "أرسل أحد أولياء الأمور رسالة إلى المدرسة", "time": "أمس" }
+      ]
+    }
+  },
+  "absentModal": {
+    "title": "الطلاب الغائبون اليوم",
+    "subtitle": "{{count}} طالب غائب — {{date}}",
+    "empty": "لا يوجد طلاب غائبون اليوم 🎉"
+  },
+  "donutChart": {
+    "present": "حاضر",
+    "absent": "غائب",
+    "leave": "إجازة",
+    "sick": "مريض",
+    "centerLabel": "الطلاب"
+  },
+  "students": {
+    "pageTitle": "الطلاب",
+    "pageSubtitle": "إدارة جميع الطلاب المسجلين في المدرسة.",
+    "addNew": "إضافة طالب جديد",
+    "searchPlaceholder": "ابحث بالاسم أو الرقم...",
+    "allClasses": "جميع الفصول",
+    "table": { "student": "الطالب", "id": "الرقم", "class": "الفصل", "gender": "الجنس", "status": "الحالة", "fee": "الرسوم" },
+    "emptyNoStudents": "لم يتم تسجيل أي طالب بعد.",
+    "seedDemo": "إضافة بيانات تجريبية (Demo)",
+    "pagination": "عرض {{shown}} من {{total}} طالب",
+    "form": {
+      "editTitle": "تعديل بيانات الطالب",
+      "addTitle": "إضافة طالب جديد",
+      "fillInfo": "يرجى تعبئة المعلومات أدناه",
+      "sections": { "personal": "المعلومات الشخصية", "parent": "معلومات ولي الأمر", "academic": "المعلومات الدراسية", "status": "الحالة" },
+      "fields": {
+        "fullName": "الاسم الكامل *", "gender": "الجنس", "male": "ذكر", "female": "أنثى",
+        "dob": "تاريخ الميلاد", "phone": "رقم الهاتف", "address": "العنوان",
+        "parentName": "اسم ولي الأمر", "relation": "صلة القرابة", "father": "الأب", "mother": "الأم", "otherGuardian": "وصي آخر",
+        "parentPhone": "هاتف ولي الأمر", "parentEmail": "بريد ولي الأمر الإلكتروني",
+        "className": "الفصل *", "section": "الشعبة", "rollNumber": "الرقم التسلسلي", "subjects": "المواد (افصل بينها بفاصلة ,)",
+        "regStatus": "حالة التسجيل", "feeStatus": "حالة الرسوم"
+      },
+      "placeholders": {
+        "fullName": "مثال: إسماعيل عبدي حسن", "phone": "+252 61 ...", "address": "الحي، المدينة",
+        "subjects": "رياضيات، إنجليزي، علوم", "parentEmail": "example@gmail.com"
+      },
+      "submitAdd": "إضافة الطالب"
+    },
+    "profile": {
+      "tabs": { "general": "المعلومات العامة", "academic": "الدراسة", "attendance": "الحضور", "results": "النتائج", "fees": "الرسوم", "behaviour": "السلوك", "documents": "المستندات" },
+      "info": {
+        "fullName": "الاسم الكامل", "studentId": "رقم الطالب", "gender": "الجنس", "dob": "تاريخ الميلاد",
+        "phone": "رقم الهاتف", "address": "العنوان", "parentSection": "معلومات ولي الأمر",
+        "parentName": "اسم ولي الأمر", "relation": "صلة القرابة", "parentPhone": "هاتف ولي الأمر",
+        "className": "الفصل", "section": "الشعبة", "rollNumber": "الرقم التسلسلي", "subjectsSection": "المواد"
+      },
+      "attendanceNote": "اضغط على أي يوم لتغيير حالة الحضور (حاضر/غائب).",
+      "table": { "subject": "المادة", "marks": "الدرجات", "total": "الإجمالي", "grade": "التقدير", "term": "الفصل الدراسي", "amount": "المبلغ", "date": "التاريخ", "status": "الحالة" },
+      "noBehaviour": "لم تتم إضافة أي ملاحظات.",
+      "noDocuments": "لم يتم رفع أي مستندات.",
+      "qrCode": "رمز QR"
+    }
+  },
+  "teachers": {
+    "pageTitle": "المعلمون",
+    "pageSubtitle": "إدارة جميع المعلمين العاملين في المدرسة.",
+    "addNew": "إضافة معلم",
+    "searchPlaceholder": "ابحث بالاسم أو المادة...",
+    "table": { "teacher": "المعلم", "email": "البريد الإلكتروني", "subject": "المادة", "classes": "الفصول", "phone": "الهاتف", "status": "الحالة" },
+    "pagination": "عرض {{shown}} من {{total}} معلم",
+    "form": {
+      "editTitle": "تعديل بيانات المعلم",
+      "addTitle": "إضافة معلم جديد",
+      "fillInfo": "يرجى تعبئة المعلومات أدناه",
+      "errorNoClass": "يجب أن يكون للمعلم فصل واحد على الأقل مسند إليه.",
+      "sections": { "personal": "المعلومات الشخصية", "academic": "المعلومات الدراسية" },
+      "fields": {
+        "fullName": "الاسم الكامل *", "phone": "رقم الهاتف", "email": "البريد الإلكتروني",
+        "qualification": "المؤهل العلمي", "subject": "المادة *", "status": "الحالة",
+        "assignedClasses": "الفصول المسندة * (افصل بينها بفاصلة ,)"
+      },
+      "placeholders": {
+        "fullName": "مثال: علي حسن ورسمي", "phone": "+252 61 ...", "email": "example@kayd.com",
+        "qualification": "مثال: بكالوريوس رياضيات - جامعة...", "subject": "مثال: الرياضيات", "assignedClasses": "مثال: Form 1A, Form 2A"
+      },
+      "hint": "يجب أن يكون لكل معلم فصل واحد على الأقل.",
+      "submitAdd": "إضافة المعلم"
+    },
+    "profile": {
+      "tabs": { "general": "المعلومات العامة", "timetable": "الجدول الزمني", "attendance": "الحضور", "salary": "الراتب", "documents": "المستندات" },
+      "info": { "fullName": "الاسم الكامل", "teacherId": "رقم المعلم", "phone": "رقم الهاتف", "email": "البريد الإلكتروني", "qualification": "المؤهل العلمي", "subject": "المادة" },
+      "assignedClassesSection": "الفصول المسندة",
+      "noAssignedClasses": "لم يتم إسناد أي فصل بعد.",
+      "noTimetable": "لم يتم إعداد أي جدول بعد.",
+      "attendanceNote": "اضغط على أي يوم لتغيير حالة الحضور (حاضر/غائب).",
+      "noAttendance": "لا يوجد سجل حضور بعد.",
+      "noSalary": "لم يتم تسجيل أي راتب بعد.",
+      "noDocuments": "لم يتم رفع أي مستندات.",
+      "table": { "day": "اليوم", "time": "الوقت", "class": "الفصل", "subject": "المادة", "month": "الشهر", "amount": "المبلغ", "payDate": "تاريخ الدفع", "status": "الحالة" }
+    }
+  },
+  "classes": {
+    "pageTitle": "الفصول",
+    "pageSubtitle": "إدارة جميع الفصول وتوزيع المعلمين.",
+    "addNew": "إنشاء فصل جديد",
+    "searchPlaceholder": "ابحث عن فصل...",
+    "openWorkspace": "فتح مساحة العمل",
+    "form": {
+      "editTitle": "تعديل بيانات الفصل",
+      "addTitle": "إنشاء فصل جديد",
+      "fillInfo": "يرجى تعبئة معلومات الفصل الجديد",
+      "errorNoTeacher": "يجب أن يكون للفصل معلم فصل (Class Teacher).",
+      "fields": {
+        "grade": "الصف (Grade) *", "section": "الشعبة (Section)", "room": "القاعة (Room)",
+        "capacity": "السعة (Capacity) *", "classTeacher": "معلم الفصل (Class Teacher) *",
+        "subjects": "المواد (افصل بينها بفاصلة ,)"
+      },
+      "placeholders": {
+        "grade": "مثال: Form 1", "room": "مثال: القاعة 101", "capacity": "مثال: 45",
+        "classTeacher": "مثال: علي حسن ورسمي", "subjects": "رياضيات، إنجليزي، علوم"
+      },
+      "submitAdd": "إنشاء الفصل"
+    }
+  },
+  "subjects": {
+    "pageTitle": "المواد",
+    "pageSubtitle": "إدارة جميع المواد التي تُدرّس في المدرسة.",
+    "addNew": "إضافة مادة جديدة",
+    "searchPlaceholder": "ابحث عن مادة أو رمز...",
+    "table": { "subject": "المادة", "code": "الرمز", "teacher": "المعلم", "credit": "الساعات المعتمدة", "weeklyHours": "الساعات الأسبوعية" },
+    "creditUnit": "ساعة معتمدة",
+    "hoursPerWeek": "ساعة/أسبوع",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف مادة \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "pagination": "عرض {{shown}} من {{total}} مادة",
+    "form": {
+      "editTitle": "تعديل بيانات المادة",
+      "addTitle": "إضافة مادة جديدة",
+      "fillInfo": "يرجى تعبئة معلومات المادة الجديدة",
+      "errorNoTeacher": "يجب أن يكون للمادة معلم مسند إليها.",
+      "fields": { "name": "اسم المادة *", "code": "الرمز *", "teacher": "المعلم *", "credit": "الساعات المعتمدة", "weeklyHours": "الساعات الأسبوعية" },
+      "placeholders": { "name": "مثال: الرياضيات", "code": "مثال: MATH-101", "teacher": "مثال: علي حسن ورسمي", "credit": "مثال: 4", "weeklyHours": "مثال: 5" },
+      "submitAdd": "إضافة المادة"
+    }
+  },
+  "finance": {
+    "pageTitle": "المالية",
+    "pageSubtitle": "إدارة الدخل والمصروفات والحسابات العامة للمدرسة.",
+    "printExport": "تصدير PDF / طباعة",
+    "printPdf": "طباعة / PDF",
+    "tabs": { "accounting": "الحسابات", "expenses": "المصروفات", "income": "الدخل", "salary": "الرواتب", "discounts": "الخصومات والمنح", "documents": "الفواتير والإيصالات" },
+    "toggle": { "byClass": "الفصول", "byFamily": "العائلات" },
+    "summaryCards": { "total": "الإجمالي", "collected": "تم تحصيله", "uncollected": "لم يُحصّل", "discountValue": "قيمة الخصم", "remaining": "المتبقي", "expenses": "المصروفات" },
+    "statsBox": { "classes": "الفصول", "families": "العائلات", "totalStudents": "الطلاب", "paymentsCount": "الدفعات", "discountRecipients": "مستفيدو الخصم", "freeCount": "مجاني", "unpaidCount": "غير مدفوع" },
+    "allClasses": "الفصول",
+    "collectFee": "تحصيل الرسوم",
+    "donutChart": {
+      "title": "الحالة المالية العامة",
+      "paid": "تم الدفع",
+      "due": "الرصيد المتبقي",
+      "discount": "الخصم",
+      "centerLabel": "الإجمالي الكلي"
+    },
+    "table": { "no": "الرقم", "class": "الفصل", "family": "العائلة", "students": "الطلاب", "total": "الإجمالي ($)", "discount": "الخصم ($)", "balance": "الرصيد ($)", "totalRow": "الإجمالي" },
+    "expenses": {
+      "addNew": "إضافة مصروف",
+      "table": { "category": "النوع", "description": "الوصف", "amount": "المبلغ", "date": "التاريخ" },
+      "items": [
+        { "category": "رواتب", "description": "رواتب المعلمين - يونيو" },
+        { "category": "خدمات", "description": "الكهرباء والماء" },
+        { "category": "معدات", "description": "أدوات الفصل (سبورة، كراسي)" },
+        { "category": "مبنى", "description": "صيانة القاعة 101" },
+        { "category": "خدمات", "description": "إنترنت الشهر" }
+      ]
+    },
+    "income": {
+      "addNew": "إضافة دخل",
+      "table": { "source": "المصدر", "description": "الوصف", "amount": "المبلغ", "date": "التاريخ" },
+      "items": [
+        { "source": "رسوم الطلاب", "description": "رسوم الفصل الدراسي الثاني" },
+        { "source": "تبرعات", "description": "تبرع من مجموعة إرمان" },
+        { "source": "رسوم الطلاب", "description": "رسوم الفصل الدراسي الثاني - دفعة إضافية" }
+      ]
+    },
+    "salary": {
+      "table": { "staff": "الموظف", "role": "الدور", "amount": "المبلغ", "month": "الشهر", "status": "الحالة" },
+      "items": [
+        { "staffName": "علي حسن ورسمي", "role": "معلم - رياضيات", "month": "يوليو 2026" },
+        { "staffName": "فاطمة نور جيجي", "role": "معلمة - إنجليزي", "month": "يوليو 2026" },
+        { "staffName": "حسن عبدُلي نور", "role": "المدير العام", "month": "يوليو 2026" },
+        { "staffName": "زينب علي ورسمي", "role": "محاسبة", "month": "يوليو 2026" }
+      ]
+    },
+    "discounts": {
+      "table": { "student": "الطالب", "type": "النوع", "amount": "المبلغ", "reason": "السبب" },
+      "scholarship": "منحة دراسية",
+      "discount": "خصم",
+      "items": [
+        { "student": "عبد الرحمن يونس", "reason": "عدة إخوة في نفس المدرسة" },
+        { "student": "سعدية حسن نور", "reason": "منحة دراسية - تفوق أكاديمي" }
+      ]
+    },
+    "documents": {
+      "table": { "no": "الرقم", "type": "النوع", "party": "الجهة", "amount": "المبلغ", "date": "التاريخ" },
+      "invoice": "فاتورة",
+      "receipt": "إيصال",
+      "items": [
+        { "party": "إسماعيل عبدي حسن" },
+        { "party": "حواء محمد علي" },
+        { "party": "أمينة عبدُلي" }
+      ]
+    },
+    "entryModal": {
+      "addExpenseTitle": "إضافة مصروف جديد",
+      "addIncomeTitle": "إضافة دخل جديد",
+      "fillInfo": "يرجى تعبئة المعلومات أدناه",
+      "category": "الفئة *",
+      "categories": { "Mushahar": "رواتب", "Adeegyada": "خدمات", "Qalabka": "معدات", "Dhismaha": "مبنى", "Gaadiid": "نقل", "Dayactir": "صيانة", "Kale": "أخرى" },
+      "source": "مصدر الدخل *",
+      "sourcePlaceholder": "مثال: رسوم الطلاب",
+      "amount": "المبلغ ($) *",
+      "amountPlaceholder": "مثال: 200",
+      "description": "الوصف",
+      "descriptionPlaceholder": "وصف مختصر",
+      "date": "التاريخ",
+      "submitExpense": "إضافة المصروف",
+      "submitIncome": "إضافة الدخل"
+    },
+    "collectModal": {
+      "title": "تحصيل الرسوم",
+      "subtitle": "سجّل المبلغ الذي تم تحصيله",
+      "classOrFamily": "الفصل / العائلة *",
+      "balanceLabel": "الرصيد",
+      "amount": "المبلغ ($) *",
+      "amountPlaceholder": "مثال: 50",
+      "method": "طريقة الدفع",
+      "methods": { "Cash": "نقدًا", "Bangi (Bank)": "بنك (Bank)", "EVC/Zaad (Mobile Money)": "EVC/Zaad (محفظة إلكترونية)" },
+      "date": "التاريخ",
+      "confirm": "تأكيد التحصيل"
+    },
+    "classDetail": {
+      "back": "رجوع",
+      "print": "طباعة",
+      "sortDefault": "ترتيب حسب...",
+      "sortName": "الاسم (أ-ي)",
+      "sortStatus": "الحالة",
+      "stats": { "total": "الإجمالي", "paid": "تم الدفع", "unpaid": "لم يُدفع", "free": "مجاني", "discountValue": "قيمة الخصم", "unpaidCount": "غير مدفوع" },
+      "table": { "student": "اسم الطالب", "fee": "الرسوم" },
+      "collect": "تحصيل"
+    }
+  },
+  "exams": {
+    "pageTitle": "الامتحانات",
+    "pageSubtitle": "إدارة الامتحانات والدرجات والتقديرات ومعدل GPA وبطاقات التقرير.",
+    "addNew": "إنشاء امتحان جديد",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف امتحان \"{{label}}\"؟",
+    "types": { "Midterm": "منتصف الفصل", "Final": "نهائي", "Monthly": "شهري", "Quiz": "اختبار قصير", "Oral": "شفهي", "Practical": "عملي" },
+    "tabs": { "exams": "الامتحانات", "marks": "إدخال الدرجات", "results": "النتائج و GPA", "reportcard": "بطاقة التقرير" },
+    "table": { "type": "النوع", "subject": "المادة", "class": "الفصل", "date": "التاريخ", "maxMarks": "الدرجة الكلية" },
+    "selectExam": "اختر الامتحان:",
+    "marksNotMoreThan": "الدرجات (لا يمكن أن تتجاوز {{max}})",
+    "marksTable": { "student": "الطالب", "marks": "الدرجات (لا يمكن أن تتجاوز {{max}})", "percent": "النسبة المئوية" },
+    "notEntered": "لم تُدخل",
+    "selectClass": "اختر الفصل:",
+    "resultsTable": { "position": "الترتيب", "student": "الطالب", "examsTaken": "الامتحانات المؤداة", "average": "المعدل %", "gpa": "GPA", "grade": "التقدير" },
+    "selectStudent": "اختر الطالب:",
+    "exportPdf": "تصدير PDF",
+    "gpaLabel": "GPA",
+    "positionLabel": "الترتيب",
+    "form": {
+      "editTitle": "تعديل بيانات الامتحان",
+      "addTitle": "إنشاء امتحان جديد",
+      "fillInfo": "يرجى تعبئة المعلومات أدناه",
+      "fields": { "type": "نوع الامتحان *", "subject": "المادة *", "className": "الفصل *", "date": "التاريخ", "maxMarks": "الدرجة الكلية (Max Marks) *" },
+      "placeholders": { "subject": "مثال: الرياضيات", "className": "مثال: Form 1A", "maxMarks": "مثال: 100" },
+      "submitAdd": "إنشاء الامتحان"
+    },
+    "pdf": {
+      "title": "Kayd — بطاقة التقرير",
+      "student": "الطالب",
+      "class": "الفصل",
+      "overallGpa": "المعدل التراكمي GPA",
+      "position": "الترتيب في الفصل (Position)"
+    }
+  },
+  "attendance": {
+    "pageTitle": "الحضور",
+    "pageSubtitle": "تتبّع وإدارة حضور الطلاب والمعلمين والموظفين.",
+    "categories": { "students": "الطلاب", "teachers": "المعلمون", "staff": "الموظفون" },
+    "periods": { "daily": "يومي", "weekly": "أسبوعي", "monthly": "شهري", "yearly": "سنوي" },
+    "today": "اليوم",
+    "total": "الإجمالي",
+    "markingTitle": "تسجيل الحضور — {{date}}",
+    "noteStudents": "اضغط على الحالة المناسبة لكل طالب.",
+    "noteOthers": "اضغط على الحالة للتبديل بينها: حاضر ← غائب ← متأخر",
+    "table": { "name": "الاسم", "details": "التفاصيل", "status": "الحالة" },
+    "reportsTitle": "التقارير",
+    "attendanceRate": "% معدل الحضور"
+  },
+  "classWorkspace": {
+    "notFound": "لم يتم العثور على هذا الفصل.",
+    "backToClasses": "العودة إلى الفصول",
+    "title": "مساحة العمل — {{grade}} {{section}}",
+    "classTeacherLabel": "معلم الفصل",
+    "tabs": { "roster": "الطلاب", "attendance": "الحضور", "grades": "الدرجات", "quran": "القرآن", "quranTargets": "هدف القرآن", "schedule": "الجدول" },
+    "roster": {
+      "title": "طلاب الفصل",
+      "countBadge": "{{count}} طالب",
+      "table": { "student": "الطالب", "id": "الرقم", "status": "الحالة" },
+      "empty": "لا يوجد طلاب في هذا الفصل بعد."
+    },
+    "attendance": {
+      "title": "حضور اليوم",
+      "table": { "student": "الطالب", "status": "الحالة" },
+      "empty": "لا يوجد طلاب في هذا الفصل بعد."
+    },
+    "grades": {
+      "title": "الدرجات / الامتحانات",
+      "empty": "لم يتم تسجيل أي امتحان لهذا الفصل بعد.",
+      "selectExam": "اختر الامتحان:",
+      "marksNotMoreThan": "الدرجات (بحد أقصى {{max}})",
+      "table": { "student": "الطالب", "percent": "النسبة المئوية" }
+    },
+    "quran": {
+      "title": "متابعة حفظ القرآن اليوم",
+      "surahLabel": "السورة/الجزء اليوم (اختياري):",
+      "surahPlaceholder": "مثال: سورة البقرة، آية 1-20",
+      "table": { "student": "الطالب", "currentStatus": "الحالة الحالية", "mark": "التقييم" },
+      "knew": "حفظ",
+      "didNotKnow": "لم يحفظ",
+      "notMarkedYet": "لم يُقيَّم بعد",
+      "empty": "لا يوجد طلاب في هذا الفصل بعد."
+    },
+    "quranTargets": {
+      "title": "هدف القرآن",
+      "currentPositionLabel": "أين وصل اليوم",
+      "currentPositionPlaceholder": "مثال: الجزء 1",
+      "save": "حفظ",
+      "table": { "student": "الطالب", "currentPosition": "أين وصل", "target": "الهدف", "deadline": "التاريخ", "status": "الحالة" },
+      "noTarget": "لم يُحدد هدف",
+      "setTarget": "تحديد الهدف",
+      "editTarget": "تعديل الهدف",
+      "deadlineLabel": "تاريخ الهدف: {{date}}",
+      "pendingUntilLabel": "قيد الانتظار حتى {{date}}",
+      "lockedTooltip": "لا يمكنك تحديد هدف جديد حتى تجيب على الهدف الحالي أو حتى يصل تاريخه {{date}}",
+      "status": { "pending": "قيد الانتظار", "reached": "تم تحقيقه", "missed": "لم يتحقق" },
+      "daysLeftLabel": "{{count}} يومًا متبقيًا",
+      "empty": "لا يوجد طلاب في هذا الفصل بعد.",
+      "promptTitle": "الطالب {{name}} — هل حقق هدفه \"{{target}}\"؟",
+      "promptReached": "صحيح",
+      "promptMissed": "خطأ",
+      "modal": {
+        "title": "تحديد هدف القرآن",
+        "targetLabel": "الهدف المطلوب",
+        "targetPlaceholder": "مثال: الجزء 3",
+        "startDateLabel": "تاريخ البداية",
+        "deadlineLabel": "تاريخ الهدف",
+        "save": "حفظ الهدف",
+        "cancel": "إلغاء"
+      }
+    },
+    "schedule": {
+      "title": "جدول اليوم — {{day}}",
+      "empty": "لا توجد حصص اليوم ({{day}}) لهذا الفصل."
+    }
+  },
+  "settings": {
+    "pageTitle": "الإعدادات",
+    "pageSubtitle": "إدارة بيانات المدرسة والرسوم والسنة الدراسية وحسابك.",
+    "savedToast": "تم حفظ التغيير",
+    "tabs": { "school": "بيانات المدرسة", "fees": "الرسوم (Fees)", "academic": "السنة الدراسية", "notifications": "الإشعارات", "account": "حسابي" },
+    "school": {
+      "sectionTitle": "المعلومات العامة للمدرسة",
+      "sectionDesc": "اسم المدرسة هذا سيظهر في الشريط الجانبي لكامل لوحة التحكم.",
+      "defaultName": "اسم المدرسة",
+      "changeLogo": "تغيير شعار المدرسة",
+      "uploadLogo": "رفع شعار المدرسة",
+      "uploading": "جارٍ الرفع...",
+      "removeLogo": "إزالة الشعار",
+      "logoHint": "PNG أو JPG أو WEBP أو SVG — بحد أقصى 500 كيلوبايت.",
+      "fields": { "name": "اسم المدرسة *", "code": "رمز المدرسة (School Code)", "phone": "رقم الهاتف", "address": "العنوان", "email": "البريد الإلكتروني للمدرسة" },
+      "langCurrencyTitle": "اللغة والعملة",
+      "systemLanguage": "لغة النظام",
+      "currency": "العملة المستخدمة",
+      "save": "حفظ التغييرات"
+    },
+    "fees": {
+      "sectionTitle": "رسوم كل صف",
+      "sectionDesc": "غيّر الرسوم الافتراضية لكل صف — هذا التغيير سيؤثر على حسابات الرسوم الجديدة.",
+      "table": { "class": "الصف", "price": "الرسوم ($)" },
+      "newGradeNamePlaceholder": "اسم الصف الجديد (مثال: Form 5)",
+      "newGradeAmountPlaceholder": "الرسوم ($)",
+      "add": "إضافة"
+    },
+    "academic": {
+      "sectionTitle": "السنة الدراسية",
+      "sectionDesc": "حدد تاريخ بداية ونهاية السنة الدراسية الحالية.",
+      "startDate": "بداية السنة",
+      "endDate": "نهاية السنة"
+    },
+    "notifications": {
+      "sectionTitle": "تفضيلات الإشعارات",
+      "sectionDesc": "اختر أنواع الإشعارات التي تريد أن يرسلها لك النظام.",
+      "items": {
+        "feeReminders": { "label": "تذكير بالرسوم", "desc": "إشعار عند تأخر دفعة أو اقتراب موعد استحقاقها." },
+        "attendanceAlerts": { "label": "تنبيه الحضور", "desc": "إشعار عند انخفاض معدل حضور أحد الفصول." },
+        "examResults": { "label": "نتائج الامتحانات", "desc": "إشعار عند إدخال الدرجات." },
+        "emailDigest": { "label": "ملخص أسبوعي (بريد إلكتروني)", "desc": "احصل على ملخص أسبوعي عام عبر البريد الإلكتروني." }
+      }
+    },
+    "account": {
+      "sectionTitle": "بيانات حسابي",
+      "defaultUser": "مستخدم",
+      "roleTeacher": "معلم",
+      "roleOwner": "مدير / مالك",
+      "email": "البريد الإلكتروني",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور"
+    }
+  },
+  "parentPortal": {
+    "brandSuffix": "بوابة أولياء الأمور",
+    "welcome": "مرحبًا بك، {{name}}",
+    "defaultParentName": "ولي الأمر",
+    "logout": "تسجيل الخروج",
+    "loading": "جارٍ التحميل...",
+    "noChildTitle": "لم يتم ربط أي ابن بهذا الحساب بعد",
+    "noChildDesc": "أدخل رقم تسجيل ابنك (مثال: STU-1042) لربطه بهذا الحساب.",
+    "addChildPlaceholder": "رقم تسجيل الابن (مثال: STU-1043)",
+    "addChildSubmit": "إضافة",
+    "addChildSubmitting": "جارٍ الإضافة...",
+    "addChildCancel": "إلغاء",
+    "addChildLink": "+ إضافة ابن آخر",
+    "addChildNotFound": "لم يتم العثور على رقم التسجيل هذا في المدرسة — يرجى التحقق من الرقم.",
+    "addChildGenericError": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "attendanceRateLabel": "معدل الحضور",
+    "tabs": { "attendance": "الحضور", "fees": "الرسوم", "results": "النتائج", "messages": "الرسائل", "behaviour": "السلوك", "examdates": "مواعيد الامتحانات", "quran": "القرآن" },
+    "attendance": { "title": "الحضور", "empty": "لم يتم تسجيل بيانات حضور لهذا الابن بعد." },
+    "quran": {
+      "progressTitle": "الحفظ اليومي للقرآن",
+      "progressEmpty": "لا توجد بيانات حفظ مسجلة لهذا الابن بعد.",
+      "knew": "أتقنه",
+      "didNotKnow": "لم يتقنه",
+      "targetTitle": "هدف القرآن",
+      "targetEmpty": "لم يُحدد هدف لهذا الابن بعد.",
+      "currentPositionLabel": "أين وصل",
+      "targetLabel": "الهدف",
+      "deadlineLabel": "تاريخ الهدف",
+      "status": { "pending": "قيد الانتظار", "reached": "تم تحقيقه", "missed": "لم يتحقق" }
+    },
+    "fees": { "title": "الرسوم", "empty": "لا توجد بيانات رسوم.", "table": { "term": "الفصل الدراسي", "amount": "المبلغ", "date": "التاريخ", "status": "الحالة" } },
+    "results": { "title": "النتائج", "empty": "لم يتم تسجيل أي امتحان لهذا الفصل بعد.", "table": { "subject": "المادة", "type": "النوع", "marks": "الدرجات", "grade": "التقدير" }, "notEntered": "لم تُدخل" },
+    "messages": { "title": "الرسائل", "empty": "لا توجد رسائل بعد — أرسل رسالتك الأولى إلى المعلم أو الإدارة.", "composePlaceholder": "اكتب رسالتك..." },
+    "behaviour": { "title": "السلوك", "empty": "لم تتم إضافة أي ملاحظات." },
+    "examdates": { "title": "مواعيد الامتحانات", "empty": "لا توجد امتحانات قادمة لهذا الفصل.", "table": { "subject": "المادة", "type": "النوع", "date": "التاريخ" } },
+    "notifications": { "title": "الإشعارات", "empty": "لا توجد إشعارات.", "markAllRead": "تحديد الكل كمقروء" }
+  },
+  "messages": {
+    "pageTitle": "الرسائل",
+    "pageSubtitle": "تواصل مع أولياء أمور الطلاب مباشرة",
+    "searchPlaceholder": "ابحث عن طالب...",
+    "noStudents": "لم يتم العثور على طلاب",
+    "noMessagesYet": "لا توجد رسائل بعد",
+    "selectStudent": "اختر طالبًا لعرض الرسائل",
+    "startConversation": "ابدأ المحادثة — أرسل أول رسالة",
+    "composePlaceholder": "اكتب رسالتك..."
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "subtitle": "تابع جميع الأحداث المهمة في النظام.",
+    "empty": "لا توجد إشعارات.",
+    "emptyFiltered": "لا توجد إشعارات في هذا القسم.",
+    "markAllRead": "تحديد الكل كمقروء",
+    "viewAll": "عرض جميع الإشعارات",
+    "delete": "حذف",
+    "filters": {
+      "all": "الكل",
+      "unread": "غير مقروء",
+      "fee": "الرسوم",
+      "absent": "الحضور",
+      "exam": "الامتحانات",
+      "message": "الرسائل",
+      "system": "النظام"
+    },
+    "types": {
+      "fee": { "label": "الرسوم", "title": "رسوم مستحقة" },
+      "absent": { "label": "الحضور", "title": "طالب غائب" },
+      "exam": { "label": "الامتحانات", "title": "الامتحانات" },
+      "message": { "label": "الرسائل", "title": "رسالة جديدة" },
+      "system": { "label": "النظام", "title": "النظام" }
+    },
+    "feeMessage": "{{name}} ({{className}}) لديه رسوم مستحقة.",
+    "absentMessage": "{{name}} ({{className}}) غائب اليوم."
+  },
+  "trash": {
+    "title": "العناصر المحذوفة",
+    "subtitle": "الطلاب الذين تم حذفهم خلال آخر 45 يومًا — استعادة أو حذف نهائي.",
+    "empty": "لا توجد عناصر محذوفة.",
+    "table": {
+      "name": "الاسم",
+      "className": "الفصل",
+      "deletedDate": "تاريخ الحذف",
+      "daysLeft": "الأيام المتبقية"
+    },
+    "daysLeftLabel": "{{count}} يومًا متبقيًا",
+    "expired": "سيُحذف قريبًا",
+    "restore": "استعادة",
+    "deletePermanently": "حذف نهائي",
+    "confirmPermanentDelete": "هل أنت متأكد أنك تريد حذف {{name}} نهائيًا؟ لا يمكن التراجع عن هذا الإجراء."
+  },
+  "login": {
+    "title": "تسجيل الدخول",
+    "registerTitle": "إنشاء حساب",
+    "errors": {
+      "invalidCredential": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+      "userNotFound": "لم يتم العثور على حساب بهذه البيانات.",
+      "wrongPassword": "كلمة المرور غير صحيحة.",
+      "tooManyRequests": "عدد كبير من المحاولات الخاطئة. يرجى الانتظار قليلاً.",
+      "emailInUse": "هذا الحساب (رمز المدرسة + رقم التسجيل) مسجل مسبقًا — يرجى تسجيل الدخول بدلاً من إنشاء حساب جديد.",
+      "weakPassword": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.",
+      "wrongRole": "هذا الحساب لا يطابق الدور الذي اخترته (طالب/ولي أمر).",
+      "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+      "passwordMismatch": "كلمة المرور وتأكيد كلمة المرور غير متطابقتين."
+    },
+    "staff": {
+      "emailLabel": "البريد الإلكتروني (G-Mail)",
+      "emailPlaceholder": "example@gmail.com",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "••••••••••••",
+      "forgotLink": "هل نسيت كلمة المرور؟",
+      "submit": "دخول",
+      "submitLoading": "جارٍ التحميل...",
+      "or": "أو",
+      "switchToStudent": "أنا طالب / ولي أمر"
+    },
+    "student": {
+      "roleArday": "طالب",
+      "roleWaalid": "ولي أمر",
+      "roleArdayLabel": "طالب",
+      "roleWaalidLabel": "ولي أمر",
+      "schoolCodeLabel": "رمز المدرسة (School Code)",
+      "schoolCodePlaceholder": "مثال: XRN-2026",
+      "diiwaanIdLabel": "رقم التسجيل ({{role}})",
+      "diiwaanIdPlaceholder": "123456",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "••••",
+      "submit": "دخول",
+      "submitLoading": "جارٍ التحميل...",
+      "noAccountLink": "ليس لديك حساب؟ أنشئ حسابًا",
+      "or": "أو",
+      "switchToStaff": "أنا موظف"
+    },
+    "register": {
+      "fullNameLabel": "الاسم الكامل",
+      "fullNamePlaceholder": "مثال: حواء محمد علي",
+      "schoolCodeLabel": "رمز المدرسة (School Code)",
+      "schoolCodePlaceholder": "مثال: XRN-2026",
+      "diiwaanIdLabel": "رقم التسجيل ({{role}})",
+      "diiwaanIdRoleArday": "أنت",
+      "diiwaanIdRoleWaalid": "أول ابن لك",
+      "diiwaanIdPlaceholder": "مثال: STU-1042",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "••••••••",
+      "confirmPasswordLabel": "تأكيد كلمة المرور",
+      "submit": "إنشاء حساب",
+      "submitLoading": "جارٍ التحميل...",
+      "alreadyHaveAccount": "هل لديك حساب مسبقًا؟ تسجيل الدخول"
+    }
+  },
+  "forgotPassword": {
+    "title": "هل نسيت كلمة المرور؟",
+    "note": "أدخل البريد الإلكتروني الخاص بحسابك، وسنرسل لك رابطًا لإعادة تعيين كلمة المرور.",
+    "emailLabel": "البريد الإلكتروني (G-Mail)",
+    "emailPlaceholder": "example@gmail.com",
+    "submit": "إرسال رابط إعادة التعيين",
+    "submitLoading": "جارٍ التحميل...",
+    "successPrefix": "لقد أرسلنا بريدًا إلكترونيًا إلى",
+    "successSuffix": "يحتوي على رابط لإعادة تعيين كلمة المرور. يرجى التحقق من صندوق الوارد (ومجلد الرسائل غير المرغوب فيها).",
+    "errors": {
+      "invalidEmail": "هذا البريد الإلكتروني غير مقبول، يرجى التحقق منه.",
+      "userNotFound": "لم يتم العثور على حساب بهذا البريد الإلكتروني.",
+      "tooManyRequests": "عدد كبير من المحاولات الخاطئة. يرجى الانتظار قليلاً.",
+      "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+    }
+  }
+}

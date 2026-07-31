@@ -61,7 +61,7 @@
   gap: 4px;
   overflow-x: auto;
   border-bottom: 1px solid var(--line);
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   scrollbar-width: none;
 }
 .fin-tabs::-webkit-scrollbar{ display: none; }
@@ -69,16 +69,17 @@
   white-space: nowrap;
   background: none;
   border: none;
-  padding: 12px 18px;
+  padding: 12px 20px;
   font-size: 13.5px;
   font-weight: 600;
   color: var(--grey-text);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  border-radius: 8px 8px 0 0;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
-.fin-tab:hover{ color: var(--navy); }
-.fin-tab.active{ color: var(--navy); border-bottom-color: var(--mint); }
+.fin-tab:hover{ color: var(--navy); background: #F7F9FA; }
+.fin-tab.active{ color: var(--navy); border-bottom-color: var(--mint); font-weight: 700; }
 
 .fin-card-title{
   font-family: 'Poppins', sans-serif;
@@ -91,18 +92,18 @@
 .fin-card-toolbar{
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 /* Expense category breakdown bars */
 .fin-category-list{
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 .fin-category-row{
   display: grid;
-  grid-template-columns: 120px 1fr 70px;
+  grid-template-columns: 120px 1fr 80px;
   align-items: center;
   gap: 14px;
 }
@@ -123,10 +124,11 @@
   border-radius: 999px;
 }
 .fin-category-amount{
-  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
   font-weight: 700;
   color: var(--navy);
-  text-align: right;
+  text-align: end;
 }
 
 @media (max-width: 640px){
@@ -145,7 +147,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 22px;
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -192,62 +194,78 @@
 .acc-summary-row{
   display: grid;
   grid-template-columns: 2.2fr 1fr;
-  gap: 16px;
-  margin-bottom: 18px;
+  gap: 20px;
+  margin-bottom: 24px;
   align-items: stretch;
 }
 .acc-summary-cards{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 16px;
 }
 .acc-card{
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 14px 16px;
+  border-radius: 16px;
+  padding: 18px 20px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  box-shadow: 0 2px 8px rgba(11,31,43,0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.acc-card:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px -16px rgba(11,31,43,0.18);
 }
 .acc-card-icon{
-  width: 38px; height: 38px;
-  border-radius: 10px;
+  width: 44px; height: 44px;
+  border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.acc-card-icon svg{ width: 18px; height: 18px; stroke: currentColor; }
-.acc-card-icon.blue{ background: #E8F1FE; color: #2563EB; }
+.acc-card-icon svg{ width: 20px; height: 20px; stroke: currentColor; }
+.acc-card-icon.blue{ background: #EAF0F4; color: var(--navy); }
 .acc-card-icon.green{ background: var(--mint-pale); color: var(--mint-dark); }
-.acc-card-icon.red{ background: #FDECEA; color: #C0392B; }
-.acc-card-icon.teal{ background: #E6F7F6; color: #0D9488; }
+.acc-card-icon.red{ background: #FDECEA; color: #E5533F; }
+.acc-card-icon.teal{ background: #FFF7E0; color: #C99A1F; }
 .acc-card-icon.orange{ background: #FFF1E0; color: #D97706; }
 .acc-card-icon.purple{ background: #F3E8FD; color: #9333EA; }
 
-.acc-card-label{ font-size: 11.5px; color: var(--grey-text); font-weight: 600; margin-bottom: 3px; }
-.acc-card-value{ font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 15px; color: var(--navy); }
-.acc-card-value span{ font-size: 11px; font-weight: 500; color: var(--grey-text); }
+.acc-card-label{ font-size: 12px; color: var(--grey-text); font-weight: 600; margin-bottom: 5px; }
+.acc-card-value{ font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 21px; color: var(--navy); letter-spacing: -0.3px; }
+.acc-card-value span{ font-size: 12px; font-weight: 600; color: var(--grey-text); letter-spacing: 0; }
 .acc-card-value.success{ color: var(--mint-dark); }
-.acc-card-value.danger{ color: #C0392B; }
+.acc-card-value.danger{ color: #E5533F; }
+
+.acc-side-col{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.acc-chart-card{ display: flex; flex-direction: column; flex: 1; box-shadow: 0 2px 8px rgba(11,31,43,0.04); }
+.acc-chart-card .dash-card-head{ margin-bottom: 14px; }
 
 .acc-stats-box{
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 18px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px 10px;
+  gap: 16px 12px;
+  box-shadow: 0 2px 8px rgba(11,31,43,0.04);
+  transition: box-shadow 0.2s ease;
 }
-.acc-stat{ display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; }
-.acc-stat strong{ font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 18px; color: var(--navy); }
-.acc-stat span{ font-size: 10.5px; color: var(--grey-text); font-weight: 600; }
+.acc-stat{ display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; }
+.acc-stat strong{ font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 20px; color: var(--navy); }
+.acc-stat span{ font-size: 11px; color: var(--grey-text); font-weight: 600; }
 
 .acc-filter-row{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   gap: 12px;
   flex-wrap: wrap;
 }
@@ -263,6 +281,7 @@
   cursor: pointer;
   min-width: 180px;
 }
+.acc-filter-select:focus{ border-color: var(--mint); box-shadow: 0 0 0 4px var(--mint-pale); }
 .acc-collect-btn{
   display: flex;
   align-items: center;
@@ -270,14 +289,15 @@
   background: var(--mint);
   color: var(--navy);
   border: none;
-  padding: 11px 20px;
+  padding: 12px 22px;
   border-radius: 11px;
   font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 8px 18px -8px rgba(22,199,132,0.45);
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
-.acc-collect-btn:hover{ background: var(--mint-dark); color: #fff; transform: translateY(-1px); }
+.acc-collect-btn:hover{ background: var(--mint-dark); color: #fff; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(15,168,109,0.5); }
 .acc-collect-btn svg{ width: 16px; height: 16px; }
 
 @media (max-width: 900px){
@@ -292,6 +312,14 @@
 /* Xisaabaadka table — clickable rows + total footer */
 .acc-row-clickable{ cursor: pointer; transition: background 0.15s ease; }
 .acc-row-clickable:hover{ background: #F7F9FA; }
-.acc-baaqi-owed{ color: #C0392B; font-weight: 700; }
+.acc-baaqi-owed{ color: #E5533F; font-weight: 700; }
 .acc-total-row{ background: #EAF1FB; font-weight: 700; }
 .acc-total-row td{ color: var(--navy); border-top: 2px solid var(--line); }
+
+/* Prominent money figures inside data tables */
+.cell-amount{
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--navy);
+}

@@ -1,0 +1,96 @@
+.cw-not-found{
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--grey-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.cw-count-badge{
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--mint-dark);
+  background: var(--mint-pale);
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+.cw-quran-surah-row{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.cw-quran-surah-row label{
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--navy);
+  white-space: nowrap;
+}
+.cw-quran-surah-row input{
+  flex: 1;
+  min-width: 220px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-family: 'Inter', sans-serif;
+  color: var(--navy);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cw-quran-surah-row input:focus{ border-color: var(--mint); box-shadow: 0 0 0 4px var(--mint-pale); }
+
+.cw-empty-note{
+  color: #94A3B8;
+  text-align: center;
+  padding: 32px;
+}
+
+.cw-schedule-list{
+  display: flex;
+  flex-direction: column;
+}
+
+.cw-schedule-row{
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--line);
+}
+.cw-schedule-row:last-child{ border-bottom: none; }
+
+.cw-schedule-time{
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--navy);
+  background: #F4F7F8;
+  padding: 8px 14px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cw-schedule-subject{
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.cw-schedule-teacher{
+  font-size: 12px;
+  color: var(--grey-text);
+  margin-top: 2px;
+}
+
+/* Prompt-ka "Ma gaadhay yoolkiisii?" — reuses .qtm-overlay/.qtm-modal/.qtm-header/.qtm-footer */
+.cw-qtp-modal{ max-width: 420px; }
+.cw-qtp-modal .qtm-header{ justify-content: center; text-align: center; }
+.cw-qtp-modal .qtm-header h2{ font-size: 16px; }
+.cw-qtp-footer{ justify-content: center; }
+.cw-qtp-btn-danger{ color: #C0392B; border-color: #F5C2BE; }
+.cw-qtp-btn-danger:hover{ background: #FDECEA; }

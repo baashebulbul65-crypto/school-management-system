@@ -1,16 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSettings } from '../../context/SettingsContext';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/dashboard-shared.css';
 import './Settings.css';
-
-const TABS = [
-  { id: 'school', label: 'Xogta Dugsiga' },
-  { id: 'fees', label: 'Qiimaha (Fees)' },
-  { id: 'academic', label: 'Sannadka Waxbarasho' },
-  { id: 'notifications', label: 'Ogeysiisyada' },
-  { id: 'account', label: 'Akoonkayga' },
-];
 
 const LANGUAGES = [
   { code: 'so', label: 'Soomaali' },
@@ -20,18 +13,22 @@ const LANGUAGES = [
 
 const CURRENCIES = ['USD', 'SOS (Shilin Soomaali)', 'ETB (Birr)'];
 
-function SavedToast({ show }) {
+function SavedToast({ show, label }) {
   if (!show) return null;
   return (
     <div className="settings-toast">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-      Isbeddelka waa la kaydiyay
+      {label}
     </div>
   );
 }
 
 function Settings() {
-  const { settings, updateSchool, updateLanguage, updateCurrency, updateAcademicYear, updateFee, addFeeGrade, removeFeeGrade, updateNotificationPref } = useSettings();
+  const { t } = useTranslation();
+  const {
+    settings, updateSchool, updateLanguage, updateCurrency, updateAcademicYear, updateFee,
+    addFeeGrade, removeFeeGrade, updateNotificationPref, uploadLogo, removeLogo, logoUploading, logoError,
+  } = useSettings();
   const { profile } = useAuth();
 
   const [activeTab, setActiveTab] = useState('school');
@@ -39,6 +36,22 @@ function Settings() {
   const [newGradeName, setNewGradeName] = useState('');
   const [newGradeAmount, setNewGradeAmount] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
+  const logoInputRef = useRef(null);
+
+  const TABS = [
+    { id: 'school', label: t('settings.tabs.school') },
+    { id: 'fees', label: t('settings.tabs.fees') },
+    { id: 'academic', label: t('settings.tabs.academic') },
+    { id: 'notifications', label: t('settings.tabs.notifications') },
+    { id: 'account', label: t('settings.tabs.account') },
+  ];
+
+  const NOTIFICATION_ITEMS = [
+    { key: 'feeReminders', label: t('settings.notifications.items.feeReminders.label'), desc: t('settings.notifications.items.feeReminders.desc') },
+    { key: 'attendanceAlerts', label: t('settings.notifications.items.attendanceAlerts.label'), desc: t('settings.notifications.items.attendanceAlerts.desc') },
+    { key: 'examResults', label: t('settings.notifications.items.examResults.label'), desc: t('settings.notifications.items.examResults.desc') },
+    { key: 'emailDigest', label: t('settings.notifications.items.emailDigest.label'), desc: t('settings.notifications.items.emailDigest.desc') },
+  ];
 
   const flashSaved = () => {
     setToastVisible(true);
@@ -49,7 +62,8 @@ function Settings() {
 
   const handleSaveSchool = (e) => {
     e.preventDefault();
-    updateSchool(schoolForm);
+    const { name, code, phone, address, email } = schoolForm;
+    updateSchool({ name, code, phone, address, email });
     flashSaved();
   };
 
@@ -71,19 +85,42 @@ function Settings() {
     flashSaved();
   };
 
+  const handleLogoPick = () => logoInputRef.current?.click();
+
+  const handleLogoChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // ogolow in isla faylka la dib-u-xulo
+    if (!file) return;
+    try {
+      await uploadLogo(file);
+      flashSaved();
+    } catch {
+      // fariinta khaladka waxa lagu tusayaa logoError gudaha UI-ga
+    }
+  };
+
+  const handleRemoveLogo = async () => {
+    try {
+      await removeLogo();
+      flashSaved();
+    } catch {
+      // fariinta khaladka waxa lagu tusayaa logoError gudaha UI-ga
+    }
+  };
+
   return (
     <div>
       <div className="page-header">
         <div className="page-header-text">
-          <h2>Dejinta</h2>
-          <p>Maamul xogta dugsiga, qiimaha, sannadka waxbarasho, iyo akoonkaaga.</p>
+          <h2>{t('settings.pageTitle')}</h2>
+          <p>{t('settings.pageSubtitle')}</p>
         </div>
       </div>
 
       <div className="fin-tabs">
-        {TABS.map((t) => (
-          <button key={t.id} className={`fin-tab ${activeTab === t.id ? 'active' : ''}`} onClick={() => setActiveTab(t.id)}>
-            {t.label}
+        {TABS.map((tb) => (
+          <button key={tb.id} className={`fin-tab ${activeTab === tb.id ? 'active' : ''}`} onClick={() => setActiveTab(tb.id)}>
+            {tb.label}
           </button>
         ))}
       </div>
@@ -91,49 +128,74 @@ function Settings() {
       {/* ===== XOGTA DUGSIGA ===== */}
       {activeTab === 'school' && (
         <div className="dash-card settings-card">
-          <h3 className="settings-section-title">Xogta Guud ee Dugsiga</h3>
-          <p className="settings-section-desc">Magaca dugsigan wuxuu ka soo muuqan doonaa Sidebar-ka Dashboard-ka oo dhan.</p>
+          <h3 className="settings-section-title">{t('settings.school.sectionTitle')}</h3>
+          <p className="settings-section-desc">{t('settings.school.sectionDesc')}</p>
 
           <div className="settings-preview">
-            <div className="settings-preview-logo">
-              {schoolForm.name?.slice(0, 2).toUpperCase() || 'XX'}
-            </div>
+            {settings.school.logo ? (
+              <img className="settings-preview-logo settings-preview-logo-img" src={settings.school.logo} alt={schoolForm.name} />
+            ) : (
+              <div className="settings-preview-logo">
+                {schoolForm.name?.slice(0, 2).toUpperCase() || 'XX'}
+              </div>
+            )}
             <div>
-              <div className="settings-preview-name">{schoolForm.name || 'Magaca Dugsiga'}</div>
+              <div className="settings-preview-name">{schoolForm.name || t('settings.school.defaultName')}</div>
               <div className="settings-preview-code">{schoolForm.code}</div>
             </div>
+          </div>
+
+          <div className="settings-logo-upload">
+            <input
+              ref={logoInputRef}
+              type="file"
+              accept="image/png, image/jpeg, image/webp, image/svg+xml"
+              hidden
+              onChange={handleLogoChange}
+            />
+            <button type="button" className="btn-secondary" onClick={handleLogoPick} disabled={logoUploading}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              {logoUploading ? t('settings.school.uploading') : settings.school.logo ? t('settings.school.changeLogo') : t('settings.school.uploadLogo')}
+            </button>
+            {settings.school.logo && (
+              <button type="button" className="settings-logo-remove" onClick={handleRemoveLogo} disabled={logoUploading}>
+                {t('settings.school.removeLogo')}
+              </button>
+            )}
+            {logoError && <div className="settings-logo-error">{logoError}</div>}
+            <p className="settings-section-desc settings-logo-hint">{t('settings.school.logoHint')}</p>
           </div>
 
           <form onSubmit={handleSaveSchool}>
             <div className="settings-grid">
               <div className="settings-field full">
-                <label>Magaca Dugsiga *</label>
+                <label>{t('settings.school.fields.name')}</label>
                 <input type="text" value={schoolForm.name} onChange={handleSchoolChange('name')} required />
               </div>
               <div className="settings-field">
-                <label>School Code</label>
+                <label>{t('settings.school.fields.code')}</label>
                 <input type="text" value={schoolForm.code} onChange={handleSchoolChange('code')} />
               </div>
               <div className="settings-field">
-                <label>Telefoonka</label>
+                <label>{t('settings.school.fields.phone')}</label>
                 <input type="text" value={schoolForm.phone} onChange={handleSchoolChange('phone')} />
               </div>
               <div className="settings-field full">
-                <label>Cinwaanka</label>
+                <label>{t('settings.school.fields.address')}</label>
                 <input type="text" value={schoolForm.address} onChange={handleSchoolChange('address')} />
               </div>
               <div className="settings-field full">
-                <label>Iimaylka Dugsiga</label>
+                <label>{t('settings.school.fields.email')}</label>
                 <input type="email" value={schoolForm.email} onChange={handleSchoolChange('email')} />
               </div>
             </div>
 
             <div className="settings-divider"></div>
 
-            <h3 className="settings-section-title">Luqadda & Lacagta</h3>
+            <h3 className="settings-section-title">{t('settings.school.langCurrencyTitle')}</h3>
             <div className="settings-grid">
               <div className="settings-field">
-                <label>Luqadda Nidaamka</label>
+                <label>{t('settings.school.systemLanguage')}</label>
                 <div className="settings-lang-options">
                   {LANGUAGES.map((l) => (
                     <button
@@ -148,14 +210,14 @@ function Settings() {
                 </div>
               </div>
               <div className="settings-field">
-                <label>Lacagta La Isticmaalo</label>
+                <label>{t('settings.school.currency')}</label>
                 <select value={settings.currency} onChange={(e) => { updateCurrency(e.target.value); flashSaved(); }}>
                   {CURRENCIES.map((c) => <option key={c}>{c}</option>)}
                 </select>
               </div>
             </div>
 
-            <button type="submit" className="btn-primary settings-save-btn">Kaydi Isbeddelka</button>
+            <button type="submit" className="btn-primary settings-save-btn">{t('settings.school.save')}</button>
           </form>
         </div>
       )}
@@ -163,12 +225,12 @@ function Settings() {
       {/* ===== QIIMAHA (FEES) ===== */}
       {activeTab === 'fees' && (
         <div className="dash-card settings-card">
-          <h3 className="settings-section-title">Qiimaha Fasal Kasta</h3>
-          <p className="settings-section-desc">Beddel qiimaha caadiga ah ee fasal kasta — isbeddelkani wuxuu saameyn ku yeelan doonaa xisaabaadka lacagta ee cusub.</p>
+          <h3 className="settings-section-title">{t('settings.fees.sectionTitle')}</h3>
+          <p className="settings-section-desc">{t('settings.fees.sectionDesc')}</p>
 
           <div className="data-table-wrap">
             <table className="data-table">
-              <thead><tr><th>Fasalka</th><th>Qiimaha ($)</th><th></th></tr></thead>
+              <thead><tr><th>{t('settings.fees.table.class')}</th><th>{t('settings.fees.table.price')}</th><th></th></tr></thead>
               <tbody>
                 {settings.feesByGrade.map((f) => (
                   <tr key={f.id}>
@@ -183,7 +245,7 @@ function Settings() {
                       />
                     </td>
                     <td>
-                      <button className="row-action-btn danger" title="Tirtir" onClick={() => { removeFeeGrade(f.id); flashSaved(); }}>
+                      <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => { removeFeeGrade(f.id); flashSaved(); }}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
                       </button>
                     </td>
@@ -194,11 +256,11 @@ function Settings() {
           </div>
 
           <form className="settings-add-grade-row" onSubmit={handleAddGrade}>
-            <input type="text" placeholder="Magaca Fasalka Cusub (tusaale: Form 5)" value={newGradeName} onChange={(e) => setNewGradeName(e.target.value)} />
-            <input type="number" placeholder="Qiimaha ($)" value={newGradeAmount} onChange={(e) => setNewGradeAmount(e.target.value)} />
+            <input type="text" placeholder={t('settings.fees.newGradeNamePlaceholder')} value={newGradeName} onChange={(e) => setNewGradeName(e.target.value)} />
+            <input type="number" placeholder={t('settings.fees.newGradeAmountPlaceholder')} value={newGradeAmount} onChange={(e) => setNewGradeAmount(e.target.value)} />
             <button type="submit" className="btn-primary">
               <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              Ku Dar
+              {t('settings.fees.add')}
             </button>
           </form>
         </div>
@@ -207,13 +269,13 @@ function Settings() {
       {/* ===== SANNADKA WAXBARASHO ===== */}
       {activeTab === 'academic' && (
         <div className="dash-card settings-card">
-          <h3 className="settings-section-title">Sannadka Waxbarasho</h3>
-          <p className="settings-section-desc">Qeex bilowga iyo dhammaadka sannadka waxbarasho ee hadda socda.</p>
+          <h3 className="settings-section-title">{t('settings.academic.sectionTitle')}</h3>
+          <p className="settings-section-desc">{t('settings.academic.sectionDesc')}</p>
 
           <form onSubmit={handleAcademicSave}>
             <div className="settings-grid">
               <div className="settings-field">
-                <label>Bilowga Sannadka</label>
+                <label>{t('settings.academic.startDate')}</label>
                 <input
                   type="date"
                   value={settings.academicYear.start}
@@ -221,7 +283,7 @@ function Settings() {
                 />
               </div>
               <div className="settings-field">
-                <label>Dhammaadka Sannadka</label>
+                <label>{t('settings.academic.endDate')}</label>
                 <input
                   type="date"
                   value={settings.academicYear.end}
@@ -229,7 +291,7 @@ function Settings() {
                 />
               </div>
             </div>
-            <button type="submit" className="btn-primary settings-save-btn">Kaydi Isbeddelka</button>
+            <button type="submit" className="btn-primary settings-save-btn">{t('settings.school.save')}</button>
           </form>
         </div>
       )}
@@ -237,16 +299,11 @@ function Settings() {
       {/* ===== OGEYSIISYADA ===== */}
       {activeTab === 'notifications' && (
         <div className="dash-card settings-card">
-          <h3 className="settings-section-title">Doorashooyinka Ogeysiisyada</h3>
-          <p className="settings-section-desc">Xulo noocyada ogeysiisyada aad rabto in nidaamku kuu soo diro.</p>
+          <h3 className="settings-section-title">{t('settings.notifications.sectionTitle')}</h3>
+          <p className="settings-section-desc">{t('settings.notifications.sectionDesc')}</p>
 
           <div className="settings-toggle-list">
-            {[
-              { key: 'feeReminders', label: 'Xasuusin Lacageed', desc: 'Ogeysii marka lacag dib u dhacdo ama dhawaan dhammaanayso.' },
-              { key: 'attendanceAlerts', label: 'Digniin Imaansho', desc: 'Ogeysii marka heerka imaanshaha fasal hoos u dhaco.' },
-              { key: 'examResults', label: 'Natiijooyinka Imtixaanka', desc: 'Ogeysii marka buundooyinka la geliyo.' },
-              { key: 'emailDigest', label: 'Soo Koobid Toddobaadle (Email)', desc: 'Hel soo koobid guud oo toddobaadle ah email ahaan.' },
-            ].map((item) => (
+            {NOTIFICATION_ITEMS.map((item) => (
               <div className="settings-toggle-row" key={item.key}>
                 <div>
                   <div className="settings-toggle-label">{item.label}</div>
@@ -267,34 +324,34 @@ function Settings() {
       {/* ===== AKOONKAYGA ===== */}
       {activeTab === 'account' && (
         <div className="dash-card settings-card">
-          <h3 className="settings-section-title">Xogta Akoonkayga</h3>
+          <h3 className="settings-section-title">{t('settings.account.sectionTitle')}</h3>
           <div className="settings-account-card">
             <div className="settings-account-avatar">{(profile?.fullName || 'U').slice(0, 2).toUpperCase()}</div>
             <div>
-              <div className="settings-account-name">{profile?.fullName || 'Isticmaale'}</div>
-              <div className="settings-account-role">{profile?.role === 'teacher' ? 'Macallin' : 'Maamule / Owner'}</div>
+              <div className="settings-account-name">{profile?.fullName || t('settings.account.defaultUser')}</div>
+              <div className="settings-account-role">{profile?.role === 'teacher' ? t('settings.account.roleTeacher') : t('settings.account.roleOwner')}</div>
             </div>
           </div>
 
           <div className="settings-grid">
             <div className="settings-field full">
-              <label>Iimaylka</label>
+              <label>{t('settings.account.email')}</label>
               <input type="email" value={profile?.email || ''} disabled />
             </div>
             <div className="settings-field">
-              <label>Furaha Sirta Cusub</label>
+              <label>{t('settings.account.newPassword')}</label>
               <input type="password" placeholder="••••••••" />
             </div>
             <div className="settings-field">
-              <label>Xaqiiji Furaha Sirta</label>
+              <label>{t('settings.account.confirmPassword')}</label>
               <input type="password" placeholder="••••••••" />
             </div>
           </div>
-          <button type="button" className="btn-primary settings-save-btn" onClick={flashSaved}>Kaydi Isbeddelka</button>
+          <button type="button" className="btn-primary settings-save-btn" onClick={flashSaved}>{t('settings.school.save')}</button>
         </div>
       )}
 
-      <SavedToast show={toastVisible} />
+      <SavedToast show={toastVisible} label={t('settings.savedToast')} />
     </div>
   );
 }

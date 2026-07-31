@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './ClassFormModal.css';
 
 const EMPTY_FORM = {
@@ -11,6 +12,7 @@ const EMPTY_FORM = {
 };
 
 function ClassFormModal({ isOpen, onClose, onSave, cls }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
   const isEditing = !!cls;
@@ -39,7 +41,7 @@ function ClassFormModal({ isOpen, onClose, onSave, cls }) {
     e.preventDefault();
 
     if (!form.classTeacher.trim()) {
-      setError('Fasalku waa in uu leeyahay Macallin Fasal (Class Teacher).');
+      setError(t('classes.form.errorNoTeacher'));
       return;
     }
 
@@ -63,8 +65,8 @@ function ClassFormModal({ isOpen, onClose, onSave, cls }) {
       <div className="cfm-modal">
         <div className="cfm-header">
           <div>
-            <h2>{isEditing ? 'Wax Ka Beddel Fasalka' : 'Abuur Fasal Cusub'}</h2>
-            <p>{isEditing ? `${cls.grade} - ${cls.section}` : 'Buuxi macluumaadka fasalka cusub'}</p>
+            <h2>{isEditing ? t('classes.form.editTitle') : t('classes.form.addTitle')}</h2>
+            <p>{isEditing ? `${cls.grade} - ${cls.section}` : t('classes.form.fillInfo')}</p>
           </div>
           <button className="cfm-close" onClick={onClose} type="button">
             <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -78,11 +80,11 @@ function ClassFormModal({ isOpen, onClose, onSave, cls }) {
 
             <div className="cfm-grid">
               <div className="cfm-field">
-                <label>Fasalka (Grade) *</label>
-                <input type="text" value={form.grade} onChange={update('grade')} placeholder="Tusaale: Form 1" required />
+                <label>{t('classes.form.fields.grade')}</label>
+                <input type="text" value={form.grade} onChange={update('grade')} placeholder={t('classes.form.placeholders.grade')} required />
               </div>
               <div className="cfm-field">
-                <label>Qaybta (Section)</label>
+                <label>{t('classes.form.fields.section')}</label>
                 <select value={form.section} onChange={update('section')}>
                   <option>A</option>
                   <option>B</option>
@@ -91,29 +93,29 @@ function ClassFormModal({ isOpen, onClose, onSave, cls }) {
                 </select>
               </div>
               <div className="cfm-field">
-                <label>Qolka (Room)</label>
-                <input type="text" value={form.room} onChange={update('room')} placeholder="Tusaale: Qolka 101" />
+                <label>{t('classes.form.fields.room')}</label>
+                <input type="text" value={form.room} onChange={update('room')} placeholder={t('classes.form.placeholders.room')} />
               </div>
               <div className="cfm-field">
-                <label>Awoodda (Capacity) *</label>
-                <input type="number" value={form.capacity} onChange={update('capacity')} placeholder="Tusaale: 45" required />
+                <label>{t('classes.form.fields.capacity')}</label>
+                <input type="number" value={form.capacity} onChange={update('capacity')} placeholder={t('classes.form.placeholders.capacity')} required />
               </div>
               <div className="cfm-field full">
-                <label>Macallin Fasal (Class Teacher) *</label>
-                <input type="text" value={form.classTeacher} onChange={update('classTeacher')} placeholder="Tusaale: Cali Xasan Warsame" required />
+                <label>{t('classes.form.fields.classTeacher')}</label>
+                <input type="text" value={form.classTeacher} onChange={update('classTeacher')} placeholder={t('classes.form.placeholders.classTeacher')} required />
               </div>
               <div className="cfm-field full">
-                <label>Maadooyinka (kala sooc comma ,)</label>
-                <input type="text" value={form.subjects} onChange={update('subjects')} placeholder="Xisaab, Ingiriisi, Sayniska" />
+                <label>{t('classes.form.fields.subjects')}</label>
+                <input type="text" value={form.subjects} onChange={update('subjects')} placeholder={t('classes.form.placeholders.subjects')} />
               </div>
             </div>
 
           </div>
 
           <div className="cfm-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>Jooji</button>
+            <button type="button" className="btn-secondary" onClick={onClose}>{t('common.cancel')}</button>
             <button type="submit" className="btn-primary">
-              {isEditing ? 'Kaydi Isbeddelka' : 'Abuur Fasalka'}
+              {isEditing ? t('common.save') : t('classes.form.submitAdd')}
             </button>
           </div>
         </form>

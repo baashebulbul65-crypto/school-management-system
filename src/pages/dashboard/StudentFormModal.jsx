@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './StudentFormModal.css';
 
 const EMPTY_FORM = {
@@ -9,6 +10,7 @@ const EMPTY_FORM = {
   parentName: '',
   parentRelation: 'Aabo',
   parentPhone: '',
+  parentEmail: '',
   address: '',
   className: '',
   section: 'A',
@@ -24,6 +26,7 @@ function initials(name) {
 }
 
 function StudentFormModal({ isOpen, onClose, onSave, student }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const isEditing = !!student;
 
@@ -37,6 +40,7 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
         parentName: student.parentName || '',
         parentRelation: student.parentRelation || 'Aabo',
         parentPhone: student.parentPhone || '',
+        parentEmail: student.parentEmail || '',
         address: student.address || '',
         className: student.className || '',
         section: student.section || 'A',
@@ -79,8 +83,8 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
           <div className="sfm-header-left">
             <div className="sfm-avatar">{initials(form.fullName)}</div>
             <div>
-              <h2>{isEditing ? 'Wax Ka Beddel Ardayga' : 'Ku Dar Arday Cusub'}</h2>
-              <p>{isEditing ? student.studentId : 'Buuxi macluumaadka hoose'}</p>
+              <h2>{isEditing ? t('students.form.editTitle') : t('students.form.addTitle')}</h2>
+              <p>{isEditing ? student.studentId : t('students.form.fillInfo')}</p>
             </div>
           </div>
           <button className="sfm-close" onClick={onClose} type="button">
@@ -91,61 +95,65 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
         <form onSubmit={handleSubmit}>
           <div className="sfm-body">
 
-            <div className="sfm-section-label">Macluumaadka Shakhsiga</div>
+            <div className="sfm-section-label">{t('students.form.sections.personal')}</div>
             <div className="sfm-grid">
               <div className="sfm-field full">
-                <label>Magaca Buuxa *</label>
-                <input type="text" value={form.fullName} onChange={update('fullName')} placeholder="Tusaale: Ismaaciil Cabdi Xasan" required />
+                <label>{t('students.form.fields.fullName')}</label>
+                <input type="text" value={form.fullName} onChange={update('fullName')} placeholder={t('students.form.placeholders.fullName')} required />
               </div>
               <div className="sfm-field">
-                <label>Jinsiga</label>
+                <label>{t('students.form.fields.gender')}</label>
                 <select value={form.gender} onChange={update('gender')}>
-                  <option>Wiil</option>
-                  <option>Gabar</option>
+                  <option value="Wiil">{t('students.form.fields.male')}</option>
+                  <option value="Gabar">{t('students.form.fields.female')}</option>
                 </select>
               </div>
               <div className="sfm-field">
-                <label>Taariikhda Dhalashada</label>
+                <label>{t('students.form.fields.dob')}</label>
                 <input type="date" value={form.dob} onChange={update('dob')} />
               </div>
               <div className="sfm-field">
-                <label>Telefoonka</label>
-                <input type="text" value={form.phone} onChange={update('phone')} placeholder="+252 61 ..." />
+                <label>{t('students.form.fields.phone')}</label>
+                <input type="text" value={form.phone} onChange={update('phone')} placeholder={t('students.form.placeholders.phone')} />
               </div>
               <div className="sfm-field">
-                <label>Cinwaanka</label>
-                <input type="text" value={form.address} onChange={update('address')} placeholder="Xaafadda, Magaalada" />
+                <label>{t('students.form.fields.address')}</label>
+                <input type="text" value={form.address} onChange={update('address')} placeholder={t('students.form.placeholders.address')} />
               </div>
             </div>
 
-            <div className="sfm-section-label">Macluumaadka Waalidka</div>
+            <div className="sfm-section-label">{t('students.form.sections.parent')}</div>
             <div className="sfm-grid">
               <div className="sfm-field">
-                <label>Magaca Waalidka</label>
+                <label>{t('students.form.fields.parentName')}</label>
                 <input type="text" value={form.parentName} onChange={update('parentName')} />
               </div>
               <div className="sfm-field">
-                <label>Xiriirka</label>
+                <label>{t('students.form.fields.relation')}</label>
                 <select value={form.parentRelation} onChange={update('parentRelation')}>
-                  <option>Aabo</option>
-                  <option>Hooyo</option>
-                  <option>Mas'uul Kale</option>
+                  <option value="Aabo">{t('students.form.fields.father')}</option>
+                  <option value="Hooyo">{t('students.form.fields.mother')}</option>
+                  <option value="Mas'uul Kale">{t('students.form.fields.otherGuardian')}</option>
                 </select>
               </div>
+              <div className="sfm-field">
+                <label>{t('students.form.fields.parentPhone')}</label>
+                <input type="text" value={form.parentPhone} onChange={update('parentPhone')} placeholder={t('students.form.placeholders.phone')} />
+              </div>
               <div className="sfm-field full">
-                <label>Telefoonka Waalidka</label>
-                <input type="text" value={form.parentPhone} onChange={update('parentPhone')} placeholder="+252 61 ..." />
+                <label>{t('students.form.fields.parentEmail')}</label>
+                <input type="email" value={form.parentEmail} onChange={update('parentEmail')} placeholder={t('students.form.placeholders.parentEmail')} />
               </div>
             </div>
 
-            <div className="sfm-section-label">Waxbarasho</div>
+            <div className="sfm-section-label">{t('students.form.sections.academic')}</div>
             <div className="sfm-grid">
               <div className="sfm-field">
-                <label>Fasalka *</label>
+                <label>{t('students.form.fields.className')}</label>
                 <input type="text" value={form.className} onChange={update('className')} placeholder="Tusaale: Form 1A" required />
               </div>
               <div className="sfm-field">
-                <label>Section</label>
+                <label>{t('students.form.fields.section')}</label>
                 <select value={form.section} onChange={update('section')}>
                   <option>A</option>
                   <option>B</option>
@@ -153,30 +161,30 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
                 </select>
               </div>
               <div className="sfm-field">
-                <label>Roll Number</label>
+                <label>{t('students.form.fields.rollNumber')}</label>
                 <input type="number" value={form.rollNumber} onChange={update('rollNumber')} />
               </div>
               <div className="sfm-field full">
-                <label>Maadooyinka (kala sooc comma ,)</label>
-                <input type="text" value={form.subjects} onChange={update('subjects')} placeholder="Xisaab, Ingiriisi, Sayniska" />
+                <label>{t('students.form.fields.subjects')}</label>
+                <input type="text" value={form.subjects} onChange={update('subjects')} placeholder={t('students.form.placeholders.subjects')} />
               </div>
             </div>
 
-            <div className="sfm-section-label">Xaaladda</div>
+            <div className="sfm-section-label">{t('students.form.sections.status')}</div>
             <div className="sfm-grid">
               <div className="sfm-field">
-                <label>Xaalada Diiwaanka</label>
+                <label>{t('students.form.fields.regStatus')}</label>
                 <select value={form.status} onChange={update('status')}>
-                  <option value="active">Firfircoon</option>
-                  <option value="inactive">Aan Firfircoonayn</option>
+                  <option value="active">{t('common.status.active')}</option>
+                  <option value="inactive">{t('common.status.inactive')}</option>
                 </select>
               </div>
               <div className="sfm-field">
-                <label>Xaalada Lacagta</label>
+                <label>{t('students.form.fields.feeStatus')}</label>
                 <select value={form.fee} onChange={update('fee')}>
-                  <option value="paid">La Bixiyay</option>
-                  <option value="pending">Sugaya</option>
-                  <option value="overdue">Dib U Dhacay</option>
+                  <option value="paid">{t('common.status.paid')}</option>
+                  <option value="pending">{t('common.status.pending')}</option>
+                  <option value="overdue">{t('common.status.overdue')}</option>
                 </select>
               </div>
             </div>
@@ -184,9 +192,9 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
           </div>
 
           <div className="sfm-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>Jooji</button>
+            <button type="button" className="btn-secondary" onClick={onClose}>{t('common.cancel')}</button>
             <button type="submit" className="btn-primary">
-              {isEditing ? 'Kaydi Isbeddelka' : 'Ku Dar Ardayga'}
+              {isEditing ? t('common.save') : t('students.form.submitAdd')}
             </button>
           </div>
         </form>

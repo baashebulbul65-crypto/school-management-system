@@ -122,7 +122,7 @@
 }
 .cdm-table thead th{
   background: #EAF1FB;
-  text-align: left;
+  text-align: start;
   padding: 12px 18px;
   font-size: 13px;
   font-weight: 700;
@@ -187,5 +187,5 @@
 @media (max-width: 720px){
   .cdm-stats-row{ padding: 14px 6px; }
   .cdm-stat{ padding: 6px 10px; border-right: none; }
-  .cdm-title{ order: 3; width: 100%; text-align: left; margin-top: 8px; }
+  .cdm-title{ order: 3; width: 100%; text-align: start; margin-top: 8px; }
 }

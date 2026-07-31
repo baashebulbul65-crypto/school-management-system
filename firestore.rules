@@ -1,0 +1,145 @@
+rules_version = '2';
+
+// Fiiri README-ka qaybta "Firestore Rules" ka hor intaadan wax beddelin halkan.
+//
+// MUHIIM: Collection-yada 'classes', 'teachers', 'subjects', 'exams',
+// 'classFees', 'familyFees' iyo 'staff' (liiska macallimiinta/shaqaalaha ee
+// bogga "Users") WELI kuma jiraan Firestore — waa xog local ah (SEED_* /
+// useState) oo ku jirta SchoolDataContext.jsx, marka rules-kani looma baahna
+// (weli). Marka la beddelo si ay Firestore ugu kaydsadaan, waa in halkan
+// loo daraa qaybo cusub oo la mid ah kuwa hoose.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // 'users/{uid}' doc-ka isticmaale kasta — ka akhri role/schoolCode/childrenIds.
+    function me() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isStaffOf(schoolCode) {
+      return isSignedIn() && me().accountType == 'staff' && me().schoolCode == schoolCode;
+    }
+
+    function isParentAccount() {
+      return isSignedIn() && me().accountType == 'student-parent';
+    }
+
+    // Waalid/Arday oo isku dugsi (schoolCode) ah — loo baahan si loo ogolaado
+    // raadinta arday (Diiwaan ID) marka la xiraayo ilmo cusub (fiiri README).
+    function isSameSchoolParent(schoolCode) {
+      return isParentAccount() && me().schoolCode == schoolCode;
+    }
+
+    // Waalidka ilmahan gaarka ah — 'childrenIds' array-ka 'users' doc-kiisa.
+    function isParentOfStudent(schoolCode, studentId) {
+      return isSameSchoolParent(schoolCode) && studentId in me().childrenIds;
+    }
+
+    // ===== users =====
+    // Isticmaale kastaa wuxuu kaliya akhriyi/beddeli karaa profile-kiisa.
+    match /users/{userId} {
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow read, update: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    // ===== schools (magaca/logo-ga dugsiga) =====
+    match /schools/{schoolDocId} {
+      allow read: if isSignedIn() && me().schoolCode == resource.data.schoolCode;
+      allow create, update: if isStaffOf(request.resource.data.schoolCode);
+      allow delete: if false;
+    }
+
+    // ===== students =====
+    // Akhris: Shaqaalaha dugsigaas + Waalid/Arday kasta oo isku dugsi ah (si
+    // loo taageero raadinta Diiwaan ID marka ilmo la xirayo — fiiri README
+    // "Xaddidaad la yaqaan" ee ku saabsan tan).
+    match /students/{studentDocId} {
+      allow read: if isStaffOf(resource.data.schoolCode) || isSameSchoolParent(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow update, delete: if isStaffOf(resource.data.schoolCode);
+    }
+
+    // ===== attendanceRecords ===== (doc id: "{date}_{studentId}")
+    match /attendanceRecords/{recordId} {
+      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
+      allow create, update: if isStaffOf(request.resource.data.schoolCode);
+      allow delete: if false;
+    }
+
+    // ===== examMarks ===== (doc id: "{examId}_{studentId}")
+    match /examMarks/{recordId} {
+      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
+      allow create, update: if isStaffOf(request.resource.data.schoolCode);
+      allow delete: if false;
+    }
+
+    // ===== quranProgress ===== (doc id: "{date}_{studentId}")
+    match /quranProgress/{recordId} {
+      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
+      allow create, update: if isStaffOf(request.resource.data.schoolCode);
+      allow delete: if false;
+    }
+
+    // ===== quranTargets =====
+    match /quranTargets/{targetId} {
+      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
+      allow create, update: if isStaffOf(request.resource.data.schoolCode);
+      allow delete: if false;
+    }
+
+    // ===== messages (Waalid <-> Shaqaale) =====
+    match /messages/{messageId} {
+      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
+
+      allow create: if
+        (isStaffOf(request.resource.data.schoolCode)
+          && request.resource.data.senderRole == 'staff'
+          && request.resource.data.senderId == request.auth.uid)
+        ||
+        (isParentOfStudent(request.resource.data.schoolCode, request.resource.data.studentId)
+          && request.resource.data.senderRole == 'parent'
+          && request.resource.data.senderId == request.auth.uid);
+
+      // Kaliya calaamadinta "la akhriyay" (readByStaff/readByParent) ayaa la
+      // ogolaanayaa — qoraalka fariinta lama badali karo.
+      allow update: if
+        (isStaffOf(resource.data.schoolCode)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readByStaff']))
+        ||
+        (isParentOfStudent(resource.data.schoolCode, resource.data.studentId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readByParent']));
+
+      allow delete: if false;
+    }
+
+    // ===== notifications =====
+    // Fiiri notifications.js: "createFeeNotification"/"createAbsentNotification"
+    // waxay isticmaalaan setDoc si ay ugu dib-u-cusboonaysiiyaan (refresh) hal
+    // doc-ID oo go'an marar badan (mar kasta oo baaqigu/maqnaanshuhu dib loo
+    // eego) — sidaas darteed shaqaalaha waa in ay si buuxda u update-gareyn
+    // karaan (ma aha kaliya calaamadinta readByStaff). Waalidku wuxuu kaliya
+    // beddeli karaa "readByParent".
+    match /notifications/{notificationId} {
+      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
+
+      allow update: if
+        isStaffOf(request.resource.data.schoolCode)
+        ||
+        (isParentOfStudent(resource.data.schoolCode, resource.data.studentId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readByParent']));
+
+      allow delete: if isStaffOf(resource.data.schoolCode);
+    }
+
+    // Wax kasta oo aan kor lagu qorin — xayiran si toos ah.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

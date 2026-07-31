@@ -1,22 +1,16 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSchoolData } from '../../context/SchoolDataContext';
 import SubjectFormModal from './SubjectFormModal';
 import '../../styles/dashboard-shared.css';
-
-const INITIAL_SUBJECTS = [
-  { id: 1, name: 'Xisaabta', code: 'MATH-101', teacher: 'Cali Xasan Warsame', credit: 4, weeklyHours: 5 },
-  { id: 2, name: 'Ingiriisi', code: 'ENG-101', teacher: 'Faadumo Nuur Cige', credit: 4, weeklyHours: 5 },
-  { id: 3, name: 'Cilmiga Bulshada', code: 'SOC-101', teacher: 'Yoonis Cabdi Maxamed', credit: 3, weeklyHours: 3 },
-  { id: 4, name: 'Sayniska', code: 'SCI-101', teacher: 'Cabdiraxman Xasan', credit: 3, weeklyHours: 4 },
-  { id: 5, name: 'Diinta Islaamka', code: 'ISL-101', teacher: 'Xamdi Maxamed Xuseen', credit: 2, weeklyHours: 3 },
-  { id: 6, name: 'Fiisigis', code: 'PHY-201', teacher: 'Cabdiraxman Xasan', credit: 4, weeklyHours: 4 },
-];
 
 function initials(name) {
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 }
 
 function Subjects() {
-  const [subjects, setSubjects] = useState(INITIAL_SUBJECTS);
+  const { t } = useTranslation();
+  const { subjects, addSubject, updateSubject, removeSubject } = useSchoolData();
   const [search, setSearch] = useState('');
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingSubject, setEditingSubject] = useState(null);
@@ -37,16 +31,16 @@ function Subjects() {
 
   const handleSaveSubject = (payload, subjectId) => {
     if (subjectId) {
-      setSubjects((prev) => prev.map((s) => (s.id === subjectId ? { ...s, ...payload } : s)));
+      updateSubject(subjectId, payload);
     } else {
-      setSubjects((prev) => [...prev, { ...payload, id: Date.now() }]);
+      addSubject(payload);
     }
   };
 
   const handleDeleteSubject = (subjectId, name) => {
-    const confirmed = window.confirm(`Ma hubtaa inaad tirtirayso maadada "${name}"? Tallaabadan lama noqon karo.`);
+    const confirmed = window.confirm(t('subjects.confirmDelete', { name }));
     if (confirmed) {
-      setSubjects((prev) => prev.filter((s) => s.id !== subjectId));
+      removeSubject(subjectId);
     }
   };
 
@@ -54,12 +48,12 @@ function Subjects() {
     <div>
       <div className="page-header">
         <div className="page-header-text">
-          <h2>Maadooyinka</h2>
-          <p>Maamul dhammaan maadooyinka la dhigo dugsiga.</p>
+          <h2>{t('subjects.pageTitle')}</h2>
+          <p>{t('subjects.pageSubtitle')}</p>
         </div>
         <button className="btn-primary" onClick={openAddModal}>
           <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          Ku Dar Maadada Cusub
+          {t('subjects.addNew')}
         </button>
       </div>
 
@@ -69,7 +63,7 @@ function Subjects() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
             <input
               type="text"
-              placeholder="Raadi maadada ama code-ka..."
+              placeholder={t('subjects.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -80,11 +74,11 @@ function Subjects() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Maadada</th>
-                <th>Code</th>
-                <th>Macallinka</th>
-                <th>Credit</th>
-                <th>Saacadaha Toddobaadka</th>
+                <th>{t('subjects.table.subject')}</th>
+                <th>{t('subjects.table.code')}</th>
+                <th>{t('subjects.table.teacher')}</th>
+                <th>{t('subjects.table.credit')}</th>
+                <th>{t('subjects.table.weeklyHours')}</th>
                 <th></th>
               </tr>
             </thead>
@@ -99,14 +93,14 @@ function Subjects() {
                   </td>
                   <td className="cell-sub">{s.code}</td>
                   <td>{s.teacher}</td>
-                  <td><span className="badge badge-neutral">{s.credit} Credit</span></td>
-                  <td className="cell-sub">{s.weeklyHours} saacadood/toddobaad</td>
+                  <td><span className="badge badge-neutral">{s.credit} {t('subjects.creditUnit')}</span></td>
+                  <td className="cell-sub">{s.weeklyHours} {t('subjects.hoursPerWeek')}</td>
                   <td>
                     <div className="row-actions">
-                      <button className="row-action-btn" title="Wax Ka Beddel" onClick={() => openEditModal(s)}>
+                      <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(s)}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
                       </button>
-                      <button className="row-action-btn danger" title="Tirtir" onClick={() => handleDeleteSubject(s.id, s.name)}>
+                      <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteSubject(s.id, s.name)}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
                       </button>
                     </div>
@@ -114,14 +108,14 @@ function Subjects() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan="6" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>Wax lama helin.</td></tr>
+                <tr><td colSpan="6" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.noResults')}</td></tr>
               )}
             </tbody>
           </table>
         </div>
 
         <div className="table-pagination">
-          <span className="pagination-info">Muujinaya {filtered.length} ee {subjects.length} maadooyin</span>
+          <span className="pagination-info">{t('subjects.pagination', { shown: filtered.length, total: subjects.length })}</span>
         </div>
       </div>
 

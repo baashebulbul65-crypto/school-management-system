@@ -4,7 +4,7 @@ import './FAQ.css';
 const FAQS = [
   {
     id: 1,
-    question: 'Sidee bilaabaa isticmaalka Xarun?',
+    question: 'Sidee u bilaabaa isticmaalka Kayd?',
     answer:
       'Waxaad diiwaan gelisaa dugsigaaga bogga hore, waxaana lagu siinayaa School Code kuu gaar ah. Kadib waxaad ku dari kartaa ardayda, macallimiinta, iyo fasallada gudaha daqiiqado.',
   },
@@ -12,7 +12,7 @@ const FAQS = [
     id: 2,
     question: 'Ma jiraa muddo tijaabo ah (free trial)?',
     answer:
-      'Haa, dugsiyada cusub waxay heli karaan 14 maalmood oo tijaabo ah oo bilaash ah, iyada oo aan lacag bixin loo baahnayn.',
+      'Haa, dugsiyada cusub waxay heli karaan 30 maalmood oo tijaabo ah oo bilaash ah, iyada oo aan lacag bixin loo baahnayn.',
   },
   {
     id: 3,

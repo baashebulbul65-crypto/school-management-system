@@ -1,0 +1,648 @@
+{
+  "common": {
+    "close": "Xir",
+    "cancel": "Jooji",
+    "save": "Kaydi Isbeddelka",
+    "present": "Joog",
+    "absent": "Maqan",
+    "leave": "Fasax",
+    "sick": "Buka",
+    "late": "Daahid",
+    "students": "Ardayda",
+    "dayNames": ["Axad", "Isniin", "Talaado", "Arbaco", "Khamiis", "Jimce", "Sabti"],
+    "monthNames": ["Janaayo", "Febraayo", "Maarso", "Abriil", "Maajo", "Juun", "Luulyo", "Ogosto", "Sebtembar", "Oktoobar", "Nofembar", "Disembar"],
+    "actions": {
+      "view": "Eeg",
+      "edit": "Wax Ka Beddel",
+      "delete": "Tirtir",
+      "download": "Soo Deji"
+    },
+    "status": {
+      "active": "Firfircoon",
+      "inactive": "Aan Firfircoonayn",
+      "paid": "La Bixiyay",
+      "pending": "Sugaya",
+      "overdue": "Dib U Dhacay"
+    },
+    "noResults": "Wax lama helin.",
+    "loading": "Waa la soo shubayaa...",
+    "confirmDelete": "Ma hubtaa inaad tirtirayso {{name}}? Tallaabadan lama noqon karo.",
+    "confirmSoftDelete": "Ma hubtaa inaad tirtirayso {{name}}? Xogtiisu waxay ku jiri doontaa \"Xogta La Tirtiray\" 45 maalmood, dabadeedna si joogto ah ayaa loo tirtiri doonaa (waadna soo celin kartaa intaas ka hor)."
+  },
+  "overview": {
+    "defaultAdminName": "Maamule",
+    "greeting": {
+      "morning": "Subax Wanaagsan, {{name}} 👋",
+      "afternoon": "Galab Wanaagsan, {{name}} 👋",
+      "evening": "Habeen Wanaagsan, {{name}} 👋"
+    },
+    "actions": {
+      "addStudent": "Ku Dar Arday Cusub",
+      "addTeacher": "Ku Dar Macallin",
+      "collectFee": "Lacag-Qabo"
+    },
+    "stats": {
+      "totalStudents": "Wadarta Ardayda",
+      "totalTeachers": "Wadarta Macallimiinta",
+      "totalClasses": "Wadarta Fasallada",
+      "totalSubjects": "Wadarta Maadooyinka",
+      "feesCollected": "Lacagta La Ururiyey",
+      "feeDueStudents": "Ardayda Leh Baaqi Lacageed",
+      "attendanceToday": "Imaanshaha Maanta",
+      "upcomingExams": "Imtixaanada Soo Socda",
+      "absentToday": "Ardayda Maqan Maanta"
+    },
+    "viewDetails": "Eeg Faahfaahin →",
+    "attendanceCard": {
+      "title": "Xaaladda Imaanshaha Maanta",
+      "viewAll": "Eeg Dhammaan →"
+    },
+    "recentActivity": {
+      "title": "Dhaqdhaqaaqa Dambe",
+      "items": [
+        { "text": "Arday cusub ayaa la diiwaan geliyay — Fasalka 3A", "time": "10 daqiiqo kahor" },
+        { "text": "Rasiid lacageed ayaa la sameeyay — $120", "time": "45 daqiiqo kahor" },
+        { "text": "Macallin cusub ayaa la diiwaan geliyay", "time": "2 saacadood kahor" },
+        { "text": "Imaanshaha maanta lama duubin — Fasalka 2B", "time": "3 saacadood kahor" },
+        { "text": "Waalid ayaa fariin ka soo diray dugsiga", "time": "Shalay" }
+      ]
+    }
+  },
+  "absentModal": {
+    "title": "Ardayda Maqan Maanta",
+    "subtitle": "{{count}} arday oo maqan — {{date}}",
+    "empty": "Arday maqan ma jiraan maanta 🎉"
+  },
+  "donutChart": {
+    "present": "Joog",
+    "absent": "Maqan",
+    "leave": "Fasax",
+    "sick": "Buka",
+    "centerLabel": "Ardayda"
+  },
+  "students": {
+    "pageTitle": "Ardayda",
+    "pageSubtitle": "Maamul dhammaan ardayda diiwaan gashan dugsiga.",
+    "addNew": "Ku Dar Arday Cusub",
+    "searchPlaceholder": "Raadi magaca ama ID-ga...",
+    "allClasses": "Dhammaan Fasallada",
+    "table": { "student": "Arday", "id": "ID", "class": "Fasalka", "gender": "Jinsiga", "status": "Xaaladda", "fee": "Lacagta" },
+    "emptyNoStudents": "Wali arday lama diiwaan gelin.",
+    "seedDemo": "Ku Dar Xogta Tijaabada (Demo)",
+    "pagination": "Muujinaya {{shown}} ee {{total}} arday",
+    "form": {
+      "editTitle": "Wax Ka Beddel Ardayga",
+      "addTitle": "Ku Dar Arday Cusub",
+      "fillInfo": "Buuxi macluumaadka hoose",
+      "sections": { "personal": "Macluumaadka Shakhsiga", "parent": "Macluumaadka Waalidka", "academic": "Waxbarasho", "status": "Xaaladda" },
+      "fields": {
+        "fullName": "Magaca Buuxa *", "gender": "Jinsiga", "male": "Wiil", "female": "Gabar",
+        "dob": "Taariikhda Dhalashada", "phone": "Telefoonka", "address": "Cinwaanka",
+        "parentName": "Magaca Waalidka", "relation": "Xiriirka", "father": "Aabo", "mother": "Hooyo", "otherGuardian": "Mas'uul Kale",
+        "parentPhone": "Telefoonka Waalidka", "parentEmail": "Email Waalidka",
+        "className": "Fasalka *", "section": "Section", "rollNumber": "Roll Number", "subjects": "Maadooyinka (kala sooc comma ,)",
+        "regStatus": "Xaalada Diiwaanka", "feeStatus": "Xaalada Lacagta"
+      },
+      "placeholders": {
+        "fullName": "Tusaale: Ismaaciil Cabdi Xasan", "phone": "+252 61 ...", "address": "Xaafadda, Magaalada",
+        "subjects": "Xisaab, Ingiriisi, Sayniska", "parentEmail": "tusaale@gmail.com"
+      },
+      "submitAdd": "Ku Dar Ardayga"
+    },
+    "profile": {
+      "tabs": { "general": "Macluumaadka Guud", "academic": "Waxbarasho", "attendance": "Imaanshaha", "results": "Natiijooyinka", "fees": "Lacagta", "behaviour": "Anshaxa", "documents": "Dukumentiyada" },
+      "info": {
+        "fullName": "Magaca Buuxa", "studentId": "Student ID", "gender": "Jinsiga", "dob": "Taariikhda Dhalashada",
+        "phone": "Telefoonka", "address": "Cinwaanka", "parentSection": "Macluumaadka Waalidka",
+        "parentName": "Magaca Waalidka", "relation": "Xiriirka", "parentPhone": "Telefoonka Waalidka",
+        "className": "Fasalka", "section": "Qaybta (Section)", "rollNumber": "Roll Number", "subjectsSection": "Maadooyinka"
+      },
+      "attendanceNote": "Guji maalin kasta si aad u beddesho xaaladda imaanshaha (Present/Absent).",
+      "table": { "subject": "Maadada", "marks": "Buundooyinka", "total": "Wadarta", "grade": "Darajada", "term": "Xilliga", "amount": "Qadarka", "date": "Taariikhda", "status": "Xaaladda" },
+      "noBehaviour": "Wax faallo ah lama qorin.",
+      "noDocuments": "Wax dukumenti ah laguma soo shubin.",
+      "qrCode": "QR Code"
+    }
+  },
+  "teachers": {
+    "pageTitle": "Macallimiinta",
+    "pageSubtitle": "Maamul dhammaan macallimiinta ka shaqeeya dugsiga.",
+    "addNew": "Ku Dar Macallin",
+    "searchPlaceholder": "Raadi magaca ama maadada...",
+    "table": { "teacher": "Macallin", "email": "Email", "subject": "Maadada", "classes": "Fasallada", "phone": "Telefoon", "status": "Xaaladda" },
+    "pagination": "Muujinaya {{shown}} ee {{total}} macallin",
+    "form": {
+      "editTitle": "Wax Ka Beddel Macallinka",
+      "addTitle": "Ku Dar Macallin Cusub",
+      "fillInfo": "Buuxi macluumaadka hoose",
+      "errorNoClass": "Macallinku waa in uu leeyahay ugu yaraan hal fasal oo loo xilsaaray.",
+      "sections": { "personal": "Macluumaadka Shakhsiga", "academic": "Waxbarasho" },
+      "fields": {
+        "fullName": "Magaca Buuxa *", "phone": "Telefoonka", "email": "Email",
+        "qualification": "Shahaadada (Qualification)", "subject": "Maadada *", "status": "Xaaladda",
+        "assignedClasses": "Fasallada Loo Xilsaaray * (kala sooc comma ,)"
+      },
+      "placeholders": {
+        "fullName": "Tusaale: Cali Xasan Warsame", "phone": "+252 61 ...", "email": "tusaale@kayd.com",
+        "qualification": "Tusaale: BSc Xisaabta - Jaamacadda...", "subject": "Tusaale: Xisaabta", "assignedClasses": "Tusaale: Form 1A, Form 2A"
+      },
+      "hint": "Macallin kastaa waa in uu leeyahay ugu yaraan hal fasal.",
+      "submitAdd": "Ku Dar Macallinka"
+    },
+    "profile": {
+      "tabs": { "general": "Macluumaadka Guud", "timetable": "Jadwalka (Timetable)", "attendance": "Imaanshaha", "salary": "Mushaharka", "documents": "Dukumentiyada" },
+      "info": { "fullName": "Magaca Buuxa", "teacherId": "Teacher ID", "phone": "Telefoonka", "email": "Email", "qualification": "Shahaadada (Qualification)", "subject": "Maadada" },
+      "assignedClassesSection": "Fasallada Loo Xilsaaray",
+      "noAssignedClasses": "Weli fasal loo xilsaaray ma jiro.",
+      "noTimetable": "Weli jadwal lama dhigin.",
+      "attendanceNote": "Guji maalin kasta si aad u beddesho xaaladda imaanshaha (Present/Absent).",
+      "noAttendance": "Weli imaansho ma jiro.",
+      "noSalary": "Weli mushahar lama diiwaan gelin.",
+      "noDocuments": "Weli dukumenti lama geli.",
+      "table": { "day": "Maalinta", "time": "Waqtiga", "class": "Fasalka", "subject": "Maadada", "month": "Bisha", "amount": "Qadarka", "payDate": "Taariikhda Bixinta", "status": "Xaaladda" }
+    }
+  },
+  "classes": {
+    "pageTitle": "Fasallada",
+    "pageSubtitle": "Maamul dhammaan fasallada iyo qoondaynta macallimiinta.",
+    "addNew": "Abuur Fasal Cusub",
+    "searchPlaceholder": "Raadi fasal...",
+    "openWorkspace": "Fur Galaaska",
+    "form": {
+      "editTitle": "Wax Ka Beddel Fasalka",
+      "addTitle": "Abuur Fasal Cusub",
+      "fillInfo": "Buuxi macluumaadka fasalka cusub",
+      "errorNoTeacher": "Fasalku waa in uu leeyahay Macallin Fasal (Class Teacher).",
+      "fields": {
+        "grade": "Fasalka (Grade) *", "section": "Qaybta (Section)", "room": "Qolka (Room)",
+        "capacity": "Awoodda (Capacity) *", "classTeacher": "Macallin Fasal (Class Teacher) *",
+        "subjects": "Maadooyinka (kala sooc comma ,)"
+      },
+      "placeholders": {
+        "grade": "Tusaale: Form 1", "room": "Tusaale: Qolka 101", "capacity": "Tusaale: 45",
+        "classTeacher": "Tusaale: Cali Xasan Warsame", "subjects": "Xisaab, Ingiriisi, Sayniska"
+      },
+      "submitAdd": "Abuur Fasalka"
+    }
+  },
+  "subjects": {
+    "pageTitle": "Maadooyinka",
+    "pageSubtitle": "Maamul dhammaan maadooyinka la dhigo dugsiga.",
+    "addNew": "Ku Dar Maadada Cusub",
+    "searchPlaceholder": "Raadi maadada ama code-ka...",
+    "table": { "subject": "Maadada", "code": "Code", "teacher": "Macallinka", "credit": "Credit", "weeklyHours": "Saacadaha Toddobaadka" },
+    "creditUnit": "Credit",
+    "hoursPerWeek": "saacadood/toddobaad",
+    "confirmDelete": "Ma hubtaa inaad tirtirayso maadada \"{{name}}\"? Tallaabadan lama noqon karo.",
+    "pagination": "Muujinaya {{shown}} ee {{total}} maadooyin",
+    "form": {
+      "editTitle": "Wax Ka Beddel Maadada",
+      "addTitle": "Ku Dar Maadada Cusub",
+      "fillInfo": "Buuxi macluumaadka maadada cusub",
+      "errorNoTeacher": "Maadadu waa in ay leedahay Macallin (Teacher) loo xilsaaray.",
+      "fields": { "name": "Magaca Maadada (Subject Name) *", "code": "Code *", "teacher": "Macallinka (Teacher) *", "credit": "Credit", "weeklyHours": "Saacadaha Toddobaadka (Weekly Hours)" },
+      "placeholders": { "name": "Tusaale: Xisaabta", "code": "Tusaale: MATH-101", "teacher": "Tusaale: Cali Xasan Warsame", "credit": "Tusaale: 4", "weeklyHours": "Tusaale: 5" },
+      "submitAdd": "Ku Dar Maadada"
+    }
+  },
+  "finance": {
+    "pageTitle": "Lacagta",
+    "pageSubtitle": "Maamul dakhliga, kharashka, iyo xisaabaadka guud ee dugsiga.",
+    "printExport": "PDF Export / Print",
+    "printPdf": "Print / PDF",
+    "tabs": { "accounting": "Xisaabaadka", "expenses": "Kharashka", "income": "Dakhliga", "salary": "Mushaharka", "discounts": "Dhimis & Deeq", "documents": "Invoices & Receipts" },
+    "toggle": { "byClass": "Fasalada", "byFamily": "M.Qoys" },
+    "summaryCards": { "total": "Wadar", "collected": "La Ururiyey", "uncollected": "Aan La Ururin", "discountValue": "Qiimo Dhimis", "remaining": "Hadhaa", "expenses": "Kharashaad" },
+    "statsBox": { "classes": "Fasalo", "families": "Qoysas", "totalStudents": "Arday", "paymentsCount": "L.Bixisa", "discountRecipients": "Q.Dhimis", "freeCount": "Bilaash", "unpaidCount": "A.Baska" },
+    "allClasses": "Fasalada",
+    "collectFee": "Lacag-Qabo",
+    "donutChart": {
+      "title": "Xaaladda Lacagta Guud",
+      "paid": "La Bixiyay",
+      "due": "Baaqi",
+      "discount": "Dhimis",
+      "centerLabel": "Wadarta Guud"
+    },
+    "table": { "no": "No", "class": "Fasal", "family": "Qoyska", "students": "Arday", "total": "Total ($)", "discount": "Q.Dhimis ($)", "balance": "Baaqi ($)", "totalRow": "Total" },
+    "expenses": {
+      "addNew": "Ku Dar Kharash",
+      "table": { "category": "Nooca", "description": "Sharraxaad", "amount": "Qadarka", "date": "Taariikhda" },
+      "items": [
+        { "category": "Mushahar", "description": "Mushaharka Macallimiinta - Juun" },
+        { "category": "Adeegyada", "description": "Korontada iyo Biyaha" },
+        { "category": "Qalabka", "description": "Alaabta Fasalka (Sabuurad, Kuraas)" },
+        { "category": "Dhismaha", "description": "Dayactirka Qolka 101" },
+        { "category": "Adeegyada", "description": "Internet-ka Bisha" }
+      ]
+    },
+    "income": {
+      "addNew": "Ku Dar Dakhli",
+      "table": { "source": "Isha (Source)", "description": "Sharraxaad", "amount": "Qadarka", "date": "Taariikhda" },
+      "items": [
+        { "source": "Fees Ardayda", "description": "Fees Semester 2" },
+        { "source": "Deeqo (Donations)", "description": "Deeq ka timid Irmaan Group" },
+        { "source": "Fees Ardayda", "description": "Fees Semester 2 - dhaqaale dheeraad" }
+      ]
+    },
+    "salary": {
+      "table": { "staff": "Shaqaale", "role": "Doorka", "amount": "Qadarka", "month": "Bisha", "status": "Xaaladda" },
+      "items": [
+        { "staffName": "Cali Xasan Warsame", "role": "Macallin - Xisaabta", "month": "Luulyo 2026" },
+        { "staffName": "Faadumo Nuur Cige", "role": "Macallin - Ingiriisi", "month": "Luulyo 2026" },
+        { "staffName": "Xasan Cabdulle Nuur", "role": "Maamule Guud", "month": "Luulyo 2026" },
+        { "staffName": "Zaynab Cali Warsame", "role": "Xisaabiye", "month": "Luulyo 2026" }
+      ]
+    },
+    "discounts": {
+      "table": { "student": "Arday", "type": "Nooca", "amount": "Qadarka", "reason": "Sababta" },
+      "scholarship": "Deeq Waxbarasho",
+      "discount": "Dhimis",
+      "items": [
+        { "student": "Cabdiraxman Yoonis", "reason": "Walaalo dhowr ah oo isku dugsi ah" },
+        { "student": "Sacdiyo Xasan Nuur", "reason": "Deeq waxbarasho - buundo sare" }
+      ]
+    },
+    "documents": {
+      "table": { "no": "Lambarka", "type": "Nooca", "party": "Qofka", "amount": "Qadarka", "date": "Taariikhda" },
+      "invoice": "Invoice",
+      "receipt": "Receipt",
+      "items": [
+        { "party": "Ismaaciil Cabdi Xasan" },
+        { "party": "Xaawo Maxamed Cali" },
+        { "party": "Amiina Cabdulle" }
+      ]
+    },
+    "entryModal": {
+      "addExpenseTitle": "Ku Dar Kharash Cusub",
+      "addIncomeTitle": "Ku Dar Dakhli Cusub",
+      "fillInfo": "Buuxi macluumaadka hoose",
+      "category": "Qaybta (Category) *",
+      "categories": { "Mushahar": "Mushahar", "Adeegyada": "Adeegyada", "Qalabka": "Qalabka", "Dhismaha": "Dhismaha", "Gaadiid": "Gaadiid", "Dayactir": "Dayactir", "Kale": "Kale" },
+      "source": "Isha Dakhliga (Source) *",
+      "sourcePlaceholder": "Tusaale: Fees Ardayda",
+      "amount": "Qadarka ($) *",
+      "amountPlaceholder": "Tusaale: 200",
+      "description": "Sharraxaad",
+      "descriptionPlaceholder": "Faahfaahin gaaban",
+      "date": "Taariikhda",
+      "submitExpense": "Ku Dar Kharashka",
+      "submitIncome": "Ku Dar Dakhliga"
+    },
+    "collectModal": {
+      "title": "Lacag-Qabo",
+      "subtitle": "Diiwaan geli lacagta la helay",
+      "classOrFamily": "Fasalka / Qoyska *",
+      "balanceLabel": "Baaqi",
+      "amount": "Qadarka ($) *",
+      "amountPlaceholder": "Tusaale: 50",
+      "method": "Habka Bixinta",
+      "methods": { "Cash": "Cash", "Bangi (Bank)": "Bangi (Bank)", "EVC/Zaad (Mobile Money)": "EVC/Zaad (Mobile Money)" },
+      "date": "Taariikhda",
+      "confirm": "Xaqiiji Lacag-Qabashada"
+    },
+    "classDetail": {
+      "back": "Noqo",
+      "print": "Print",
+      "sortDefault": "Kala saar...",
+      "sortName": "Magaca (A-Z)",
+      "sortStatus": "Xaaladda",
+      "stats": { "total": "Total", "paid": "Bixiyey", "unpaid": "Aan Bixin", "free": "Bilaash", "discountValue": "Qiimo Dhimista", "unpaidCount": "A.Baska" },
+      "table": { "student": "Magaca Ardayga", "fee": "Fii" },
+      "collect": "Lacag Qabo"
+    }
+  },
+  "exams": {
+    "pageTitle": "Imtixaanada",
+    "pageSubtitle": "Maamul imtixaanada, buundooyinka, darajooyinka, GPA, iyo Report Card-yada.",
+    "addNew": "Abuur Imtixaan Cusub",
+    "confirmDelete": "Ma hubtaa inaad tirtirayso imtixaanka \"{{label}}\"?",
+    "types": { "Midterm": "Midterm", "Final": "Final", "Monthly": "Monthly", "Quiz": "Quiz", "Oral": "Oral", "Practical": "Practical" },
+    "tabs": { "exams": "Imtixaanada", "marks": "Gelinta Buundooyinka", "results": "Natiijooyinka & GPA", "reportcard": "Report Card" },
+    "table": { "type": "Nooca", "subject": "Maadada", "class": "Fasalka", "date": "Taariikhda", "maxMarks": "Buundooyinka Guud" },
+    "selectExam": "Dooro Imtixaanka:",
+    "marksNotMoreThan": "Buundooyinka (ka badan {{max}} ma noqon karto)",
+    "marksTable": { "student": "Ardayga", "marks": "Buundooyinka (ka badan {{max}} ma noqon karto)", "percent": "Boqolkiiba" },
+    "notEntered": "Lama gelin",
+    "selectClass": "Dooro Fasalka:",
+    "resultsTable": { "position": "Booska", "student": "Ardayga", "examsTaken": "Imtixaanada La Qaatay", "average": "Celceliska %", "gpa": "GPA", "grade": "Darajada" },
+    "selectStudent": "Dooro Ardayga:",
+    "exportPdf": "Export PDF",
+    "gpaLabel": "GPA",
+    "positionLabel": "Booska",
+    "form": {
+      "editTitle": "Wax Ka Beddel Imtixaanka",
+      "addTitle": "Abuur Imtixaan Cusub",
+      "fillInfo": "Buuxi macluumaadka hoose",
+      "fields": { "type": "Nooca Imtixaanka *", "subject": "Maadada *", "className": "Fasalka *", "date": "Taariikhda", "maxMarks": "Buundooyinka Guud (Max Marks) *" },
+      "placeholders": { "subject": "Tusaale: Xisaabta", "className": "Tusaale: Form 1A", "maxMarks": "Tusaale: 100" },
+      "submitAdd": "Abuur Imtixaanka"
+    },
+    "pdf": {
+      "title": "Kayd — Report Card",
+      "student": "Ardayga",
+      "class": "Fasalka",
+      "overallGpa": "GPA Guud",
+      "position": "Booska Fasalka (Position)"
+    }
+  },
+  "attendance": {
+    "pageTitle": "Imaanshaha",
+    "pageSubtitle": "La soco oo maamul imaanshaha ardayda, macallimiinta, iyo shaqaalaha.",
+    "categories": { "students": "Ardayda", "teachers": "Macallimiinta", "staff": "Shaqaalaha" },
+    "periods": { "daily": "Maalinlaha", "weekly": "Toddobaadlaha", "monthly": "Bishii", "yearly": "Sannadlaha" },
+    "today": "Maanta",
+    "total": "Wadarta",
+    "markingTitle": "Calaamadinta Imaanshaha — {{date}}",
+    "noteStudents": "Guji xaaladda ku habboon arday kasta.",
+    "noteOthers": "Guji xaaladda si aad u wareejiso: Joog → Maqan → Daahid",
+    "table": { "name": "Magaca", "details": "Faahfaahin", "status": "Xaaladda" },
+    "reportsTitle": "Warbixinnada",
+    "attendanceRate": "% Heerka Imaanshaha"
+  },
+  "classWorkspace": {
+    "notFound": "Fasalkan lama helin.",
+    "backToClasses": "Ku Noqo Fasallada",
+    "title": "Galaaska — {{grade}} {{section}}",
+    "classTeacherLabel": "Macallinka Fasalka",
+    "tabs": { "roster": "Ardayda", "attendance": "Xaadiris", "grades": "Dhibcaha", "quran": "Quraanka", "quranTargets": "Yoolka Quraanka", "schedule": "Jadwalka" },
+    "roster": {
+      "title": "Ardayda Fasalka",
+      "countBadge": "{{count}} Arday",
+      "table": { "student": "Arday", "id": "ID", "status": "Xaaladda" },
+      "empty": "Wali arday kuma jiraan fasalkan."
+    },
+    "attendance": {
+      "title": "Xaadiriska Maanta",
+      "table": { "student": "Arday", "status": "Xaaladda" },
+      "empty": "Wali arday kuma jiraan fasalkan."
+    },
+    "grades": {
+      "title": "Dhibcaha / Imtixaanada",
+      "empty": "Fasalkan wali imtixaan looma qorin.",
+      "selectExam": "Dooro Imtixaanka:",
+      "marksNotMoreThan": "Buundooyinka (ugu badnaan {{max}})",
+      "table": { "student": "Ardayga", "percent": "Boqolkiiba" }
+    },
+    "quran": {
+      "title": "Horumarka Quraanka Maanta",
+      "surahLabel": "Suurada/Qeybta Maanta (ikhtiyaari):",
+      "surahPlaceholder": "Tusaale: Suuratul Baqarah, aayad 1-20",
+      "table": { "student": "Arday", "currentStatus": "Xaaladda Hadda", "mark": "Calaamadi" },
+      "knew": "Wuu Gartay",
+      "didNotKnow": "Garanwaa",
+      "notMarkedYet": "Wali Lama Calaamadin",
+      "empty": "Wali arday kuma jiraan fasalkan."
+    },
+    "quranTargets": {
+      "title": "Yoolka Quraanka",
+      "currentPositionLabel": "Halka Uu Maanta Ka Socdo",
+      "currentPositionPlaceholder": "Tusaale: Juz' 1",
+      "save": "Kaydi",
+      "table": { "student": "Arday", "currentPosition": "Halka Uu Ka Socdo", "target": "Yoolka", "deadline": "Taariikhda", "status": "Xaaladda" },
+      "noTarget": "Yool lama dejin",
+      "setTarget": "Deji Yoolka",
+      "editTarget": "Beddel Yoolka",
+      "deadlineLabel": "Taariikhda Yoolka: {{date}}",
+      "pendingUntilLabel": "Sugaya ilaa {{date}}",
+      "lockedTooltip": "Ma sameyn kartid yool cusub ilaa aad ka jawaabto yoolka hadda jira ama ilaa uu gaadho {{date}}",
+      "status": { "pending": "Sugaya", "reached": "Wuu Gaadhay", "missed": "Ma Gaadhin" },
+      "daysLeftLabel": "{{count}} maalmood ka hadhay",
+      "empty": "Wali arday kuma jiraan fasalkan.",
+      "promptTitle": "Ardayga {{name}} — Ma gaadhay yoolkiisii \"{{target}}\"?",
+      "promptReached": "Sax",
+      "promptMissed": "Khalad",
+      "modal": {
+        "title": "Deji Yoolka Quraanka",
+        "targetLabel": "Yoolka La Rabo",
+        "targetPlaceholder": "Tusaale: Juz' 3",
+        "startDateLabel": "Taariikhda Bilowga",
+        "deadlineLabel": "Taariikhda Yoolka",
+        "save": "Kaydi Yoolka",
+        "cancel": "Jooji"
+      }
+    },
+    "schedule": {
+      "title": "Jadwalka Maanta — {{day}}",
+      "empty": "Ma jirto cashar maanta ({{day}}) loo qoray fasalkan."
+    }
+  },
+  "settings": {
+    "pageTitle": "Dejinta",
+    "pageSubtitle": "Maamul xogta dugsiga, qiimaha, sannadka waxbarasho, iyo akoonkaaga.",
+    "savedToast": "Isbeddelka waa la kaydiyay",
+    "tabs": { "school": "Xogta Dugsiga", "fees": "Qiimaha (Fees)", "academic": "Sannadka Waxbarasho", "notifications": "Ogeysiisyada", "account": "Akoonkayga" },
+    "school": {
+      "sectionTitle": "Xogta Guud ee Dugsiga",
+      "sectionDesc": "Magaca dugsigan wuxuu ka soo muuqan doonaa Sidebar-ka Dashboard-ka oo dhan.",
+      "defaultName": "Magaca Dugsiga",
+      "changeLogo": "Bedel Sawirka Logo-ga",
+      "uploadLogo": "Soo Geli Sawir Logo",
+      "uploading": "Waa la soo gelinayaa...",
+      "removeLogo": "Ka Saar Sawirka",
+      "logoHint": "PNG, JPG, WEBP ama SVG — ugu badnaan 500KB.",
+      "fields": { "name": "Magaca Dugsiga *", "code": "School Code", "phone": "Telefoonka", "address": "Cinwaanka", "email": "Iimaylka Dugsiga" },
+      "langCurrencyTitle": "Luqadda & Lacagta",
+      "systemLanguage": "Luqadda Nidaamka",
+      "currency": "Lacagta La Isticmaalo",
+      "save": "Kaydi Isbeddelka"
+    },
+    "fees": {
+      "sectionTitle": "Qiimaha Fasal Kasta",
+      "sectionDesc": "Beddel qiimaha caadiga ah ee fasal kasta — isbeddelkani wuxuu saameyn ku yeelan doonaa xisaabaadka lacagta ee cusub.",
+      "table": { "class": "Fasalka", "price": "Qiimaha ($)" },
+      "newGradeNamePlaceholder": "Magaca Fasalka Cusub (tusaale: Form 5)",
+      "newGradeAmountPlaceholder": "Qiimaha ($)",
+      "add": "Ku Dar"
+    },
+    "academic": {
+      "sectionTitle": "Sannadka Waxbarasho",
+      "sectionDesc": "Qeex bilowga iyo dhammaadka sannadka waxbarasho ee hadda socda.",
+      "startDate": "Bilowga Sannadka",
+      "endDate": "Dhammaadka Sannadka"
+    },
+    "notifications": {
+      "sectionTitle": "Doorashooyinka Ogeysiisyada",
+      "sectionDesc": "Xulo noocyada ogeysiisyada aad rabto in nidaamku kuu soo diro.",
+      "items": {
+        "feeReminders": { "label": "Xasuusin Lacageed", "desc": "Ogeysii marka lacag dib u dhacdo ama dhawaan dhammaanayso." },
+        "attendanceAlerts": { "label": "Digniin Imaansho", "desc": "Ogeysii marka heerka imaanshaha fasal hoos u dhaco." },
+        "examResults": { "label": "Natiijooyinka Imtixaanka", "desc": "Ogeysii marka buundooyinka la geliyo." },
+        "emailDigest": { "label": "Soo Koobid Toddobaadle (Email)", "desc": "Hel soo koobid guud oo toddobaadle ah email ahaan." }
+      }
+    },
+    "account": {
+      "sectionTitle": "Xogta Akoonkayga",
+      "defaultUser": "Isticmaale",
+      "roleTeacher": "Macallin",
+      "roleOwner": "Maamule / Owner",
+      "email": "Iimaylka",
+      "newPassword": "Furaha Sirta Cusub",
+      "confirmPassword": "Xaqiiji Furaha Sirta"
+    }
+  },
+  "parentPortal": {
+    "brandSuffix": "Waalidka",
+    "welcome": "Ku soo dhawoow, {{name}}",
+    "defaultParentName": "Waalid",
+    "logout": "Ka Bax",
+    "loading": "Waa la soo shubayaa...",
+    "noChildTitle": "Weli ilmo kuuma xirna akoonkan",
+    "noChildDesc": "Geli Diiwaan ID-ga ilmahaaga (tusaale: STU-1042) si loo xiro akoonkan.",
+    "addChildPlaceholder": "Diiwaan ID-ga ilmaha (tusaale: STU-1043)",
+    "addChildSubmit": "Ku Dar",
+    "addChildSubmitting": "Sugaya...",
+    "addChildCancel": "Jooji",
+    "addChildLink": "+ Ku Dar Ilmo Kale",
+    "addChildNotFound": "Diiwaan ID-gan lama helin dugsigan — fadlan hubi qoraalka.",
+    "addChildGenericError": "Wax baa qaldamay. Fadlan mar kale isku day.",
+    "attendanceRateLabel": "Heerka Imaanshaha",
+    "tabs": { "attendance": "Imaanshaha", "fees": "Lacagaha", "results": "Natiijooyinka", "messages": "Fariimaha", "behaviour": "Anshaxa", "examdates": "Taariikhaha Imtixaanka", "quran": "Quraanka" },
+    "attendance": { "title": "Imaanshaha", "empty": "Xog imaanshaha lama duubin weli ilmahan." },
+    "quran": {
+      "progressTitle": "Garashada Quraanka Maalinlaha ah",
+      "progressEmpty": "Wali xog garasho ah lama duubin ilmahan.",
+      "knew": "Wuu Yaqaanay",
+      "didNotKnow": "Ma Yaqaanin",
+      "targetTitle": "Yoolka Quraanka",
+      "targetEmpty": "Weli yool lama dejin ilmahan.",
+      "currentPositionLabel": "Halka Uu Ka Socdo",
+      "targetLabel": "Yoolka",
+      "deadlineLabel": "Taariikhda Yoolka",
+      "status": { "pending": "Sugaya", "reached": "Wuu Gaadhay", "missed": "Ma Gaadhin" }
+    },
+    "fees": { "title": "Lacagaha", "empty": "Xog lacageed lama helin.", "table": { "term": "Xilliga", "amount": "Qadarka", "date": "Taariikhda", "status": "Xaaladda" } },
+    "results": { "title": "Natiijooyinka", "empty": "Weli imtixaan looma qorin fasalkan.", "table": { "subject": "Maadada", "type": "Nooca", "marks": "Buundooyinka", "grade": "Darajada" }, "notEntered": "Lama gelin" },
+    "messages": { "title": "Fariimaha", "empty": "Weli fariin lama dirin — dir fariintaada ugu horeysa macallinka ama maamulaha.", "composePlaceholder": "Qor fariintaada..." },
+    "behaviour": { "title": "Anshaxa", "empty": "Wax faallo ah lama qorin." },
+    "examdates": { "title": "Taariikhaha Imtixaanka", "empty": "Ma jiro imtixaan soo socda fasalkan.", "table": { "subject": "Maadada", "type": "Nooca", "date": "Taariikhda" } },
+    "notifications": { "title": "Ogeysiisyada", "empty": "Ogeysiis lama helin.", "markAllRead": "Calaamadee Dhammaan" }
+  },
+  "messages": {
+    "pageTitle": "Fariimaha",
+    "pageSubtitle": "La xiriir waalidiinta ardayda si toos ah",
+    "searchPlaceholder": "Raadi arday...",
+    "noStudents": "Arday lama helin",
+    "noMessagesYet": "Fariin lama dirin weli",
+    "selectStudent": "Dooro arday si aad u aragto fariimaha",
+    "startConversation": "Bilow wadahadal — dir fariinta ugu horeysa",
+    "composePlaceholder": "Qor fariintaada..."
+  },
+  "notifications": {
+    "title": "Ogeysiisyada",
+    "subtitle": "La soco dhammaan dhacdooyinka muhiimka ah ee nidaamka.",
+    "empty": "Ogeysiis lama helin.",
+    "emptyFiltered": "Ogeysiis lama helin qaybtan.",
+    "markAllRead": "Calaamadee Dhammaan",
+    "viewAll": "Fiiri Dhammaan Ogeysiisyada",
+    "delete": "Tirtir",
+    "filters": {
+      "all": "Dhammaan",
+      "unread": "Aan La Akhrin",
+      "fee": "Lacagta",
+      "absent": "Imaanshaha",
+      "exam": "Imtixaanada",
+      "message": "Fariimaha",
+      "system": "Nidaamka"
+    },
+    "types": {
+      "fee": { "label": "Lacagta", "title": "Lacag Baaqi Ah" },
+      "absent": { "label": "Imaanshaha", "title": "Arday Maqan" },
+      "exam": { "label": "Imtixaanada", "title": "Imtixaanada" },
+      "message": { "label": "Fariinta", "title": "Fariin Cusub" },
+      "system": { "label": "Nidaamka", "title": "Nidaamka" }
+    },
+    "feeMessage": "{{name}} ({{className}}) wuxuu leeyahay lacag baaqi ah.",
+    "absentMessage": "{{name}} ({{className}}) ayaa maanta ka maqnaa fasalka."
+  },
+  "trash": {
+    "title": "Xogta La Tirtiray",
+    "subtitle": "Ardayda la tirtiray 45-ka maalmood ee ugu dambeeyay — soo celi ama tirtir run ahaan.",
+    "empty": "Xog lama tirtirin.",
+    "table": {
+      "name": "Magaca",
+      "className": "Fasalka",
+      "deletedDate": "Taariikhda La Tirtiray",
+      "daysLeft": "Maalmaha Ka Hadhay"
+    },
+    "daysLeftLabel": "{{count}} maalmood ka hadhay",
+    "expired": "Dhawaan ayaa la tirtiri doonaa",
+    "restore": "Soo Celi",
+    "deletePermanently": "Tirtir Run Ahaan",
+    "confirmPermanentDelete": "Ma hubtaa inaad si joogto ah u tirtirayso {{name}}? Tallaabadan lama noqon karo."
+  },
+  "login": {
+    "title": "Gal Akoonkaaga",
+    "registerTitle": "Diiwaan Geli",
+    "errors": {
+      "invalidCredential": "Iimaylka ama Furaha Sirta waa khalad.",
+      "userNotFound": "Akoon lama helin xogtan.",
+      "wrongPassword": "Furaha Sirta waa khalad.",
+      "tooManyRequests": "Isku day badan oo khalad ah ayaa la sameeyay. Fadlan wax yar sug.",
+      "emailInUse": "Akoonkan (School Code + Diiwaan ID) horeba waa la diiwaan geliyay — fadlan Gal halkii aad Diiwaan Geli lahayd.",
+      "weakPassword": "Furaha Sirta waa inuu ka koobnaadaa ugu yaraan 6 xaraf.",
+      "wrongRole": "Akoontaan uma dhigna doorka aad doorateen (Arday/Waalid).",
+      "generic": "Wax baa qaldamay. Fadlan mar kale isku day.",
+      "passwordMismatch": "Furaha Sirta iyo Xaqiijinta Furaha Sirta isku mid ma aha."
+    },
+    "staff": {
+      "emailLabel": "Iimaylka (G-Mail)",
+      "emailPlaceholder": "tusaale@gmail.com",
+      "passwordLabel": "Furaha Sirta",
+      "passwordPlaceholder": "••••••••••••",
+      "forgotLink": "Ma illowday Password-ka?",
+      "submit": "GAL",
+      "submitLoading": "SUGAYA...",
+      "or": "AMA",
+      "switchToStudent": "Waxaan Ahay Arday / Waalid"
+    },
+    "student": {
+      "roleArday": "ARDAY",
+      "roleWaalid": "WAALID",
+      "roleArdayLabel": "Arday",
+      "roleWaalidLabel": "Waalid",
+      "schoolCodeLabel": "School Code",
+      "schoolCodePlaceholder": "Tusaale: XRN-2026",
+      "diiwaanIdLabel": "Diiwaan ID ({{role}})",
+      "diiwaanIdPlaceholder": "123456",
+      "passwordLabel": "Furaha Sirta",
+      "passwordPlaceholder": "••••",
+      "submit": "GAL",
+      "submitLoading": "SUGAYA...",
+      "noAccountLink": "Ma lihi akoon? Diiwaan Geli",
+      "or": "AMA",
+      "switchToStaff": "Waxaan Ahay Shaqaale"
+    },
+    "register": {
+      "fullNameLabel": "Magaca Buuxa",
+      "fullNamePlaceholder": "Tusaale: Xaawo Maxamed Cali",
+      "schoolCodeLabel": "School Code",
+      "schoolCodePlaceholder": "Tusaale: XRN-2026",
+      "diiwaanIdLabel": "Diiwaan ID ({{role}})",
+      "diiwaanIdRoleArday": "Adiga",
+      "diiwaanIdRoleWaalid": "Ilmahaaga ugu horreeya",
+      "diiwaanIdPlaceholder": "Tusaale: STU-1042",
+      "passwordLabel": "Furaha Sirta",
+      "passwordPlaceholder": "••••••••",
+      "confirmPasswordLabel": "Xaqiiji Furaha Sirta",
+      "submit": "Diiwaan Geli",
+      "submitLoading": "SUGAYA...",
+      "alreadyHaveAccount": "Horeba akoon ma leedahay? Gal"
+    }
+  },
+  "forgotPassword": {
+    "title": "Ma Illowday Password-ka?",
+    "note": "Geli iimaylka akoonkaaga, waxaan kuu diri doonaa link aad password-kaaga ku beddeli karto.",
+    "emailLabel": "Iimaylka (G-Mail)",
+    "emailPlaceholder": "tusaale@gmail.com",
+    "submit": "Dir Link-ga Beddelka",
+    "submitLoading": "SUGAYA...",
+    "successPrefix": "Waxaan email ku dirnay",
+    "successSuffix": "link aad ku beddeli karto password-kaaga. Fadlan hubi inbox-kaaga (iyo folder-ka Spam).",
+    "errors": {
+      "invalidEmail": "Iimaylkan lama aqbalo, fadlan hubi qoraalka.",
+      "userNotFound": "Akoon lama helin iimaylkan.",
+      "tooManyRequests": "Isku day badan oo khalad ah ayaa la sameeyay. Fadlan wax yar sug.",
+      "generic": "Wax baa qaldamay. Fadlan mar kale isku day."
+    }
+  }
+}
