@@ -295,7 +295,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                   required
                 />
               </div>
-              <div className="field" style={{ marginBottom: '24px' }}>
+              <div className="field" style={{ marginBottom: '16px' }}>
                 <label>{t('login.register.confirmPasswordLabel')}</label>
                 <input
                   type="password"

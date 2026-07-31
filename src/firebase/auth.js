@@ -86,10 +86,9 @@ export async function registerStudentOrParent({
   const pseudoEmail = buildStudentPseudoEmail(cleanSchoolCode, cleanDiiwaanId);
   const result = await createUserWithEmailAndPassword(auth, pseudoEmail, password);
 
-  // Xiriirinta ilmaha 1aad: Diiwaan ID-ga la geliyay waxaa lagu barbardhigaa
-  // studentId-ga dhabta ah ee dugsigan — haddii la helo, waa lagu xiraa.
-  const matchedStudent = await findStudentByStudentId(cleanSchoolCode, cleanDiiwaanId);
-
+  // Profile-ka waa in la sameeyaa KA HOR raadinta ardayga — Firestore Rules
+  // waxay u baahan yihiin in users/{uid} doc-ku horeba jiro si loo xaqiijiyo
+  // in isticmaaluhu isla dugsiga (schoolCode) yahay ka hor inta uu wax akhrin.
   await setDoc(doc(db, 'users', result.user.uid), {
     uid: result.user.uid,
     fullName,
@@ -97,9 +96,16 @@ export async function registerStudentOrParent({
     diiwaanId: cleanDiiwaanId,
     role, // 'arday' | 'waalid'
     accountType: 'student-parent',
-    childrenIds: matchedStudent ? [matchedStudent.id] : [],
+    childrenIds: [],
     createdAt: serverTimestamp(),
   });
+
+  // Xiriirinta ilmaha 1aad: Diiwaan ID-ga la geliyay waxaa lagu barbardhigaa
+  // studentId-ga dhabta ah ee dugsigan — haddii la helo, waa lagu xiraa.
+  const matchedStudent = await findStudentByStudentId(cleanSchoolCode, cleanDiiwaanId);
+  if (matchedStudent) {
+    await updateDoc(doc(db, 'users', result.user.uid), { childrenIds: [matchedStudent.id] });
+  }
 
   return { user: result.user, childFound: !!matchedStudent };
 }
