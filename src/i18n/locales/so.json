@@ -399,6 +399,64 @@
     "reportsTitle": "Warbixinnada",
     "attendanceRate": "% Heerka Imaanshaha"
   },
+  "reports": {
+    "pageTitle": "Warbixinno",
+    "pageSubtitle": "Warbixin guud oo isku keenta xogta ardayda, macallimiinta, lacagta, iyo imtixaanada.",
+    "exportPdf": "Export PDF",
+    "unassigned": "Aan la qeexin",
+    "metrics": {
+      "totalStudents": "Wadarta Ardayda",
+      "avgAttendance": "Celceliska Imaanshaha",
+      "netProfit": "Faa'iidada Saafiga Ah",
+      "examAvg": "Celceliska Imtixaanada"
+    },
+    "enrollment": {
+      "title": "Diiwaan Gelinta Fasal Kasta",
+      "empty": "Wali arday lama darin."
+    },
+    "examPerformance": {
+      "title": "Waxqabadka Imtixaanada Fasal Kasta",
+      "empty": "Wali imtixaan lama qorin."
+    },
+    "attendanceTrend": {
+      "title": "Isbeddelka Imaanshaha",
+      "titleWithCount": "Isbeddelka Imaanshaha ({{count}} Toddobaad)",
+      "empty": "Wali imaanshaha arday lama qorin.",
+      "week": "Toddobaad {{n}}",
+      "weekShort": "T{{n}}"
+    },
+    "finance": {
+      "title": "Warbixinta Maaliyadda",
+      "income": "Dakhliga",
+      "expenses": "Kharashka"
+    },
+    "topStudents": {
+      "title": "Ardayda Ugu Sarreeya (GPA)",
+      "empty": "Wali buundo imtixaan lama qorin."
+    },
+    "teacherAttendance": {
+      "title": "Imaanshaha Macallimiinta",
+      "empty": "Wali macallin lama darin."
+    },
+    "pdf": {
+      "title": "Kayd — Warbixinta Guud",
+      "generatedOn": "La soo saaray: {{date}}",
+      "totalStudents": "Wadarta Ardayda: {{count}}",
+      "avgAttendance": "Celceliska Imaanshaha: {{rate}}%",
+      "financeLine": "Dakhliga: ${{income}}  |  Kharashka: ${{expenses}}  |  Faa'iidada: ${{profit}}",
+      "examAvg": "Celceliska Imtixaanada: {{rate}}%",
+      "headers": {
+        "class": "Fasalka",
+        "studentCount": "Tirada Ardayda",
+        "examAvg": "Celceliska Imtixaanada (%)",
+        "week": "Toddobaadka",
+        "attendanceRate": "Heerka Imaanshaha (%)",
+        "student": "Ardayga",
+        "gpa": "GPA",
+        "teacher": "Macallinka"
+      }
+    }
+  },
   "classWorkspace": {
     "notFound": "Fasalkan lama helin.",
     "backToClasses": "Ku Noqo Fasallada",

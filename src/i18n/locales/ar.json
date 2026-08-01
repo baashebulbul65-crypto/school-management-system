@@ -399,6 +399,64 @@
     "reportsTitle": "التقارير",
     "attendanceRate": "% معدل الحضور"
   },
+  "reports": {
+    "pageTitle": "التقارير",
+    "pageSubtitle": "تقرير عام يجمع بيانات الطلاب والمعلمين والمالية والامتحانات.",
+    "exportPdf": "تصدير PDF",
+    "unassigned": "غير محدد",
+    "metrics": {
+      "totalStudents": "إجمالي الطلاب",
+      "avgAttendance": "متوسط الحضور",
+      "netProfit": "صافي الربح",
+      "examAvg": "متوسط الامتحانات"
+    },
+    "enrollment": {
+      "title": "تسجيل الطلاب لكل صف",
+      "empty": "لم يتم إضافة أي طالب بعد."
+    },
+    "examPerformance": {
+      "title": "أداء الامتحانات لكل صف",
+      "empty": "لم يتم تسجيل أي امتحان بعد."
+    },
+    "attendanceTrend": {
+      "title": "اتجاه الحضور",
+      "titleWithCount": "اتجاه الحضور ({{count}} أسبوع)",
+      "empty": "لم يتم تسجيل حضور الطلاب بعد.",
+      "week": "أسبوع {{n}}",
+      "weekShort": "أ{{n}}"
+    },
+    "finance": {
+      "title": "التقرير المالي",
+      "income": "الدخل",
+      "expenses": "المصروفات"
+    },
+    "topStudents": {
+      "title": "الطلاب الأوائل (GPA)",
+      "empty": "لم يتم تسجيل درجات امتحانات بعد."
+    },
+    "teacherAttendance": {
+      "title": "حضور المعلمين",
+      "empty": "لم يتم إضافة أي معلم بعد."
+    },
+    "pdf": {
+      "title": "كيد — التقرير العام",
+      "generatedOn": "تاريخ الإصدار: {{date}}",
+      "totalStudents": "إجمالي الطلاب: {{count}}",
+      "avgAttendance": "متوسط الحضور: {{rate}}%",
+      "financeLine": "الدخل: ${{income}}  |  المصروفات: ${{expenses}}  |  الربح: ${{profit}}",
+      "examAvg": "متوسط الامتحانات: {{rate}}%",
+      "headers": {
+        "class": "الصف",
+        "studentCount": "عدد الطلاب",
+        "examAvg": "متوسط الامتحانات (%)",
+        "week": "الأسبوع",
+        "attendanceRate": "معدل الحضور (%)",
+        "student": "الطالب",
+        "gpa": "GPA",
+        "teacher": "المعلم"
+      }
+    }
+  },
   "classWorkspace": {
     "notFound": "لم يتم العثور على هذا الفصل.",
     "backToClasses": "العودة إلى الفصول",

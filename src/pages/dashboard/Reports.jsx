@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useSchoolData } from '../../context/SchoolDataContext';
@@ -20,6 +21,7 @@ function gpaFromPercent(pct) {
 }
 
 function Reports() {
+  const { t, i18n } = useTranslation();
   const { students, teachers, classes, exams, examMarks, expenses, income, feePayments, allStudentAttendanceRecords, allStaffAttendanceRecords } = useSchoolData();
 
   // classId marka jira, className fallback ilaa ardayda/imtixaannada aan weli
@@ -35,10 +37,10 @@ function Reports() {
       students: students.filter((s) => studentInClass(s, cls)).length,
     }));
     const unassigned = students.filter((s) => !classes.some((cls) => studentInClass(s, cls))).length;
-    if (unassigned > 0) rows.push({ className: 'Aan la qeexin', students: unassigned });
+    if (unassigned > 0) rows.push({ className: t('reports.unassigned'), students: unassigned });
     return rows.filter((r) => r.students > 0).sort((a, b) => b.students - a.students);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [students, classes]);
+  }, [students, classes, t]);
 
   const totalStudents = students.length;
   const maxEnrollment = Math.max(1, ...enrollmentByClass.map((c) => c.students));
@@ -82,7 +84,7 @@ function Reports() {
       const weekDates = dates.slice(i, i + 7);
       const present = weekDates.reduce((s, d) => s + dateBuckets[d].present, 0);
       const total = weekDates.reduce((s, d) => s + dateBuckets[d].total, 0);
-      weeks.push({ week: `Toddobaad ${weeks.length + 1}`, rate: total > 0 ? Math.round((present / total) * 100) : 0 });
+      weeks.push({ weekNumber: weeks.length + 1, rate: total > 0 ? Math.round((present / total) * 100) : 0 });
     }
     return weeks;
   }, [allStudentAttendanceRecords]);
@@ -121,7 +123,7 @@ function Reports() {
         });
         return {
           name: student.fullName,
-          className: studentCls ? classroomName(studentCls) : (student.className || 'Aan la qeexin'),
+          className: studentCls ? classroomName(studentCls) : (student.className || t('reports.unassigned')),
           gpa: count > 0 ? totalGpa / count : null,
         };
       })
@@ -129,7 +131,7 @@ function Reports() {
       .sort((a, b) => b.gpa - a.gpa)
       .slice(0, 5);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [students, exams, examMarks, classes]);
+  }, [students, exams, examMarks, classes, t]);
 
   const teacherAttendanceSummary = useMemo(() => {
     return teachers
@@ -145,40 +147,40 @@ function Reports() {
   const handleExportPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(16);
-    doc.text('Kayd — Warbixinta Guud', 14, 18);
+    doc.text(t('reports.pdf.title'), 14, 18);
     doc.setFontSize(10);
-    doc.text(`La soo saaray: ${new Date().toLocaleDateString('so')}`, 14, 25);
+    doc.text(t('reports.pdf.generatedOn', { date: new Date().toLocaleDateString(i18n.language) }), 14, 25);
 
     doc.setFontSize(11);
-    doc.text(`Wadarta Ardayda: ${totalStudents}`, 14, 36);
-    doc.text(`Celceliska Imaanshaha: ${avgAttendance}%`, 14, 43);
-    doc.text(`Dakhliga: $${totalIncome}  |  Kharashka: $${totalExpenses}  |  Faa'iidada: $${netProfit}`, 14, 50);
-    doc.text(`Celceliska Imtixaanada: ${overallExamAvg}%`, 14, 57);
+    doc.text(t('reports.pdf.totalStudents', { count: totalStudents }), 14, 36);
+    doc.text(t('reports.pdf.avgAttendance', { rate: avgAttendance }), 14, 43);
+    doc.text(t('reports.pdf.financeLine', { income: totalIncome, expenses: totalExpenses, profit: netProfit }), 14, 50);
+    doc.text(t('reports.pdf.examAvg', { rate: overallExamAvg }), 14, 57);
 
     autoTable(doc, {
       startY: 65,
-      head: [['Fasalka', 'Tirada Ardayda']],
+      head: [[t('reports.pdf.headers.class'), t('reports.pdf.headers.studentCount')]],
       body: enrollmentByClass.map((c) => [c.className, c.students]),
     });
 
     autoTable(doc, {
-      head: [['Fasalka', 'Celceliska Imtixaanada (%)']],
+      head: [[t('reports.pdf.headers.class'), t('reports.pdf.headers.examAvg')]],
       body: examPerformanceByClass.map((c) => [c.className, c.avgPercent]),
     });
 
     autoTable(doc, {
-      head: [['Toddobaadka', 'Heerka Imaanshaha (%)']],
-      body: attendanceTrend.map((w) => [w.week, w.rate]),
+      head: [[t('reports.pdf.headers.week'), t('reports.pdf.headers.attendanceRate')]],
+      body: attendanceTrend.map((w) => [t('reports.attendanceTrend.week', { n: w.weekNumber }), w.rate]),
     });
 
     autoTable(doc, {
-      head: [['Ardayga', 'Fasalka', 'GPA']],
+      head: [[t('reports.pdf.headers.student'), t('reports.pdf.headers.class'), t('reports.pdf.headers.gpa')]],
       body: topStudents.map((s) => [s.name, s.className, s.gpa.toFixed(2)]),
     });
 
     autoTable(doc, {
-      head: [['Macallinka', 'Heerka Imaanshaha (%)']],
-      body: teacherAttendanceSummary.map((t) => [t.name, t.rate]),
+      head: [[t('reports.pdf.headers.teacher'), t('reports.pdf.headers.attendanceRate')]],
+      body: teacherAttendanceSummary.map((row) => [row.name, row.rate]),
     });
 
     doc.save('kayd-warbixinta-guud.pdf');
@@ -188,13 +190,13 @@ function Reports() {
     <div>
       <div className="page-header">
         <div className="page-header-text">
-          <h2>Warbixinno</h2>
-          <p>Warbixin guud oo isku keenta xogta ardayda, macallimiinta, lacagta, iyo imtixaanada.</p>
+          <h2>{t('reports.pageTitle')}</h2>
+          <p>{t('reports.pageSubtitle')}</p>
         </div>
         <div className="rep-header-actions">
           <button className="btn-primary" onClick={handleExportPDF}>
             <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-            Export PDF
+            {t('reports.exportPdf')}
           </button>
         </div>
       </div>
@@ -205,25 +207,25 @@ function Reports() {
           <div className="rep-metric-icon blue">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
           </div>
-          <div><span className="rep-metric-value">{totalStudents}</span><span className="rep-metric-label">Wadarta Ardayda</span></div>
+          <div><span className="rep-metric-value">{totalStudents}</span><span className="rep-metric-label">{t('reports.metrics.totalStudents')}</span></div>
         </div>
         <div className="rep-metric-card">
           <div className="rep-metric-icon green">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
           </div>
-          <div><span className="rep-metric-value">{avgAttendance}%</span><span className="rep-metric-label">Celceliska Imaanshaha</span></div>
+          <div><span className="rep-metric-value">{avgAttendance}%</span><span className="rep-metric-label">{t('reports.metrics.avgAttendance')}</span></div>
         </div>
         <div className="rep-metric-card">
           <div className="rep-metric-icon teal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
           </div>
-          <div><span className={`rep-metric-value ${netProfit >= 0 ? 'success' : 'danger'}`}>${netProfit.toLocaleString()}</span><span className="rep-metric-label">Faa'iidada Saafiga Ah</span></div>
+          <div><span className={`rep-metric-value ${netProfit >= 0 ? 'success' : 'danger'}`}>${netProfit.toLocaleString()}</span><span className="rep-metric-label">{t('reports.metrics.netProfit')}</span></div>
         </div>
         <div className="rep-metric-card">
           <div className="rep-metric-icon purple">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
           </div>
-          <div><span className="rep-metric-value">{overallExamAvg}%</span><span className="rep-metric-label">Celceliska Imtixaanada</span></div>
+          <div><span className="rep-metric-value">{overallExamAvg}%</span><span className="rep-metric-label">{t('reports.metrics.examAvg')}</span></div>
         </div>
       </div>
 
@@ -231,9 +233,9 @@ function Reports() {
 
         {/* ENROLLMENT BY CLASS */}
         <div className="dash-card">
-          <h3 className="rep-card-title">Diiwaan Gelinta Fasal Kasta</h3>
+          <h3 className="rep-card-title">{t('reports.enrollment.title')}</h3>
           {enrollmentByClass.length === 0 ? (
-            <p className="rep-empty">Wali arday lama darin.</p>
+            <p className="rep-empty">{t('reports.enrollment.empty')}</p>
           ) : (
             <div className="rep-bar-list">
               {enrollmentByClass.map((c) => (
@@ -251,9 +253,9 @@ function Reports() {
 
         {/* EXAM PERFORMANCE BY CLASS */}
         <div className="dash-card">
-          <h3 className="rep-card-title">Waxqabadka Imtixaanada Fasal Kasta</h3>
+          <h3 className="rep-card-title">{t('reports.examPerformance.title')}</h3>
           {examPerformanceByClass.length === 0 ? (
-            <p className="rep-empty">Wali imtixaan lama qorin.</p>
+            <p className="rep-empty">{t('reports.examPerformance.empty')}</p>
           ) : (
             <div className="rep-bar-list">
               {examPerformanceByClass.map((c) => (
@@ -271,19 +273,23 @@ function Reports() {
 
         {/* ATTENDANCE TREND */}
         <div className="dash-card">
-          <h3 className="rep-card-title">Isbeddelka Imaanshaha{attendanceTrend.length ? ` (${attendanceTrend.length} Toddobaad)` : ''}</h3>
+          <h3 className="rep-card-title">
+            {attendanceTrend.length
+              ? t('reports.attendanceTrend.titleWithCount', { count: attendanceTrend.length })
+              : t('reports.attendanceTrend.title')}
+          </h3>
           {attendanceTrend.length === 0 ? (
-            <p className="rep-empty">Wali imaanshaha arday lama qorin.</p>
+            <p className="rep-empty">{t('reports.attendanceTrend.empty')}</p>
           ) : (
             <div className="rep-trend-chart">
               {attendanceTrend.map((w) => (
-                <div className="rep-trend-col" key={w.week}>
+                <div className="rep-trend-col" key={w.weekNumber}>
                   <div className="rep-trend-bar-wrap">
                     <div className="rep-trend-bar" style={{ height: `${w.rate}%` }}>
                       <span>{w.rate}%</span>
                     </div>
                   </div>
-                  <span className="rep-trend-label">{w.week.replace('Toddobaad ', 'T')}</span>
+                  <span className="rep-trend-label">{t('reports.attendanceTrend.weekShort', { n: w.weekNumber })}</span>
                 </div>
               ))}
             </div>
@@ -292,17 +298,17 @@ function Reports() {
 
         {/* FINANCE SUMMARY */}
         <div className="dash-card">
-          <h3 className="rep-card-title">Warbixinta Maaliyadda</h3>
+          <h3 className="rep-card-title">{t('reports.finance.title')}</h3>
           <div className="rep-finance-bars">
             <div className="rep-finance-row">
-              <span className="rep-finance-label">Dakhliga</span>
+              <span className="rep-finance-label">{t('reports.finance.income')}</span>
               <div className="rep-bar-track">
                 <div className="rep-bar-fill green" style={{ width: `${(totalIncome / maxFinanceBar) * 100}%` }}></div>
               </div>
               <span className="rep-bar-value">${totalIncome.toLocaleString()}</span>
             </div>
             <div className="rep-finance-row">
-              <span className="rep-finance-label">Kharashka</span>
+              <span className="rep-finance-label">{t('reports.finance.expenses')}</span>
               <div className="rep-bar-track">
                 <div className="rep-bar-fill red" style={{ width: `${(totalExpenses / maxFinanceBar) * 100}%` }}></div>
               </div>
@@ -310,7 +316,7 @@ function Reports() {
             </div>
           </div>
           <div className={`rep-net-banner ${netProfit >= 0 ? 'positive' : 'negative'}`}>
-            Faa'iidada Saafiga Ah: <strong>${netProfit.toLocaleString()}</strong>
+            {t('reports.metrics.netProfit')}: <strong>${netProfit.toLocaleString()}</strong>
           </div>
         </div>
 
@@ -320,9 +326,9 @@ function Reports() {
 
         {/* TOP STUDENTS */}
         <div className="dash-card">
-          <h3 className="rep-card-title">Ardayda Ugu Sarreeya (GPA)</h3>
+          <h3 className="rep-card-title">{t('reports.topStudents.title')}</h3>
           {topStudents.length === 0 ? (
-            <p className="rep-empty">Wali buundo imtixaan lama qorin.</p>
+            <p className="rep-empty">{t('reports.topStudents.empty')}</p>
           ) : (
             <div className="rep-leaderboard">
               {topStudents.map((s, i) => (
@@ -342,18 +348,18 @@ function Reports() {
 
         {/* TEACHER ATTENDANCE */}
         <div className="dash-card">
-          <h3 className="rep-card-title">Imaanshaha Macallimiinta</h3>
+          <h3 className="rep-card-title">{t('reports.teacherAttendance.title')}</h3>
           {teacherAttendanceSummary.length === 0 ? (
-            <p className="rep-empty">Wali macallin lama darin.</p>
+            <p className="rep-empty">{t('reports.teacherAttendance.empty')}</p>
           ) : (
             <div className="rep-bar-list">
-              {teacherAttendanceSummary.map((t) => (
-                <div className="rep-bar-row" key={t.name}>
-                  <span className="rep-bar-label">{t.name}</span>
+              {teacherAttendanceSummary.map((row) => (
+                <div className="rep-bar-row" key={row.name}>
+                  <span className="rep-bar-label">{row.name}</span>
                   <div className="rep-bar-track">
-                    <div className={`rep-bar-fill ${t.rate >= 90 ? 'green' : t.rate >= 80 ? 'orange' : 'red'}`} style={{ width: `${t.rate}%` }}></div>
+                    <div className={`rep-bar-fill ${row.rate >= 90 ? 'green' : row.rate >= 80 ? 'orange' : 'red'}`} style={{ width: `${row.rate}%` }}></div>
                   </div>
-                  <span className="rep-bar-value">{t.rate}%</span>
+                  <span className="rep-bar-value">{row.rate}%</span>
                 </div>
               ))}
             </div>
