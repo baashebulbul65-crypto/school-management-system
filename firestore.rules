@@ -37,6 +37,29 @@ service cloud.firestore {
       return isSameSchoolParent(schoolCode) && studentId in me().childrenIds;
     }
 
+    // "Ilmahan (childId) ma ku jiraa fasalka (classId)" — waxaa loo isticmaalaa
+    // 'exams' (fiiri hoos), maadaama imtixaanku uu ku xiran yahay fasal
+    // (classId), ma aha arday gaar ah (studentId) sida collections-ka kale.
+    function childInClass(childId, classId) {
+      return childId != null
+        && classId != null
+        && exists(/databases/$(database)/documents/students/$(childId))
+        && get(/databases/$(database)/documents/students/$(childId)).data.get('classId', null) == classId;
+    }
+
+    // Waalidka fasalka — mid ka mid ah childrenIds-kiisa (ilaa 5, tiro
+    // macquul ah) ku jiraa fasalkan. Rules-ku ma taageeraan loop dhab ah oo
+    // liis ah, sidaas darteed waxaa la xaddiday tiro la yaqaan.
+    function isParentOfClass(schoolCode, classId) {
+      return isSameSchoolParent(schoolCode) && (
+        (me().childrenIds.size() > 0 && childInClass(me().childrenIds[0], classId))
+        || (me().childrenIds.size() > 1 && childInClass(me().childrenIds[1], classId))
+        || (me().childrenIds.size() > 2 && childInClass(me().childrenIds[2], classId))
+        || (me().childrenIds.size() > 3 && childInClass(me().childrenIds[3], classId))
+        || (me().childrenIds.size() > 4 && childInClass(me().childrenIds[4], classId))
+      );
+    }
+
     // ===== users =====
     // Isticmaale kastaa wuxuu akhriyi/beddeli karaa profile-kiisa. Waxaa sidoo
     // kale u ogolaaday 'owner' inuu maamulo (abuur/akhri/beddel/saar) shaqaalaha
@@ -155,8 +178,12 @@ service cloud.firestore {
 
     // ===== exams ===== (qeexidda imtixaanka — fiiri examMarks ee buundada
     // ardaygu ku qaatay) — shaqaale kastaa wuu maamuli karaa.
+    // Waalidku wuxuu akhrin karaa KELIYA imtixaannada fasalka ilmihiisa
+    // (isla qaabka subscribeToClassExamsForParent, fiiri firebase/exams.js)
+    // — ma aha dhammaan imtixaanada dugsiga.
     match /exams/{examId} {
-      allow read, update, delete: if isStaffOf(resource.data.schoolCode);
+      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfClass(resource.data.schoolCode, resource.data.get('classId', null));
+      allow update, delete: if isStaffOf(resource.data.schoolCode);
       allow create: if isStaffOf(request.resource.data.schoolCode);
     }
 

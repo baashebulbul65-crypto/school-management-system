@@ -2,13 +2,13 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
-import { useSchoolData } from '../../context/SchoolDataContext';
 import { useToast } from '../../context/ToastContext';
 import { getStudentsByIds } from '../../firebase/students';
 import { subscribeToStudentAttendanceHistory } from '../../firebase/attendance';
 import { subscribeToStudentQuranProgressHistory } from '../../firebase/quranProgress';
 import { subscribeToQuranTargetsForStudent } from '../../firebase/quranTargets';
 import { subscribeToStudentExamMarks } from '../../firebase/examMarks';
+import { subscribeToClassExamsForParent } from '../../firebase/exams';
 import { subscribeToStudentFeePayments } from '../../firebase/finance';
 import { addChildToParent } from '../../firebase/auth';
 import { subscribeToThread, sendMessage, markMessagesRead } from '../../firebase/messages';
@@ -61,7 +61,6 @@ function ParentPortal() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('attendance');
   const { profile, logout } = useAuth();
-  const { exams } = useSchoolData();
   const { showError } = useToast();
   const navigate = useNavigate();
 
@@ -88,6 +87,7 @@ function ParentPortal() {
   const [quranProgressHistory, setQuranProgressHistory] = useState([]);
   const [studentQuranTargets, setStudentQuranTargets] = useState([]);
   const [studentExamMarks, setStudentExamMarks] = useState([]);
+  const [classExams, setClassExams] = useState([]);
   const [feePaymentsHistory, setFeePaymentsHistory] = useState([]);
   const [threadMessages, setThreadMessages] = useState([]);
   const [messageDraft, setMessageDraft] = useState('');
@@ -179,6 +179,26 @@ function ParentPortal() {
     );
     return unsubscribe;
   }, [profile?.schoolCode, selectedChildId]);
+
+  // Imtixaannada fasalka ilmaha la doortay KALIYA (classId-scoped) — ma aha
+  // dhammaan imtixaanada dugsiga (kaas oo staff-only, fiiri
+  // SchoolDataContext.jsx). Haddii ilmuhu weli aanu lahayn classId (aan la
+  // dib-u-kaydin dropdown-ka cusub), liiskan wuu madhnaan doonaa ilaa la
+  // dib-u-kaydiyo.
+  useEffect(() => {
+    const child = children.find((c) => c.id === selectedChildId);
+    if (!profile?.schoolCode || !child?.classId) {
+      setClassExams([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToClassExamsForParent(
+      profile.schoolCode,
+      child.classId,
+      setClassExams,
+      (err) => reportError('Khalad ayaa dhacay markii imtixaanada laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, selectedChildId, children]);
 
   // Taariikhda bixinnada lacagta ee ilmaha la doortay (feePayments dhab ah,
   // halkii ay ka akhrin lahaayeen selectedChild.fees oo ah array hore oo
@@ -303,24 +323,23 @@ function ParentPortal() {
     if (!selectedChild) return [];
     const marksByExamId = {};
     studentExamMarks.forEach((r) => { marksByExamId[r.examId] = r.mark; });
-    return exams
-      .filter((e) => e.className === selectedChild.className)
+    return classExams
       .map((e) => {
         const mark = marksByExamId[e.id];
         const hasMark = mark !== undefined && mark !== '' && mark !== null;
         const pct = hasMark ? (mark / e.maxMarks) * 100 : null;
         return { exam: e, mark, hasMark, grade: hasMark ? gradeFromPercent(pct) : null };
       });
-  }, [exams, studentExamMarks, selectedChild]);
+  }, [classExams, studentExamMarks, selectedChild]);
 
   const upcomingExams = useMemo(() => {
     if (!selectedChild) return [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return exams
-      .filter((e) => e.className === selectedChild.className && new Date(e.date) >= today)
+    return classExams
+      .filter((e) => new Date(e.date) >= today)
       .sort((a, b) => a.date.localeCompare(b.date));
-  }, [exams, selectedChild]);
+  }, [classExams, selectedChild]);
 
   const handleLogout = async () => {
     await logout();

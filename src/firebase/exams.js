@@ -28,3 +28,17 @@ export async function updateExamDoc(examId, data) {
 export async function deleteExamDoc(examId) {
   await deleteDoc(doc(db, COLLECTION, examId));
 }
+
+// Waxaa isticmaala ParentPortal — imtixaannada fasalka ilmaha la doortay
+// KALIYA (classId), ma aha dhammaan imtixaanada dugsiga (kaas oo staff-only
+// ah, fiiri SchoolDataContext.jsx). Query gaar ah ayaa loo baahan yahay si
+// Firestore Rules-ku ugu ogolaadaan waalidka inuu akhriyo kaliya fasalka
+// ilmihiisa (fiiri firestore.rules).
+export function subscribeToClassExamsForParent(schoolCode, classId, onChange, onError) {
+  const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode), where('classId', '==', classId));
+  return onSnapshot(
+    q,
+    (snap) => onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    onError
+  );
+}

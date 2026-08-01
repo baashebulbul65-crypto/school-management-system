@@ -59,8 +59,8 @@ function ClassWorkspace() {
   );
 
   const classExams = useMemo(
-    () => exams.filter((e) => e.className === classroomName),
-    [exams, classroomName]
+    () => exams.filter((e) => (cls ? e.classId === cls.id : false) || (!e.classId && e.className === classroomName)),
+    [exams, classroomName, cls]
   );
 
   const currentExamId = selectedExamId ?? classExams[0]?.id;

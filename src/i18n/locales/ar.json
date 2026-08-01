@@ -370,7 +370,11 @@
       "addTitle": "إنشاء امتحان جديد",
       "fillInfo": "يرجى تعبئة المعلومات أدناه",
       "fields": { "type": "نوع الامتحان *", "subject": "المادة *", "className": "الفصل *", "date": "التاريخ", "maxMarks": "الدرجة الكلية (Max Marks) *" },
-      "placeholders": { "subject": "مثال: الرياضيات", "className": "مثال: Form 1A", "maxMarks": "مثال: 100" },
+      "placeholders": {
+        "subject": "اختر المادة", "className": "اختر الفصل", "maxMarks": "مثال: 100",
+        "noSubjects": "لا توجد مواد بعد — يرجى إضافة مادة من صفحة المواد أولاً",
+        "noClasses": "لا توجد فصول بعد — يرجى إضافة فصل من صفحة الفصول أولاً"
+      },
       "submitAdd": "إنشاء الامتحان"
     },
     "pdf": {

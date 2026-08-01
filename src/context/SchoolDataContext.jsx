@@ -592,8 +592,13 @@ export function SchoolDataProvider({ children }) {
   }, [profile?.schoolCode]);
 
   // ===== IMTIXAANADA - QEEXIDDA (Firestore collection "exams") =====
+  // Staff-only (schoolCode-wide) — waalidku wuxuu isticmaalaa
+  // subscribeToClassExamsForParent (fiiri ParentPortal.jsx) oo gaar u ah
+  // fasalka ilmihiisa, si Firestore Rules-ku ugu ogolaadaan query-gan
+  // (rules-ku `exams` akhriskeedu waa staff-kaliya, marka laga reebo
+  // xaqiijinta gaarka ah ee waalidka, fiiri firestore.rules).
   useEffect(() => {
-    if (!profile?.schoolCode) {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
       setExams([]);
       return undefined;
     }
@@ -896,6 +901,27 @@ export function SchoolDataProvider({ children }) {
       });
   }, [profile?.schoolCode, profile?.accountType, classes, allStudents]);
 
+  // Hal mar per school — u buuxisa "classId" imtixaannada hore u haystay
+  // "className" kaliya (isla fikradda backfill-ka classId ee ardayda kore —
+  // className-kii hore waxaa laga soo doortay dropdown dhab ah, khatar-yar).
+  const examClassIdBackfillRef = useRef(null);
+  useEffect(() => {
+    if (!profile?.schoolCode || profile.accountType !== 'staff') return;
+    if (examClassIdBackfillRef.current === profile.schoolCode) return;
+    if (classes.length === 0 || exams.length === 0) return;
+    examClassIdBackfillRef.current = profile.schoolCode;
+    exams
+      .filter((e) => !e.classId && e.className)
+      .forEach((e) => {
+        const match = classes.find((c) => `${c.grade}${c.section}` === e.className);
+        if (match) {
+          updateExamDoc(e.id, { classId: match.id }).catch((err) =>
+            reportError('Khalad ayaa dhacay markii classId-ga imtixaanka la buuxinayay:', err)
+          );
+        }
+      });
+  }, [profile?.schoolCode, profile?.accountType, classes, exams]);
+
   // Ogeysiiska lacagta bishii ("fee reminder") hadda si otomaatig ah ayaa loo
   // sameeyaa NotificationsContext.jsx (kaas oo bishii-bishii u wareega ardayda
   // "unpaid" ee dhabta ah ee feePayments) — ma aha mid gacan-gelin ah oo
@@ -1043,6 +1069,12 @@ export function SchoolDataProvider({ children }) {
       const newClassroomName = `${payload.grade}${payload.section}`;
       const affectedStudents = students.filter((s) => s.classId === id && s.className !== newClassroomName);
       await Promise.all(affectedStudents.map((s) => updateStudentDoc(s.id, { className: newClassroomName })));
+      // Isla sida ardayda — imtixaannada classId-gan leh waa in "className"
+      // (denormalized) la cusboonaysiiyaa, si Exams.jsx/ClassWorkspace/
+      // Reports.jsx (kuwaas oo isticmaala qoraalkan) aysan u dhaqmin xog
+      // duugsan.
+      const affectedExams = exams.filter((e) => e.classId === id && e.className !== newClassroomName);
+      await Promise.all(affectedExams.map((e) => updateExamDoc(e.id, { className: newClassroomName })));
     } catch (err) {
       reportError('Khalad ayaa dhacay markii fasalka wax laga beddelayay:', err);
     }
@@ -1076,6 +1108,13 @@ export function SchoolDataProvider({ children }) {
   const updateSubject = async (id, payload) => {
     try {
       await updateSubjectDoc(id, payload);
+      // Imtixaannada subjectId-gan leh waa in "subject" (denormalized) la
+      // cusboonaysiiyaa marka maadada magaceeda la beddelo — isla fikradda
+      // updateClass ee kore.
+      if (payload.name) {
+        const affectedExams = exams.filter((e) => e.subjectId === id && e.subject !== payload.name);
+        await Promise.all(affectedExams.map((e) => updateExamDoc(e.id, { subject: payload.name })));
+      }
     } catch (err) {
       reportError('Khalad ayaa dhacay markii maadada wax laga beddelayay:', err);
     }

@@ -1,20 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useClassOptions, classroomName } from '../../hooks/useClassOptions';
 import './ExamFormModal.css';
 
-const EMPTY_FORM = { type: 'Midterm', subject: '', className: '', date: '', maxMarks: '' };
+const EMPTY_FORM = { type: 'Midterm', subjectId: '', classId: '', date: '', maxMarks: '' };
 
-function ExamFormModal({ isOpen, onClose, onSave, exam, examTypes }) {
+function ExamFormModal({ isOpen, onClose, onSave, exam, examTypes, subjects = [], classes = [] }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const isEditing = !!exam;
+  const classOptions = useClassOptions(form.classId, { byId: true });
 
   useEffect(() => {
     if (exam) {
       setForm({
         type: exam.type,
-        subject: exam.subject,
-        className: exam.className,
+        subjectId: exam.subjectId || '',
+        classId: exam.classId || '',
         date: exam.date,
         maxMarks: exam.maxMarks,
       });
@@ -29,7 +31,18 @@ function ExamFormModal({ isOpen, onClose, onSave, exam, examTypes }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({ ...form, maxMarks: Number(form.maxMarks) || 100 }, exam?.id);
+    // "subject"/"className" waxaa laga soo saaraa subjectId/classId la doortay —
+    // waxaa loo baahan yahay in ay sii jiraan (denormalized) meelaha kale ee
+    // isticmaala (Reports.jsx, iwm). Fiiri SchoolDataContext.jsx: updateClass/
+    // updateSubject waxay si otomaatig ah u cusboonaysiiyaan marka la beddelo.
+    const selectedSubject = subjects.find((s) => s.id === form.subjectId);
+    const selectedClass = classes.find((c) => c.id === form.classId);
+    onSave({
+      ...form,
+      subject: selectedSubject?.name || '',
+      className: selectedClass ? classroomName(selectedClass) : '',
+      maxMarks: Number(form.maxMarks) || 100,
+    }, exam?.id);
     onClose();
   };
 
@@ -57,11 +70,25 @@ function ExamFormModal({ isOpen, onClose, onSave, exam, examTypes }) {
               </div>
               <div className="exfm-field">
                 <label>{t('exams.form.fields.subject')}</label>
-                <input type="text" value={form.subject} onChange={update('subject')} placeholder={t('exams.form.placeholders.subject')} required />
+                <select value={form.subjectId} onChange={update('subjectId')} required disabled={subjects.length === 0}>
+                  <option value="" disabled>
+                    {subjects.length === 0 ? t('exams.form.placeholders.noSubjects') : t('exams.form.placeholders.subject')}
+                  </option>
+                  {subjects.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
               </div>
               <div className="exfm-field">
                 <label>{t('exams.form.fields.className')}</label>
-                <input type="text" value={form.className} onChange={update('className')} placeholder={t('exams.form.placeholders.className')} required />
+                <select value={form.classId} onChange={update('classId')} required disabled={classOptions.length === 0}>
+                  <option value="" disabled>
+                    {classOptions.length === 0 ? t('exams.form.placeholders.noClasses') : t('exams.form.placeholders.className')}
+                  </option>
+                  {classOptions.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
               </div>
               <div className="exfm-field">
                 <label>{t('exams.form.fields.date')}</label>

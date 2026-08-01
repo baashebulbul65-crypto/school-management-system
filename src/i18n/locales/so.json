@@ -370,7 +370,11 @@
       "addTitle": "Abuur Imtixaan Cusub",
       "fillInfo": "Buuxi macluumaadka hoose",
       "fields": { "type": "Nooca Imtixaanka *", "subject": "Maadada *", "className": "Fasalka *", "date": "Taariikhda", "maxMarks": "Buundooyinka Guud (Max Marks) *" },
-      "placeholders": { "subject": "Tusaale: Xisaabta", "className": "Tusaale: Form 1A", "maxMarks": "Tusaale: 100" },
+      "placeholders": {
+        "subject": "Dooro Maado", "className": "Dooro Fasal", "maxMarks": "Tusaale: 100",
+        "noSubjects": "Wali maadooyin lama abuurin — marka hore ku dar bogga Maadooyinka",
+        "noClasses": "Wali fasal lama abuurin — marka hore ku dar bogga Fasallada"
+      },
       "submitAdd": "Abuur Imtixaanka"
     },
     "pdf": {

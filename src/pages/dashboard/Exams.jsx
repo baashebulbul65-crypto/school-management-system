@@ -3,6 +3,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { classroomName } from '../../hooks/useClassOptions';
 import ExamFormModal from './ExamFormModal';
 import '../../styles/dashboard-shared.css';
 import './Exams.css';
@@ -23,12 +24,15 @@ function initials(name) {
 
 function Exams() {
   const { t } = useTranslation();
-  const { students, exams, examMarks, addExam, updateExam, removeExam, updateExamMark } = useSchoolData();
+  const { students, classes, subjects, exams, examMarks, addExam, updateExam, removeExam, updateExamMark } = useSchoolData();
   const [activeTab, setActiveTab] = useState('exams');
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingExam, setEditingExam] = useState(null);
   const [selectedExamId, setSelectedExamId] = useState(exams[0]?.id);
-  const [resultsClass, setResultsClass] = useState('Form 1A');
+  // resultsClass hadda waa classId dhab ah (Firestore doc id), ma aha magac
+  // qoraal ah — fiiri effect-ka hoose ee dooranaya fasalka ugu horreeya
+  // marka classes-ku horay uga soo shubmo Firestore.
+  const [resultsClass, setResultsClass] = useState('');
   const [reportStudentId, setReportStudentId] = useState(students[0]?.id);
   // Buundooyinka la qorayo hadda (kama bixin Firestore ilaa "onBlur") — si aan u
   // yareyno qorista Firestore keystroke kasta, isla markaana looga fogaado in
@@ -42,8 +46,6 @@ function Exams() {
     { id: 'reportcard', label: t('exams.tabs.reportcard') },
   ];
 
-  const classes = useMemo(() => [...new Set(students.map((s) => s.className))], [students]);
-
   // Ardayda waxaa laga soo shubaa Firestore si aan degdeg ah u socon (async) —
   // haddii aan la doorbidin arday weli, ama midkii la doortay uu tirtiran yahay,
   // dib u dooro kan ugu horreeya ee liiska.
@@ -53,6 +55,15 @@ function Exams() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [students]);
+
+  // Isla qaabkaas — dooro fasalka ugu horreeya ee "classes" (dhab ah) marka
+  // uu la doorto weli maqan yahay ama uu tirtiran yahay.
+  useEffect(() => {
+    if (classes.length && !classes.some((c) => c.id === resultsClass)) {
+      setResultsClass(classes[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [classes]);
 
   const openAddModal = () => { setEditingExam(null); setShowFormModal(true); };
   const openEditModal = (exam) => { setEditingExam(exam); setShowFormModal(true); };
@@ -88,13 +99,23 @@ function Exams() {
     });
   };
 
+  // studentInClass/examInClass: classId marka jira, className fallback ilaa
+  // ardayda/imtixaannada aan weli la dib-u-kaydin (fiiri backfill-ka
+  // SchoolDataContext.jsx).
+  const studentInClass = (s, cls) => (s.classId ? s.classId === cls.id : s.className === classroomName(cls));
+  const examInClass = (e, cls) => (e.classId ? e.classId === cls.id : e.className === classroomName(cls));
+
   const selectedExam = exams.find((e) => e.id === selectedExamId);
-  const studentsForSelectedExam = selectedExam ? students.filter((s) => s.className === selectedExam.className) : [];
+  const selectedExamClass = selectedExam ? classes.find((c) => c.id === selectedExam.classId || classroomName(c) === selectedExam.className) : null;
+  const studentsForSelectedExam = selectedExam
+    ? students.filter((s) => (selectedExamClass ? studentInClass(s, selectedExamClass) : s.className === selectedExam.className))
+    : [];
 
   // ===== RESULTS & GPA CALCULATION (per class) =====
+  const resultsCls = classes.find((c) => c.id === resultsClass);
   const classResults = useMemo(() => {
-    const studentsInClass = students.filter((s) => s.className === resultsClass);
-    const examsInClass = exams.filter((e) => e.className === resultsClass);
+    const studentsInClass = resultsCls ? students.filter((s) => studentInClass(s, resultsCls)) : [];
+    const examsInClass = resultsCls ? exams.filter((e) => examInClass(e, resultsCls)) : [];
 
     const rows = studentsInClass.map((student) => {
       let totalPct = 0;
@@ -127,11 +148,12 @@ function Exams() {
     }));
 
     return withPosition.sort((a, b) => a.position - b.position);
-  }, [resultsClass, exams, examMarks, students]);
+  }, [resultsCls, exams, examMarks, students]);
 
   // ===== REPORT CARD (per student) =====
   const reportStudent = students.find((s) => s.id === reportStudentId);
-  const reportExams = exams.filter((e) => e.className === reportStudent?.className);
+  const reportStudentClass = reportStudent ? classes.find((c) => c.id === reportStudent.classId || classroomName(c) === reportStudent.className) : null;
+  const reportExams = exams.filter((e) => (reportStudentClass ? examInClass(e, reportStudentClass) : e.className === reportStudent?.className));
   const reportRows = reportExams.map((exam) => {
     const mark = examMarks[exam.id]?.[reportStudent.id];
     const pct = mark !== undefined && mark !== '' ? (mark / exam.maxMarks) * 100 : null;
@@ -282,7 +304,7 @@ function Exams() {
           <div className="exam-select-row">
             <label>{t('exams.selectClass')}</label>
             <select value={resultsClass} onChange={(e) => setResultsClass(e.target.value)}>
-              {classes.map((c) => <option key={c}>{c}</option>)}
+              {classes.map((c) => <option key={c.id} value={c.id}>{classroomName(c)}</option>)}
             </select>
           </div>
 
@@ -374,6 +396,8 @@ function Exams() {
         onSave={handleSaveExam}
         exam={editingExam}
         examTypes={EXAM_TYPES}
+        subjects={subjects}
+        classes={classes}
       />
     </div>
   );
