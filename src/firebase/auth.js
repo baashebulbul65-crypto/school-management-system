@@ -13,6 +13,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  onSnapshot,
   serverTimestamp,
   arrayUnion,
 } from 'firebase/firestore';
@@ -136,6 +137,19 @@ export async function addChildToParent(uid, schoolCode, diiwaanId) {
 export async function getUserProfile(uid) {
   const snap = await getDoc(doc(db, 'users', uid));
   return snap.exists() ? snap.data() : null;
+}
+
+// Isla "users/{uid}" laakiin real-time (onSnapshot) — waxaa isticmaala
+// AuthContext.jsx, si haddii owner-ku beddelo doorka/teacherDocId-ga
+// shaqaale INTUU horeba login yahay, isbeddelku isla markiiba ugu muuqdo
+// (ma aha in uu u baahdo dib-u-gelin/refresh, sida hore ee getUserProfile
+// hal-mar ah lagu isticmaali jiray halkan).
+export function subscribeToUserProfile(uid, onChange, onError) {
+  return onSnapshot(
+    doc(db, 'users', uid),
+    (snap) => onChange(snap.exists() ? snap.data() : null),
+    onError
+  );
 }
 
 // Doc-ka dugsiga (magaca, logo-ga, fees, iwm) — fiiri firebase/schools.js.

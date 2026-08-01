@@ -2,7 +2,7 @@
 // Wadaagista xaaladda user-ka (logged in / logged out) gudaha App-ka oo dhan
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { subscribeToAuthChanges, getUserProfile, logout as firebaseLogout } from '../firebase/auth';
+import { subscribeToAuthChanges, subscribeToUserProfile, logout as firebaseLogout } from '../firebase/auth';
 
 const AuthContext = createContext(null);
 
@@ -12,19 +12,44 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = subscribeToAuthChanges(async (user) => {
+    // Listener-ka profile-ka ("users/{uid}") waa in la yeeshaa gooni ah oo
+    // la joojiyo (unsubscribe) mar kasta oo auth-state-ku isbeddesho —
+    // haddii kale listener-kii hore wuu sii socon lahaa isaga oo aan la
+    // baahnayn (leak), amaba wuxuu qori lahaa profile qof kale (login/logout
+    // degdeg ah).
+    let unsubscribeProfile = null;
+
+    const unsubscribeAuth = subscribeToAuthChanges((user) => {
+      if (unsubscribeProfile) {
+        unsubscribeProfile();
+        unsubscribeProfile = null;
+      }
+
       setCurrentUser(user);
 
       if (user) {
-        const userProfile = await getUserProfile(user.uid);
-        setProfile(userProfile);
+        unsubscribeProfile = subscribeToUserProfile(
+          user.uid,
+          (userProfile) => {
+            setProfile(userProfile);
+            setLoading(false);
+          },
+          (err) => {
+            console.error('Khalad ayaa dhacay markii profile-ka la soo akhriyay:', err);
+            setProfile(null);
+            setLoading(false);
+          }
+        );
       } else {
         setProfile(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeProfile) unsubscribeProfile();
+    };
   }, []);
 
   const logout = async () => {
