@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
 import { useSchoolData } from './SchoolDataContext';
+import { useSettings } from './SettingsContext';
 import { subscribeToAllNotifications, markNotificationsRead, deleteNotificationDoc, createFeeNotification } from '../firebase/notifications';
 import { currentMonthValue } from '../utils/somaliDate';
 import { getMonthlyFeeStatus } from '../utils/studentFee';
@@ -17,6 +18,7 @@ export function NotificationsProvider({ children }) {
   const { profile } = useAuth();
   const { showError } = useToast();
   const { students, feePayments } = useSchoolData();
+  const { settings } = useSettings();
   const [rawNotifications, setRawNotifications] = useState([]);
 
   const reportError = (message, err) => {
@@ -46,6 +48,7 @@ export function NotificationsProvider({ children }) {
   // celin "aan la akhrin" ogeysiin horeba la arkay.
   useEffect(() => {
     if (!profile?.schoolCode || profile?.accountType !== 'staff') return;
+    if (!settings.notificationPrefs.feeReminders) return;
     const month = currentMonthValue();
     students
       .filter((s) => getMonthlyFeeStatus(s, feePayments, month) === 'unpaid')
@@ -60,7 +63,7 @@ export function NotificationsProvider({ children }) {
           month,
         }).catch((err) => reportError('Khalad ayaa dhacay markii ogeysiiska lacagta la abuurayay:', err));
       });
-  }, [students, feePayments, rawNotifications, profile?.schoolCode, profile?.accountType]);
+  }, [students, feePayments, rawNotifications, profile?.schoolCode, profile?.accountType, settings.notificationPrefs.feeReminders]);
 
   const notifications = useMemo(
     () =>

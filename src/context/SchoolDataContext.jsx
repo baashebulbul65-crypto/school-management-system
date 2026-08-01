@@ -7,6 +7,7 @@
 import { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
+import { useSettings } from './SettingsContext';
 import { subscribeToStudents, createStudentDoc, updateStudentDoc, softDeleteStudentDoc, restoreStudentDoc, deleteStudentDoc, backfillStudentLookups } from '../firebase/students';
 import { subscribeToTeachers, createTeacherDoc, updateTeacherDoc } from '../firebase/teachers';
 import { subscribeToClasses, createClassDoc, updateClassDoc, deleteClassDoc } from '../firebase/classes';
@@ -198,6 +199,7 @@ const DEMO_STUDENTS_SEED = [
 export function SchoolDataProvider({ children }) {
   const { profile } = useAuth();
   const { showError } = useToast();
+  const { settings } = useSettings();
 
   // Waxaa loo isticmaalaa dhammaan isku dayada Firestore ee ka socda user
   // action (add/update/delete/collect/mark) — waxay isticmaalaan qoraalka
@@ -265,7 +267,7 @@ export function SchoolDataProvider({ children }) {
     } catch (err) {
       reportError('Khalad ayaa dhacay markii imaanshaha ardayga la kaydinayay:', err);
     }
-    if (status === 'absent') {
+    if (status === 'absent' && settings.notificationPrefs.attendanceAlerts) {
       const student = students.find((s) => s.id === studentId);
       try {
         await createAbsentNotification({

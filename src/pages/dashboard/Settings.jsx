@@ -64,8 +64,8 @@ function Settings() {
   const NOTIFICATION_ITEMS = [
     { key: 'feeReminders', label: t('settings.notifications.items.feeReminders.label'), desc: t('settings.notifications.items.feeReminders.desc') },
     { key: 'attendanceAlerts', label: t('settings.notifications.items.attendanceAlerts.label'), desc: t('settings.notifications.items.attendanceAlerts.desc') },
-    { key: 'examResults', label: t('settings.notifications.items.examResults.label'), desc: t('settings.notifications.items.examResults.desc') },
-    { key: 'emailDigest', label: t('settings.notifications.items.emailDigest.label'), desc: t('settings.notifications.items.emailDigest.desc') },
+    { key: 'examResults', label: t('settings.notifications.items.examResults.label'), desc: t('settings.notifications.items.examResults.desc'), comingSoon: true },
+    { key: 'emailDigest', label: t('settings.notifications.items.emailDigest.label'), desc: t('settings.notifications.items.emailDigest.desc'), comingSoon: true },
   ];
 
   const flashSaved = () => {
@@ -77,8 +77,8 @@ function Settings() {
 
   const handleSaveSchool = (e) => {
     e.preventDefault();
-    const { name, code, phone, address, email } = schoolForm;
-    updateSchool({ name, code, phone, address, email });
+    const { name, phone, address, email } = schoolForm;
+    updateSchool({ name, phone, address, email });
     flashSaved();
   };
 
@@ -190,7 +190,7 @@ function Settings() {
             )}
             <div>
               <div className="settings-preview-name">{schoolForm.name || t('settings.school.defaultName')}</div>
-              <div className="settings-preview-code">{schoolForm.code}</div>
+              <div className="settings-preview-code">{profile?.schoolCode}</div>
             </div>
           </div>
 
@@ -223,7 +223,8 @@ function Settings() {
               </div>
               <div className="settings-field">
                 <label>{t('settings.school.fields.code')}</label>
-                <input type="text" value={schoolForm.code} onChange={handleSchoolChange('code')} />
+                <input type="text" value={profile?.schoolCode || ''} disabled />
+                <p className="settings-section-desc settings-code-hint">{t('settings.school.codeReadonlyHint')}</p>
               </div>
               <div className="settings-field">
                 <label>{t('settings.school.fields.phone')}</label>
@@ -355,11 +356,15 @@ function Settings() {
             {NOTIFICATION_ITEMS.map((item) => (
               <div className="settings-toggle-row" key={item.key}>
                 <div>
-                  <div className="settings-toggle-label">{item.label}</div>
+                  <div className="settings-toggle-label">
+                    {item.label}
+                    {item.comingSoon && <span className="settings-coming-soon-badge">{t('settings.notifications.comingSoon')}</span>}
+                  </div>
                   <div className="settings-toggle-desc">{item.desc}</div>
                 </div>
                 <button
                   className={`settings-switch ${settings.notificationPrefs[item.key] ? 'on' : ''}`}
+                  disabled={item.comingSoon}
                   onClick={() => { updateNotificationPref(item.key, !settings.notificationPrefs[item.key]); flashSaved(); }}
                 >
                   <span className="settings-switch-knob"></span>

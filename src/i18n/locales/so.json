@@ -481,6 +481,7 @@
       "removeLogo": "Ka Saar Sawirka",
       "logoHint": "PNG, JPG, WEBP ama SVG — ugu badnaan 500KB.",
       "fields": { "name": "Magaca Dugsiga *", "code": "School Code", "phone": "Telefoonka", "address": "Cinwaanka", "email": "Iimaylka Dugsiga" },
+      "codeReadonlyHint": "Koodhkani waa mid aan la beddeli karin — waa aasaaska login-ka/diiwaan-gelinta waalidiinta iyo ardayda, sidaas darteed beddelidiisu keeni lahayd inaysan waalidiinta cusub is-diiwaan-gelin karin.",
       "langCurrencyTitle": "Luqadda & Lacagta",
       "systemLanguage": "Luqadda Nidaamka",
       "currency": "Lacagta La Isticmaalo",
@@ -503,6 +504,7 @@
     "notifications": {
       "sectionTitle": "Doorashooyinka Ogeysiisyada",
       "sectionDesc": "Xulo noocyada ogeysiisyada aad rabto in nidaamku kuu soo diro.",
+      "comingSoon": "Dhawaan",
       "items": {
         "feeReminders": { "label": "Xasuusin Lacageed", "desc": "Ogeysii marka lacag dib u dhacdo ama dhawaan dhammaanayso." },
         "attendanceAlerts": { "label": "Digniin Imaansho", "desc": "Ogeysii marka heerka imaanshaha fasal hoos u dhaco." },

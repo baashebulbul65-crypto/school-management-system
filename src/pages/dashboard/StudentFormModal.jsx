@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClassOptions, classroomName } from '../../hooks/useClassOptions';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { useSettings } from '../../context/SettingsContext';
 import { getFeeType } from '../../utils/studentFee';
 import './StudentFormModal.css';
 
@@ -33,9 +34,28 @@ function initials(name) {
 function StudentFormModal({ isOpen, onClose, onSave, student }) {
   const { t } = useTranslation();
   const { classes } = useSchoolData();
+  const { settings } = useSettings();
   const [form, setForm] = useState(EMPTY_FORM);
   const isEditing = !!student;
   const classOptions = useClassOptions(form.classId, { byId: true });
+
+  // Marka arday CUSUB la doorto fasal, feeAmount-ka waxaa si otomaatig ah
+  // loogu buuxinayaa qiimaha feesByGrade ee fasalkaas (Settings > Qiimaha),
+  // haddii la helo — weli waa la beddeli karaa gacan ahaan. Arday jira
+  // lama taabanayo si aan loo tirtirin feeAmount gaar ah oo horeba loo
+  // geliyay (override).
+  const handleClassChange = (e) => {
+    const classId = e.target.value;
+    setForm((f) => {
+      const next = { ...f, classId };
+      if (!isEditing) {
+        const cls = classes.find((c) => c.id === classId);
+        const gradeFee = cls && settings.feesByGrade.find((g) => g.grade === cls.grade);
+        if (gradeFee) next.feeAmount = gradeFee.amount;
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (student) {
@@ -169,7 +189,7 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
             <div className="sfm-grid">
               <div className="sfm-field">
                 <label>{t('students.form.fields.className')}</label>
-                <select value={form.classId} onChange={update('classId')} required disabled={classOptions.length === 0}>
+                <select value={form.classId} onChange={handleClassChange} required disabled={classOptions.length === 0}>
                   <option value="" disabled>
                     {classOptions.length === 0 ? t('students.form.placeholders.noClasses') : t('students.form.placeholders.selectClass')}
                   </option>
