@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useClassOptions } from '../../hooks/useClassOptions';
 import './StudentFormModal.css';
 
 const EMPTY_FORM = {
@@ -29,6 +30,7 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const isEditing = !!student;
+  const classOptions = useClassOptions(form.className);
 
   useEffect(() => {
     if (student) {
@@ -150,7 +152,14 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
             <div className="sfm-grid">
               <div className="sfm-field">
                 <label>{t('students.form.fields.className')}</label>
-                <input type="text" value={form.className} onChange={update('className')} placeholder="Tusaale: Form 1A" required />
+                <select value={form.className} onChange={update('className')} required disabled={classOptions.length === 0}>
+                  <option value="" disabled>
+                    {classOptions.length === 0 ? t('students.form.placeholders.noClasses') : t('students.form.placeholders.selectClass')}
+                  </option>
+                  {classOptions.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
               </div>
               <div className="sfm-field">
                 <label>{t('students.form.fields.section')}</label>

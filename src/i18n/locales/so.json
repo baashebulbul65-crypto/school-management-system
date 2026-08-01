@@ -105,7 +105,8 @@
       },
       "placeholders": {
         "fullName": "Tusaale: Ismaaciil Cabdi Xasan", "phone": "+252 61 ...", "address": "Xaafadda, Magaalada",
-        "subjects": "Xisaab, Ingiriisi, Sayniska", "parentEmail": "tusaale@gmail.com"
+        "subjects": "Xisaab, Ingiriisi, Sayniska", "parentEmail": "tusaale@gmail.com",
+        "selectClass": "Dooro Fasal", "noClasses": "Wali fasal lama abuurin — marka hore ku dar bogga Fasallada"
       },
       "submitAdd": "Ku Dar Ardayga"
     },
@@ -140,13 +141,14 @@
       "fields": {
         "fullName": "Magaca Buuxa *", "phone": "Telefoonka", "email": "Email",
         "qualification": "Shahaadada (Qualification)", "subject": "Maadada *", "status": "Xaaladda",
-        "assignedClasses": "Fasallada Loo Xilsaaray * (kala sooc comma ,)"
+        "assignedClasses": "Fasallada Loo Xilsaaray *"
       },
       "placeholders": {
         "fullName": "Tusaale: Cali Xasan Warsame", "phone": "+252 61 ...", "email": "tusaale@kayd.com",
-        "qualification": "Tusaale: BSc Xisaabta - Jaamacadda...", "subject": "Tusaale: Xisaabta", "assignedClasses": "Tusaale: Form 1A, Form 2A"
+        "qualification": "Tusaale: BSc Xisaabta - Jaamacadda...", "subject": "Tusaale: Xisaabta"
       },
-      "hint": "Macallin kastaa waa in uu leeyahay ugu yaraan hal fasal.",
+      "noClasses": "Wali fasal lama abuurin — marka hore ku dar bogga Fasallada",
+      "hint": "Riix oo hay Ctrl (Cmd ee Mac) si aad u dooratid dhowr fasal. Macallin kastaa waa in uu leeyahay ugu yaraan hal fasal.",
       "submitAdd": "Ku Dar Macallinka"
     },
     "profile": {

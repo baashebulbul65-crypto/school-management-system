@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useClassOptions } from '../../hooks/useClassOptions';
 import './TeacherFormModal.css';
 
 const EMPTY_FORM = {
@@ -8,7 +9,7 @@ const EMPTY_FORM = {
   email: '',
   qualification: '',
   subject: '',
-  assignedClasses: '',
+  assignedClasses: [],
   status: 'active',
 };
 
@@ -22,6 +23,7 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
   const isEditing = !!teacher;
+  const classOptions = useClassOptions(form.assignedClasses);
 
   useEffect(() => {
     if (teacher) {
@@ -31,7 +33,7 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
         email: teacher.email || '',
         qualification: teacher.qualification || '',
         subject: teacher.subject || '',
-        assignedClasses: (teacher.assignedClasses || []).join(', '),
+        assignedClasses: teacher.assignedClasses || [],
         status: teacher.status || 'active',
       });
     } else {
@@ -44,22 +46,21 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
 
   const update = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
+  const handleClassesChange = (e) => {
+    const selected = Array.from(e.target.selectedOptions, (o) => o.value);
+    setForm((f) => ({ ...f, assignedClasses: selected }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const classesArray = form.assignedClasses
-      .split(',')
-      .map((c) => c.trim())
-      .filter(Boolean);
-
     // ===== VALIDATION: macallin kastaa waa in uu leeyahay ugu yaraan hal fasal =====
-    if (classesArray.length === 0) {
+    if (form.assignedClasses.length === 0) {
       setError(t('teachers.form.errorNoClass'));
       return;
     }
 
-    const payload = { ...form, assignedClasses: classesArray };
-    onSave(payload, teacher?.id);
+    onSave(form, teacher?.id);
     onClose();
   };
 
@@ -119,13 +120,21 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
               </div>
               <div className="tfm-field full">
                 <label>{t('teachers.form.fields.assignedClasses')}</label>
-                <input
-                  type="text"
+                <select
+                  multiple
                   value={form.assignedClasses}
-                  onChange={update('assignedClasses')}
-                  placeholder={t('teachers.form.placeholders.assignedClasses')}
+                  onChange={handleClassesChange}
+                  size={Math.min(6, Math.max(3, classOptions.length))}
+                  disabled={classOptions.length === 0}
                   required
-                />
+                >
+                  {classOptions.length === 0 && (
+                    <option value="" disabled>{t('teachers.form.noClasses')}</option>
+                  )}
+                  {classOptions.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
                 <span className="tfm-hint">{t('teachers.form.hint')}</span>
               </div>
             </div>

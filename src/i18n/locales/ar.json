@@ -105,7 +105,8 @@
       },
       "placeholders": {
         "fullName": "مثال: إسماعيل عبدي حسن", "phone": "+252 61 ...", "address": "الحي، المدينة",
-        "subjects": "رياضيات، إنجليزي، علوم", "parentEmail": "example@gmail.com"
+        "subjects": "رياضيات، إنجليزي، علوم", "parentEmail": "example@gmail.com",
+        "selectClass": "اختر الفصل", "noClasses": "لا توجد فصول بعد — يرجى إضافة فصل من صفحة الفصول أولاً"
       },
       "submitAdd": "إضافة الطالب"
     },
@@ -140,13 +141,14 @@
       "fields": {
         "fullName": "الاسم الكامل *", "phone": "رقم الهاتف", "email": "البريد الإلكتروني",
         "qualification": "المؤهل العلمي", "subject": "المادة *", "status": "الحالة",
-        "assignedClasses": "الفصول المسندة * (افصل بينها بفاصلة ,)"
+        "assignedClasses": "الفصول المسندة *"
       },
       "placeholders": {
         "fullName": "مثال: علي حسن ورسمي", "phone": "+252 61 ...", "email": "example@kayd.com",
-        "qualification": "مثال: بكالوريوس رياضيات - جامعة...", "subject": "مثال: الرياضيات", "assignedClasses": "مثال: Form 1A, Form 2A"
+        "qualification": "مثال: بكالوريوس رياضيات - جامعة...", "subject": "مثال: الرياضيات"
       },
-      "hint": "يجب أن يكون لكل معلم فصل واحد على الأقل.",
+      "noClasses": "لا توجد فصول بعد — يرجى إضافة فصل من صفحة الفصول أولاً",
+      "hint": "اضغط مع الاستمرار على Ctrl (أو Cmd في Mac) لاختيار أكثر من فصل. يجب أن يكون لكل معلم فصل واحد على الأقل.",
       "submitAdd": "إضافة المعلم"
     },
     "profile": {
