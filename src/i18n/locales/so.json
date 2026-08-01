@@ -516,8 +516,19 @@
       "roleTeacher": "Macallin",
       "roleOwner": "Maamule / Owner",
       "email": "Iimaylka",
+      "currentPassword": "Furaha Sirta Hore",
       "newPassword": "Furaha Sirta Cusub",
-      "confirmPassword": "Xaqiiji Furaha Sirta"
+      "confirmPassword": "Xaqiiji Furaha Sirta",
+      "saving": "Kaydinaya...",
+      "errors": {
+        "allFieldsRequired": "Fadlan buuxi dhammaan saddexda goobood ee password-ka.",
+        "passwordMismatch": "Password-ka cusub iyo xaqiijintiisu isku mid ma aha.",
+        "weakPassword": "Password-ka cusub waa in uu ka koobnaadaa ugu yaraan 6 xaraf.",
+        "wrongPassword": "Furaha sirta hore waa qalad.",
+        "requiresRecentLogin": "Sicir-celin ammaan darteed, fadlan ka bax (logout) oo dib usoo gal, kadibna isku day mar kale.",
+        "tooManyRequests": "Isku day badan oo khaldan ayaa dhacay — fadlan wax yar sug oo isku day mar kale.",
+        "generic": "Khalad ayaa dhacay markii password-ka la beddelayay. Fadlan isku day mar kale."
+      }
     }
   },
   "parentPortal": {

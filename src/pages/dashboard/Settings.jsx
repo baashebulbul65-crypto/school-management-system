@@ -2,8 +2,17 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../../context/SettingsContext';
 import { useAuth } from '../../context/AuthContext';
+import { changeStaffPassword } from '../../firebase/auth';
 import '../../styles/dashboard-shared.css';
 import './Settings.css';
+
+const PASSWORD_ERROR_KEYS = {
+  'auth/wrong-password': 'wrongPassword',
+  'auth/invalid-credential': 'wrongPassword',
+  'auth/weak-password': 'weakPassword',
+  'auth/requires-recent-login': 'requiresRecentLogin',
+  'auth/too-many-requests': 'tooManyRequests',
+};
 
 const LANGUAGES = [
   { code: 'so', label: 'Soomaali' },
@@ -37,6 +46,12 @@ function Settings() {
   const [newGradeAmount, setNewGradeAmount] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const logoInputRef = useRef(null);
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   const TABS = [
     { id: 'school', label: t('settings.tabs.school') },
@@ -105,6 +120,40 @@ function Settings() {
       flashSaved();
     } catch {
       // fariinta khaladka waxa lagu tusayaa logoError gudaha UI-ga
+    }
+  };
+
+  const friendlyPasswordError = (err) => {
+    const key = PASSWORD_ERROR_KEYS[err?.code];
+    return key ? t(`settings.account.errors.${key}`) : t('settings.account.errors.generic');
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPasswordError(t('settings.account.errors.allFieldsRequired'));
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError(t('settings.account.errors.passwordMismatch'));
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPasswordError(t('settings.account.errors.weakPassword'));
+      return;
+    }
+    setPasswordSaving(true);
+    try {
+      await changeStaffPassword(currentPassword, newPassword);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      flashSaved();
+    } catch (err) {
+      setPasswordError(friendlyPasswordError(err));
+    } finally {
+      setPasswordSaving(false);
     }
   };
 
@@ -338,16 +387,45 @@ function Settings() {
               <label>{t('settings.account.email')}</label>
               <input type="email" value={profile?.email || ''} disabled />
             </div>
-            <div className="settings-field">
-              <label>{t('settings.account.newPassword')}</label>
-              <input type="password" placeholder="••••••••" />
-            </div>
-            <div className="settings-field">
-              <label>{t('settings.account.confirmPassword')}</label>
-              <input type="password" placeholder="••••••••" />
-            </div>
           </div>
-          <button type="button" className="btn-primary settings-save-btn" onClick={flashSaved}>{t('settings.school.save')}</button>
+
+          <div className="settings-divider"></div>
+
+          <form onSubmit={handleChangePassword}>
+            {passwordError && <div className="settings-logo-error">{passwordError}</div>}
+            <div className="settings-grid">
+              <div className="settings-field full">
+                <label>{t('settings.account.currentPassword')}</label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={currentPassword}
+                  onChange={(e) => { setCurrentPassword(e.target.value); if (passwordError) setPasswordError(''); }}
+                />
+              </div>
+              <div className="settings-field">
+                <label>{t('settings.account.newPassword')}</label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={newPassword}
+                  onChange={(e) => { setNewPassword(e.target.value); if (passwordError) setPasswordError(''); }}
+                />
+              </div>
+              <div className="settings-field">
+                <label>{t('settings.account.confirmPassword')}</label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => { setConfirmPassword(e.target.value); if (passwordError) setPasswordError(''); }}
+                />
+              </div>
+            </div>
+            <button type="submit" className="btn-primary settings-save-btn" disabled={passwordSaving}>
+              {passwordSaving ? t('settings.account.saving') : t('settings.school.save')}
+            </button>
+          </form>
         </div>
       )}
 

@@ -7,6 +7,9 @@ import {
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
 } from 'firebase/auth';
 import {
   doc,
@@ -58,6 +61,21 @@ export async function registerStaff({ email, password, fullName, schoolCode, rol
 
 export async function resetStaffPassword(email) {
   return sendPasswordResetEmail(auth, email);
+}
+
+// Beddelidda password-ka (Settings > Akoonkayga) — waa in marka hore la
+// xaqiijiyaa password-ka HORE (reauthenticate), sababo:
+//   1) Firebase wuxuu xayiraa updatePassword haddii session-ku aanu
+//      "dhawaan" ahayn (auth/requires-recent-login).
+//   2) Waa habka ugu sax-badan si loo hubiyo in qofka beddelayaa password
+//      uu dhab ahaantii yaqaano kan hore, ma aha in uu kaliya session
+//      furan yahay (tusaale: laptop la iloobay oo furan).
+export async function changeStaffPassword(currentPassword, newPassword) {
+  const user = auth.currentUser;
+  if (!user) throw new Error('LAMA_HELIN_USER');
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+  await reauthenticateWithCredential(user, credential);
+  await updatePassword(user, newPassword);
 }
 
 /* ============================================================
