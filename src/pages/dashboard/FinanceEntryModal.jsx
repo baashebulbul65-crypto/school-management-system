@@ -7,7 +7,7 @@ const EXPENSE_CATEGORIES = ['Mushahar', 'Adeegyada', 'Qalabka', 'Dhismaha', 'Gaa
 const EMPTY_FORMS = {
   expenses: { category: EXPENSE_CATEGORIES[0], description: '', amount: '', date: '' },
   income: { source: '', description: '', amount: '', date: '' },
-  salary: { staffName: '', role: '', amount: '', month: '' },
+  salary: { staffName: '', role: '', amount: '', month: '', teacherId: '' },
   discounts: { student: '', type: 'discount', amount: '', reason: '' },
   documents: { type: 'invoice', party: '', amount: '', date: '' },
 };
@@ -20,7 +20,7 @@ const TITLES = {
   documents: 'Ku Dar Invoice/Receipt',
 };
 
-function FinanceEntryModal({ isOpen, onClose, onSave, type }) {
+function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [] }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORMS[type] || EMPTY_FORMS.expenses);
 
@@ -80,6 +80,16 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type }) {
                   <div className="fem-field">
                     <label>{t('finance.salary.table.role')}</label>
                     <input type="text" value={form.role} onChange={update('role')} placeholder="Tusaale: Macallin - Xisaabta" />
+                  </div>
+                  <div className="fem-field full">
+                    <label>{t('finance.salary.linkTeacher')}</label>
+                    <select value={form.teacherId} onChange={update('teacherId')}>
+                      <option value="">{t('finance.salary.linkTeacherNone')}</option>
+                      {teachers.map((tc) => (
+                        <option key={tc.id} value={tc.id}>{tc.fullName}</option>
+                      ))}
+                    </select>
+                    <span className="fem-hint">{t('finance.salary.linkTeacherHint')}</span>
                   </div>
                   <div className="fem-field full">
                     <label>{t('finance.salary.table.month')}</label>

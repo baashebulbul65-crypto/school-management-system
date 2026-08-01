@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSchoolData } from '../../context/SchoolDataContext';
 import './TeacherProfileModal.css';
 
 function initials(name) {
@@ -17,6 +18,7 @@ function InfoRow({ label, value }) {
 
 function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAttendance }) {
   const { t } = useTranslation();
+  const { salaries } = useSchoolData();
   const [activeTab, setActiveTab] = useState('guud');
 
   if (!teacher) return null;
@@ -32,7 +34,10 @@ function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAtte
   const assignedClasses = teacher.assignedClasses || [];
   const timetable = teacher.timetable || [];
   const attendance = attendanceRecords || [];
-  const salary = teacher.salary || [];
+  // Mushaharka DHABTA AH (financeSalaries, la xiriiray teacherId) — ma aha
+  // teacher.salary (array hore oo mar walba madhan, marnaba lama qorin,
+  // fiiri commit-kii ka saaray student.fees ee isla dhibaatadaas ahaa).
+  const salary = salaries.filter((s) => s.teacherId === teacher.id);
   const documents = teacher.documents || [];
 
   return (
@@ -152,11 +157,11 @@ function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAtte
                     <tr><th>{t('teachers.profile.table.month')}</th><th>{t('teachers.profile.table.amount')}</th><th>{t('teachers.profile.table.payDate')}</th><th>{t('teachers.profile.table.status')}</th></tr>
                   </thead>
                   <tbody>
-                    {salary.map((s, i) => (
-                      <tr key={i}>
+                    {salary.map((s) => (
+                      <tr key={s.id}>
                         <td>{s.month}</td>
                         <td>${s.amount}</td>
-                        <td className="cell-sub">{s.date}</td>
+                        <td className="cell-sub">{s.date || '—'}</td>
                         <td>
                           <span className={`badge ${s.status === 'paid' ? 'badge-success' : s.status === 'pending' ? 'badge-warning' : 'badge-danger'}`}>
                             {t(`common.status.${s.status}`)}

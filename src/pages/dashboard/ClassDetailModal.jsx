@@ -64,8 +64,11 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
   // "Aan Bixin" iyada oo aan gacan lagu bedelin (fiiri collectStudentFee).
   const classRoster = useMemo(() => {
     if (viewMode !== 'class' || !row) return [];
+    // row.id waa classId dhabta ah (fiiri Finance.jsx: financeClassRows) —
+    // waa in la isticmaalo halkii la isticmaali lahaa className kaliya, si
+    // liiskan uu had iyo jeer la mid noqdo tirada Finance.jsx table-kiisa.
     return students
-      .filter((s) => s.className === row.name)
+      .filter((s) => (s.classId ? s.classId === row.id : s.className === row.name))
       .map((s) => {
         const feeType = getFeeType(s);
         const amount = studentFeeOwed(s);

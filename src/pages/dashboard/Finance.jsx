@@ -20,7 +20,7 @@ function Finance() {
   const location = useLocation();
   const navigate = useNavigate();
   const {
-    classes, students, familyFees, collectFamilyFee, addFamilyFeeRow, feePayments,
+    classes, students, teachers, familyFees, collectFamilyFee, addFamilyFeeRow, feePayments,
     expenses, income, addExpense, addIncome,
     salaries, addSalary, markSalaryPaid,
     discounts, addDiscount,
@@ -603,6 +603,7 @@ function Finance() {
         onClose={() => setShowEntryModal(false)}
         onSave={handleSaveEntry}
         type={entryType}
+        teachers={teachers}
       />
 
       {viewMode === 'family' && (

@@ -260,6 +260,9 @@
     },
     "salary": {
       "table": { "staff": "Shaqaale", "role": "Doorka", "amount": "Qadarka", "month": "Bisha", "status": "Xaaladda" },
+      "linkTeacher": "Xiriirinta Macallinka (ikhtiyaari)",
+      "linkTeacherNone": "-- Ma jiro (macallin ma aha, ama lama xirin) --",
+      "linkTeacherHint": "Haddii shaqaalahani uu yahay macallin ku jira bogga Macallimiinta, ku xir halkan si mushaharkan uu ugu soo baxo profile-kiisa.",
       "items": [
         { "staffName": "Cali Xasan Warsame", "role": "Macallin - Xisaabta", "month": "Luulyo 2026" },
         { "staffName": "Faadumo Nuur Cige", "role": "Macallin - Ingiriisi", "month": "Luulyo 2026" },
