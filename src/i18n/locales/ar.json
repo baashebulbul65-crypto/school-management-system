@@ -159,16 +159,15 @@
       "submitAdd": "إضافة المعلم"
     },
     "profile": {
-      "tabs": { "general": "المعلومات العامة", "timetable": "الجدول الزمني", "attendance": "الحضور", "salary": "الراتب", "documents": "المستندات" },
+      "tabs": { "general": "المعلومات العامة", "attendance": "الحضور", "salary": "الراتب", "documents": "المستندات" },
       "info": { "fullName": "الاسم الكامل", "teacherId": "رقم المعلم", "phone": "رقم الهاتف", "email": "البريد الإلكتروني", "qualification": "المؤهل العلمي", "subject": "المادة" },
       "assignedClassesSection": "الفصول المسندة",
       "noAssignedClasses": "لم يتم إسناد أي فصل بعد.",
-      "noTimetable": "لم يتم إعداد أي جدول بعد.",
       "attendanceNote": "اضغط على أي يوم لتغيير حالة الحضور (حاضر/غائب).",
       "noAttendance": "لا يوجد سجل حضور بعد.",
       "noSalary": "لم يتم تسجيل أي راتب بعد.",
       "noDocuments": "لم يتم رفع أي مستندات.",
-      "table": { "day": "اليوم", "time": "الوقت", "class": "الفصل", "subject": "المادة", "month": "الشهر", "amount": "المبلغ", "payDate": "تاريخ الدفع", "status": "الحالة" }
+      "table": { "month": "الشهر", "amount": "المبلغ", "payDate": "تاريخ الدفع", "status": "الحالة" }
     }
   },
   "classes": {
@@ -462,7 +461,7 @@
     "backToClasses": "العودة إلى الفصول",
     "title": "مساحة العمل — {{grade}} {{section}}",
     "classTeacherLabel": "معلم الفصل",
-    "tabs": { "roster": "الطلاب", "attendance": "الحضور", "grades": "الدرجات", "quran": "القرآن", "quranTargets": "هدف القرآن", "schedule": "الجدول" },
+    "tabs": { "roster": "الطلاب", "attendance": "الحضور", "grades": "الدرجات", "quran": "القرآن", "quranTargets": "هدف القرآن" },
     "roster": {
       "title": "طلاب الفصل",
       "countBadge": "{{count}} طالب",
@@ -518,10 +517,6 @@
         "save": "حفظ الهدف",
         "cancel": "إلغاء"
       }
-    },
-    "schedule": {
-      "title": "جدول اليوم — {{day}}",
-      "empty": "لا توجد حصص اليوم ({{day}}) لهذا الفصل."
     }
   },
   "settings": {

@@ -25,14 +25,12 @@ function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAtte
 
   const TABS = [
     { id: 'guud', label: t('teachers.profile.tabs.general') },
-    { id: 'jadwal', label: t('teachers.profile.tabs.timetable') },
     { id: 'imaanshaha', label: t('teachers.profile.tabs.attendance') },
     { id: 'mushahar', label: t('teachers.profile.tabs.salary') },
     { id: 'dukumenti', label: t('teachers.profile.tabs.documents') },
   ];
 
   const assignedClasses = teacher.assignedClasses || [];
-  const timetable = teacher.timetable || [];
   const attendance = attendanceRecords || [];
   // Mushaharka DHABTA AH (financeSalaries, la xiriiray teacherId) — ma aha
   // teacher.salary (array hore oo mar walba madhan, marnaba lama qorin,
@@ -95,30 +93,6 @@ function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAtte
                   ))
                 )}
               </div>
-            </div>
-          )}
-
-          {activeTab === 'jadwal' && (
-            <div className="data-table-wrap">
-              {timetable.length === 0 ? (
-                <p className="tpm-note">{t('teachers.profile.noTimetable')}</p>
-              ) : (
-                <table className="data-table">
-                  <thead>
-                    <tr><th>{t('teachers.profile.table.day')}</th><th>{t('teachers.profile.table.time')}</th><th>{t('teachers.profile.table.class')}</th><th>{t('teachers.profile.table.subject')}</th></tr>
-                  </thead>
-                  <tbody>
-                    {timetable.map((tt, i) => (
-                      <tr key={i}>
-                        <td>{tt.day}</td>
-                        <td className="cell-sub">{tt.time}</td>
-                        <td>{tt.className}</td>
-                        <td>{tt.subject}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
             </div>
           )}
 

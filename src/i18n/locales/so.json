@@ -159,16 +159,15 @@
       "submitAdd": "Ku Dar Macallinka"
     },
     "profile": {
-      "tabs": { "general": "Macluumaadka Guud", "timetable": "Jadwalka (Timetable)", "attendance": "Imaanshaha", "salary": "Mushaharka", "documents": "Dukumentiyada" },
+      "tabs": { "general": "Macluumaadka Guud", "attendance": "Imaanshaha", "salary": "Mushaharka", "documents": "Dukumentiyada" },
       "info": { "fullName": "Magaca Buuxa", "teacherId": "Teacher ID", "phone": "Telefoonka", "email": "Email", "qualification": "Shahaadada (Qualification)", "subject": "Maadada" },
       "assignedClassesSection": "Fasallada Loo Xilsaaray",
       "noAssignedClasses": "Weli fasal loo xilsaaray ma jiro.",
-      "noTimetable": "Weli jadwal lama dhigin.",
       "attendanceNote": "Guji maalin kasta si aad u beddesho xaaladda imaanshaha (Present/Absent).",
       "noAttendance": "Weli imaansho ma jiro.",
       "noSalary": "Weli mushahar lama diiwaan gelin.",
       "noDocuments": "Weli dukumenti lama geli.",
-      "table": { "day": "Maalinta", "time": "Waqtiga", "class": "Fasalka", "subject": "Maadada", "month": "Bisha", "amount": "Qadarka", "payDate": "Taariikhda Bixinta", "status": "Xaaladda" }
+      "table": { "month": "Bisha", "amount": "Qadarka", "payDate": "Taariikhda Bixinta", "status": "Xaaladda" }
     }
   },
   "classes": {
@@ -462,7 +461,7 @@
     "backToClasses": "Ku Noqo Fasallada",
     "title": "Galaaska — {{grade}} {{section}}",
     "classTeacherLabel": "Macallinka Fasalka",
-    "tabs": { "roster": "Ardayda", "attendance": "Xaadiris", "grades": "Dhibcaha", "quran": "Quraanka", "quranTargets": "Yoolka Quraanka", "schedule": "Jadwalka" },
+    "tabs": { "roster": "Ardayda", "attendance": "Xaadiris", "grades": "Dhibcaha", "quran": "Quraanka", "quranTargets": "Yoolka Quraanka" },
     "roster": {
       "title": "Ardayda Fasalka",
       "countBadge": "{{count}} Arday",
@@ -518,10 +517,6 @@
         "save": "Kaydi Yoolka",
         "cancel": "Jooji"
       }
-    },
-    "schedule": {
-      "title": "Jadwalka Maanta — {{day}}",
-      "empty": "Ma jirto cashar maanta ({{day}}) loo qoray fasalkan."
     }
   },
   "settings": {

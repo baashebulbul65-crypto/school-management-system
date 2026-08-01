@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
-import { todaySomaliDayName, todayISODate, formatDMY } from '../../utils/somaliDate';
+import { todayISODate, formatDMY } from '../../utils/somaliDate';
 import QuranTargetFormModal from './QuranTargetFormModal';
 import '../../styles/dashboard-shared.css';
 import './Attendance.css';
@@ -37,7 +37,6 @@ function ClassWorkspace() {
     { id: 'grades', label: t('classWorkspace.tabs.grades') },
     { id: 'quran', label: t('classWorkspace.tabs.quran') },
     { id: 'quranTargets', label: t('classWorkspace.tabs.quranTargets') },
-    { id: 'schedule', label: t('classWorkspace.tabs.schedule') },
   ];
 
   const ATTENDANCE_STATUSES = [
@@ -68,16 +67,18 @@ function ClassWorkspace() {
 
   // Yoolka ugu dambeeyay (createdAt) ee arday kasta — kuwii hore (reached/missed)
   // waxay ahaadaan taariikh/history oo aan la beddelin, kaliya waa la kaydiyaa.
+  // classId marka jira, className fallback ilaa yoolasha hore ee aan lahayn
+  // classId (fiiri saveQuranTarget/updateClass cascade, SchoolDataContext.jsx).
   const latestTargetByStudent = useMemo(() => {
     const map = {};
     quranTargets
-      .filter((qt) => qt.className === classroomName)
+      .filter((qt) => (cls ? qt.classId === cls.id : false) || (!qt.classId && qt.className === classroomName))
       .forEach((qt) => {
         const existing = map[qt.studentId];
         if (!existing || qt.createdAt > existing.createdAt) map[qt.studentId] = qt;
       });
     return map;
-  }, [quranTargets, classroomName]);
+  }, [quranTargets, classroomName, cls]);
 
   // Ha isticmaalin useMemo halkan — waa in mar walba (render kasta, sida marka
   // tab-ka la furo) laga hubiyaa "now" cusub si prompt-ku si otomaatig ah
@@ -87,17 +88,6 @@ function ClassWorkspace() {
     classStudents
       .map((s) => latestTargetByStudent[s.id])
       .find((qt) => qt && qt.status === 'pending' && !dismissedPromptIds.includes(qt.id) && new Date(qt.deadline).getTime() <= Date.now()) || null;
-
-  const todayDayName = todaySomaliDayName(); // fur (key) loo isticmaalo barbardhigga xogta timetable
-  const todayDayLabel = t('common.dayNames', { returnObjects: true })[new Date().getDay()]; // magaca loo muujiyo
-  const todaysSchedule = useMemo(() => {
-    const entries = teachers.flatMap((tc) =>
-      (tc.timetable || [])
-        .filter((tt) => tt.className === classroomName && tt.day === todayDayName)
-        .map((tt) => ({ ...tt, teacherName: tc.fullName }))
-    );
-    return entries.sort((a, b) => a.time.localeCompare(b.time));
-  }, [teachers, classroomName, todayDayName]);
 
   const markKey = (examId, studentId) => `${examId}_${studentId}`;
 
@@ -446,36 +436,12 @@ function ClassWorkspace() {
         </div>
       )}
 
-      {/* ===== JADWALKA ===== */}
-      {activeTab === 'schedule' && (
-        <div className="dash-card">
-          <div className="dash-card-head">
-            <h3>{t('classWorkspace.schedule.title', { day: todayDayLabel })}</h3>
-          </div>
-          {todaysSchedule.length === 0 ? (
-            <p className="cw-empty-note">{t('classWorkspace.schedule.empty', { day: todayDayLabel })}</p>
-          ) : (
-            <div className="cw-schedule-list">
-              {todaysSchedule.map((entry, i) => (
-                <div className="cw-schedule-row" key={i}>
-                  <div className="cw-schedule-time">{entry.time}</div>
-                  <div>
-                    <div className="cw-schedule-subject">{entry.subject}</div>
-                    <div className="cw-schedule-teacher">{entry.teacherName}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
       <QuranTargetFormModal
         isOpen={!!targetModalStudent}
         onClose={() => setTargetModalStudent(null)}
         student={targetModalStudent}
         onSave={(data) =>
-          saveQuranTarget(targetModalStudent.id, targetModalStudent.fullName, targetModalStudent.className, data)
+          saveQuranTarget(targetModalStudent.id, targetModalStudent.fullName, targetModalStudent.className, cls.id, data)
         }
       />
     </div>

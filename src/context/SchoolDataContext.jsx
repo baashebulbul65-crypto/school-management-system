@@ -467,7 +467,7 @@ export function SchoolDataProvider({ children }) {
   // hore waa la go'aamiyay/reached/missed) waxaa la abuurayaa yool cusub —
   // taasi waxay siisaa macallinka fursad uu isla badhanka "Deji Yoolka" ugu
   // dhufto mar labaad si uu u sameeyo yool cusub isla ardaygaas.
-  const saveQuranTarget = async (studentId, studentName, className, data) => {
+  const saveQuranTarget = async (studentId, studentName, className, classId, data) => {
     if (!profile?.schoolCode) return;
     try {
       const existing = quranTargets.find((qt) => qt.studentId === studentId && qt.status === 'pending');
@@ -475,7 +475,7 @@ export function SchoolDataProvider({ children }) {
         await updateQuranTargetDoc(existing.id, data);
       } else {
         await createQuranTargetDoc(profile.schoolCode, {
-          studentId, studentName, className,
+          studentId, studentName, className, classId,
           status: 'pending',
           decidedAt: null,
           createdAt: new Date().toISOString(),
@@ -1077,6 +1077,11 @@ export function SchoolDataProvider({ children }) {
       // duugsan.
       const affectedExams = exams.filter((e) => e.classId === id && e.className !== newClassroomName);
       await Promise.all(affectedExams.map((e) => updateExamDoc(e.id, { className: newClassroomName })));
+      // Isla sida ardayda/imtixaannada — yoolasha Quraanka classId-gan leh
+      // waa in "className" (denormalized) la cusboonaysiiyaa, si ClassWorkspace.jsx
+      // (Yoolka Quraanka tab) aanu u dhaqmin xog duugsan (Reports MEDIUM #1).
+      const affectedQuranTargets = quranTargets.filter((qt) => qt.classId === id && qt.className !== newClassroomName);
+      await Promise.all(affectedQuranTargets.map((qt) => updateQuranTargetDoc(qt.id, { className: newClassroomName })));
     } catch (err) {
       reportError('Khalad ayaa dhacay markii fasalka wax laga beddelayay:', err);
     }
