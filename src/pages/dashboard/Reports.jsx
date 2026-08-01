@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { classroomName } from '../../hooks/useClassOptions';
 import '../../styles/dashboard-shared.css';
 import './Reports.css';
 
@@ -19,40 +20,50 @@ function gpaFromPercent(pct) {
 }
 
 function Reports() {
-  const { students, teachers, exams, examMarks, expenses, income, feePayments, allStudentAttendanceRecords, allStaffAttendanceRecords } = useSchoolData();
+  const { students, teachers, classes, exams, examMarks, expenses, income, feePayments, allStudentAttendanceRecords, allStaffAttendanceRecords } = useSchoolData();
+
+  // classId marka jira, className fallback ilaa ardayda/imtixaannada aan weli
+  // la dib-u-kaydin (fiiri backfill-ka SchoolDataContext.jsx) — isla habka
+  // Exams.jsx (studentInClass/examInClass), si aan loo isticmaalin
+  // isbarbardhig magac oo keliya ah (Reports MEDIUM #2).
+  const studentInClass = (s, cls) => (s.classId ? s.classId === cls.id : s.className === classroomName(cls));
+  const examInClass = (e, cls) => (e.classId ? e.classId === cls.id : e.className === classroomName(cls));
 
   const enrollmentByClass = useMemo(() => {
-    const counts = {};
-    students.forEach((s) => {
-      const cls = s.className || 'Aan la qeexin';
-      counts[cls] = (counts[cls] || 0) + 1;
-    });
-    return Object.entries(counts)
-      .map(([className, count]) => ({ className, students: count }))
-      .sort((a, b) => b.students - a.students);
-  }, [students]);
+    const rows = classes.map((cls) => ({
+      className: classroomName(cls),
+      students: students.filter((s) => studentInClass(s, cls)).length,
+    }));
+    const unassigned = students.filter((s) => !classes.some((cls) => studentInClass(s, cls))).length;
+    if (unassigned > 0) rows.push({ className: 'Aan la qeexin', students: unassigned });
+    return rows.filter((r) => r.students > 0).sort((a, b) => b.students - a.students);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [students, classes]);
 
   const totalStudents = students.length;
   const maxEnrollment = Math.max(1, ...enrollmentByClass.map((c) => c.students));
 
   const examPerformanceByClass = useMemo(() => {
-    const classNames = [...new Set(exams.map((e) => e.className))];
-    return classNames.map((className) => {
-      const examsInClass = exams.filter((e) => e.className === className);
-      let totalPct = 0;
-      let count = 0;
-      examsInClass.forEach((exam) => {
-        const marksForExam = examMarks[exam.id] || {};
-        Object.values(marksForExam).forEach((mark) => {
-          if (mark !== undefined && mark !== '' && exam.maxMarks) {
-            totalPct += (mark / exam.maxMarks) * 100;
-            count += 1;
-          }
+    return classes
+      .map((cls) => {
+        const examsInClass = exams.filter((e) => examInClass(e, cls));
+        let totalPct = 0;
+        let count = 0;
+        examsInClass.forEach((exam) => {
+          const marksForExam = examMarks[exam.id] || {};
+          Object.values(marksForExam).forEach((mark) => {
+            if (mark !== undefined && mark !== '' && exam.maxMarks) {
+              totalPct += (mark / exam.maxMarks) * 100;
+              count += 1;
+            }
+          });
         });
-      });
-      return { className, avgPercent: count > 0 ? Math.round(totalPct / count) : 0 };
-    });
-  }, [exams, examMarks]);
+        return { className: classroomName(cls), avgPercent: count > 0 ? Math.round(totalPct / count) : 0, hasExams: examsInClass.length > 0 };
+      })
+      .filter((c) => c.hasExams)
+      .map(({ hasExams, ...rest }) => rest);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exams, examMarks, classes]);
 
   const overallExamAvg = examPerformanceByClass.length
     ? Math.round(examPerformanceByClass.reduce((s, c) => s + c.avgPercent, 0) / examPerformanceByClass.length)
@@ -95,7 +106,10 @@ function Reports() {
   const topStudents = useMemo(() => {
     return students
       .map((student) => {
-        const examsInClass = exams.filter((e) => e.className === student.className);
+        const studentCls = classes.find((cls) => studentInClass(student, cls));
+        const examsInClass = studentCls
+          ? exams.filter((e) => examInClass(e, studentCls))
+          : exams.filter((e) => e.className === student.className);
         let totalGpa = 0;
         let count = 0;
         examsInClass.forEach((exam) => {
@@ -105,12 +119,17 @@ function Reports() {
             count += 1;
           }
         });
-        return { name: student.fullName, className: student.className, gpa: count > 0 ? totalGpa / count : null };
+        return {
+          name: student.fullName,
+          className: studentCls ? classroomName(studentCls) : (student.className || 'Aan la qeexin'),
+          gpa: count > 0 ? totalGpa / count : null,
+        };
       })
       .filter((s) => s.gpa !== null)
       .sort((a, b) => b.gpa - a.gpa)
       .slice(0, 5);
-  }, [students, exams, examMarks]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [students, exams, examMarks, classes]);
 
   const teacherAttendanceSummary = useMemo(() => {
     return teachers
