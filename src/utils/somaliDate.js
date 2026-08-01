@@ -11,12 +11,24 @@ export function todaySomaliDayName() {
   return SOMALI_DAYS[new Date().getDay()];
 }
 
+// MUHIIM: waxaa la isticmaalaa qiimayaasha SAXDA AH ee taariikhda MAANTA
+// (getFullYear/getMonth/getDate), MA AHA toISOString() — kaas oo UTC ah oo
+// kartida ku ridi kara maalin/bil qaldan wakhtiyada u dhow saqda dhexe
+// (tusaale: saacadaha ugu horreeya ee maalin/bil cusub ee waqtiga
+// maxalliga ah, UTC-du weli waxay ku jirtaa maalin/bil hore, sidaas
+// darteed calendarku qalday haddii toISOString() la isticmaalo).
+function pad2(n) {
+  return String(n).padStart(2, '0');
+}
+
 export function todayISODate() {
-  return new Date().toISOString().split('T')[0];
+  const d = new Date();
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
 export function currentMonthValue() {
-  return new Date().toISOString().slice(0, 7);
+  const d = new Date();
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
 }
 
 export function formatTodaySomali() {

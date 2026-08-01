@@ -33,6 +33,7 @@ import { subscribeToQuranTargets, createQuranTargetDoc, updateQuranTargetDoc } f
 import { subscribeToAllThreads, sendMessage as sendMessageDoc, markMessagesRead } from '../firebase/messages';
 import { createAbsentNotification, createFeeNotification } from '../firebase/notifications';
 import { todayISODate } from '../utils/somaliDate';
+import { studentFeeOwed } from '../utils/studentFee';
 
 const SchoolDataContext = createContext(null);
 
@@ -1127,7 +1128,7 @@ export function SchoolDataProvider({ children }) {
         studentName: student.fullName || '',
         className: student.className || '',
         month,
-        amount: Number(student.feeAmount) || 0,
+        amount: studentFeeOwed(student),
         method: '',
         date: todayISODate(),
         collectedBy: profile.uid,

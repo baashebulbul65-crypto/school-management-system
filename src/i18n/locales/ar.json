@@ -3,6 +3,7 @@
     "close": "إغلاق",
     "cancel": "إلغاء",
     "save": "حفظ التغييرات",
+    "select": "اختيار",
     "present": "حاضر",
     "absent": "غائب",
     "leave": "إجازة",
@@ -102,13 +103,15 @@
         "parentPhone": "هاتف ولي الأمر", "parentEmail": "بريد ولي الأمر الإلكتروني",
         "className": "الفصل *", "section": "الشعبة", "rollNumber": "الرقم التسلسلي", "subjects": "المواد (افصل بينها بفاصلة ,)",
         "regStatus": "حالة التسجيل", "feeStatus": "حالة الرسوم",
-        "feeAmount": "الرسوم الشهرية ($)", "feeFree": "مجاني (بدون رسوم)"
+        "feeAmount": "الرسوم الشهرية ($)",
+        "feeType": "نوع الرسوم", "feeTypeFixed": "مبلغ عادي", "feeTypeFree": "مجاني", "feeTypeDiscount": "خصم",
+        "discountPercent": "نسبة الخصم (%)"
       },
       "placeholders": {
         "fullName": "مثال: إسماعيل عبدي حسن", "phone": "+252 61 ...", "address": "الحي، المدينة",
         "subjects": "رياضيات، إنجليزي، علوم", "parentEmail": "example@gmail.com",
         "selectClass": "اختر الفصل", "noClasses": "لا توجد فصول بعد — يرجى إضافة فصل من صفحة الفصول أولاً",
-        "feeAmount": "مثال: 50"
+        "feeAmount": "مثال: 50", "discountPercent": "مثال: 20"
       },
       "submitAdd": "إضافة الطالب"
     },
@@ -320,13 +323,18 @@
     "classDetail": {
       "back": "رجوع",
       "print": "طباعة",
+      "filterAll": "الكل",
       "sortDefault": "ترتيب حسب...",
       "sortName": "الاسم (أ-ي)",
       "sortStatus": "الحالة",
       "stats": { "total": "الإجمالي", "paid": "تم الدفع", "unpaid": "لم يُدفع", "free": "مجاني", "discountValue": "قيمة الخصم", "unpaidCount": "الرصيد المتبقي ($)" },
       "table": { "student": "اسم الطالب", "status": "الحالة" },
       "collect": "تحصيل",
-      "confirmCollect": "هل أنت متأكد من تحصيل رسوم {{name}}؟"
+      "confirmCollect": "هل أنت متأكد من تحصيل رسوم {{name}}؟",
+      "discountLabel": "خصم"
+    },
+    "feeCategoryModal": {
+      "student": "اسم الطالب"
     }
   },
   "exams": {

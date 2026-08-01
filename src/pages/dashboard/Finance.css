@@ -260,6 +260,8 @@
 .acc-stat{ display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; }
 .acc-stat strong{ font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 20px; color: var(--navy); }
 .acc-stat span{ font-size: 11px; color: var(--grey-text); font-weight: 600; }
+.acc-stat-clickable{ cursor: pointer; border-radius: 10px; transition: background 0.15s ease; }
+.acc-stat-clickable:hover{ background: #F7F9FA; }
 
 .acc-filter-row{
   display: flex;

@@ -4,11 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { classroomName } from '../../hooks/useClassOptions';
 import { currentMonthValue } from '../../utils/somaliDate';
+import { getFeeType, studentFeeOwed } from '../../utils/studentFee';
 import FinanceDonutChart from '../../components/dashboard/FinanceDonutChart';
+import MonthCalendarPicker from '../../components/dashboard/MonthCalendarPicker';
 import FinanceEntryModal from './FinanceEntryModal';
 import FeeCollectionModal from './FeeCollectionModal';
 import AddFeeRowModal from './AddFeeRowModal';
 import ClassDetailModal from './ClassDetailModal';
+import FeeCategoryListModal from './FeeCategoryListModal';
 import '../../styles/dashboard-shared.css';
 import './Finance.css';
 
@@ -35,6 +38,7 @@ function Finance() {
 
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [entryType, setEntryType] = useState('expenses');
+  const [showFreeModal, setShowFreeModal] = useState(false);
 
   // Safafka fasalada (Xisaabaadka > Fasalada) waxaa hadda si toos ah looga
   // soo saaraa xogta DHAB AH ee "classes" + "students" + "feePayments" ee
@@ -43,15 +47,31 @@ function Finance() {
   // Sidaas darteed fasal kasta oo Classes.jsx lagu abuuro wuxuu si otomaatig
   // ah ugu soo muuqdaa halkan, iyo bishii cusub marka ay bilaabato arday
   // kastaa wuxuu dib ugu noqdaa "Aan Bixin" (ma jiro feePayment bishaas ah weli).
+  // Ardayda la tirinayo (financeClassRows iyo liiska Bilaash-ka) waa in ay
+  // isku mid ahaadaan: KELIYA ardayda className-tiisu ku beegan tahay fasal
+  // DHAB AH oo hadda jira (classes collection-ka) — haddii arday leeyahay
+  // className aan la mid ahayn fasal jira (fasal la beddelay/la tirtiray),
+  // waa in la iska daayaa xisaabinta, si tirada iyo liiska la furo ee
+  // "Bilaash" ay had iyo jeer isku mid ahaadaan (mar hore tiradu waxay
+  // ahayd 2, laakiin liiska waxaa lagu arkay ilaa 7 arday — sababtoo ah
+  // liiska hore wuxuu eegayay STUDENTS OO DHAN, isaga oo aan xaqiijin in
+  // className-kooda uu ku beegan yahay fasal dhab ah).
+  const validClassNames = useMemo(() => new Set(classes.map((c) => classroomName(c))), [classes]);
+  const realClassStudents = useMemo(
+    () => students.filter((s) => validClassNames.has(s.className)),
+    [students, validClassNames]
+  );
+
   const financeClassRows = useMemo(() => classes.map((cls) => {
     const name = classroomName(cls);
-    const classStudents = students.filter((s) => s.className === name);
+    const classStudents = realClassStudents.filter((s) => s.className === name);
     let paidCount = 0, paidTotal = 0, unpaidCount = 0, unpaidTotal = 0, freeCount = 0;
     classStudents.forEach((s) => {
-      const amount = Number(s.feeAmount) || 0;
-      if (amount === 0) { freeCount += 1; return; }
+      const feeType = getFeeType(s);
+      if (feeType === 'free') { freeCount += 1; return; }
+      const owed = studentFeeOwed(s);
       const isPaid = feePayments.some((p) => p.feeType === 'student' && p.studentId === s.id && p.month === monthValue);
-      if (isPaid) { paidCount += 1; paidTotal += amount; } else { unpaidCount += 1; unpaidTotal += amount; }
+      if (isPaid) { paidCount += 1; paidTotal += owed; } else { unpaidCount += 1; unpaidTotal += owed; }
     });
     return {
       id: cls.id, name,
@@ -61,7 +81,17 @@ function Finance() {
       balance: unpaidTotal,
       paidCount, paidTotal, unpaidCount, unpaidTotal, freeCount,
     };
-  }), [classes, students, feePayments, monthValue]);
+  }), [classes, realClassStudents, feePayments, monthValue]);
+
+  // Liiska dhab ah ee ardayda "Bilaash" (dhammaan dugsiga, ma aha kaliya
+  // fasalka la doortay) — waxaa laga furaa stat-ka "Bilaash" ee acc-stats-box
+  // (fiiri hoos), tiradiisuna waa in ay isku mid ahaato financeClassRows.
+  const freeStudentsList = useMemo(
+    () => realClassStudents
+      .filter((s) => getFeeType(s) === 'free')
+      .map((s) => ({ id: s.id, name: s.fullName })),
+    [realClassStudents]
+  );
 
   const activeRows = viewMode === 'class' ? financeClassRows : familyFees;
   const selectedRow = activeRows.find((r) => r.id === selectedRowId) || null;
@@ -91,10 +121,7 @@ function Finance() {
   const extraStats = useMemo(() => ({
     paymentsCount: feePayments.length,
     discountRecipients: discounts.filter((d) => d.type === 'discount').length,
-    // Fasalada: "Bilaash" waa tirada ARDAYDA DHABTA AH ee feeAmount === 0
-    // (fiiri financeClassRows) — ma aha tirada dhimis/deeq-ta la diiwaan
-    // geliyay (Discounts tab), kuwaas oo ah xog kale oo aan lala xirin
-    // xisaabaadka fasalka. M.Qoys waxay wali isticmaashaa tirada deeqaha.
+    // Fasalada: "Bilaash" waa tirada ARDAYDA DHABTA AH ee feeType==='free'.
     scholarshipCount: viewMode === 'class'
       ? financeClassRows.reduce((s, r) => s + r.freeCount, 0)
       : discounts.filter((d) => d.type === 'scholarship').length,
@@ -199,7 +226,7 @@ function Finance() {
                 {t('finance.toggle.byFamily')}
               </button>
             </div>
-            <input type="month" className="acc-month-picker" value={monthValue} onChange={(e) => setMonthValue(e.target.value)} />
+            <MonthCalendarPicker value={monthValue} onChange={setMonthValue} />
           </div>
 
           {/* SUMMARY CARDS (6) */}
@@ -281,7 +308,13 @@ function Finance() {
                 <div className="acc-stat"><strong>{totalStudents}</strong><span>{t('finance.statsBox.totalStudents')}</span></div>
                 <div className="acc-stat"><strong>{extraStats.paymentsCount}</strong><span>{t('finance.statsBox.paymentsCount')}</span></div>
                 <div className="acc-stat"><strong>{extraStats.discountRecipients}</strong><span>{t('finance.statsBox.discountRecipients')}</span></div>
-                <div className="acc-stat"><strong>{extraStats.scholarshipCount}</strong><span>{t('finance.statsBox.freeCount')}</span></div>
+                <div
+                  className={`acc-stat ${viewMode === 'class' ? 'acc-stat-clickable' : ''}`}
+                  onClick={() => viewMode === 'class' && setShowFreeModal(true)}
+                >
+                  <strong>{extraStats.scholarshipCount}</strong>
+                  <span>{t('finance.statsBox.freeCount')}</span>
+                </div>
                 <div className="acc-stat"><strong>{extraStats.unpaidCount}</strong><span>{t('finance.statsBox.unpaidCount')}</span></div>
               </div>
             </div>
@@ -596,6 +629,13 @@ function Finance() {
           onCollected={handleCollectDetail}
         />
       )}
+
+      <FeeCategoryListModal
+        isOpen={showFreeModal}
+        onClose={() => setShowFreeModal(false)}
+        title={t('finance.statsBox.freeCount')}
+        items={freeStudentsList}
+      />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { getFeeType, studentFeeOwed } from '../../utils/studentFee';
 import './ClassDetailModal.css';
 
 const SAMPLE_NAMES = [
@@ -42,11 +43,18 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
   const { t } = useTranslation();
   const { students, feePayments, collectStudentFee } = useSchoolData();
   const [sortBy, setSortBy] = useState('default');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [familyRoster, setFamilyRoster] = useState([]);
 
   useEffect(() => {
     if (viewMode === 'family') setFamilyRoster(buildFamilyRoster(row));
   }, [row, viewMode]);
+
+  // Marka fasal kale la furo, filter-ka/kala-soocidda hore ha ku hadhin.
+  useEffect(() => {
+    setStatusFilter('all');
+    setSortBy('default');
+  }, [row?.id]);
 
   // Fasalada — liiska ARDAYDA DHABTA AH ee fasalkan (Firestore "students"),
   // xaaladdoodana waxaa laga soo xisaabiyaa feeAmount + feePayments-ka
@@ -59,13 +67,18 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
     return students
       .filter((s) => s.className === row.name)
       .map((s) => {
-        const amount = Number(s.feeAmount) || 0;
+        const feeType = getFeeType(s);
+        const amount = studentFeeOwed(s);
         let status = 'free';
-        if (amount > 0) {
+        if (feeType !== 'free') {
           const isPaid = feePayments.some((p) => p.feeType === 'student' && p.studentId === s.id && p.month === monthValue);
           status = isPaid ? 'paid' : 'unpaid';
         }
-        return { id: s.id, name: s.fullName, status, amount };
+        return {
+          id: s.id, name: s.fullName, status, amount,
+          isDiscount: feeType === 'discount',
+          discountPercent: Number(s.discountPercent) || 0,
+        };
       });
   }, [viewMode, students, feePayments, row, monthValue]);
 
@@ -82,12 +95,22 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
     return { total, bixiyey, aanBixin, bilaash, qiimoDhimista: row.discount || 0, aBaska };
   }, [roster, row, viewMode]);
 
+  // Filter-ka xaaladda (Dhammaan/Bixiyay/Ma Bixin/Bilaash) iyo kala-soocidda
+  // A-Z waa laba shay oo kala duwan oo isku shaqeeya: marka hore liiska waxaa
+  // lagu XANTIYAA (filter) xaaladda la doortay, dabadeedna liiskaas la kala
+  // saaraa (sort) — sidaas darteed doorashada "Ma Bixin" ka dib, liiska wali
+  // waa loo kala saari karaa A-Z.
+  const filteredRoster = useMemo(() => {
+    if (statusFilter === 'all') return roster;
+    return roster.filter((r) => r.status === statusFilter);
+  }, [roster, statusFilter]);
+
   const sortedRoster = useMemo(() => {
-    const copy = [...roster];
+    const copy = [...filteredRoster];
     if (sortBy === 'name') copy.sort((a, b) => a.name.localeCompare(b.name));
     if (sortBy === 'status') copy.sort((a, b) => a.status.localeCompare(b.status));
     return copy;
-  }, [roster, sortBy]);
+  }, [filteredRoster, sortBy]);
 
   const handleCollect = (rosterId) => {
     const person = roster.find((r) => r.id === rosterId);
@@ -117,6 +140,12 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
           </button>
           <div className="cdm-month">{monthValue}</div>
+          <select className="cdm-sort" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="all">{t('finance.classDetail.filterAll')}</option>
+            <option value="paid">{t('finance.classDetail.stats.paid')}</option>
+            <option value="unpaid">{t('finance.classDetail.stats.unpaid')}</option>
+            <option value="free">{t('finance.classDetail.stats.free')}</option>
+          </select>
           <select className="cdm-sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
             <option value="default">{t('finance.classDetail.sortDefault')}</option>
             <option value="name">{t('finance.classDetail.sortName')}</option>
@@ -167,7 +196,8 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
                   {s.status === 'paid' && (
                     <span className="cdm-fii-status paid">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-                      {t('finance.classDetail.stats.paid')} (${s.amount})
+                      {t('finance.classDetail.stats.paid')} (${s.amount.toFixed(2)})
+                      {s.isDiscount ? ` · ${t('finance.classDetail.discountLabel')} ${s.discountPercent}%` : ''}
                     </span>
                   )}
                   {s.status === 'free' && (
@@ -180,7 +210,8 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
                     <div className="cdm-unpaid-row">
                       <span className="cdm-fii-status unpaid">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                        {t('finance.classDetail.stats.unpaid')}
+                        {t('finance.classDetail.stats.unpaid')} (${s.amount.toFixed(2)})
+                        {s.isDiscount ? ` · ${t('finance.classDetail.discountLabel')} ${s.discountPercent}%` : ''}
                       </span>
                       <button className="cdm-collect-btn" onClick={() => handleCollect(s.id)}>{t('finance.classDetail.collect')}</button>
                     </div>

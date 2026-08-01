@@ -3,6 +3,7 @@
     "close": "Xir",
     "cancel": "Jooji",
     "save": "Kaydi Isbeddelka",
+    "select": "Dooro",
     "present": "Joog",
     "absent": "Maqan",
     "leave": "Fasax",
@@ -102,13 +103,15 @@
         "parentPhone": "Telefoonka Waalidka", "parentEmail": "Email Waalidka",
         "className": "Fasalka *", "section": "Section", "rollNumber": "Roll Number", "subjects": "Maadooyinka (kala sooc comma ,)",
         "regStatus": "Xaalada Diiwaanka", "feeStatus": "Xaalada Lacagta",
-        "feeAmount": "Lacagta Fasalka Bishii ($)", "feeFree": "Bilaash (Fee ma jiro)"
+        "feeAmount": "Lacagta Fasalka Bishii ($)",
+        "feeType": "Nooca Fee-ga", "feeTypeFixed": "Qiimo Caadi Ah", "feeTypeFree": "Bilaash", "feeTypeDiscount": "Danyar/Dhimis",
+        "discountPercent": "Qiimaha Dhimista (%)"
       },
       "placeholders": {
         "fullName": "Tusaale: Ismaaciil Cabdi Xasan", "phone": "+252 61 ...", "address": "Xaafadda, Magaalada",
         "subjects": "Xisaab, Ingiriisi, Sayniska", "parentEmail": "tusaale@gmail.com",
         "selectClass": "Dooro Fasal", "noClasses": "Wali fasal lama abuurin — marka hore ku dar bogga Fasallada",
-        "feeAmount": "Tusaale: 50"
+        "feeAmount": "Tusaale: 50", "discountPercent": "Tusaale: 20"
       },
       "submitAdd": "Ku Dar Ardayga"
     },
@@ -320,13 +323,18 @@
     "classDetail": {
       "back": "Noqo",
       "print": "Print",
+      "filterAll": "Dhammaan",
       "sortDefault": "Kala saar...",
       "sortName": "Magaca (A-Z)",
       "sortStatus": "Xaaladda",
       "stats": { "total": "Total", "paid": "Bixiyey", "unpaid": "Aan Bixin", "free": "Bilaash", "discountValue": "Qiimo Dhimista", "unpaidCount": "Baaqiga ($)" },
       "table": { "student": "Magaca Ardayga", "status": "Xaaladda" },
       "collect": "Lacag Qabo",
-      "confirmCollect": "Ma hubtaa inaad ka qabaneyso lacagta {{name}}?"
+      "confirmCollect": "Ma hubtaa inaad ka qabaneyso lacagta {{name}}?",
+      "discountLabel": "Danyar"
+    },
+    "feeCategoryModal": {
+      "student": "Magaca Ardayga"
     }
   },
   "exams": {
