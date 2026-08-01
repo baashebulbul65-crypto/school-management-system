@@ -6,6 +6,7 @@
 
 import { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from './AuthContext';
+import { useToast } from './ToastContext';
 import { subscribeToStudents, createStudentDoc, updateStudentDoc, softDeleteStudentDoc, restoreStudentDoc, deleteStudentDoc, backfillStudentLookups } from '../firebase/students';
 import { subscribeToTeachers, createTeacherDoc, updateTeacherDoc } from '../firebase/teachers';
 import { subscribeToClasses, createClassDoc, updateClassDoc, deleteClassDoc } from '../firebase/classes';
@@ -198,6 +199,18 @@ const DEMO_STUDENTS_SEED = [
 
 export function SchoolDataProvider({ children }) {
   const { profile } = useAuth();
+  const { showError } = useToast();
+
+  // Waxaa loo isticmaalaa dhammaan isku dayada Firestore ee ka socda user
+  // action (add/update/delete/collect/mark) — waxay isticmaalaan qoraalka
+  // isla mid ah console.error-ka (fiiri Round 1: SchoolDataContext.jsx
+  // mutation functions), si isticmaaluhu u ogaado marka isku dayga uu ku
+  // guuldareysto, ma aha kaliya console-ka.
+  const reportError = (message, err) => {
+    console.error(message, err);
+    showError(message);
+  };
+
   const [allStudents, setAllStudents] = useState([]);
   const [studentsLoading, setStudentsLoading] = useState(true);
   // "students" waa kaliya kuwa aan la tirtirin (isDeleted !== true) — bogagga
@@ -252,7 +265,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await setStudentAttendanceRecord(profile.schoolCode, date, studentId, className, status);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii imaanshaha ardayga la kaydinayay:', err);
+      reportError('Khalad ayaa dhacay markii imaanshaha ardayga la kaydinayay:', err);
     }
     if (status === 'absent') {
       const student = students.find((s) => s.id === studentId);
@@ -265,7 +278,7 @@ export function SchoolDataProvider({ children }) {
           date,
         });
       } catch (err) {
-        console.error('Khalad ayaa dhacay markii ogeysiiska maqnaanshaha la abuurayay:', err);
+        reportError('Khalad ayaa dhacay markii ogeysiiska maqnaanshaha la abuurayay:', err);
       }
     }
   };
@@ -336,7 +349,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await createStaffRosterDoc(profile.schoolCode, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii shaqaalaha la darayay:', err);
+      reportError('Khalad ayaa dhacay markii shaqaalaha la darayay:', err);
     }
   };
 
@@ -344,7 +357,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await updateStaffRosterDoc(id, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii shaqaalaha wax laga beddelayay:', err);
+      reportError('Khalad ayaa dhacay markii shaqaalaha wax laga beddelayay:', err);
     }
   };
 
@@ -352,7 +365,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await deleteStaffRosterDoc(id);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii shaqaalaha la saarayay:', err);
+      reportError('Khalad ayaa dhacay markii shaqaalaha la saarayay:', err);
     }
   };
 
@@ -425,7 +438,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await setQuranProgressRecord(profile.schoolCode, todayISODate(), studentId, className, result, surah);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii horumarka Quraanka la kaydinayay:', err);
+      reportError('Khalad ayaa dhacay markii horumarka Quraanka la kaydinayay:', err);
     }
   };
 
@@ -470,7 +483,7 @@ export function SchoolDataProvider({ children }) {
         });
       }
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii yoolka Quraanka la kaydinayay:', err);
+      reportError('Khalad ayaa dhacay markii yoolka Quraanka la kaydinayay:', err);
     }
   };
 
@@ -486,7 +499,7 @@ export function SchoolDataProvider({ children }) {
         decidedAt: new Date().toISOString(),
       });
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii natiijada yoolka Quraanka la kaydinayay:', err);
+      reportError('Khalad ayaa dhacay markii natiijada yoolka Quraanka la kaydinayay:', err);
     }
   };
 
@@ -522,7 +535,7 @@ export function SchoolDataProvider({ children }) {
         text: text.trim(),
       });
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii fariinta la dirayay:', err);
+      reportError('Khalad ayaa dhacay markii fariinta la dirayay:', err);
     }
   };
 
@@ -534,7 +547,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await markMessagesRead(unreadIds, 'staff');
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii fariimaha la calaamadinayay in la akhriyay:', err);
+      reportError('Khalad ayaa dhacay markii fariimaha la calaamadinayay in la akhriyay:', err);
     }
   };
 
@@ -705,7 +718,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await createSalaryDoc(profile.schoolCode, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii mushaharka la darayay:', err);
+      reportError('Khalad ayaa dhacay markii mushaharka la darayay:', err);
     }
   };
 
@@ -713,7 +726,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await setSalaryStatus(id, 'paid');
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii mushaharka la calaamadinayay in la bixiyay:', err);
+      reportError('Khalad ayaa dhacay markii mushaharka la calaamadinayay in la bixiyay:', err);
     }
   };
 
@@ -722,7 +735,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await createDiscountDoc(profile.schoolCode, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii dhimista/deeqda la darayay:', err);
+      reportError('Khalad ayaa dhacay markii dhimista/deeqda la darayay:', err);
     }
   };
 
@@ -733,7 +746,7 @@ export function SchoolDataProvider({ children }) {
       const no = `${prefix}-${new Date().getFullYear()}-${String(financeDocuments.length + 1).padStart(3, '0')}`;
       await createDocumentDoc(profile.schoolCode, { ...payload, no });
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii invoice/receipt la darayay:', err);
+      reportError('Khalad ayaa dhacay markii invoice/receipt la darayay:', err);
     }
   };
 
@@ -759,7 +772,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await createExpenseDoc(profile.schoolCode, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii kharashka la darayay:', err);
+      reportError('Khalad ayaa dhacay markii kharashka la darayay:', err);
     }
   };
 
@@ -768,7 +781,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await createIncomeDoc(profile.schoolCode, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii dakhliga la darayay:', err);
+      reportError('Khalad ayaa dhacay markii dakhliga la darayay:', err);
     }
   };
 
@@ -777,7 +790,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await createClassFeeRowDoc(profile.schoolCode, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii safka lacagta fasalka la darayay:', err);
+      reportError('Khalad ayaa dhacay markii safka lacagta fasalka la darayay:', err);
     }
   };
 
@@ -786,7 +799,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await createFamilyFeeRowDoc(profile.schoolCode, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii safka lacagta qoyska la darayay:', err);
+      reportError('Khalad ayaa dhacay markii safka lacagta qoyska la darayay:', err);
     }
   };
 
@@ -858,7 +871,7 @@ export function SchoolDataProvider({ children }) {
         className: payload.className || '',
       });
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii ogeysiiska lacagta la abuurayay:', err);
+      reportError('Khalad ayaa dhacay markii ogeysiiska lacagta la abuurayay:', err);
     }
   };
 
@@ -875,7 +888,7 @@ export function SchoolDataProvider({ children }) {
       });
       await notifyIfFeeOverdue(newId, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii ardayga la darayay:', err);
+      reportError('Khalad ayaa dhacay markii ardayga la darayay:', err);
     }
   };
 
@@ -884,7 +897,7 @@ export function SchoolDataProvider({ children }) {
       await updateStudentDoc(id, payload);
       await notifyIfFeeOverdue(id, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii ardayga wax laga beddelayay:', err);
+      reportError('Khalad ayaa dhacay markii ardayga wax laga beddelayay:', err);
     }
   };
 
@@ -894,7 +907,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await softDeleteStudentDoc(id);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii ardayga la tirtirayay:', err);
+      reportError('Khalad ayaa dhacay markii ardayga la tirtirayay:', err);
     }
   };
 
@@ -902,7 +915,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await restoreStudentDoc(id);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii ardayga laga soo celinayay xogta la tirtiray:', err);
+      reportError('Khalad ayaa dhacay markii ardayga laga soo celinayay xogta la tirtiray:', err);
     }
   };
 
@@ -910,7 +923,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await deleteStudentDoc(id);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii ardayga si joogto ah loo tirtirayay:', err);
+      reportError('Khalad ayaa dhacay markii ardayga si joogto ah loo tirtirayay:', err);
     }
   };
 
@@ -925,7 +938,7 @@ export function SchoolDataProvider({ children }) {
       .filter((s) => s.deletedAt && new Date(s.deletedAt).getTime() <= cutoff)
       .forEach((s) => {
         deleteStudentDoc(s.id).catch((err) =>
-          console.error('Khalad ayaa dhacay markii xog dhammaatay 45-ta maalmood si otomaatig ah loo tirtirayay:', err)
+          reportError('Khalad ayaa dhacay markii xog dhammaatay 45-ta maalmood si otomaatig ah loo tirtirayay:', err)
         );
       });
   }, [deletedStudents, profile?.accountType]);
@@ -941,7 +954,7 @@ export function SchoolDataProvider({ children }) {
         await createStudentDoc(profile.schoolCode, data);
       }
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii xogta tijaabada la seed-gareynayay:', err);
+      reportError('Khalad ayaa dhacay markii xogta tijaabada la seed-gareynayay:', err);
     }
   };
 
@@ -957,7 +970,7 @@ export function SchoolDataProvider({ children }) {
         documents: [],
       });
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii macallinka la darayay:', err);
+      reportError('Khalad ayaa dhacay markii macallinka la darayay:', err);
     }
   };
 
@@ -965,7 +978,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await updateTeacherDoc(id, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii macallinka wax laga beddelayay:', err);
+      reportError('Khalad ayaa dhacay markii macallinka wax laga beddelayay:', err);
     }
   };
 
@@ -978,7 +991,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await setStaffAttendanceRecord(profile.schoolCode, 'teachers', date, teacherId, nextStatus);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii imaanshaha macallinka la cusbooneysiinayay:', err);
+      reportError('Khalad ayaa dhacay markii imaanshaha macallinka la cusbooneysiinayay:', err);
     }
   };
 
@@ -988,21 +1001,21 @@ export function SchoolDataProvider({ children }) {
     try {
       await createClassDoc(profile.schoolCode, { ...payload, students: 0 });
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii fasalka la darayay:', err);
+      reportError('Khalad ayaa dhacay markii fasalka la darayay:', err);
     }
   };
   const updateClass = async (id, payload) => {
     try {
       await updateClassDoc(id, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii fasalka wax laga beddelayay:', err);
+      reportError('Khalad ayaa dhacay markii fasalka wax laga beddelayay:', err);
     }
   };
   const removeClass = async (id) => {
     try {
       await deleteClassDoc(id);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii fasalka la tirtirayay:', err);
+      reportError('Khalad ayaa dhacay markii fasalka la tirtirayay:', err);
     }
   };
 
@@ -1012,21 +1025,21 @@ export function SchoolDataProvider({ children }) {
     try {
       await createSubjectDoc(profile.schoolCode, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii maadada la darayay:', err);
+      reportError('Khalad ayaa dhacay markii maadada la darayay:', err);
     }
   };
   const updateSubject = async (id, payload) => {
     try {
       await updateSubjectDoc(id, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii maadada wax laga beddelayay:', err);
+      reportError('Khalad ayaa dhacay markii maadada wax laga beddelayay:', err);
     }
   };
   const removeSubject = async (id) => {
     try {
       await deleteSubjectDoc(id);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii maadada la tirtirayay:', err);
+      reportError('Khalad ayaa dhacay markii maadada la tirtirayay:', err);
     }
   };
 
@@ -1036,21 +1049,21 @@ export function SchoolDataProvider({ children }) {
     try {
       await createExamDoc(profile.schoolCode, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii imtixaanka la darayay:', err);
+      reportError('Khalad ayaa dhacay markii imtixaanka la darayay:', err);
     }
   };
   const updateExam = async (id, payload) => {
     try {
       await updateExamDoc(id, payload);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii imtixaanka wax laga beddelayay:', err);
+      reportError('Khalad ayaa dhacay markii imtixaanka wax laga beddelayay:', err);
     }
   };
   const removeExam = async (id) => {
     try {
       await deleteExamDoc(id);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii imtixaanka la tirtirayay:', err);
+      reportError('Khalad ayaa dhacay markii imtixaanka la tirtirayay:', err);
     }
   };
   const updateExamMark = async (examId, studentId, value) => {
@@ -1058,7 +1071,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await setExamMarkRecord(profile.schoolCode, examId, studentId, value === '' ? '' : Number(value));
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii buundada la kaydinayay:', err);
+      reportError('Khalad ayaa dhacay markii buundada la kaydinayay:', err);
     }
   };
 
@@ -1078,7 +1091,7 @@ export function SchoolDataProvider({ children }) {
         collectedByName: profile.fullName || '',
       });
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii lacagta la ururinayay:', err);
+      reportError('Khalad ayaa dhacay markii lacagta la ururinayay:', err);
     }
   };
   const collectClassFee = (rowId, amount, method, date) => collectFee('class', rowId, amount, method, date);
@@ -1092,7 +1105,7 @@ export function SchoolDataProvider({ children }) {
     try {
       await setStaffAttendanceRecord(profile.schoolCode, category, todayISODate(), id, nextStatus);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii imaanshaha maanta la cusbooneysiinayay:', err);
+      reportError('Khalad ayaa dhacay markii imaanshaha maanta la cusbooneysiinayay:', err);
     }
   };
 
