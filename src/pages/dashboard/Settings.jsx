@@ -95,11 +95,6 @@ function Settings() {
     updateFee(id, Number(value) || 0);
   };
 
-  const handleAcademicSave = (e) => {
-    e.preventDefault();
-    flashSaved();
-  };
-
   const handleLogoPick = () => logoInputRef.current?.click();
 
   const handleLogoChange = async (e) => {
@@ -322,27 +317,24 @@ function Settings() {
           <h3 className="settings-section-title">{t('settings.academic.sectionTitle')}</h3>
           <p className="settings-section-desc">{t('settings.academic.sectionDesc')}</p>
 
-          <form onSubmit={handleAcademicSave}>
-            <div className="settings-grid">
-              <div className="settings-field">
-                <label>{t('settings.academic.startDate')}</label>
-                <input
-                  type="date"
-                  value={settings.academicYear.start}
-                  onChange={(e) => updateAcademicYear({ start: e.target.value })}
-                />
-              </div>
-              <div className="settings-field">
-                <label>{t('settings.academic.endDate')}</label>
-                <input
-                  type="date"
-                  value={settings.academicYear.end}
-                  onChange={(e) => updateAcademicYear({ end: e.target.value })}
-                />
-              </div>
+          <div className="settings-grid">
+            <div className="settings-field">
+              <label>{t('settings.academic.startDate')}</label>
+              <input
+                type="date"
+                value={settings.academicYear.start}
+                onChange={(e) => { updateAcademicYear({ start: e.target.value }); flashSaved(); }}
+              />
             </div>
-            <button type="submit" className="btn-primary settings-save-btn">{t('settings.school.save')}</button>
-          </form>
+            <div className="settings-field">
+              <label>{t('settings.academic.endDate')}</label>
+              <input
+                type="date"
+                value={settings.academicYear.end}
+                onChange={(e) => { updateAcademicYear({ end: e.target.value }); flashSaved(); }}
+              />
+            </div>
+          </div>
         </div>
       )}
 
