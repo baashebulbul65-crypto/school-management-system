@@ -252,7 +252,7 @@ export function SchoolDataProvider({ children }) {
         records.forEach((r) => { map[r.studentId] = r.status; });
         setStudentAttendanceToday(map);
       },
-      (err) => console.error('Khalad ayaa dhacay markii imaanshaha maanta laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii imaanshaha maanta laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
@@ -309,7 +309,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToAllAttendanceRecords(
       profile.schoolCode,
       setAllStudentAttendanceRecords,
-      (err) => console.error('Khalad ayaa dhacay markii taariikhda imaanshaha ardayda laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii taariikhda imaanshaha ardayda laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -322,7 +322,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToAllStaffAttendanceRecords(
       profile.schoolCode,
       setAllStaffAttendanceRecords,
-      (err) => console.error('Khalad ayaa dhacay markii taariikhda imaanshaha macallimiinta/shaqaalaha laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii taariikhda imaanshaha macallimiinta/shaqaalaha laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -339,7 +339,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToStaffRoster(
       profile.schoolCode,
       setStaff,
-      (err) => console.error('Khalad ayaa dhacay markii shaqaalaha (roster) laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii shaqaalaha (roster) laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
@@ -385,7 +385,7 @@ export function SchoolDataProvider({ children }) {
         records.forEach((r) => { map[r.personId] = r.status; });
         setTeacherAttendanceToday(map);
       },
-      (err) => console.error('Khalad ayaa dhacay markii imaanshaha macallimiinta maanta laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii imaanshaha macallimiinta maanta laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
@@ -404,7 +404,7 @@ export function SchoolDataProvider({ children }) {
         records.forEach((r) => { map[r.personId] = r.status; });
         setStaffAttendanceToday(map);
       },
-      (err) => console.error('Khalad ayaa dhacay markii imaanshaha shaqaalaha maanta laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii imaanshaha shaqaalaha maanta laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
@@ -428,7 +428,7 @@ export function SchoolDataProvider({ children }) {
         records.forEach((r) => { map[r.studentId] = { result: r.result, surah: r.surah }; });
         setQuranProgressToday(map);
       },
-      (err) => console.error('Khalad ayaa dhacay markii horumarka Quraanka laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii horumarka Quraanka laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -457,7 +457,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToQuranTargets(
       profile.schoolCode,
       setQuranTargetsState,
-      (err) => console.error('Khalad ayaa dhacay markii yoolalka Quraanka laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii yoolalka Quraanka laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -518,7 +518,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToAllThreads(
       profile.schoolCode,
       setStaffMessages,
-      (err) => console.error('Khalad ayaa dhacay markii fariimaha laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii fariimaha laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -560,7 +560,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToTeachers(
       profile.schoolCode,
       setTeachers,
-      (err) => console.error('Khalad ayaa dhacay markii macallimiinta laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii macallimiinta laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
@@ -574,7 +574,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToClasses(
       profile.schoolCode,
       setClasses,
-      (err) => console.error('Khalad ayaa dhacay markii fasallada laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii fasallada laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
@@ -588,7 +588,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToSubjects(
       profile.schoolCode,
       setSubjects,
-      (err) => console.error('Khalad ayaa dhacay markii maadooyinka laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii maadooyinka laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
@@ -602,7 +602,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToExams(
       profile.schoolCode,
       setExams,
-      (err) => console.error('Khalad ayaa dhacay markii imtixaanada laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii imtixaanada laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
@@ -617,7 +617,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToExpenses(
       profile.schoolCode,
       setExpenses,
-      (err) => console.error('Khalad ayaa dhacay markii kharashaadka laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii kharashaadka laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -630,7 +630,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToIncome(
       profile.schoolCode,
       setIncome,
-      (err) => console.error('Khalad ayaa dhacay markii dakhliga laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii dakhliga laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -643,7 +643,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToClassFees(
       profile.schoolCode,
       setClassFeeRows,
-      (err) => console.error('Khalad ayaa dhacay markii safafka lacagta fasalka laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii safafka lacagta fasalka laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -656,7 +656,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToFamilyFees(
       profile.schoolCode,
       setFamilyFeeRows,
-      (err) => console.error('Khalad ayaa dhacay markii safafka lacagta qoyska laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii safafka lacagta qoyska laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -669,7 +669,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToFeePayments(
       profile.schoolCode,
       setFeePayments,
-      (err) => console.error('Khalad ayaa dhacay markii bixinada lacagta laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii bixinada lacagta laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -682,7 +682,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToSalaries(
       profile.schoolCode,
       setSalaries,
-      (err) => console.error('Khalad ayaa dhacay markii mushaharka laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii mushaharka laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -695,7 +695,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToDiscounts(
       profile.schoolCode,
       setDiscounts,
-      (err) => console.error('Khalad ayaa dhacay markii dhimista/deeqaha laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii dhimista/deeqaha laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -708,7 +708,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToDocuments(
       profile.schoolCode,
       setFinanceDocuments,
-      (err) => console.error('Khalad ayaa dhacay markii invoices/receipts laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii invoices/receipts laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -822,7 +822,7 @@ export function SchoolDataProvider({ children }) {
         });
         setExamMarks(map);
       },
-      (err) => console.error('Khalad ayaa dhacay markii buundooyinka laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii buundooyinka laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -842,7 +842,7 @@ export function SchoolDataProvider({ children }) {
         setStudentsLoading(false);
       },
       (err) => {
-        console.error('Khalad ayaa dhacay markii ardayda laga soo akhriyay Firestore:', err);
+        reportError('Khalad ayaa dhacay markii ardayda laga soo akhriyay Firestore:', err);
         setStudentsLoading(false);
       }
     );
@@ -857,7 +857,7 @@ export function SchoolDataProvider({ children }) {
     if (backfilledSchoolRef.current === profile.schoolCode) return;
     backfilledSchoolRef.current = profile.schoolCode;
     backfillStudentLookups(profile.schoolCode).catch((err) =>
-      console.error('Khalad ayaa dhacay markii lookup-ka ardayda la buuxinayay:', err)
+      reportError('Khalad ayaa dhacay markii lookup-ka ardayda la buuxinayay:', err)
     );
   }, [profile?.schoolCode, profile?.accountType]);
 
