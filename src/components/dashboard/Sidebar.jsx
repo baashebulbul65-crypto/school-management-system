@@ -92,12 +92,16 @@ function Sidebar({ isOpen, onClose }) {
   const { staffMessages, classes, deletedStudents } = useSchoolData();
   const effectiveRole = normalizeRole(profile?.role);
 
-  // Macallinku wuxuu kaliya arkaa fariimaha fasalladiisa (barbardhig magac —
-  // classTeacher waa qoraal magac ah, ma aha uid); Owner-ku wuxuu arkaa dhammaantood.
+  // Macallinku wuxuu kaliya arkaa fariimaha fasalladiisa — barbardhig ID dhab
+  // ah (classTeacherId === profile.teacherDocId), ma aha isbarbardhig magac
+  // (fiiri commit-kii ka saaray isbarbardhigga magac-ku-salaysan). Haddii
+  // macallinku aanu weli ku xirneyn diiwaanka Teachers (teacherDocId maqan),
+  // 0 fasal ayuu arkaa — sax, ma aha khalad qarsoon.
   const myClassNames = useMemo(() => {
     if (profile?.role !== 'teacher') return null;
-    return classes.filter((c) => c.classTeacher === profile.fullName).map((c) => `${c.grade}${c.section}`);
-  }, [classes, profile?.role, profile?.fullName]);
+    if (!profile?.teacherDocId) return [];
+    return classes.filter((c) => c.classTeacherId === profile.teacherDocId).map((c) => `${c.grade}${c.section}`);
+  }, [classes, profile?.role, profile?.teacherDocId]);
 
   const unreadMessagesCount = useMemo(() => {
     const relevant = myClassNames ? staffMessages.filter((m) => myClassNames.includes(m.className)) : staffMessages;

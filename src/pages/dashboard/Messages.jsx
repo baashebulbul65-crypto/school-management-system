@@ -22,12 +22,14 @@ function Messages() {
   const [draft, setDraft] = useState('');
   const bottomRef = useRef(null);
 
-  // Macallinku wuxuu kaliya arkaa ardayda fasalladiisa (barbardhig magac —
-  // classTeacher waa qoraal magac ah); Owner-ku wuxuu arkaa dhammaan ardayda.
+  // Macallinku wuxuu kaliya arkaa ardayda fasalladiisa — barbardhig ID dhab
+  // ah (classTeacherId === profile.teacherDocId), ma aha isbarbardhig magac.
+  // Owner-ku wuxuu arkaa dhammaan ardayda.
   const myClassNames = useMemo(() => {
     if (profile?.role !== 'teacher') return null;
-    return classes.filter((c) => c.classTeacher === profile.fullName).map((c) => `${c.grade}${c.section}`);
-  }, [classes, profile?.role, profile?.fullName]);
+    if (!profile?.teacherDocId) return [];
+    return classes.filter((c) => c.classTeacherId === profile.teacherDocId).map((c) => `${c.grade}${c.section}`);
+  }, [classes, profile?.role, profile?.teacherDocId]);
 
   const visibleStudents = useMemo(
     () => (myClassNames ? students.filter((s) => myClassNames.includes(s.className)) : students),

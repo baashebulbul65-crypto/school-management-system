@@ -189,7 +189,8 @@
       },
       "placeholders": {
         "grade": "Tusaale: Form 1", "room": "Tusaale: Qolka 101", "capacity": "Tusaale: 45",
-        "classTeacher": "Tusaale: Cali Xasan Warsame", "subjects": "Xisaab, Ingiriisi, Sayniska"
+        "classTeacher": "Tusaale: Cali Xasan Warsame", "subjects": "Xisaab, Ingiriisi, Sayniska",
+        "selectTeacher": "Dooro Macallin", "noTeachers": "Wali macallin lama abuurin — marka hore ku dar bogga Macallimiinta"
       },
       "submitAdd": "Abuur Fasalka"
     }
@@ -210,7 +211,10 @@
       "fillInfo": "Buuxi macluumaadka maadada cusub",
       "errorNoTeacher": "Maadadu waa in ay leedahay Macallin (Teacher) loo xilsaaray.",
       "fields": { "name": "Magaca Maadada (Subject Name) *", "code": "Code *", "teacher": "Macallinka (Teacher) *", "credit": "Credit", "weeklyHours": "Saacadaha Toddobaadka (Weekly Hours)" },
-      "placeholders": { "name": "Tusaale: Xisaabta", "code": "Tusaale: MATH-101", "teacher": "Tusaale: Cali Xasan Warsame", "credit": "Tusaale: 4", "weeklyHours": "Tusaale: 5" },
+      "placeholders": {
+        "name": "Tusaale: Xisaabta", "code": "Tusaale: MATH-101", "teacher": "Tusaale: Cali Xasan Warsame", "credit": "Tusaale: 4", "weeklyHours": "Tusaale: 5",
+        "selectTeacher": "Dooro Macallin", "noTeachers": "Wali macallin lama abuurin — marka hore ku dar bogga Macallimiinta"
+      },
       "submitAdd": "Ku Dar Maadada"
     }
   },

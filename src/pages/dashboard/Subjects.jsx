@@ -10,7 +10,7 @@ function initials(name) {
 
 function Subjects() {
   const { t } = useTranslation();
-  const { subjects, addSubject, updateSubject, removeSubject } = useSchoolData();
+  const { subjects, teachers, addSubject, updateSubject, removeSubject } = useSchoolData();
   const [search, setSearch] = useState('');
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingSubject, setEditingSubject] = useState(null);
@@ -92,7 +92,7 @@ function Subjects() {
                     </div>
                   </td>
                   <td className="cell-sub">{s.code}</td>
-                  <td>{s.teacher}</td>
+                  <td>{teachers.find((tc) => tc.id === s.teacherId)?.fullName || s.teacher || '—'}</td>
                   <td><span className="badge badge-neutral">{s.credit} {t('subjects.creditUnit')}</span></td>
                   <td className="cell-sub">{s.weeklyHours} {t('subjects.hoursPerWeek')}</td>
                   <td>
@@ -124,6 +124,7 @@ function Subjects() {
         onClose={() => setShowFormModal(false)}
         onSave={handleSaveSubject}
         subject={editingSubject}
+        teachers={teachers}
       />
     </div>
   );

@@ -9,7 +9,7 @@ import './Classes.css';
 function Classes() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { classes, addClass, updateClass, removeClass } = useSchoolData();
+  const { classes, teachers, addClass, updateClass, removeClass } = useSchoolData();
   const [search, setSearch] = useState('');
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
@@ -89,7 +89,9 @@ function Classes() {
 
               <h3>{c.grade} - {c.section}</h3>
               <p className="class-room">{c.room}</p>
-              <p className="class-teacher">{c.classTeacher}</p>
+              <p className="class-teacher">
+                {teachers.find((t) => t.id === c.classTeacherId)?.fullName || c.classTeacher || '—'}
+              </p>
 
               <div className="class-subjects">
                 {c.subjects.slice(0, 3).map((s) => (
@@ -124,6 +126,7 @@ function Classes() {
         onClose={() => setShowFormModal(false)}
         onSave={handleSaveClass}
         cls={editingClass}
+        teachers={teachers}
       />
     </div>
   );

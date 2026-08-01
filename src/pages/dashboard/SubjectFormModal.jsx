@@ -5,12 +5,12 @@ import './SubjectFormModal.css';
 const EMPTY_FORM = {
   name: '',
   code: '',
-  teacher: '',
+  teacherId: '',
   credit: '',
   weeklyHours: '',
 };
 
-function SubjectFormModal({ isOpen, onClose, onSave, subject }) {
+function SubjectFormModal({ isOpen, onClose, onSave, subject, teachers = [] }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
@@ -21,7 +21,7 @@ function SubjectFormModal({ isOpen, onClose, onSave, subject }) {
       setForm({
         name: subject.name || '',
         code: subject.code || '',
-        teacher: subject.teacher || '',
+        teacherId: subject.teacherId || '',
         credit: subject.credit || '',
         weeklyHours: subject.weeklyHours || '',
       });
@@ -38,7 +38,7 @@ function SubjectFormModal({ isOpen, onClose, onSave, subject }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!form.teacher.trim()) {
+    if (!form.teacherId) {
       setError(t('subjects.form.errorNoTeacher'));
       return;
     }
@@ -46,7 +46,7 @@ function SubjectFormModal({ isOpen, onClose, onSave, subject }) {
     const payload = {
       name: form.name,
       code: form.code,
-      teacher: form.teacher,
+      teacherId: form.teacherId,
       credit: Number(form.credit) || 0,
       weeklyHours: Number(form.weeklyHours) || 0,
     };
@@ -84,7 +84,14 @@ function SubjectFormModal({ isOpen, onClose, onSave, subject }) {
               </div>
               <div className="sjfm-field">
                 <label>{t('subjects.form.fields.teacher')}</label>
-                <input type="text" value={form.teacher} onChange={update('teacher')} placeholder={t('subjects.form.placeholders.teacher')} required />
+                <select value={form.teacherId} onChange={update('teacherId')} required disabled={teachers.length === 0}>
+                  <option value="" disabled>
+                    {teachers.length === 0 ? t('subjects.form.placeholders.noTeachers') : t('subjects.form.placeholders.selectTeacher')}
+                  </option>
+                  {teachers.map((tc) => (
+                    <option key={tc.id} value={tc.id}>{tc.fullName}</option>
+                  ))}
+                </select>
               </div>
               <div className="sjfm-field">
                 <label>{t('subjects.form.fields.credit')}</label>

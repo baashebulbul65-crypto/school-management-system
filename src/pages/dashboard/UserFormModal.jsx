@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import './UserFormModal.css';
 
-const EMPTY_FORM = { fullName: '', email: '', role: 'Teacher', password: '' };
+const EMPTY_FORM = { fullName: '', email: '', role: 'Teacher', password: '', teacherDocId: '' };
 
-function UserFormModal({ isOpen, onClose, onSave, user, roleOptions }) {
+function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOptions = [] }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -11,7 +11,7 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions }) {
 
   useEffect(() => {
     if (user) {
-      setForm({ fullName: user.fullName, email: user.email, role: user.title, password: '' });
+      setForm({ fullName: user.fullName, email: user.email, role: user.title, password: '', teacherDocId: user.teacherDocId || '' });
     } else {
       setForm(EMPTY_FORM);
     }
@@ -30,7 +30,13 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions }) {
       return;
     }
 
-    const payload = { fullName: form.fullName, email: form.email, title: form.role, password: form.password };
+    const payload = {
+      fullName: form.fullName,
+      email: form.email,
+      title: form.role,
+      password: form.password,
+      teacherDocId: form.role === 'Teacher' ? (form.teacherDocId || null) : null,
+    };
     setSubmitting(true);
     setError('');
     try {
@@ -83,6 +89,22 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions }) {
                   {roleOptions.map((r) => <option key={r}>{r}</option>)}
                 </select>
               </div>
+
+              {form.role === 'Teacher' && (
+                <div className="ufm-field full">
+                  <label>Xiriirinta Diiwaanka Macallinka</label>
+                  <select value={form.teacherDocId} onChange={update('teacherDocId')}>
+                    <option value="">-- Ma jiro (weli lama xirin) --</option>
+                    {teacherOptions.map((t) => (
+                      <option key={t.id} value={t.id}>{t.fullName}</option>
+                    ))}
+                  </select>
+                  <span className="ufm-hint">
+                    Haddii macallinkani horeba ugu jiro bogga "Macallimiinta", ku xir halkan si fasalladiisa
+                    si sax ah loogu muujiyo (fariimaha, iwm) — ikhtiyaari.
+                  </span>
+                </div>
+              )}
 
               {!isEditing && (
                 <div className="ufm-field full">

@@ -27,7 +27,7 @@ export function subscribeToStaff(schoolCode, onChange, onError) {
   );
 }
 
-export async function createStaffAccount({ schoolCode, fullName, email, password, role, title }) {
+export async function createStaffAccount({ schoolCode, fullName, email, password, role, title, teacherDocId }) {
   const secondaryAuth = getSecondaryAuth();
   const result = await createUserWithEmailAndPassword(secondaryAuth, email, password);
   await signOut(secondaryAuth);
@@ -42,6 +42,11 @@ export async function createStaffAccount({ schoolCode, fullName, email, password
     schoolCode,
     role, // 'owner' | 'teacher' — fiiri auth.js registerStaff
     title, // magaca la muujiyo (School Owner, Principal, iwm) — cosmetic
+    // Xiriirinta diiwaanka macallinka (collection "teachers") — ikhtiyaari,
+    // waxaa loo isticmaalaa Sidebar.jsx/Messages.jsx si loo ogaado fasallada
+    // macallinkan (fiiri classes.classTeacherId), iyada oo aan lala xiriirin
+    // isbarbardhig magac (fiiri commit-kii hore ee ka saaray isbarbardhigga).
+    teacherDocId: teacherDocId || null,
     accountType: 'staff',
     status: 'active',
     createdAt: serverTimestamp(),

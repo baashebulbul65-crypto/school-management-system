@@ -127,7 +127,7 @@ function ClassWorkspace() {
       <div className="page-header">
         <div className="page-header-text">
           <h2>{t('classWorkspace.title', { grade: cls.grade, section: cls.section })}</h2>
-          <p>{cls.room} · {t('classWorkspace.classTeacherLabel')}: {cls.classTeacher}</p>
+          <p>{cls.room} · {t('classWorkspace.classTeacherLabel')}: {teachers.find((tc) => tc.id === cls.classTeacherId)?.fullName || cls.classTeacher || '—'}</p>
         </div>
         <button className="btn-secondary" onClick={() => navigate('/dashboard/classes')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>

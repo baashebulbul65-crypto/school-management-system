@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import UserFormModal from './UserFormModal';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { useSchoolData } from '../../context/SchoolDataContext';
 import { subscribeToStaff, createStaffAccount, updateStaffDoc, setStaffStatus, removeStaffDoc } from '../../firebase/staff';
 import '../../styles/dashboard-shared.css';
 import './Users.css';
@@ -41,6 +42,7 @@ function initials(name) {
 function Users() {
   const { profile } = useAuth();
   const { showError } = useToast();
+  const { teachers } = useSchoolData();
   const [users, setUsers] = useState([]);
 
   const reportError = (message, err) => {
@@ -87,7 +89,12 @@ function Users() {
   // horeba loo isticmaalay iwm.
   const handleSaveUser = async (payload, userId) => {
     if (userId) {
-      await updateStaffDoc(userId, { fullName: payload.fullName, title: payload.title, role: permissionTier(payload.title) });
+      await updateStaffDoc(userId, {
+        fullName: payload.fullName,
+        title: payload.title,
+        role: permissionTier(payload.title),
+        teacherDocId: payload.teacherDocId,
+      });
     } else {
       await createStaffAccount({
         schoolCode: profile.schoolCode,
@@ -96,6 +103,7 @@ function Users() {
         password: payload.password,
         role: permissionTier(payload.title),
         title: payload.title,
+        teacherDocId: payload.teacherDocId,
       });
     }
   };
@@ -156,6 +164,7 @@ function Users() {
                 <th>Shaqaale</th>
                 <th>Email</th>
                 <th>Doorka</th>
+                <th>Xiriirinta Macallinka</th>
                 <th>Xaaladda</th>
                 <th>Ku Biiray</th>
                 <th></th>
@@ -172,6 +181,11 @@ function Users() {
                   </td>
                   <td className="cell-sub">{u.email || '—'}</td>
                   <td><span className={`users-role-badge ${ROLE_COLOR[u.title] || 'navy'}`}>{u.title}</span></td>
+                  <td className="cell-sub">
+                    {u.title === 'Teacher'
+                      ? (teachers.find((t) => t.id === u.teacherDocId)?.fullName || '— lama xirin —')
+                      : '—'}
+                  </td>
                   <td>
                     <button
                       className={`users-status-btn ${u.status}`}
@@ -201,7 +215,7 @@ function Users() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan="6" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>Wax lama helin.</td></tr>
+                <tr><td colSpan="7" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>Wax lama helin.</td></tr>
               )}
             </tbody>
           </table>
@@ -218,6 +232,7 @@ function Users() {
         onSave={handleSaveUser}
         user={editingUser}
         roleOptions={ROLE_OPTIONS}
+        teacherOptions={teachers}
       />
     </div>
   );

@@ -7,11 +7,11 @@ const EMPTY_FORM = {
   section: 'A',
   room: '',
   capacity: '',
-  classTeacher: '',
+  classTeacherId: '',
   subjects: '',
 };
 
-function ClassFormModal({ isOpen, onClose, onSave, cls }) {
+function ClassFormModal({ isOpen, onClose, onSave, cls, teachers = [] }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
@@ -24,7 +24,7 @@ function ClassFormModal({ isOpen, onClose, onSave, cls }) {
         section: cls.section || 'A',
         room: cls.room || '',
         capacity: cls.capacity || '',
-        classTeacher: cls.classTeacher || '',
+        classTeacherId: cls.classTeacherId || '',
         subjects: (cls.subjects || []).join(', '),
       });
     } else {
@@ -40,7 +40,7 @@ function ClassFormModal({ isOpen, onClose, onSave, cls }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!form.classTeacher.trim()) {
+    if (!form.classTeacherId) {
       setError(t('classes.form.errorNoTeacher'));
       return;
     }
@@ -52,7 +52,7 @@ function ClassFormModal({ isOpen, onClose, onSave, cls }) {
       section: form.section,
       room: form.room,
       capacity: Number(form.capacity) || 0,
-      classTeacher: form.classTeacher,
+      classTeacherId: form.classTeacherId,
       subjects: subjectsArray,
     };
 
@@ -102,7 +102,14 @@ function ClassFormModal({ isOpen, onClose, onSave, cls }) {
               </div>
               <div className="cfm-field full">
                 <label>{t('classes.form.fields.classTeacher')}</label>
-                <input type="text" value={form.classTeacher} onChange={update('classTeacher')} placeholder={t('classes.form.placeholders.classTeacher')} required />
+                <select value={form.classTeacherId} onChange={update('classTeacherId')} required disabled={teachers.length === 0}>
+                  <option value="" disabled>
+                    {teachers.length === 0 ? t('classes.form.placeholders.noTeachers') : t('classes.form.placeholders.selectTeacher')}
+                  </option>
+                  {teachers.map((tc) => (
+                    <option key={tc.id} value={tc.id}>{tc.fullName}</option>
+                  ))}
+                </select>
               </div>
               <div className="cfm-field full">
                 <label>{t('classes.form.fields.subjects')}</label>
