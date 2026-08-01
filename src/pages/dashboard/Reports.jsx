@@ -1,11 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import '../../styles/dashboard-shared.css';
 import './Reports.css';
-
-const TERMS = ['Semester 1 - 2026', 'Semester 2 - 2026', 'Sannadka 2026 (Guud)'];
 
 function initials(name) {
   if (!name) return '?';
@@ -22,7 +20,6 @@ function gpaFromPercent(pct) {
 
 function Reports() {
   const { students, teachers, exams, examMarks, expenses, income, feePayments, allStudentAttendanceRecords, allStaffAttendanceRecords } = useSchoolData();
-  const [term, setTerm] = useState(TERMS[1]);
 
   const enrollmentByClass = useMemo(() => {
     const counts = {};
@@ -131,7 +128,7 @@ function Reports() {
     doc.setFontSize(16);
     doc.text('Kayd — Warbixinta Guud', 14, 18);
     doc.setFontSize(10);
-    doc.text(`Xilliga: ${term}`, 14, 25);
+    doc.text(`La soo saaray: ${new Date().toLocaleDateString('so')}`, 14, 25);
 
     doc.setFontSize(11);
     doc.text(`Wadarta Ardayda: ${totalStudents}`, 14, 36);
@@ -161,9 +158,6 @@ function Reports() {
           <p>Warbixin guud oo isku keenta xogta ardayda, macallimiinta, lacagta, iyo imtixaanada.</p>
         </div>
         <div className="rep-header-actions">
-          <select className="rep-term-select" value={term} onChange={(e) => setTerm(e.target.value)}>
-            {TERMS.map((t) => <option key={t}>{t}</option>)}
-          </select>
           <button className="btn-primary" onClick={handleExportPDF}>
             <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             Export PDF
