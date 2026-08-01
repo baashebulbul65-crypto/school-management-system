@@ -40,6 +40,21 @@ export function isoDateDaysAgo(days) {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
+// Taariikhda "Axad-ka" (bilowga toddobaadka calendar-ka) ee toddobaadka uu
+// ku jiro taariikhda la siiyay — waxaa loo isticmaalaa Reports.jsx si xogta
+// imaanshaha loogu kooban toddobaadyo dhab ah (calendar), ma aha kaliya
+// in la kala googooyo taariikhaha xogtu ku jirto 7-7 ah (kaas oo qalda
+// haddii maalmo aan xog lahayn ay ka dhex jiraan, sida weekend/fasax).
+// Waxaa la parse-gareeyaa qaybaha (year/month/day) si toos ah halkii la
+// isticmaali lahaa `new Date(isoString)` — taasoo UTC ahaan u fasiran
+// karta, oo maalinta beddeli karta wakhtiyada ku dhow saqda dhexe.
+export function weekStartISODate(isoDate) {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  date.setDate(date.getDate() - date.getDay());
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+}
+
 export function formatTodaySomali() {
   const d = new Date();
   return `${SOMALI_DAYS[d.getDay()]}, ${d.getDate()} ${SOMALI_MONTHS[d.getMonth()]} ${d.getFullYear()}`;

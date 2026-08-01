@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { classroomName } from '../../hooks/useClassOptions';
+import { weekStartISODate } from '../../utils/somaliDate';
 import '../../styles/dashboard-shared.css';
 import './Reports.css';
 
@@ -71,22 +72,25 @@ function Reports() {
     ? Math.round(examPerformanceByClass.reduce((s, c) => s + c.avgPercent, 0) / examPerformanceByClass.length)
     : 0;
 
+  // Toddobaadyada waxaa lagu kooban yahay taariikhda calendar-ka dhabta ah
+  // (Axad-Sabti), ma aha in la kala googooyo taariikhaha xogtu ku jirto
+  // 7-7 ah — habkaas oo qaldi jiray haddii maalmo aan xog lahayn (weekend/
+  // fasax) ay ka dhex jireen, isaga oo "Toddobaad 1" ka dhigi jiray mid ka
+  // koobnaan kara in ka badan 7 maalmood dhab ah (Reports LOW #2).
   const attendanceTrend = useMemo(() => {
-    const dateBuckets = {};
+    const weekBuckets = {};
     allStudentAttendanceRecords.forEach((a) => {
-      if (!dateBuckets[a.date]) dateBuckets[a.date] = { present: 0, total: 0 };
-      dateBuckets[a.date].total += 1;
-      if (a.status === 'present') dateBuckets[a.date].present += 1;
+      const weekStart = weekStartISODate(a.date);
+      if (!weekBuckets[weekStart]) weekBuckets[weekStart] = { present: 0, total: 0 };
+      weekBuckets[weekStart].total += 1;
+      if (a.status === 'present') weekBuckets[weekStart].present += 1;
     });
-    const dates = Object.keys(dateBuckets).sort();
-    const weeks = [];
-    for (let i = 0; i < dates.length; i += 7) {
-      const weekDates = dates.slice(i, i + 7);
-      const present = weekDates.reduce((s, d) => s + dateBuckets[d].present, 0);
-      const total = weekDates.reduce((s, d) => s + dateBuckets[d].total, 0);
-      weeks.push({ weekNumber: weeks.length + 1, rate: total > 0 ? Math.round((present / total) * 100) : 0 });
-    }
-    return weeks;
+    return Object.keys(weekBuckets)
+      .sort()
+      .map((weekStart, i) => {
+        const { present, total } = weekBuckets[weekStart];
+        return { weekNumber: i + 1, rate: total > 0 ? Math.round((present / total) * 100) : 0 };
+      });
   }, [allStudentAttendanceRecords]);
 
   const avgAttendance = attendanceTrend.length
