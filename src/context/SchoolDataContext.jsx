@@ -35,14 +35,6 @@ import { todayISODate } from '../utils/somaliDate';
 
 const SchoolDataContext = createContext(null);
 
-const CALENDAR_DAYS = ['2026-07-01','2026-07-02','2026-07-03','2026-07-06','2026-07-07','2026-07-08','2026-07-09','2026-07-10','2026-07-13','2026-07-14','2026-07-15','2026-07-16','2026-07-17','2026-07-20'];
-const STUDENT_ATTENDANCE_PATTERN = ['present','present','present','absent','present','present','late','present','present','present','absent','present','present','present'];
-const TEACHER_ATTENDANCE_PATTERN = ['present','present','present','present','present','absent','present','present','present','late','present','present','present','present'];
-
-function buildAttendanceCalendar(pattern) {
-  return CALENDAR_DAYS.map((date, i) => ({ date, status: pattern[i] }));
-}
-
 const NEXT_STATUS = { present: 'absent', absent: 'late', late: 'present' };
 
 // Xogta tijaabada ah — waxaa loo isticmaalaa KELIYA "seedDemoStudents()" (hal mar,
@@ -67,7 +59,6 @@ const DEMO_STUDENTS_SEED = [
     subjects: ['Xisaab', 'Ingiriisi', 'Cilmiga Bulshada', 'Sayniska', 'Qur’aan'],
     status: 'active',
     fee: 'paid',
-    attendance: buildAttendanceCalendar(STUDENT_ATTENDANCE_PATTERN),
     examResults: [
       { subject: 'Xisaab', marks: 82, maxMarks: 100, grade: 'A' },
       { subject: 'Ingiriisi', marks: 74, maxMarks: 100, grade: 'B' },
@@ -102,7 +93,6 @@ const DEMO_STUDENTS_SEED = [
     subjects: ['Xisaab', 'Ingiriisi', 'Taariikh', 'Sayniska'],
     status: 'active',
     fee: 'paid',
-    attendance: buildAttendanceCalendar(STUDENT_ATTENDANCE_PATTERN),
     examResults: [
       { subject: 'Xisaab', marks: 91, maxMarks: 100, grade: 'A' },
       { subject: 'Ingiriisi', marks: 88, maxMarks: 100, grade: 'A' },
@@ -128,7 +118,6 @@ const DEMO_STUDENTS_SEED = [
     subjects: ['Xisaab', 'Ingiriisi', 'Cilmiga Bulshada'],
     status: 'active',
     fee: 'pending',
-    attendance: buildAttendanceCalendar(STUDENT_ATTENDANCE_PATTERN),
     examResults: [{ subject: 'Xisaab', marks: 48, maxMarks: 100, grade: 'F' }],
     fees: [{ term: 'Semester 2', amount: 120, date: '2026-06-15', status: 'pending' }],
     behaviour: [
@@ -153,7 +142,6 @@ const DEMO_STUDENTS_SEED = [
     subjects: ['Xisaab', 'Ingiriisi', 'Sayniska', 'Taariikh'],
     status: 'inactive',
     fee: 'overdue',
-    attendance: buildAttendanceCalendar(STUDENT_ATTENDANCE_PATTERN),
     examResults: [{ subject: 'Ingiriisi', marks: 55, maxMarks: 100, grade: 'C' }],
     fees: [{ term: 'Semester 2', amount: 120, date: '2026-06-01', status: 'overdue' }],
     behaviour: [],
@@ -176,7 +164,6 @@ const DEMO_STUDENTS_SEED = [
     subjects: ['Xisaab', 'Ingiriisi', 'Fiisigis', 'Kiimikada'],
     status: 'active',
     fee: 'paid',
-    attendance: buildAttendanceCalendar(STUDENT_ATTENDANCE_PATTERN),
     examResults: [
       { subject: 'Fiisigis', marks: 77, maxMarks: 100, grade: 'B' },
       { subject: 'Kiimikada', marks: 85, maxMarks: 100, grade: 'A' },
@@ -202,7 +189,6 @@ const DEMO_STUDENTS_SEED = [
     subjects: ['Xisaab', 'Ingiriisi', 'Taariikh'],
     status: 'active',
     fee: 'pending',
-    attendance: buildAttendanceCalendar(STUDENT_ATTENDANCE_PATTERN),
     examResults: [{ subject: 'Taariikh', marks: 69, maxMarks: 100, grade: 'C' }],
     fees: [{ term: 'Semester 2', amount: 120, date: '2026-06-18', status: 'pending' }],
     behaviour: [],
@@ -258,12 +244,15 @@ export function SchoolDataProvider({ children }) {
     return unsubscribe;
   }, [profile?.schoolCode]);
 
-  const setStudentAttendanceStatus = async (studentId, className, status) => {
+  // "forDate" ayaa la wadaagaa labadaba: calaamadinta "maanta" ee Attendance.jsx
+  // (setStudentAttendanceStatus, date=maanta) iyo cyclinga taariikhda hore ee
+  // StudentProfileModal (cycleStudentAttendanceRecord, date=maalin la doortay).
+  const setStudentAttendanceForDate = async (studentId, className, date, status) => {
     if (!profile?.schoolCode) return;
     try {
-      await setStudentAttendanceRecord(profile.schoolCode, todayISODate(), studentId, className, status);
+      await setStudentAttendanceRecord(profile.schoolCode, date, studentId, className, status);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii imaanshaha maanta la kaydinayay:', err);
+      console.error('Khalad ayaa dhacay markii imaanshaha ardayga la kaydinayay:', err);
     }
     if (status === 'absent') {
       const student = students.find((s) => s.id === studentId);
@@ -273,12 +262,26 @@ export function SchoolDataProvider({ children }) {
           studentId,
           studentName: student?.fullName || '',
           className,
-          date: todayISODate(),
+          date,
         });
       } catch (err) {
         console.error('Khalad ayaa dhacay markii ogeysiiska maqnaanshaha la abuurayay:', err);
       }
     }
+  };
+
+  const setStudentAttendanceStatus = (studentId, className, status) =>
+    setStudentAttendanceForDate(studentId, className, todayISODate(), status);
+
+  // Cycle-ka 4-da xaalado ee ardayda isticmaalaan (fiiri Attendance.jsx
+  // STATUS_DEFS.students) — loo isticmaalaa marka StudentProfileModal la
+  // gujiyo maalin taariikhdeed ah si loo beddelo xaaladdeeda.
+  const STUDENT_NEXT_STATUS = { present: 'absent', absent: 'leave', leave: 'sick', sick: 'present' };
+
+  const cycleStudentAttendanceRecord = (studentId, className, date) => {
+    const existing = allStudentAttendanceRecords.find((r) => r.studentId === studentId && r.date === date);
+    const nextStatus = STUDENT_NEXT_STATUS[existing?.status || 'present'];
+    return setStudentAttendanceForDate(studentId, className, date, nextStatus);
   };
 
   // ===== TAARIIKHDA IMAANSHAHA OO DHAN (Firestore collections "attendanceRecords"
@@ -865,7 +868,6 @@ export function SchoolDataProvider({ children }) {
       const newId = await createStudentDoc(profile.schoolCode, {
         ...payload,
         studentId: `STU-${1040 + allStudents.length + 1}`,
-        attendance: buildAttendanceCalendar(STUDENT_ATTENDANCE_PATTERN),
         examResults: [],
         fees: [],
         behaviour: [],
@@ -928,19 +930,6 @@ export function SchoolDataProvider({ children }) {
       });
   }, [deletedStudents, profile?.accountType]);
 
-  const toggleStudentAttendanceDay = async (studentId, date) => {
-    const student = students.find((s) => s.id === studentId);
-    if (!student) return;
-    const nextAttendance = student.attendance.map((a) =>
-      a.date === date ? { ...a, status: NEXT_STATUS[a.status] } : a
-    );
-    try {
-      await updateStudentDoc(studentId, { attendance: nextAttendance });
-    } catch (err) {
-      console.error('Khalad ayaa dhacay markii imaanshaha ardayga la cusbooneysiinayay:', err);
-    }
-  };
-
   // Hal-mar-kaliya: waxay ku qorayaan 6-da arday ee tijaabada ahaa Firestore, si loo
   // helo xog tusaale ah. Waxay iska daayaan haddii collection-ku horeba xog leeyahay.
   const seedDemoStudents = async () => {
@@ -966,7 +955,6 @@ export function SchoolDataProvider({ children }) {
         salary: [],
         timetable: [],
         documents: [],
-        attendance: buildAttendanceCalendar(TEACHER_ATTENDANCE_PATTERN),
       });
     } catch (err) {
       console.error('Khalad ayaa dhacay markii macallinka la darayay:', err);
@@ -981,14 +969,14 @@ export function SchoolDataProvider({ children }) {
     }
   };
 
-  const toggleTeacherAttendanceDay = async (teacherId, date) => {
-    const teacher = teachers.find((t) => t.id === teacherId);
-    if (!teacher) return;
-    const nextAttendance = teacher.attendance.map((a) =>
-      a.date === date ? { ...a, status: NEXT_STATUS[a.status] } : a
-    );
+  // Cycle-ka taariikhda hore ee TeacherProfileModal — 3-da xaalado ee
+  // "maanta" ee macallimiinta isticmaalaan (NEXT_STATUS, fiiri kore).
+  const cycleTeacherAttendanceRecord = async (teacherId, date) => {
+    if (!profile?.schoolCode) return;
+    const existing = allStaffAttendanceRecords.find((r) => r.category === 'teachers' && r.personId === teacherId && r.date === date);
+    const nextStatus = NEXT_STATUS[existing?.status || 'present'];
     try {
-      await updateTeacherDoc(teacherId, { attendance: nextAttendance });
+      await setStaffAttendanceRecord(profile.schoolCode, 'teachers', date, teacherId, nextStatus);
     } catch (err) {
       console.error('Khalad ayaa dhacay markii imaanshaha macallinka la cusbooneysiinayay:', err);
     }
@@ -1115,10 +1103,10 @@ export function SchoolDataProvider({ children }) {
   };
 
   const value = {
-    students, studentsLoading, addStudent, updateStudent, deleteStudent, toggleStudentAttendanceDay, seedDemoStudents,
+    students, studentsLoading, addStudent, updateStudent, deleteStudent, cycleStudentAttendanceRecord, seedDemoStudents,
     deletedStudents, restoreStudent, permanentlyDeleteStudent,
     setStudentAttendanceStatus,
-    teachers, addTeacher, updateTeacher, toggleTeacherAttendanceDay,
+    teachers, addTeacher, updateTeacher, cycleTeacherAttendanceRecord,
     classes, addClass, updateClass, removeClass,
     subjects, addSubject, updateSubject, removeSubject,
     exams, examMarks, addExam, updateExam, removeExam, updateExamMark,

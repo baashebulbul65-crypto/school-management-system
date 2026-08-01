@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
@@ -16,13 +16,20 @@ function Teachers() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const { teachers, addTeacher, updateTeacher, toggleTeacherAttendanceDay } = useSchoolData();
+  const { teachers, addTeacher, updateTeacher, cycleTeacherAttendanceRecord, allStaffAttendanceRecords } = useSchoolData();
   const [search, setSearch] = useState('');
   const [selectedTeacherId, setSelectedTeacherId] = useState(null);
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState(null);
 
   const selectedTeacher = teachers.find((t) => t.id === selectedTeacherId) || null;
+
+  const selectedTeacherAttendance = useMemo(
+    () => allStaffAttendanceRecords
+      .filter((r) => r.category === 'teachers' && r.personId === selectedTeacherId)
+      .sort((a, b) => a.date.localeCompare(b.date)),
+    [allStaffAttendanceRecords, selectedTeacherId]
+  );
 
   const filtered = teachers.filter((t) =>
     t.fullName.toLowerCase().includes(search.toLowerCase()) || t.subject.toLowerCase().includes(search.toLowerCase())
@@ -137,8 +144,9 @@ function Teachers() {
       {selectedTeacher && (
         <TeacherProfileModal
           teacher={selectedTeacher}
+          attendanceRecords={selectedTeacherAttendance}
           onClose={() => setSelectedTeacherId(null)}
-          onToggleAttendance={toggleTeacherAttendanceDay}
+          onToggleAttendance={cycleTeacherAttendanceRecord}
         />
       )}
 

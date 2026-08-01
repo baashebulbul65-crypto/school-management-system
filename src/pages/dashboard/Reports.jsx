@@ -21,7 +21,7 @@ function gpaFromPercent(pct) {
 }
 
 function Reports() {
-  const { students, teachers, exams, examMarks, expenses, income } = useSchoolData();
+  const { students, teachers, exams, examMarks, expenses, income, allStudentAttendanceRecords, allStaffAttendanceRecords } = useSchoolData();
   const [term, setTerm] = useState(TERMS[1]);
 
   const enrollmentByClass = useMemo(() => {
@@ -63,12 +63,10 @@ function Reports() {
 
   const attendanceTrend = useMemo(() => {
     const dateBuckets = {};
-    students.forEach((s) => {
-      (s.attendance || []).forEach((a) => {
-        if (!dateBuckets[a.date]) dateBuckets[a.date] = { present: 0, total: 0 };
-        dateBuckets[a.date].total += 1;
-        if (a.status === 'present' || a.status === 'late') dateBuckets[a.date].present += 1;
-      });
+    allStudentAttendanceRecords.forEach((a) => {
+      if (!dateBuckets[a.date]) dateBuckets[a.date] = { present: 0, total: 0 };
+      dateBuckets[a.date].total += 1;
+      if (a.status === 'present') dateBuckets[a.date].present += 1;
     });
     const dates = Object.keys(dateBuckets).sort();
     const weeks = [];
@@ -79,7 +77,7 @@ function Reports() {
       weeks.push({ week: `Toddobaad ${weeks.length + 1}`, rate: total > 0 ? Math.round((present / total) * 100) : 0 });
     }
     return weeks;
-  }, [students]);
+  }, [allStudentAttendanceRecords]);
 
   const avgAttendance = attendanceTrend.length
     ? Math.round(attendanceTrend.reduce((s, w) => s + w.rate, 0) / attendanceTrend.length)
@@ -113,13 +111,13 @@ function Reports() {
   const teacherAttendanceSummary = useMemo(() => {
     return teachers
       .map((teacher) => {
-        const records = teacher.attendance || [];
+        const records = allStaffAttendanceRecords.filter((r) => r.category === 'teachers' && r.personId === teacher.id);
         const total = records.length;
-        const present = records.filter((a) => a.status === 'present' || a.status === 'late').length;
+        const present = records.filter((a) => a.status === 'present').length;
         return { name: teacher.fullName, rate: total > 0 ? Math.round((present / total) * 100) : 0 };
       })
       .sort((a, b) => b.rate - a.rate);
-  }, [teachers]);
+  }, [teachers, allStaffAttendanceRecords]);
 
   const handleExportPDF = () => {
     const doc = new jsPDF();

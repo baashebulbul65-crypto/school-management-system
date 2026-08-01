@@ -17,7 +17,10 @@ function Students() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const { students, studentsLoading, addStudent, updateStudent, deleteStudent, toggleStudentAttendanceDay, seedDemoStudents } = useSchoolData();
+  const {
+    students, studentsLoading, addStudent, updateStudent, deleteStudent, cycleStudentAttendanceRecord, seedDemoStudents,
+    allStudentAttendanceRecords,
+  } = useSchoolData();
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('all');
   const [selectedStudentId, setSelectedStudentId] = useState(null);
@@ -25,6 +28,13 @@ function Students() {
   const [editingStudent, setEditingStudent] = useState(null);
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId) || null;
+
+  const selectedStudentAttendance = useMemo(
+    () => allStudentAttendanceRecords
+      .filter((r) => r.studentId === selectedStudentId)
+      .sort((a, b) => a.date.localeCompare(b.date)),
+    [allStudentAttendanceRecords, selectedStudentId]
+  );
 
   const classes = useMemo(() => ['all', ...new Set(students.map((s) => s.className))], [students]);
 
@@ -174,8 +184,9 @@ function Students() {
       {selectedStudent && (
         <StudentProfileModal
           student={selectedStudent}
+          attendanceRecords={selectedStudentAttendance}
           onClose={() => setSelectedStudentId(null)}
-          onToggleAttendance={toggleStudentAttendanceDay}
+          onToggleAttendance={(studentId, date) => cycleStudentAttendanceRecord(studentId, selectedStudent.className, date)}
         />
       )}
 

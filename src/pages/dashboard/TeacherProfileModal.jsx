@@ -15,7 +15,7 @@ function InfoRow({ label, value }) {
   );
 }
 
-function TeacherProfileModal({ teacher, onClose, onToggleAttendance }) {
+function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAttendance }) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('guud');
 
@@ -31,7 +31,7 @@ function TeacherProfileModal({ teacher, onClose, onToggleAttendance }) {
 
   const assignedClasses = teacher.assignedClasses || [];
   const timetable = teacher.timetable || [];
-  const attendance = teacher.attendance || [];
+  const attendance = attendanceRecords || [];
   const salary = teacher.salary || [];
   const documents = teacher.documents || [];
 

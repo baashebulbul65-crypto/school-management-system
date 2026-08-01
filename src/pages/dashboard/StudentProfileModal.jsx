@@ -16,7 +16,7 @@ function InfoRow({ label, value }) {
   );
 }
 
-function StudentProfileModal({ student, onClose, onToggleAttendance }) {
+function StudentProfileModal({ student, attendanceRecords, onClose, onToggleAttendance }) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('guud');
 
@@ -106,7 +106,10 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
             <div>
               <p className="spm-note">{t('students.profile.attendanceNote')}</p>
               <div className="attendance-grid">
-                {student.attendance?.map((a) => (
+                {(!attendanceRecords || attendanceRecords.length === 0) && (
+                  <p className="spm-note">Weli imaansho ma jiro.</p>
+                )}
+                {attendanceRecords?.map((a) => (
                   <button
                     key={a.date}
                     className={`attendance-cell ${a.status}`}
@@ -115,7 +118,10 @@ function StudentProfileModal({ student, onClose, onToggleAttendance }) {
                   >
                     <span className="attendance-date">{a.date.split('-')[2]}</span>
                     <span className="attendance-status">
-                      {a.status === 'present' ? t('common.present') : a.status === 'late' ? t('common.late') : t('common.absent')}
+                      {a.status === 'present' ? t('common.present')
+                        : a.status === 'leave' ? t('common.leave')
+                        : a.status === 'sick' ? t('common.sick')
+                        : t('common.absent')}
                     </span>
                   </button>
                 ))}
