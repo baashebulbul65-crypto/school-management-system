@@ -110,12 +110,22 @@ export async function backfillStudentLookups(schoolCode) {
 }
 
 // Waxaa loo isticmaalaa ParentPortal — soo qaadista ilmaha (childrenIds) waalidku
-// leeyahay. Firestore "in" query wuxuu taageeraa ugu badnaan 30 qiimo.
-export async function getStudentsByIds(ids) {
-  if (!ids || ids.length === 0) return [];
+// leeyahay, real-time (onSnapshot) si haddii shaqaaluhu wax ka beddelo
+// diiwaanka ilmaha (fasal cusub, xaalad lacageed, iwm) intuu waalidku
+// horeba bogga furan yahay, isbeddelku isla markiiba ugu muuqdo (ma aha
+// in uu u baahdo dib-u-gelin/refresh). Firestore "in" query wuxuu
+// taageeraa ugu badnaan 30 qiimo.
+export function subscribeToStudentsByIds(ids, onChange, onError) {
+  if (!ids || ids.length === 0) {
+    onChange([]);
+    return () => {};
+  }
   const q = query(collection(db, COLLECTION), where(documentId(), 'in', ids.slice(0, 30)));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return onSnapshot(
+    q,
+    (snap) => onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    onError
+  );
 }
 
 export async function getStudentById(studentId) {

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
-import { getStudentsByIds } from '../../firebase/students';
+import { subscribeToStudentsByIds } from '../../firebase/students';
 import { subscribeToStudentAttendanceHistory } from '../../firebase/attendance';
 import { subscribeToStudentQuranProgressHistory } from '../../firebase/quranProgress';
 import { subscribeToQuranTargetsForStudent } from '../../firebase/quranTargets';
@@ -100,24 +100,26 @@ function ParentPortal() {
   const [addChildLoading, setAddChildLoading] = useState(false);
   const [addChildError, setAddChildError] = useState('');
 
-  // Soo qaad diiwaannada ardayda ee childrenIds-ka ku jira
+  // Diiwaannada ardayda ee childrenIds-ka ku jira — real-time (onSnapshot),
+  // si haddii shaqaaluhu wax ka beddelo diiwaanka ilmaha (fasal cusub,
+  // xaalad lacageed, iwm) intuu waalidku horeba bogga furan yahay,
+  // isbeddelku isla markiiba ugu muuqdo (ma aha in uu u baahdo
+  // dib-u-gelin/refresh).
   useEffect(() => {
-    if (childrenIds.length === 0) {
-      setChildren([]);
-      setChildrenLoading(false);
-      return;
-    }
     setChildrenLoading(true);
-    getStudentsByIds(childrenIds)
-      .then((list) => {
+    const unsubscribe = subscribeToStudentsByIds(
+      childrenIds,
+      (list) => {
         setChildren(list);
         setChildrenLoading(false);
         setSelectedChildId((prev) => (prev && list.some((c) => c.id === prev) ? prev : list[0]?.id));
-      })
-      .catch((err) => {
+      },
+      (err) => {
         reportError('Khalad ayaa dhacay markii ilmaha laga soo akhriyay:', err);
         setChildrenLoading(false);
-      });
+      }
+    );
+    return unsubscribe;
   }, [childrenIds]);
 
   // Taariikhda imaanshaha ee ilmaha la doortay
