@@ -10,34 +10,16 @@ import ClassDetailModal from './ClassDetailModal';
 import '../../styles/dashboard-shared.css';
 import './Finance.css';
 
-// Tirooyin dheeraad ah oo la xiriira xisaabaadka (stats box-ka midig)
-const EXTRA_STATS = { paymentsCount: 139, discountRecipients: 8, scholarshipCount: 71, unpaidCount: 0 };
-
-const SALARY_META = [
-  { id: 1, amount: 420, status: 'pending' },
-  { id: 2, amount: 380, status: 'pending' },
-  { id: 3, amount: 550, status: 'paid' },
-  { id: 4, amount: 400, status: 'paid' },
-];
-
-const DISCOUNTS_META = [
-  { id: 1, type: 'discount', amount: 30 },
-  { id: 2, type: 'scholarship', amount: 150 },
-];
-
-const DOCUMENTS_META = [
-  { id: 1, no: 'INV-2026-014', type: 'invoice', amount: 120, date: '2026-07-15' },
-  { id: 2, no: 'RCT-2026-032', type: 'receipt', amount: 120, date: '2026-07-10' },
-  { id: 3, no: 'INV-2026-015', type: 'invoice', amount: 120, date: '2026-07-16' },
-];
-
 function Finance() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const {
-    classFees, familyFees, collectClassFee, collectFamilyFee, addClassFeeRow, addFamilyFeeRow,
+    classFees, familyFees, collectClassFee, collectFamilyFee, addClassFeeRow, addFamilyFeeRow, feePayments,
     expenses, income, addExpense, addIncome,
+    salaries, addSalary, markSalaryPaid,
+    discounts, addDiscount,
+    financeDocuments, addFinanceDocument,
   } = useSchoolData();
   const [activeTab, setActiveTab] = useState('accounting');
 
@@ -48,13 +30,6 @@ function Finance() {
   const [showCollectModal, setShowCollectModal] = useState(false);
   const [showAddRowModal, setShowAddRowModal] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
-
-  // Salary/Discounts/Documents WELI waa xog tijaabo ah (demo) — ma jiraan
-  // wali add-flow UI ah oo shaqeynaya (fiiri plan-ka: "Salary/Discounts/
-  // Documents tabs remain demo-only pending dedicated add-flows").
-  const salary = t('finance.salary.items', { returnObjects: true }).map((item, i) => ({ ...SALARY_META[i], ...item }));
-  const discounts = t('finance.discounts.items', { returnObjects: true }).map((item, i) => ({ ...DISCOUNTS_META[i], ...item }));
-  const documents = t('finance.documents.items', { returnObjects: true }).map((item, i) => ({ ...DOCUMENTS_META[i], ...item }));
 
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [entryType, setEntryType] = useState('expenses');
@@ -80,6 +55,13 @@ function Finance() {
   }, [activeRows, expenses]);
 
   const totalStudents = useMemo(() => activeRows.reduce((s, r) => s + r.students, 0), [activeRows]);
+
+  const extraStats = useMemo(() => ({
+    paymentsCount: feePayments.length,
+    discountRecipients: discounts.filter((d) => d.type === 'discount').length,
+    scholarshipCount: discounts.filter((d) => d.type === 'scholarship').length,
+    unpaidCount: activeRows.filter((r) => r.balance > 0).length,
+  }), [feePayments, discounts, activeRows]);
 
   const handleCollectPayment = ({ rowId, amount, method, date }) => {
     if (viewMode === 'class') collectClassFee(rowId, amount, method, date);
@@ -111,6 +93,9 @@ function Finance() {
   const handleSaveEntry = (payload, type) => {
     if (type === 'expenses') addExpense(payload);
     else if (type === 'income') addIncome(payload);
+    else if (type === 'salary') addSalary(payload);
+    else if (type === 'discounts') addDiscount(payload);
+    else if (type === 'documents') addFinanceDocument(payload);
   };
 
   const handlePrint = () => window.print();
@@ -255,10 +240,10 @@ function Finance() {
               <div className="acc-stats-box">
                 <div className="acc-stat"><strong>{viewMode === 'class' ? classFees.length : familyFees.length}</strong><span>{viewMode === 'class' ? t('finance.statsBox.classes') : t('finance.statsBox.families')}</span></div>
                 <div className="acc-stat"><strong>{totalStudents}</strong><span>{t('finance.statsBox.totalStudents')}</span></div>
-                <div className="acc-stat"><strong>{EXTRA_STATS.paymentsCount}</strong><span>{t('finance.statsBox.paymentsCount')}</span></div>
-                <div className="acc-stat"><strong>{EXTRA_STATS.discountRecipients}</strong><span>{t('finance.statsBox.discountRecipients')}</span></div>
-                <div className="acc-stat"><strong>{EXTRA_STATS.scholarshipCount}</strong><span>{t('finance.statsBox.freeCount')}</span></div>
-                <div className="acc-stat"><strong>{EXTRA_STATS.unpaidCount}</strong><span>{t('finance.statsBox.unpaidCount')}</span></div>
+                <div className="acc-stat"><strong>{extraStats.paymentsCount}</strong><span>{t('finance.statsBox.paymentsCount')}</span></div>
+                <div className="acc-stat"><strong>{extraStats.discountRecipients}</strong><span>{t('finance.statsBox.discountRecipients')}</span></div>
+                <div className="acc-stat"><strong>{extraStats.scholarshipCount}</strong><span>{t('finance.statsBox.freeCount')}</span></div>
+                <div className="acc-stat"><strong>{extraStats.unpaidCount}</strong><span>{t('finance.statsBox.unpaidCount')}</span></div>
               </div>
             </div>
           </div>
@@ -399,11 +384,17 @@ function Finance() {
       {/* SALARY TAB */}
       {activeTab === 'salary' && (
         <div className="dash-card">
+          <div className="fin-card-toolbar">
+            <button className="btn-primary" onClick={() => openEntryModal('salary')}>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              Ku Dar Mushahar
+            </button>
+          </div>
           <div className="data-table-wrap">
             <table className="data-table">
-              <thead><tr><th>{t('finance.salary.table.staff')}</th><th>{t('finance.salary.table.role')}</th><th>{t('finance.salary.table.amount')}</th><th>{t('finance.salary.table.month')}</th><th>{t('finance.salary.table.status')}</th></tr></thead>
+              <thead><tr><th>{t('finance.salary.table.staff')}</th><th>{t('finance.salary.table.role')}</th><th>{t('finance.salary.table.amount')}</th><th>{t('finance.salary.table.month')}</th><th>{t('finance.salary.table.status')}</th><th></th></tr></thead>
               <tbody>
-                {salary.map((s) => {
+                {salaries.map((s) => {
                   const b = statusBadge(s.status);
                   return (
                     <tr key={s.id}>
@@ -412,9 +403,17 @@ function Finance() {
                       <td className="cell-amount">${s.amount}</td>
                       <td>{s.month}</td>
                       <td><span className={`badge ${b.cls}`}>{b.label}</span></td>
+                      <td>
+                        {s.status === 'pending' && (
+                          <button className="btn-secondary" onClick={() => markSalaryPaid(s.id)}>Bixi</button>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}
+                {salaries.length === 0 && (
+                  <tr><td colSpan="6" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.noResults')}</td></tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -424,6 +423,12 @@ function Finance() {
       {/* DISCOUNTS & SCHOLARSHIPS TAB */}
       {activeTab === 'discounts' && (
         <div className="dash-card">
+          <div className="fin-card-toolbar">
+            <button className="btn-primary" onClick={() => openEntryModal('discounts')}>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              Ku Dar Dhimis/Deeq
+            </button>
+          </div>
           <div className="data-table-wrap">
             <table className="data-table">
               <thead><tr><th>{t('finance.discounts.table.student')}</th><th>{t('finance.discounts.table.type')}</th><th>{t('finance.discounts.table.amount')}</th><th>{t('finance.discounts.table.reason')}</th></tr></thead>
@@ -440,6 +445,9 @@ function Finance() {
                     <td className="cell-sub">{d.reason}</td>
                   </tr>
                 ))}
+                {discounts.length === 0 && (
+                  <tr><td colSpan="4" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.noResults')}</td></tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -449,11 +457,17 @@ function Finance() {
       {/* INVOICES & RECEIPTS TAB */}
       {activeTab === 'documents' && (
         <div className="dash-card">
+          <div className="fin-card-toolbar">
+            <button className="btn-primary" onClick={() => openEntryModal('documents')}>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              Ku Dar Invoice/Receipt
+            </button>
+          </div>
           <div className="data-table-wrap">
             <table className="data-table">
               <thead><tr><th>{t('finance.documents.table.no')}</th><th>{t('finance.documents.table.type')}</th><th>{t('finance.documents.table.party')}</th><th>{t('finance.documents.table.amount')}</th><th>{t('finance.documents.table.date')}</th><th></th></tr></thead>
               <tbody>
-                {documents.map((d) => (
+                {financeDocuments.map((d) => (
                   <tr key={d.id}>
                     <td className="cell-sub">{d.no}</td>
                     <td>
@@ -471,6 +485,9 @@ function Finance() {
                     </td>
                   </tr>
                 ))}
+                {financeDocuments.length === 0 && (
+                  <tr><td colSpan="6" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.noResults')}</td></tr>
+                )}
               </tbody>
             </table>
           </div>

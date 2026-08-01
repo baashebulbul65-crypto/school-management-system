@@ -240,6 +240,28 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // ===== financeSalaries ===== — "status" (pending/paid) kaliya ayaa la
+    // beddeli karaa (fiiri firebase/finance.js: setSalaryStatus).
+    match /financeSalaries/{salaryId} {
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow update: if isStaffOf(resource.data.schoolCode)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
+      allow delete: if false;
+    }
+
+    // ===== financeDiscounts / financeDocuments ===== — diiwaan, APPEND-ONLY.
+    match /financeDiscounts/{discountId} {
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow update, delete: if false;
+    }
+    match /financeDocuments/{documentId} {
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow update, delete: if false;
+    }
+
     // ===== notifications =====
     // Fiiri notifications.js: "createFeeNotification"/"createAbsentNotification"
     // waxay isticmaalaan setDoc si ay ugu dib-u-cusboonaysiiyaan (refresh) hal

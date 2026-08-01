@@ -17,6 +17,9 @@ import {
   subscribeToClassFees, createClassFeeRowDoc,
   subscribeToFamilyFees, createFamilyFeeRowDoc,
   subscribeToFeePayments, createFeePaymentDoc,
+  subscribeToSalaries, createSalaryDoc, setSalaryStatus,
+  subscribeToDiscounts, createDiscountDoc,
+  subscribeToDocuments, createDocumentDoc,
 } from '../firebase/finance';
 import { subscribeToAttendanceByDate, setStudentAttendanceRecord, subscribeToStaffAttendanceByDate, setStaffAttendanceRecord } from '../firebase/attendance';
 import { subscribeToStaffRoster, createStaffRosterDoc, updateStaffRosterDoc, deleteStaffRosterDoc } from '../firebase/staffRoster';
@@ -223,6 +226,9 @@ export function SchoolDataProvider({ children }) {
   const [feePayments, setFeePayments] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [income, setIncome] = useState([]);
+  const [salaries, setSalaries] = useState([]);
+  const [discounts, setDiscounts] = useState([]);
+  const [financeDocuments, setFinanceDocuments] = useState([]);
   const [staff, setStaff] = useState([]);
   const [teacherAttendanceToday, setTeacherAttendanceToday] = useState({});
   const [staffAttendanceToday, setStaffAttendanceToday] = useState({});
@@ -617,6 +623,82 @@ export function SchoolDataProvider({ children }) {
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
 
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setSalaries([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToSalaries(
+      profile.schoolCode,
+      setSalaries,
+      (err) => console.error('Khalad ayaa dhacay markii mushaharka laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType]);
+
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setDiscounts([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToDiscounts(
+      profile.schoolCode,
+      setDiscounts,
+      (err) => console.error('Khalad ayaa dhacay markii dhimista/deeqaha laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType]);
+
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setFinanceDocuments([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToDocuments(
+      profile.schoolCode,
+      setFinanceDocuments,
+      (err) => console.error('Khalad ayaa dhacay markii invoices/receipts laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType]);
+
+  const addSalary = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      await createSalaryDoc(profile.schoolCode, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii mushaharka la darayay:', err);
+    }
+  };
+
+  const markSalaryPaid = async (id) => {
+    try {
+      await setSalaryStatus(id, 'paid');
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii mushaharka la calaamadinayay in la bixiyay:', err);
+    }
+  };
+
+  const addDiscount = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      await createDiscountDoc(profile.schoolCode, payload);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii dhimista/deeqda la darayay:', err);
+    }
+  };
+
+  const addFinanceDocument = async (payload) => {
+    if (!profile?.schoolCode) return;
+    try {
+      const prefix = payload.type === 'invoice' ? 'INV' : 'RCT';
+      const no = `${prefix}-${new Date().getFullYear()}-${String(financeDocuments.length + 1).padStart(3, '0')}`;
+      await createDocumentDoc(profile.schoolCode, { ...payload, no });
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii invoice/receipt la darayay:', err);
+    }
+  };
+
   // Balance-ka saf kasta waxaa laga soo xisaabiyaa (derive) isu geynta
   // feePayments-ka la xiriira row-gaas — ma aha counter la kaydiyo, si loo
   // xalliyo tartanka (race condition) iyo si loo hesho diiwaan (ledger)
@@ -1005,8 +1087,11 @@ export function SchoolDataProvider({ children }) {
     classes, addClass, updateClass, removeClass,
     subjects, addSubject, updateSubject, removeSubject,
     exams, examMarks, addExam, updateExam, removeExam, updateExamMark,
-    classFees, familyFees, collectClassFee, collectFamilyFee, addClassFeeRow, addFamilyFeeRow,
+    classFees, familyFees, collectClassFee, collectFamilyFee, addClassFeeRow, addFamilyFeeRow, feePayments,
     expenses, income, addExpense, addIncome,
+    salaries, addSalary, markSalaryPaid,
+    discounts, addDiscount,
+    financeDocuments, addFinanceDocument,
     staff, addStaffMember, updateStaffMember, removeStaffMember,
     attendanceToday, cycleAttendanceStatus,
     quranProgressToday, setQuranProgress,

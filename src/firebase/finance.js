@@ -5,7 +5,7 @@
 // soo xisaabiyaa (derive) isu geynta feePayments-ka la xiriira row-gaas,
 // ma aha counter la is dhimo — fiiri SchoolDataContext.jsx.
 
-import { collection, addDoc, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from './config';
 
 const EXPENSES_COLLECTION = 'financeExpenses';
@@ -13,6 +13,9 @@ const INCOME_COLLECTION = 'financeIncome';
 const CLASS_FEES_COLLECTION = 'classFees';
 const FAMILY_FEES_COLLECTION = 'familyFees';
 const FEE_PAYMENTS_COLLECTION = 'feePayments';
+const SALARIES_COLLECTION = 'financeSalaries';
+const DISCOUNTS_COLLECTION = 'financeDiscounts';
+const DOCUMENTS_COLLECTION = 'financeDocuments';
 
 function subscribeToCollection(collectionName, schoolCode, onChange, onError) {
   const q = query(collection(db, collectionName), where('schoolCode', '==', schoolCode));
@@ -66,5 +69,36 @@ export function subscribeToFeePayments(schoolCode, onChange, onError) {
 }
 export async function createFeePaymentDoc(data) {
   const docRef = await addDoc(collection(db, FEE_PAYMENTS_COLLECTION), { ...data, createdAt: new Date().toISOString() });
+  return docRef.id;
+}
+
+// ===== Mushaharka Shaqaalaha (financeSalaries) — "status" (pending/paid)
+// waa kaliya field-ka la beddeli karo (fiiri firestore.rules) =====
+export function subscribeToSalaries(schoolCode, onChange, onError) {
+  return subscribeToCollection(SALARIES_COLLECTION, schoolCode, onChange, onError);
+}
+export async function createSalaryDoc(schoolCode, data) {
+  const docRef = await addDoc(collection(db, SALARIES_COLLECTION), { ...data, schoolCode, status: 'pending' });
+  return docRef.id;
+}
+export async function setSalaryStatus(id, status) {
+  await updateDoc(doc(db, SALARIES_COLLECTION, id), { status });
+}
+
+// ===== Dhimista/Deeqaha Waxbarasho (financeDiscounts) — diiwaan, append-only =====
+export function subscribeToDiscounts(schoolCode, onChange, onError) {
+  return subscribeToCollection(DISCOUNTS_COLLECTION, schoolCode, onChange, onError);
+}
+export async function createDiscountDoc(schoolCode, data) {
+  const docRef = await addDoc(collection(db, DISCOUNTS_COLLECTION), { ...data, schoolCode });
+  return docRef.id;
+}
+
+// ===== Invoices/Receipts (financeDocuments) — diiwaan, append-only =====
+export function subscribeToDocuments(schoolCode, onChange, onError) {
+  return subscribeToCollection(DOCUMENTS_COLLECTION, schoolCode, onChange, onError);
+}
+export async function createDocumentDoc(schoolCode, data) {
+  const docRef = await addDoc(collection(db, DOCUMENTS_COLLECTION), { ...data, schoolCode });
   return docRef.id;
 }
