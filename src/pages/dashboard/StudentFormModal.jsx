@@ -18,6 +18,7 @@ const EMPTY_FORM = {
   rollNumber: '',
   subjects: '',
   fee: 'pending',
+  feeAmount: '',
   status: 'active',
 };
 
@@ -49,6 +50,7 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
         rollNumber: student.rollNumber || '',
         subjects: (student.subjects || []).join(', '),
         fee: student.fee || 'pending',
+        feeAmount: student.feeAmount ?? '',
         status: student.status || 'active',
       });
     } else {
@@ -72,6 +74,7 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
       ...form,
       subjects: subjectsArray,
       rollNumber: Number(form.rollNumber) || 0,
+      feeAmount: Number(form.feeAmount) || 0,
     };
 
     onSave(payload, student?.id);
@@ -195,6 +198,28 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
                   <option value="pending">{t('common.status.pending')}</option>
                   <option value="overdue">{t('common.status.overdue')}</option>
                 </select>
+              </div>
+              <div className="sfm-field">
+                <label>{t('students.form.fields.feeAmount')}</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.feeAmount}
+                  onChange={update('feeAmount')}
+                  placeholder={t('students.form.placeholders.feeAmount')}
+                  disabled={form.feeAmount === 0}
+                  required
+                />
+              </div>
+              <div className="sfm-field">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={form.feeAmount === 0}
+                    onChange={(e) => setForm((f) => ({ ...f, feeAmount: e.target.checked ? 0 : '' }))}
+                  />
+                  {t('students.form.fields.feeFree')}
+                </label>
               </div>
             </div>
 

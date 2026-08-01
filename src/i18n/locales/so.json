@@ -101,12 +101,14 @@
         "parentName": "Magaca Waalidka", "relation": "Xiriirka", "father": "Aabo", "mother": "Hooyo", "otherGuardian": "Mas'uul Kale",
         "parentPhone": "Telefoonka Waalidka", "parentEmail": "Email Waalidka",
         "className": "Fasalka *", "section": "Section", "rollNumber": "Roll Number", "subjects": "Maadooyinka (kala sooc comma ,)",
-        "regStatus": "Xaalada Diiwaanka", "feeStatus": "Xaalada Lacagta"
+        "regStatus": "Xaalada Diiwaanka", "feeStatus": "Xaalada Lacagta",
+        "feeAmount": "Lacagta Fasalka Bishii ($)", "feeFree": "Bilaash (Fee ma jiro)"
       },
       "placeholders": {
         "fullName": "Tusaale: Ismaaciil Cabdi Xasan", "phone": "+252 61 ...", "address": "Xaafadda, Magaalada",
         "subjects": "Xisaab, Ingiriisi, Sayniska", "parentEmail": "tusaale@gmail.com",
-        "selectClass": "Dooro Fasal", "noClasses": "Wali fasal lama abuurin — marka hore ku dar bogga Fasallada"
+        "selectClass": "Dooro Fasal", "noClasses": "Wali fasal lama abuurin — marka hore ku dar bogga Fasallada",
+        "feeAmount": "Tusaale: 50"
       },
       "submitAdd": "Ku Dar Ardayga"
     },
@@ -225,7 +227,7 @@
       "discount": "Dhimis",
       "centerLabel": "Wadarta Guud"
     },
-    "table": { "no": "No", "class": "Fasal", "family": "Qoyska", "students": "Arday", "total": "Total ($)", "discount": "Q.Dhimis ($)", "balance": "Baaqi ($)", "totalRow": "Total" },
+    "table": { "no": "No", "class": "Fasal", "family": "Qoyska", "students": "Arday", "total": "Total ($)", "discount": "Q.Dhimis ($)", "balance": "Baaqi ($)", "totalRow": "Total", "paidStudents": "La Bixiyay", "unpaidStudents": "Ma Bixin" },
     "expenses": {
       "addNew": "Ku Dar Kharash",
       "table": { "category": "Nooca", "description": "Sharraxaad", "amount": "Qadarka", "date": "Taariikhda" },
@@ -321,9 +323,10 @@
       "sortDefault": "Kala saar...",
       "sortName": "Magaca (A-Z)",
       "sortStatus": "Xaaladda",
-      "stats": { "total": "Total", "paid": "Bixiyey", "unpaid": "Aan Bixin", "free": "Bilaash", "discountValue": "Qiimo Dhimista", "unpaidCount": "A.Baska" },
-      "table": { "student": "Magaca Ardayga", "fee": "Fii" },
-      "collect": "Lacag Qabo"
+      "stats": { "total": "Total", "paid": "Bixiyey", "unpaid": "Aan Bixin", "free": "Bilaash", "discountValue": "Qiimo Dhimista", "unpaidCount": "Baaqiga ($)" },
+      "table": { "student": "Magaca Ardayga", "status": "Xaaladda" },
+      "collect": "Lacag Qabo",
+      "confirmCollect": "Ma hubtaa inaad ka qabaneyso lacagta {{name}}?"
     }
   },
   "exams": {

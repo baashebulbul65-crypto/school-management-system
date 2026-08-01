@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSchoolData } from '../../context/SchoolDataContext';
 import './ClassDetailModal.css';
 
 const SAMPLE_NAMES = [
@@ -10,7 +11,12 @@ const SAMPLE_NAMES = [
   'Maxamed Xuseen Cige', 'Sacdiyo Xasan Nuur', 'Amiina Cabdulle', 'Xaawo Maxamed Cali',
 ];
 
-function buildRoster(row) {
+// M.Qoys (family) — safafka qoyska lama xirin arday DHAB AH (ma jiro
+// className la mid ah), sidaas darteed halkan waxaa weli lagu isticmaalaa
+// roster tijaabo ah oo ka soo baxa tirooyinka safka (total/balance/discount).
+// Fasalada (class) way ka duwan yihiin — fiiri classRoster ee hoose, kaas oo
+// ka soo saaraa ARDAYDA DHABTA AH ee "students" collection-ka Firestore.
+function buildFamilyRoster(row) {
   if (!row) return [];
   const count = row.students;
   const perFee = Math.max(1, Math.round(row.total / count));
@@ -32,14 +38,38 @@ function buildRoster(row) {
   return roster;
 }
 
-function ClassDetailModal({ row, monthValue, onClose, onCollected }) {
+function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
   const { t } = useTranslation();
-  const [roster, setRoster] = useState([]);
+  const { students, feePayments, collectStudentFee } = useSchoolData();
   const [sortBy, setSortBy] = useState('default');
+  const [familyRoster, setFamilyRoster] = useState([]);
 
   useEffect(() => {
-    setRoster(buildRoster(row));
-  }, [row]);
+    if (viewMode === 'family') setFamilyRoster(buildFamilyRoster(row));
+  }, [row, viewMode]);
+
+  // Fasalada — liiska ARDAYDA DHABTA AH ee fasalkan (Firestore "students"),
+  // xaaladdoodana waxaa laga soo xisaabiyaa feeAmount + feePayments-ka
+  // bishaas la doortay (monthValue) — ma aha roster tijaabo ah. Marka bil
+  // cusub bilaabmayso (monthValue is beddesha), ma jiro feePayment bishaas
+  // ah weli, sidaas darteed ardayda dhammaantood dib ayay ugu noqdaan
+  // "Aan Bixin" iyada oo aan gacan lagu bedelin (fiiri collectStudentFee).
+  const classRoster = useMemo(() => {
+    if (viewMode !== 'class' || !row) return [];
+    return students
+      .filter((s) => s.className === row.name)
+      .map((s) => {
+        const amount = Number(s.feeAmount) || 0;
+        let status = 'free';
+        if (amount > 0) {
+          const isPaid = feePayments.some((p) => p.feeType === 'student' && p.studentId === s.id && p.month === monthValue);
+          status = isPaid ? 'paid' : 'unpaid';
+        }
+        return { id: s.id, name: s.fullName, status, amount };
+      });
+  }, [viewMode, students, feePayments, row, monthValue]);
+
+  const roster = viewMode === 'class' ? classRoster : familyRoster;
 
   if (!row) return null;
 
@@ -48,8 +78,9 @@ function ClassDetailModal({ row, monthValue, onClose, onCollected }) {
     const bixiyey = roster.filter((r) => r.status === 'paid').length;
     const aanBixin = roster.filter((r) => r.status === 'unpaid').length;
     const bilaash = roster.filter((r) => r.status === 'free').length;
-    return { total, bixiyey, aanBixin, bilaash, qiimoDhimista: row.discount, aBaska: 0 };
-  }, [roster, row]);
+    const aBaska = viewMode === 'class' ? (row.unpaidTotal || 0) : 0;
+    return { total, bixiyey, aanBixin, bilaash, qiimoDhimista: row.discount || 0, aBaska };
+  }, [roster, row, viewMode]);
 
   const sortedRoster = useMemo(() => {
     const copy = [...roster];
@@ -58,11 +89,17 @@ function ClassDetailModal({ row, monthValue, onClose, onCollected }) {
     return copy;
   }, [roster, sortBy]);
 
-  const handleCollect = (studentId) => {
-    const student = roster.find((r) => r.id === studentId);
-    if (!student) return;
-    setRoster((prev) => prev.map((r) => (r.id === studentId ? { ...r, status: 'paid' } : r)));
-    onCollected?.(row.id, student.amount);
+  const handleCollect = (rosterId) => {
+    const person = roster.find((r) => r.id === rosterId);
+    if (!person) return;
+    const confirmed = window.confirm(t('finance.classDetail.confirmCollect', { name: person.name }));
+    if (!confirmed) return;
+    if (viewMode === 'class') {
+      collectStudentFee(rosterId, monthValue);
+    } else {
+      setFamilyRoster((prev) => prev.map((r) => (r.id === rosterId ? { ...r, status: 'paid' } : r)));
+      onCollected?.(row.id, person.amount);
+    }
   };
 
   const handlePrint = () => window.print();
@@ -111,13 +148,13 @@ function ClassDetailModal({ row, monthValue, onClose, onCollected }) {
         </div>
         <div className="cdm-stat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>
-          <div><strong>{stats.aBaska}</strong><span>{t('finance.classDetail.stats.unpaidCount')}</span></div>
+          <div><strong>${stats.aBaska}</strong><span>{t('finance.classDetail.stats.unpaidCount')}</span></div>
         </div>
       </div>
 
       <div className="cdm-table-wrap">
         <table className="cdm-table">
-          <thead><tr><th>{t('finance.classDetail.table.student')}</th><th>{t('finance.classDetail.table.fee')}</th></tr></thead>
+          <thead><tr><th>{t('finance.classDetail.table.student')}</th><th>{t('finance.classDetail.table.status')}</th></tr></thead>
           <tbody>
             {sortedRoster.map((s, i) => (
               <tr key={s.id}>
@@ -130,14 +167,20 @@ function ClassDetailModal({ row, monthValue, onClose, onCollected }) {
                   {s.status === 'paid' && (
                     <span className="cdm-fii-status paid">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-                      ${s.amount}
+                      {t('finance.classDetail.stats.paid')} (${s.amount})
                     </span>
                   )}
-                  {s.status === 'free' && <span className="cdm-fii-status free"></span>}
+                  {s.status === 'free' && (
+                    <div className="cdm-unpaid-row">
+                      <span className="cdm-fii-status free"></span>
+                      <span className="cdm-fii-status">{t('finance.classDetail.stats.free')}</span>
+                    </div>
+                  )}
                   {s.status === 'unpaid' && (
                     <div className="cdm-unpaid-row">
                       <span className="cdm-fii-status unpaid">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        {t('finance.classDetail.stats.unpaid')}
                       </span>
                       <button className="cdm-collect-btn" onClick={() => handleCollect(s.id)}>{t('finance.classDetail.collect')}</button>
                     </div>
@@ -145,6 +188,9 @@ function ClassDetailModal({ row, monthValue, onClose, onCollected }) {
                 </td>
               </tr>
             ))}
+            {sortedRoster.length === 0 && (
+              <tr><td colSpan="2" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.noResults')}</td></tr>
+            )}
           </tbody>
         </table>
       </div>

@@ -15,6 +15,10 @@ export function todayISODate() {
   return new Date().toISOString().split('T')[0];
 }
 
+export function currentMonthValue() {
+  return new Date().toISOString().slice(0, 7);
+}
+
 export function formatTodaySomali() {
   const d = new Date();
   return `${SOMALI_DAYS[d.getDay()]}, ${d.getDate()} ${SOMALI_MONTHS[d.getMonth()]} ${d.getFullYear()}`;

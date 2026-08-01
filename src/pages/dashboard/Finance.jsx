@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { classroomName } from '../../hooks/useClassOptions';
+import { currentMonthValue } from '../../utils/somaliDate';
 import FinanceDonutChart from '../../components/dashboard/FinanceDonutChart';
 import FinanceEntryModal from './FinanceEntryModal';
 import FeeCollectionModal from './FeeCollectionModal';
@@ -15,7 +17,7 @@ function Finance() {
   const location = useLocation();
   const navigate = useNavigate();
   const {
-    classFees, familyFees, collectClassFee, collectFamilyFee, addClassFeeRow, addFamilyFeeRow, feePayments,
+    classes, students, familyFees, collectFamilyFee, addFamilyFeeRow, feePayments,
     expenses, income, addExpense, addIncome,
     salaries, addSalary, markSalaryPaid,
     discounts, addDiscount,
@@ -25,7 +27,7 @@ function Finance() {
 
   // ----- Xisaabaadka state -----
   const [viewMode, setViewMode] = useState('class'); // 'class' | 'family'
-  const [monthValue, setMonthValue] = useState('2026-07');
+  const [monthValue, setMonthValue] = useState(currentMonthValue());
   const [classFilter, setClassFilter] = useState('all');
   const [showCollectModal, setShowCollectModal] = useState(false);
   const [showAddRowModal, setShowAddRowModal] = useState(false);
@@ -34,7 +36,34 @@ function Finance() {
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [entryType, setEntryType] = useState('expenses');
 
-  const activeRows = viewMode === 'class' ? classFees : familyFees;
+  // Safafka fasalada (Xisaabaadka > Fasalada) waxaa hadda si toos ah looga
+  // soo saaraa xogta DHAB AH ee "classes" + "students" + "feePayments" ee
+  // bishaas la doortay (monthValue) — ma aha safaf gacan lagu geliyay
+  // (fiiri AddFeeRowModal, kaas oo hadda KELIYA loo isticmaalo M.Qoys).
+  // Sidaas darteed fasal kasta oo Classes.jsx lagu abuuro wuxuu si otomaatig
+  // ah ugu soo muuqdaa halkan, iyo bishii cusub marka ay bilaabato arday
+  // kastaa wuxuu dib ugu noqdaa "Aan Bixin" (ma jiro feePayment bishaas ah weli).
+  const financeClassRows = useMemo(() => classes.map((cls) => {
+    const name = classroomName(cls);
+    const classStudents = students.filter((s) => s.className === name);
+    let paidCount = 0, paidTotal = 0, unpaidCount = 0, unpaidTotal = 0, freeCount = 0;
+    classStudents.forEach((s) => {
+      const amount = Number(s.feeAmount) || 0;
+      if (amount === 0) { freeCount += 1; return; }
+      const isPaid = feePayments.some((p) => p.feeType === 'student' && p.studentId === s.id && p.month === monthValue);
+      if (isPaid) { paidCount += 1; paidTotal += amount; } else { unpaidCount += 1; unpaidTotal += amount; }
+    });
+    return {
+      id: cls.id, name,
+      students: classStudents.length,
+      total: paidTotal + unpaidTotal,
+      discount: 0,
+      balance: unpaidTotal,
+      paidCount, paidTotal, unpaidCount, unpaidTotal, freeCount,
+    };
+  }), [classes, students, feePayments, monthValue]);
+
+  const activeRows = viewMode === 'class' ? financeClassRows : familyFees;
   const selectedRow = activeRows.find((r) => r.id === selectedRowId) || null;
 
   const filteredRows = useMemo(() => {
@@ -42,7 +71,7 @@ function Finance() {
     return activeRows.filter((r) => r.name === classFilter);
   }, [activeRows, classFilter, viewMode]);
 
-  const uniqueClassNames = useMemo(() => [...new Set(classFees.map((r) => r.name))], [classFees]);
+  const uniqueClassNames = useMemo(() => classes.map((c) => classroomName(c)), [classes]);
 
   // ----- Xisaabaadka summary (waxaa laga soo xisaabiyay xogta table-ka) -----
   const accSummary = useMemo(() => {
@@ -51,7 +80,10 @@ function Finance() {
     const baaqi = activeRows.reduce((s, r) => s + r.balance, 0);
     const laUururiyey = wadar - dhimis - baaqi;
     const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
-    return { wadar, dhimis, baaqi, laUururiyey, totalExpenses };
+    // "Hadhaa" = lacagta la haysto ka dib kharashaadka (la ururiyey - kharash),
+    // ma aha "Aan La Ururin" (baaqi) — labadaas waa laba shay oo kala duwan.
+    const remaining = laUururiyey - totalExpenses;
+    return { wadar, dhimis, baaqi, laUururiyey, totalExpenses, remaining };
   }, [activeRows, expenses]);
 
   const totalStudents = useMemo(() => activeRows.reduce((s, r) => s + r.students, 0), [activeRows]);
@@ -59,24 +91,27 @@ function Finance() {
   const extraStats = useMemo(() => ({
     paymentsCount: feePayments.length,
     discountRecipients: discounts.filter((d) => d.type === 'discount').length,
-    scholarshipCount: discounts.filter((d) => d.type === 'scholarship').length,
-    unpaidCount: activeRows.filter((r) => r.balance > 0).length,
-  }), [feePayments, discounts, activeRows]);
+    // Fasalada: "Bilaash" waa tirada ARDAYDA DHABTA AH ee feeAmount === 0
+    // (fiiri financeClassRows) — ma aha tirada dhimis/deeq-ta la diiwaan
+    // geliyay (Discounts tab), kuwaas oo ah xog kale oo aan lala xirin
+    // xisaabaadka fasalka. M.Qoys waxay wali isticmaashaa tirada deeqaha.
+    scholarshipCount: viewMode === 'class'
+      ? financeClassRows.reduce((s, r) => s + r.freeCount, 0)
+      : discounts.filter((d) => d.type === 'scholarship').length,
+    unpaidCount: viewMode === 'class'
+      ? financeClassRows.reduce((s, r) => s + r.unpaidCount, 0)
+      : activeRows.filter((r) => r.balance > 0).length,
+  }), [feePayments, discounts, activeRows, viewMode, financeClassRows]);
 
-  const handleCollectPayment = ({ rowId, amount, method, date }) => {
-    if (viewMode === 'class') collectClassFee(rowId, amount, method, date);
-    else collectFamilyFee(rowId, amount, method, date);
-  };
+  // Qabashada lacagta arday-gaarka ah (fasalada) waxay ka dhacdaa gudaha
+  // ClassDetailModal (fiiri collectStudentFee) — labadan hoose hadda waxay u
+  // adeegaan KELIYA M.Qoys (family), maadaama safafka fasalada aan hadda
+  // ahayn kuwo gacan lagu geliyay.
+  const handleCollectPayment = ({ rowId, amount, method, date }) => collectFamilyFee(rowId, amount, method, date);
 
-  const handleCollectDetail = (rowId, amount) => {
-    if (viewMode === 'class') collectClassFee(rowId, amount);
-    else collectFamilyFee(rowId, amount);
-  };
+  const handleCollectDetail = (rowId, amount) => collectFamilyFee(rowId, amount);
 
-  const handleSaveFeeRow = (payload) => {
-    if (viewMode === 'class') addClassFeeRow(payload);
-    else addFamilyFeeRow(payload);
-  };
+  const handleSaveFeeRow = (payload) => addFamilyFeeRow(payload);
 
   // ----- Kharashka/Dakhliga -----
   const expenseCategories = useMemo(() => {
@@ -103,6 +138,10 @@ function Finance() {
   useEffect(() => {
     if (location.state?.openCollect) {
       setActiveTab('accounting');
+      // FeeCollectionModal-ka guud (safaf-doorasho) hadda waxaa loo isticmaalaa
+      // KELIYA M.Qoys — fasalada lacagtoodu waxay ka dhacdaa arday kasta oo
+      // gudaha ClassDetailModal ah (fiiri "Fur Fasalka").
+      setViewMode('family');
       setShowCollectModal(true);
       navigate(location.pathname, { replace: true, state: {} });
     }
@@ -208,7 +247,7 @@ function Finance() {
                 </div>
                 <div>
                   <div className="acc-card-label">{t('finance.summaryCards.remaining')}</div>
-                  <div className="acc-card-value">$0.00</div>
+                  <div className="acc-card-value">{accSummary.remaining < 0 ? '-' : ''}${Math.abs(accSummary.remaining).toLocaleString()}.00</div>
                 </div>
               </div>
               <div className="acc-card">
@@ -238,7 +277,7 @@ function Finance() {
               </div>
 
               <div className="acc-stats-box">
-                <div className="acc-stat"><strong>{viewMode === 'class' ? classFees.length : familyFees.length}</strong><span>{viewMode === 'class' ? t('finance.statsBox.classes') : t('finance.statsBox.families')}</span></div>
+                <div className="acc-stat"><strong>{viewMode === 'class' ? financeClassRows.length : familyFees.length}</strong><span>{viewMode === 'class' ? t('finance.statsBox.classes') : t('finance.statsBox.families')}</span></div>
                 <div className="acc-stat"><strong>{totalStudents}</strong><span>{t('finance.statsBox.totalStudents')}</span></div>
                 <div className="acc-stat"><strong>{extraStats.paymentsCount}</strong><span>{t('finance.statsBox.paymentsCount')}</span></div>
                 <div className="acc-stat"><strong>{extraStats.discountRecipients}</strong><span>{t('finance.statsBox.discountRecipients')}</span></div>
@@ -256,16 +295,18 @@ function Finance() {
                 {uniqueClassNames.map((n) => <option key={n} value={n}>{n}</option>)}
               </select>
             ) : <div />}
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button className="btn-secondary" onClick={() => setShowAddRowModal(true)} type="button">
-                <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                {t('finance.addFeeRow.button')}
-              </button>
-              <button className="acc-collect-btn" onClick={() => setShowCollectModal(true)} disabled={activeRows.length === 0}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-                {t('finance.collectFee')}
-              </button>
-            </div>
+            {viewMode === 'family' && (
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button className="btn-secondary" onClick={() => setShowAddRowModal(true)} type="button">
+                  <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                  {t('finance.addFeeRow.button')}
+                </button>
+                <button className="acc-collect-btn" onClick={() => setShowCollectModal(true)} disabled={activeRows.length === 0}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                  {t('finance.collectFee')}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* TABLE */}
@@ -277,9 +318,18 @@ function Finance() {
                     <th>{t('finance.table.no')}</th>
                     <th>{viewMode === 'class' ? t('finance.table.class') : t('finance.table.family')}</th>
                     <th>{t('finance.table.students')}</th>
-                    <th>{t('finance.table.total')}</th>
-                    <th>{t('finance.table.discount')}</th>
-                    <th>{t('finance.table.balance')}</th>
+                    {viewMode === 'class' ? (
+                      <>
+                        <th>{t('finance.table.paidStudents')}</th>
+                        <th>{t('finance.table.unpaidStudents')}</th>
+                      </>
+                    ) : (
+                      <>
+                        <th>{t('finance.table.total')}</th>
+                        <th>{t('finance.table.discount')}</th>
+                        <th>{t('finance.table.balance')}</th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -291,9 +341,18 @@ function Finance() {
                         {r.shift && <div className="cell-sub">{r.shift}</div>}
                       </td>
                       <td>{r.students}</td>
-                      <td className="cell-amount">${r.total.toFixed(2)}</td>
-                      <td className="cell-sub">{r.discount ? `$${r.discount.toFixed(2)}` : ''}</td>
-                      <td className={`cell-amount ${r.balance ? 'acc-baaqi-owed' : ''}`}>{r.balance ? `$${r.balance.toFixed(2)}` : ''}</td>
+                      {viewMode === 'class' ? (
+                        <>
+                          <td className="cell-amount">{r.paidCount} (${r.paidTotal.toFixed(2)})</td>
+                          <td className={`cell-amount ${r.unpaidCount ? 'acc-baaqi-owed' : ''}`}>{r.unpaidCount} (${r.unpaidTotal.toFixed(2)})</td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="cell-amount">${r.total.toFixed(2)}</td>
+                          <td className="cell-sub">{r.discount ? `$${r.discount.toFixed(2)}` : ''}</td>
+                          <td className={`cell-amount ${r.balance ? 'acc-baaqi-owed' : ''}`}>{r.balance ? `$${r.balance.toFixed(2)}` : ''}</td>
+                        </>
+                      )}
                     </tr>
                   ))}
                   {filteredRows.length === 0 && (
@@ -306,9 +365,18 @@ function Finance() {
                       <td></td>
                       <td>{t('finance.table.totalRow')} ({filteredRows.length}) {viewMode === 'class' ? t('finance.table.class') : t('finance.table.family')}</td>
                       <td>{filteredRows.reduce((s, r) => s + r.students, 0)}</td>
-                      <td className="cell-amount">${filteredRows.reduce((s, r) => s + r.total, 0).toFixed(2)}</td>
-                      <td className="cell-amount">${filteredRows.reduce((s, r) => s + r.discount, 0).toFixed(2)}</td>
-                      <td className="cell-amount">${filteredRows.reduce((s, r) => s + r.balance, 0).toFixed(2)}</td>
+                      {viewMode === 'class' ? (
+                        <>
+                          <td className="cell-amount">{filteredRows.reduce((s, r) => s + r.paidCount, 0)} (${filteredRows.reduce((s, r) => s + r.paidTotal, 0).toFixed(2)})</td>
+                          <td className="cell-amount">{filteredRows.reduce((s, r) => s + r.unpaidCount, 0)} (${filteredRows.reduce((s, r) => s + r.unpaidTotal, 0).toFixed(2)})</td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="cell-amount">${filteredRows.reduce((s, r) => s + r.total, 0).toFixed(2)}</td>
+                          <td className="cell-amount">${filteredRows.reduce((s, r) => s + r.discount, 0).toFixed(2)}</td>
+                          <td className="cell-amount">${filteredRows.reduce((s, r) => s + r.balance, 0).toFixed(2)}</td>
+                        </>
+                      )}
                     </tr>
                   </tfoot>
                 )}
@@ -501,23 +569,28 @@ function Finance() {
         type={entryType}
       />
 
-      <FeeCollectionModal
-        isOpen={showCollectModal}
-        onClose={() => setShowCollectModal(false)}
-        onCollect={handleCollectPayment}
-        rows={activeRows}
-      />
+      {viewMode === 'family' && (
+        <>
+          <FeeCollectionModal
+            isOpen={showCollectModal}
+            onClose={() => setShowCollectModal(false)}
+            onCollect={handleCollectPayment}
+            rows={activeRows}
+          />
 
-      <AddFeeRowModal
-        isOpen={showAddRowModal}
-        onClose={() => setShowAddRowModal(false)}
-        onSave={handleSaveFeeRow}
-        viewMode={viewMode}
-      />
+          <AddFeeRowModal
+            isOpen={showAddRowModal}
+            onClose={() => setShowAddRowModal(false)}
+            onSave={handleSaveFeeRow}
+            viewMode={viewMode}
+          />
+        </>
+      )}
 
       {selectedRow && (
         <ClassDetailModal
           row={selectedRow}
+          viewMode={viewMode}
           monthValue={monthValue}
           onClose={() => setSelectedRowId(null)}
           onCollected={handleCollectDetail}

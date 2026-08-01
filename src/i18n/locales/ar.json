@@ -101,12 +101,14 @@
         "parentName": "اسم ولي الأمر", "relation": "صلة القرابة", "father": "الأب", "mother": "الأم", "otherGuardian": "وصي آخر",
         "parentPhone": "هاتف ولي الأمر", "parentEmail": "بريد ولي الأمر الإلكتروني",
         "className": "الفصل *", "section": "الشعبة", "rollNumber": "الرقم التسلسلي", "subjects": "المواد (افصل بينها بفاصلة ,)",
-        "regStatus": "حالة التسجيل", "feeStatus": "حالة الرسوم"
+        "regStatus": "حالة التسجيل", "feeStatus": "حالة الرسوم",
+        "feeAmount": "الرسوم الشهرية ($)", "feeFree": "مجاني (بدون رسوم)"
       },
       "placeholders": {
         "fullName": "مثال: إسماعيل عبدي حسن", "phone": "+252 61 ...", "address": "الحي، المدينة",
         "subjects": "رياضيات، إنجليزي، علوم", "parentEmail": "example@gmail.com",
-        "selectClass": "اختر الفصل", "noClasses": "لا توجد فصول بعد — يرجى إضافة فصل من صفحة الفصول أولاً"
+        "selectClass": "اختر الفصل", "noClasses": "لا توجد فصول بعد — يرجى إضافة فصل من صفحة الفصول أولاً",
+        "feeAmount": "مثال: 50"
       },
       "submitAdd": "إضافة الطالب"
     },
@@ -225,7 +227,7 @@
       "discount": "الخصم",
       "centerLabel": "الإجمالي الكلي"
     },
-    "table": { "no": "الرقم", "class": "الفصل", "family": "العائلة", "students": "الطلاب", "total": "الإجمالي ($)", "discount": "الخصم ($)", "balance": "الرصيد ($)", "totalRow": "الإجمالي" },
+    "table": { "no": "الرقم", "class": "الفصل", "family": "العائلة", "students": "الطلاب", "total": "الإجمالي ($)", "discount": "الخصم ($)", "balance": "الرصيد ($)", "totalRow": "الإجمالي", "paidStudents": "تم الدفع", "unpaidStudents": "لم يُدفع" },
     "expenses": {
       "addNew": "إضافة مصروف",
       "table": { "category": "النوع", "description": "الوصف", "amount": "المبلغ", "date": "التاريخ" },
@@ -321,9 +323,10 @@
       "sortDefault": "ترتيب حسب...",
       "sortName": "الاسم (أ-ي)",
       "sortStatus": "الحالة",
-      "stats": { "total": "الإجمالي", "paid": "تم الدفع", "unpaid": "لم يُدفع", "free": "مجاني", "discountValue": "قيمة الخصم", "unpaidCount": "غير مدفوع" },
-      "table": { "student": "اسم الطالب", "fee": "الرسوم" },
-      "collect": "تحصيل"
+      "stats": { "total": "الإجمالي", "paid": "تم الدفع", "unpaid": "لم يُدفع", "free": "مجاني", "discountValue": "قيمة الخصم", "unpaidCount": "الرصيد المتبقي ($)" },
+      "table": { "student": "اسم الطالب", "status": "الحالة" },
+      "collect": "تحصيل",
+      "confirmCollect": "هل أنت متأكد من تحصيل رسوم {{name}}؟"
     }
   },
   "exams": {

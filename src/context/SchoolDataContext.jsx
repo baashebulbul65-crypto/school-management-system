@@ -722,9 +722,23 @@ export function SchoolDataProvider({ children }) {
     }
   };
 
+  // Marka mushahar la bixiyo, waa in uu si otomaatig ah ugu galaa qaybta
+  // Kharashaadka (financeExpenses) — si xisaabaadka guud (Xisaabaadka tab-ka +
+  // "Hadhaa"/wadarta kharashka) ay u sii ahaadaan xog dhab ah, mana aha in
+  // mushaharka la bixiyay uu kaliya "status" ka beddelo bogga Mushaharka isaga
+  // oo aan gudbin qaybta kharashaadka.
   const markSalaryPaid = async (id) => {
     try {
       await setSalaryStatus(id, 'paid');
+      const salary = salaries.find((s) => s.id === id);
+      if (salary && profile?.schoolCode) {
+        await createExpenseDoc(profile.schoolCode, {
+          category: 'Mushahar',
+          description: `Mushaharka ${salary.staffName || ''}${salary.role ? ` - ${salary.role}` : ''}${salary.month ? ` (${salary.month})` : ''}`.trim(),
+          amount: salary.amount || 0,
+          date: todayISODate(),
+        });
+      }
     } catch (err) {
       reportError('Khalad ayaa dhacay markii mushaharka la calaamadinayay in la bixiyay:', err);
     }
@@ -1097,6 +1111,33 @@ export function SchoolDataProvider({ children }) {
   const collectClassFee = (rowId, amount, method, date) => collectFee('class', rowId, amount, method, date);
   const collectFamilyFee = (rowId, amount, method, date) => collectFee('family', rowId, amount, method, date);
 
+  // Fii-ga arday-gaarka ah (Finance > Fasalada) — hal diiwaan (feePayments) per
+  // arday+bil, ma aha counter la is dhimo. Bishii cusub markay bilaabato,
+  // diiwaan bishaas ah ma jiro weli, sidaas darteed ardaygu si otomaatig ah
+  // wuxuu u noqdaa "Aan Bixin" iyada oo aan loo baahnayn tirtiro/reset gacan.
+  const collectStudentFee = async (studentId, month) => {
+    if (!profile?.schoolCode) return;
+    const student = students.find((s) => s.id === studentId);
+    if (!student) return;
+    try {
+      await createFeePaymentDoc({
+        schoolCode: profile.schoolCode,
+        feeType: 'student',
+        studentId,
+        studentName: student.fullName || '',
+        className: student.className || '',
+        month,
+        amount: Number(student.feeAmount) || 0,
+        method: '',
+        date: todayISODate(),
+        collectedBy: profile.uid,
+        collectedByName: profile.fullName || '',
+      });
+    } catch (err) {
+      reportError('Khalad ayaa dhacay markii lacagta ardayga la ururinayay:', err);
+    }
+  };
+
   // ===== IMAANSHAHA MAANTA (Macallimiinta / Shaqaalaha) =====
   const cycleAttendanceStatus = async (category, id) => {
     if (!profile?.schoolCode) return;
@@ -1123,7 +1164,7 @@ export function SchoolDataProvider({ children }) {
     classes, addClass, updateClass, removeClass,
     subjects, addSubject, updateSubject, removeSubject,
     exams, examMarks, addExam, updateExam, removeExam, updateExamMark,
-    classFees, familyFees, collectClassFee, collectFamilyFee, addClassFeeRow, addFamilyFeeRow, feePayments,
+    classFees, familyFees, collectClassFee, collectFamilyFee, addClassFeeRow, addFamilyFeeRow, feePayments, collectStudentFee,
     expenses, income, addExpense, addIncome,
     salaries, addSalary, markSalaryPaid,
     discounts, addDiscount,
