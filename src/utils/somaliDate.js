@@ -31,6 +31,15 @@ export function currentMonthValue() {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
 }
 
+// "N maalmood ka hor maanta" (local time, ma aha UTC) — waxaa loo isticmaalaa
+// xudduudaha warbixinnada toddobaad/bil/sano (fiiri Attendance.jsx), si aan
+// isla bug-ka toISOString() ee kore looga dhicin xisaabinta xudduudka.
+export function isoDateDaysAgo(days) {
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+
 export function formatTodaySomali() {
   const d = new Date();
   return `${SOMALI_DAYS[d.getDay()]}, ${d.getDate()} ${SOMALI_MONTHS[d.getMonth()]} ${d.getFullYear()}`;

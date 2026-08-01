@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { todayISODate, isoDateDaysAgo } from '../../utils/somaliDate';
 import StaffMemberFormModal from './StaffMemberFormModal';
 import '../../styles/dashboard-shared.css';
 import './Attendance.css';
@@ -14,9 +15,7 @@ const PERIOD_DAYS = { weekly: 7, monthly: 30, yearly: 365 };
 // allStaffAttendanceRecords, fiiri SchoolDataContext.jsx) — "daily" waxaa
 // laga soo xisaabiyaa xogta nool ee hoos ku qoran (attendanceToday).
 function computePeriodStats(records, statusKeys, days) {
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - days);
-  const cutoffISO = cutoff.toISOString().split('T')[0];
+  const cutoffISO = isoDateDaysAgo(days);
   const filtered = records.filter((r) => r.date >= cutoffISO);
   const counts = { total: filtered.length };
   statusKeys.forEach((k) => { counts[k] = filtered.filter((r) => r.status === k).length; });
@@ -37,7 +36,7 @@ function Attendance() {
   } = useSchoolData();
   const [category, setCategory] = useState('students');
   const [period, setPeriod] = useState('daily');
-  const [date] = useState(new Date().toISOString().split('T')[0]);
+  const [date] = useState(todayISODate());
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [editingStaffMember, setEditingStaffMember] = useState(null);
 
