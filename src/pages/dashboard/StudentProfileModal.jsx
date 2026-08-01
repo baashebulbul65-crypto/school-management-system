@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useTranslation } from 'react-i18next';
+import { useSchoolData } from '../../context/SchoolDataContext';
+import { currentMonthValue } from '../../utils/somaliDate';
+import { getMonthlyFeeStatus, studentFeeOwed } from '../../utils/studentFee';
 import './StudentProfileModal.css';
 
 function initials(name) {
@@ -19,8 +22,19 @@ function InfoRow({ label, value }) {
 function StudentProfileModal({ student, attendanceRecords, onClose, onToggleAttendance }) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('guud');
+  const { feePayments } = useSchoolData();
 
   if (!student) return null;
+
+  // Xaaladda bishan + taariikhda bixinnada DHABTA AH ee ardaygan (feePayments),
+  // ma aha "student.fees" (array hore oo mar walba madhan, fiiri commit-kii
+  // ParentPortal-ka).
+  const currentMonth = currentMonthValue();
+  const feeStatus = getMonthlyFeeStatus(student, feePayments, currentMonth);
+  const feeOwed = studentFeeOwed(student);
+  const studentPayments = feePayments
+    .filter((p) => p.feeType === 'student' && p.studentId === student.id)
+    .sort((a, b) => b.month.localeCompare(a.month));
 
   const TABS = [
     { id: 'guud', label: t('students.profile.tabs.general') },
@@ -150,26 +164,35 @@ function StudentProfileModal({ student, attendanceRecords, onClose, onToggleAtte
           )}
 
           {activeTab === 'lacag' && (
-            <div className="data-table-wrap">
-              <table className="data-table">
-                <thead>
-                  <tr><th>{t('students.profile.table.term')}</th><th>{t('students.profile.table.amount')}</th><th>{t('students.profile.table.date')}</th><th>{t('students.profile.table.status')}</th></tr>
-                </thead>
-                <tbody>
-                  {student.fees?.map((f, i) => (
-                    <tr key={i}>
-                      <td>{f.term}</td>
-                      <td>${f.amount}</td>
-                      <td className="cell-sub">{f.date}</td>
-                      <td>
-                        <span className={`badge ${f.status === 'paid' ? 'badge-success' : f.status === 'pending' ? 'badge-warning' : 'badge-danger'}`}>
-                          {t(`common.status.${f.status}`)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div>
+              <p className="spm-fee-current-status">
+                <span className={`badge ${feeStatus === 'paid' ? 'badge-success' : feeStatus === 'free' ? 'badge-neutral' : 'badge-danger'}`}>
+                  {t(`finance.classDetail.stats.${feeStatus}`)}
+                </span>
+                {feeStatus !== 'free' && <span className="spm-fee-amount">${feeOwed.toFixed(2)}</span>}
+              </p>
+
+              <div className="spm-divider" style={{ marginTop: 20 }}>{t('students.profile.feeHistoryTitle')}</div>
+              {studentPayments.length === 0 ? (
+                <p className="spm-note">{t('students.profile.noFeeHistory')}</p>
+              ) : (
+                <div className="data-table-wrap">
+                  <table className="data-table">
+                    <thead>
+                      <tr><th>{t('students.profile.table.month')}</th><th>{t('students.profile.table.amount')}</th><th>{t('students.profile.table.date')}</th></tr>
+                    </thead>
+                    <tbody>
+                      {studentPayments.map((p) => (
+                        <tr key={p.id}>
+                          <td>{p.month}</td>
+                          <td>${(p.amount || 0).toFixed(2)}</td>
+                          <td className="cell-sub">{p.date}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 

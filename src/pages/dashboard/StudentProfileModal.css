@@ -169,6 +169,18 @@
   margin-bottom:18px;
 }
 
+.spm-fee-current-status{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.spm-fee-amount{
+  font-family:'Poppins', sans-serif;
+  font-weight:700;
+  font-size:18px;
+  color: var(--navy);
+}
+
 /* Attendance grid */
 .attendance-grid{
   display:grid;

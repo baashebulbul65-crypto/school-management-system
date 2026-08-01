@@ -124,7 +124,9 @@
         "className": "Fasalka", "section": "Qaybta (Section)", "rollNumber": "Roll Number", "subjectsSection": "Maadooyinka"
       },
       "attendanceNote": "Guji maalin kasta si aad u beddesho xaaladda imaanshaha (Present/Absent).",
-      "table": { "subject": "Maadada", "marks": "Buundooyinka", "total": "Wadarta", "grade": "Darajada", "term": "Xilliga", "amount": "Qadarka", "date": "Taariikhda", "status": "Xaaladda" },
+      "table": { "subject": "Maadada", "marks": "Buundooyinka", "total": "Wadarta", "grade": "Darajada", "month": "Bisha", "amount": "Qadarka", "date": "Taariikhda" },
+      "feeHistoryTitle": "Taariikhda Bixinnada",
+      "noFeeHistory": "Wali lacag lama bixin.",
       "noBehaviour": "Wax faallo ah lama qorin.",
       "noDocuments": "Wax dukumenti ah laguma soo shubin.",
       "qrCode": "QR Code"

@@ -124,7 +124,9 @@
         "className": "الفصل", "section": "الشعبة", "rollNumber": "الرقم التسلسلي", "subjectsSection": "المواد"
       },
       "attendanceNote": "اضغط على أي يوم لتغيير حالة الحضور (حاضر/غائب).",
-      "table": { "subject": "المادة", "marks": "الدرجات", "total": "الإجمالي", "grade": "التقدير", "term": "الفصل الدراسي", "amount": "المبلغ", "date": "التاريخ", "status": "الحالة" },
+      "table": { "subject": "المادة", "marks": "الدرجات", "total": "الإجمالي", "grade": "التقدير", "month": "الشهر", "amount": "المبلغ", "date": "التاريخ" },
+      "feeHistoryTitle": "سجل الدفعات",
+      "noFeeHistory": "لم يتم دفع أي رسوم بعد.",
       "noBehaviour": "لم تتم إضافة أي ملاحظات.",
       "noDocuments": "لم يتم رفع أي مستندات.",
       "qrCode": "رمز QR"
