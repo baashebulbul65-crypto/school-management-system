@@ -21,7 +21,7 @@ function gpaFromPercent(pct) {
 }
 
 function Reports() {
-  const { students, teachers, exams, examMarks, expenses, income, allStudentAttendanceRecords, allStaffAttendanceRecords } = useSchoolData();
+  const { students, teachers, exams, examMarks, expenses, income, feePayments, allStudentAttendanceRecords, allStaffAttendanceRecords } = useSchoolData();
   const [term, setTerm] = useState(TERMS[1]);
 
   const enrollmentByClass = useMemo(() => {
@@ -83,7 +83,14 @@ function Reports() {
     ? Math.round(attendanceTrend.reduce((s, w) => s + w.rate, 0) / attendanceTrend.length)
     : 0;
 
-  const totalIncome = useMemo(() => income.reduce((s, i) => s + (i.amount || 0), 0), [income]);
+  // "Dakhliga" waa in ay ku jiraan labada isha ee dakhliga dugsiga: lacagaha
+  // ardayda ee dhab ahaan la ururiyay (feePayments — isha ugu weyn) IYO
+  // dakhliga kale ee gacanta lagu galiyo (financeIncome). Hore waxaa loo
+  // isticmaali jiray kaliya financeIncome, taasoo netProfit-ka ka dhigi
+  // jirtay mid been abuur ah (lumis marnaba jirin).
+  const totalFeeCollected = useMemo(() => feePayments.reduce((s, p) => s + (p.amount || 0), 0), [feePayments]);
+  const totalOtherIncome = useMemo(() => income.reduce((s, i) => s + (i.amount || 0), 0), [income]);
+  const totalIncome = totalFeeCollected + totalOtherIncome;
   const totalExpenses = useMemo(() => expenses.reduce((s, e) => s + (e.amount || 0), 0), [expenses]);
   const netProfit = totalIncome - totalExpenses;
   const maxFinanceBar = Math.max(1, totalIncome, totalExpenses);
