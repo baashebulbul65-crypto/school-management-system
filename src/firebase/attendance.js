@@ -27,6 +27,18 @@ export async function setStudentAttendanceRecord(schoolCode, date, studentId, cl
   });
 }
 
+// Dhammaan diiwaanka imaanshaha ee ARDAYDA OO DHAN (taariikhda oo dhan, ma
+// ahan hal maalin) — waxaa isticmaala bogga Attendance ee warbixinnada
+// toddobaadka/bisha/sanadka (fiiri Attendance.jsx).
+export function subscribeToAllAttendanceRecords(schoolCode, onChange, onError) {
+  const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode));
+  return onSnapshot(
+    q,
+    (snap) => onChange(snap.docs.map((d) => d.data())),
+    onError
+  );
+}
+
 // Taariikhda imaanshaha oo dhan ee arday gaar ah — waxaa isticmaala ParentPortal.
 export function subscribeToStudentAttendanceHistory(schoolCode, studentId, onChange, onError) {
   const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode), where('studentId', '==', studentId));
@@ -69,4 +81,16 @@ export async function setStaffAttendanceRecord(schoolCode, category, date, perso
   await setDoc(doc(db, STAFF_COLLECTION, staffRecordId(category, date, personId)), {
     schoolCode, date, category, personId, status,
   });
+}
+
+// Dhammaan diiwaanka imaanshaha ee MACALLIMIINTA + SHAQAALAHA OO DHAN
+// (taariikhda oo dhan) — la mid ah subscribeToAllAttendanceRecords ee
+// ardayda, loo isticmaalo warbixinnada toddobaadka/bisha/sanadka.
+export function subscribeToAllStaffAttendanceRecords(schoolCode, onChange, onError) {
+  const q = query(collection(db, STAFF_COLLECTION), where('schoolCode', '==', schoolCode));
+  return onSnapshot(
+    q,
+    (snap) => onChange(snap.docs.map((d) => d.data())),
+    onError
+  );
 }

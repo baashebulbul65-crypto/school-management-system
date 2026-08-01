@@ -7,26 +7,22 @@ import './Attendance.css';
 
 const VALUE_CLS = { present: 'success', absent: 'danger', late: 'warning', leave: 'warning', sick: 'danger' };
 
-// Warbixin tijaabo ah oo xilliyada dhaafay (weekly/monthly/yearly) — ma jirto xog
-// taariikheed oo dhab ah (backend), "daily" waxaa laga soo xisaabiyaa xogta nool
-// ee hoos ku qoran (isla liiska calaamadinta ee sare).
-const STATIC_REPORT_STATS = {
-  students: {
-    weekly: { present: 32, absent: 4, late: 3, total: 39, rate: 82 },
-    monthly: { present: 138, absent: 14, late: 10, total: 162, rate: 85 },
-    yearly: { present: 1620, absent: 145, late: 98, total: 1863, rate: 87 },
-  },
-  teachers: {
-    weekly: { present: 22, absent: 2, late: 3, total: 27, rate: 81 },
-    monthly: { present: 96, absent: 6, late: 8, total: 110, rate: 87 },
-    yearly: { present: 1150, absent: 62, late: 78, total: 1290, rate: 89 },
-  },
-  staff: {
-    weekly: { present: 18, absent: 1, late: 2, total: 21, rate: 86 },
-    monthly: { present: 78, absent: 4, late: 6, total: 88, rate: 89 },
-    yearly: { present: 940, absent: 38, late: 52, total: 1030, rate: 91 },
-  },
-};
+const PERIOD_DAYS = { weekly: 7, monthly: 30, yearly: 365 };
+
+// Warbixinnada toddobaadka/bisha/sanadka waxaa laga soo xisaabiyaa (derive)
+// taariikhda dhabta ah ee diiwaanka imaanshaha (allStudentAttendanceRecords /
+// allStaffAttendanceRecords, fiiri SchoolDataContext.jsx) — "daily" waxaa
+// laga soo xisaabiyaa xogta nool ee hoos ku qoran (attendanceToday).
+function computePeriodStats(records, statusKeys, days) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  const cutoffISO = cutoff.toISOString().split('T')[0];
+  const filtered = records.filter((r) => r.date >= cutoffISO);
+  const counts = { total: filtered.length };
+  statusKeys.forEach((k) => { counts[k] = filtered.filter((r) => r.status === k).length; });
+  counts.rate = counts.total ? Math.round(((counts.present || 0) / counts.total) * 100) : 0;
+  return counts;
+}
 
 function initials(name) {
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
@@ -37,6 +33,7 @@ function Attendance() {
   const {
     students, teachers, staff, attendanceToday, cycleAttendanceStatus, setStudentAttendanceStatus,
     addStaffMember, updateStaffMember, removeStaffMember,
+    allStudentAttendanceRecords, allStaffAttendanceRecords,
   } = useSchoolData();
   const [category, setCategory] = useState('students');
   const [period, setPeriod] = useState('daily');
@@ -115,9 +112,14 @@ function Attendance() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list, category]);
 
+  const periodRecords = useMemo(() => {
+    if (category === 'students') return allStudentAttendanceRecords;
+    return allStaffAttendanceRecords.filter((r) => r.category === category);
+  }, [category, allStudentAttendanceRecords, allStaffAttendanceRecords]);
+
   const stats = period === 'daily'
     ? { ...todayCounts, rate: todayCounts.total ? Math.round((todayCounts.present / todayCounts.total) * 100) : 0 }
-    : STATIC_REPORT_STATS[category][period];
+    : computePeriodStats(periodRecords, statusDefs.map((d) => d.key), PERIOD_DAYS[period]);
 
   const handleMark = (person, statusKey) => {
     if (category === 'students') {

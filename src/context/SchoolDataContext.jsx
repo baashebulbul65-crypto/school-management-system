@@ -21,7 +21,10 @@ import {
   subscribeToDiscounts, createDiscountDoc,
   subscribeToDocuments, createDocumentDoc,
 } from '../firebase/finance';
-import { subscribeToAttendanceByDate, setStudentAttendanceRecord, subscribeToStaffAttendanceByDate, setStaffAttendanceRecord } from '../firebase/attendance';
+import {
+  subscribeToAttendanceByDate, setStudentAttendanceRecord, subscribeToAllAttendanceRecords,
+  subscribeToStaffAttendanceByDate, setStaffAttendanceRecord, subscribeToAllStaffAttendanceRecords,
+} from '../firebase/attendance';
 import { subscribeToStaffRoster, createStaffRosterDoc, updateStaffRosterDoc, deleteStaffRosterDoc } from '../firebase/staffRoster';
 import { subscribeToExamMarks, setExamMarkRecord } from '../firebase/examMarks';
 import { subscribeToQuranProgressByDate, setQuranProgressRecord } from '../firebase/quranProgress';
@@ -233,6 +236,8 @@ export function SchoolDataProvider({ children }) {
   const [teacherAttendanceToday, setTeacherAttendanceToday] = useState({});
   const [staffAttendanceToday, setStaffAttendanceToday] = useState({});
   const [studentAttendanceToday, setStudentAttendanceToday] = useState({});
+  const [allStudentAttendanceRecords, setAllStudentAttendanceRecords] = useState([]);
+  const [allStaffAttendanceRecords, setAllStaffAttendanceRecords] = useState([]);
 
   // ===== IMAANSHAHA ARDAYDA MAANTA (Firestore collection "attendanceRecords") =====
   useEffect(() => {
@@ -275,6 +280,36 @@ export function SchoolDataProvider({ children }) {
       }
     }
   };
+
+  // ===== TAARIIKHDA IMAANSHAHA OO DHAN (Firestore collections "attendanceRecords"
+  // + "staffAttendanceRecords") — loo isticmaalo warbixinnada toddobaadka/
+  // bisha/sanadka ee bogga Attendance (kama socoto attendanceToday ee kore,
+  // kaas oo maalinta hadda ah kaliya). =====
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setAllStudentAttendanceRecords([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToAllAttendanceRecords(
+      profile.schoolCode,
+      setAllStudentAttendanceRecords,
+      (err) => console.error('Khalad ayaa dhacay markii taariikhda imaanshaha ardayda laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType]);
+
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setAllStaffAttendanceRecords([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToAllStaffAttendanceRecords(
+      profile.schoolCode,
+      setAllStaffAttendanceRecords,
+      (err) => console.error('Khalad ayaa dhacay markii taariikhda imaanshaha macallimiinta/shaqaalaha laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType]);
 
   // ===== SHAQAALAHA (Firestore collection "staffRoster") — liiska shaqaalaha
   // aan macallimiinta ahayn (Maamule, Xisaabiye, Ilaaliye, iwm), loo isticmaalo
@@ -1094,6 +1129,7 @@ export function SchoolDataProvider({ children }) {
     financeDocuments, addFinanceDocument,
     staff, addStaffMember, updateStaffMember, removeStaffMember,
     attendanceToday, cycleAttendanceStatus,
+    allStudentAttendanceRecords, allStaffAttendanceRecords,
     quranProgressToday, setQuranProgress,
     quranTargets, saveQuranTarget, recordQuranTargetOutcome,
     staffMessages, sendStaffMessage, markThreadReadByStaff,
