@@ -102,7 +102,7 @@
         "parentName": "اسم ولي الأمر", "relation": "صلة القرابة", "father": "الأب", "mother": "الأم", "otherGuardian": "وصي آخر",
         "parentPhone": "هاتف ولي الأمر", "parentEmail": "بريد ولي الأمر الإلكتروني",
         "className": "الفصل *", "section": "الشعبة", "rollNumber": "الرقم التسلسلي", "subjects": "المواد (افصل بينها بفاصلة ,)",
-        "regStatus": "حالة التسجيل", "feeStatus": "حالة الرسوم",
+        "regStatus": "حالة التسجيل",
         "feeAmount": "الرسوم الشهرية ($)",
         "feeType": "نوع الرسوم", "feeTypeFixed": "مبلغ عادي", "feeTypeFree": "مجاني", "feeTypeDiscount": "خصم",
         "discountPercent": "نسبة الخصم (%)"
@@ -536,7 +536,7 @@
       "deadlineLabel": "تاريخ الهدف",
       "status": { "pending": "قيد الانتظار", "reached": "تم تحقيقه", "missed": "لم يتحقق" }
     },
-    "fees": { "title": "الرسوم", "empty": "لا توجد بيانات رسوم.", "table": { "term": "الفصل الدراسي", "amount": "المبلغ", "date": "التاريخ", "status": "الحالة" } },
+    "fees": { "title": "الرسوم", "historyTitle": "سجل الدفعات", "empty": "لم يتم دفع أي رسوم بعد.", "table": { "month": "الشهر", "amount": "المبلغ", "date": "التاريخ", "status": "الحالة" } },
     "results": { "title": "النتائج", "empty": "لم يتم تسجيل أي امتحان لهذا الفصل بعد.", "table": { "subject": "المادة", "type": "النوع", "marks": "الدرجات", "grade": "التقدير" }, "notEntered": "لم تُدخل" },
     "messages": { "title": "الرسائل", "empty": "لا توجد رسائل بعد — أرسل رسالتك الأولى إلى المعلم أو الإدارة.", "composePlaceholder": "اكتب رسالتك..." },
     "behaviour": { "title": "السلوك", "empty": "لم تتم إضافة أي ملاحظات." },

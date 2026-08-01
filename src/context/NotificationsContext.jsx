@@ -2,7 +2,10 @@ import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
-import { subscribeToAllNotifications, markNotificationsRead, deleteNotificationDoc } from '../firebase/notifications';
+import { useSchoolData } from './SchoolDataContext';
+import { subscribeToAllNotifications, markNotificationsRead, deleteNotificationDoc, createFeeNotification } from '../firebase/notifications';
+import { currentMonthValue } from '../utils/somaliDate';
+import { getMonthlyFeeStatus } from '../utils/studentFee';
 
 const NotificationsContext = createContext(null);
 
@@ -13,6 +16,7 @@ export function NotificationsProvider({ children }) {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const { showError } = useToast();
+  const { students, feePayments } = useSchoolData();
   const [rawNotifications, setRawNotifications] = useState([]);
 
   const reportError = (message, err) => {
@@ -32,6 +36,31 @@ export function NotificationsProvider({ children }) {
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
+
+  // Xasuusinta Lacagta ("fee reminder") — otomaatig, ma aha gacan-gelin.
+  // Bishii-bishii waxaan u wareegnaa ardayda "unpaid" ee dhabta ah (fiiri
+  // getMonthlyFeeStatus, kaas oo ka soo xisaabiya feeType/feeAmount/
+  // discountPercent + feePayments), oo haddii ogeysiin bishaas+ardaygaas ah
+  // aanu horeba u jirin (fiiri rawNotifications), mid cusub ayaan abuuraa.
+  // Hubinta "horeba ma jiraa" waa lama huraan si aan mar walba dib loogu
+  // celin "aan la akhrin" ogeysiin horeba la arkay.
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') return;
+    const month = currentMonthValue();
+    students
+      .filter((s) => getMonthlyFeeStatus(s, feePayments, month) === 'unpaid')
+      .forEach((s) => {
+        const notifId = `fee_${s.id}_${month}`;
+        if (rawNotifications.some((n) => n.id === notifId)) return;
+        createFeeNotification({
+          schoolCode: profile.schoolCode,
+          studentId: s.id,
+          studentName: s.fullName || '',
+          className: s.className || '',
+          month,
+        }).catch((err) => reportError('Khalad ayaa dhacay markii ogeysiiska lacagta la abuurayay:', err));
+      });
+  }, [students, feePayments, rawNotifications, profile?.schoolCode, profile?.accountType]);
 
   const notifications = useMemo(
     () =>

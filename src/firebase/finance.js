@@ -67,6 +67,26 @@ export async function createFamilyFeeRowDoc(schoolCode, data) {
 export function subscribeToFeePayments(schoolCode, onChange, onError) {
   return subscribeToCollection(FEE_PAYMENTS_COLLECTION, schoolCode, onChange, onError);
 }
+// Waxaa isticmaala ParentPortal — taariikhda bixinnada arday-gaarka ah ee
+// ilmaha la doortay (isla qaabka subscribeToStudentAttendanceHistory).
+export function subscribeToStudentFeePayments(schoolCode, studentId, onChange, onError) {
+  const q = query(
+    collection(db, FEE_PAYMENTS_COLLECTION),
+    where('schoolCode', '==', schoolCode),
+    where('feeType', '==', 'student'),
+    where('studentId', '==', studentId)
+  );
+  return onSnapshot(
+    q,
+    (snap) => {
+      const records = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      records.sort((a, b) => b.month.localeCompare(a.month));
+      onChange(records);
+    },
+    onError
+  );
+}
+
 export async function createFeePaymentDoc(data) {
   const docRef = await addDoc(collection(db, FEE_PAYMENTS_COLLECTION), { ...data, createdAt: new Date().toISOString() });
   return docRef.id;

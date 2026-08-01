@@ -2,12 +2,15 @@ import { useState, useMemo, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { getMonthlyFeeStatus } from '../../utils/studentFee';
+import { currentMonthValue } from '../../utils/somaliDate';
 import StudentProfileModal from './StudentProfileModal';
 import StudentFormModal from './StudentFormModal';
 import '../../styles/dashboard-shared.css';
 
 const STATUS_CLS = { active: 'badge-success', inactive: 'badge-neutral' };
-const FEE_CLS = { paid: 'badge-success', pending: 'badge-warning', overdue: 'badge-danger' };
+const FEE_CLS = { paid: 'badge-success', unpaid: 'badge-danger', free: 'badge-neutral' };
+const FEE_LABEL_KEY = { paid: 'finance.classDetail.stats.paid', unpaid: 'finance.classDetail.stats.unpaid', free: 'finance.classDetail.stats.free' };
 
 function initials(name) {
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
@@ -19,8 +22,9 @@ function Students() {
   const navigate = useNavigate();
   const {
     students, studentsLoading, addStudent, updateStudent, deleteStudent, cycleStudentAttendanceRecord, seedDemoStudents,
-    allStudentAttendanceRecords,
+    allStudentAttendanceRecords, feePayments,
   } = useSchoolData();
+  const currentMonth = currentMonthValue();
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('all');
   const [selectedStudentId, setSelectedStudentId] = useState(null);
@@ -135,7 +139,12 @@ function Students() {
                   <td>{s.className}</td>
                   <td>{s.gender}</td>
                   <td><span className={`badge ${STATUS_CLS[s.status]}`}>{t(`common.status.${s.status}`)}</span></td>
-                  <td><span className={`badge ${FEE_CLS[s.fee]}`}>{t(`common.status.${s.fee}`)}</span></td>
+                  <td>
+                    {(() => {
+                      const feeStatus = getMonthlyFeeStatus(s, feePayments, currentMonth);
+                      return <span className={`badge ${FEE_CLS[feeStatus]}`}>{t(FEE_LABEL_KEY[feeStatus])}</span>;
+                    })()}
+                  </td>
                   <td>
                     <div className="row-actions">
                       <button className="row-action-btn" title={t('common.actions.view')} onClick={() => setSelectedStudentId(s.id)}>

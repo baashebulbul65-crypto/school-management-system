@@ -31,7 +31,7 @@ import { subscribeToExamMarks, setExamMarkRecord } from '../firebase/examMarks';
 import { subscribeToQuranProgressByDate, setQuranProgressRecord } from '../firebase/quranProgress';
 import { subscribeToQuranTargets, createQuranTargetDoc, updateQuranTargetDoc } from '../firebase/quranTargets';
 import { subscribeToAllThreads, sendMessage as sendMessageDoc, markMessagesRead } from '../firebase/messages';
-import { createAbsentNotification, createFeeNotification } from '../firebase/notifications';
+import { createAbsentNotification } from '../firebase/notifications';
 import { todayISODate } from '../utils/somaliDate';
 import { studentFeeOwed } from '../utils/studentFee';
 
@@ -60,15 +60,12 @@ const DEMO_STUDENTS_SEED = [
     rollNumber: 12,
     subjects: ['Xisaab', 'Ingiriisi', 'Cilmiga Bulshada', 'Sayniska', 'Qur’aan'],
     status: 'active',
-    fee: 'paid',
+    feeType: 'fixed',
+    feeAmount: 120,
     examResults: [
       { subject: 'Xisaab', marks: 82, maxMarks: 100, grade: 'A' },
       { subject: 'Ingiriisi', marks: 74, maxMarks: 100, grade: 'B' },
       { subject: 'Sayniska', marks: 65, maxMarks: 100, grade: 'C' },
-    ],
-    fees: [
-      { term: 'Semester 1', amount: 120, date: '2026-01-10', status: 'paid' },
-      { term: 'Semester 2', amount: 120, date: '2026-06-10', status: 'paid' },
     ],
     behaviour: [
       { note: 'Ka qayb qaatay tartanka akhriska - meesha 1aad', date: '2026-05-02', type: 'positive' },
@@ -94,12 +91,12 @@ const DEMO_STUDENTS_SEED = [
     rollNumber: 5,
     subjects: ['Xisaab', 'Ingiriisi', 'Taariikh', 'Sayniska'],
     status: 'active',
-    fee: 'paid',
+    feeType: 'fixed',
+    feeAmount: 120,
     examResults: [
       { subject: 'Xisaab', marks: 91, maxMarks: 100, grade: 'A' },
       { subject: 'Ingiriisi', marks: 88, maxMarks: 100, grade: 'A' },
     ],
-    fees: [{ term: 'Semester 1', amount: 120, date: '2026-01-12', status: 'paid' }],
     behaviour: [],
     documents: [{ name: 'Shahaadada Dhalashada', type: 'PDF', uploadDate: '2026-01-06' }],
   },
@@ -119,9 +116,9 @@ const DEMO_STUDENTS_SEED = [
     rollNumber: 18,
     subjects: ['Xisaab', 'Ingiriisi', 'Cilmiga Bulshada'],
     status: 'active',
-    fee: 'pending',
+    feeType: 'fixed',
+    feeAmount: 120,
     examResults: [{ subject: 'Xisaab', marks: 48, maxMarks: 100, grade: 'F' }],
-    fees: [{ term: 'Semester 2', amount: 120, date: '2026-06-15', status: 'pending' }],
     behaviour: [
       { note: 'Fasalka ka daahay 3 jeer bishan', date: '2026-06-20', type: 'negative' },
     ],
@@ -143,9 +140,9 @@ const DEMO_STUDENTS_SEED = [
     rollNumber: 9,
     subjects: ['Xisaab', 'Ingiriisi', 'Sayniska', 'Taariikh'],
     status: 'inactive',
-    fee: 'overdue',
+    feeType: 'fixed',
+    feeAmount: 120,
     examResults: [{ subject: 'Ingiriisi', marks: 55, maxMarks: 100, grade: 'C' }],
-    fees: [{ term: 'Semester 2', amount: 120, date: '2026-06-01', status: 'overdue' }],
     behaviour: [],
     documents: [],
   },
@@ -165,12 +162,12 @@ const DEMO_STUDENTS_SEED = [
     rollNumber: 2,
     subjects: ['Xisaab', 'Ingiriisi', 'Fiisigis', 'Kiimikada'],
     status: 'active',
-    fee: 'paid',
+    feeType: 'fixed',
+    feeAmount: 150,
     examResults: [
       { subject: 'Fiisigis', marks: 77, maxMarks: 100, grade: 'B' },
       { subject: 'Kiimikada', marks: 85, maxMarks: 100, grade: 'A' },
     ],
-    fees: [{ term: 'Semester 2', amount: 150, date: '2026-06-08', status: 'paid' }],
     behaviour: [],
     documents: [{ name: 'Ratiga Fasalka Hore', type: 'PDF', uploadDate: '2026-02-01' }],
   },
@@ -190,9 +187,9 @@ const DEMO_STUDENTS_SEED = [
     rollNumber: 21,
     subjects: ['Xisaab', 'Ingiriisi', 'Taariikh'],
     status: 'active',
-    fee: 'pending',
+    feeType: 'fixed',
+    feeAmount: 120,
     examResults: [{ subject: 'Taariikh', marks: 69, maxMarks: 100, grade: 'C' }],
-    fees: [{ term: 'Semester 2', amount: 120, date: '2026-06-18', status: 'pending' }],
     behaviour: [],
     documents: [],
   },
@@ -876,32 +873,21 @@ export function SchoolDataProvider({ children }) {
     );
   }, [profile?.schoolCode, profile?.accountType]);
 
-  const notifyIfFeeOverdue = async (studentId, payload) => {
-    if (payload.fee !== 'overdue' || !profile?.schoolCode) return;
-    try {
-      await createFeeNotification({
-        schoolCode: profile.schoolCode,
-        studentId,
-        studentName: payload.fullName || '',
-        className: payload.className || '',
-      });
-    } catch (err) {
-      reportError('Khalad ayaa dhacay markii ogeysiiska lacagta la abuurayay:', err);
-    }
-  };
-
+  // Ogeysiiska lacagta bishii ("fee reminder") hadda si otomaatig ah ayaa loo
+  // sameeyaa NotificationsContext.jsx (kaas oo bishii-bishii u wareega ardayda
+  // "unpaid" ee dhabta ah ee feePayments) — ma aha mid gacan-gelin ah oo
+  // ku tiirsan field-kii hore ee "fee" (paid/pending/overdue), kaas oo hadda
+  // laga saaray StudentFormModal gebi ahaanba.
   const addStudent = async (payload) => {
     if (!profile?.schoolCode) return;
     try {
-      const newId = await createStudentDoc(profile.schoolCode, {
+      await createStudentDoc(profile.schoolCode, {
         ...payload,
         studentId: `STU-${1040 + allStudents.length + 1}`,
         examResults: [],
-        fees: [],
         behaviour: [],
         documents: [],
       });
-      await notifyIfFeeOverdue(newId, payload);
     } catch (err) {
       reportError('Khalad ayaa dhacay markii ardayga la darayay:', err);
     }
@@ -910,7 +896,6 @@ export function SchoolDataProvider({ children }) {
   const updateStudent = async (id, payload) => {
     try {
       await updateStudentDoc(id, payload);
-      await notifyIfFeeOverdue(id, payload);
     } catch (err) {
       reportError('Khalad ayaa dhacay markii ardayga wax laga beddelayay:', err);
     }

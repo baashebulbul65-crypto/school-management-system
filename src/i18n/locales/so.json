@@ -102,7 +102,7 @@
         "parentName": "Magaca Waalidka", "relation": "Xiriirka", "father": "Aabo", "mother": "Hooyo", "otherGuardian": "Mas'uul Kale",
         "parentPhone": "Telefoonka Waalidka", "parentEmail": "Email Waalidka",
         "className": "Fasalka *", "section": "Section", "rollNumber": "Roll Number", "subjects": "Maadooyinka (kala sooc comma ,)",
-        "regStatus": "Xaalada Diiwaanka", "feeStatus": "Xaalada Lacagta",
+        "regStatus": "Xaalada Diiwaanka",
         "feeAmount": "Lacagta Fasalka Bishii ($)",
         "feeType": "Nooca Fee-ga", "feeTypeFixed": "Qiimo Caadi Ah", "feeTypeFree": "Bilaash", "feeTypeDiscount": "Danyar/Dhimis",
         "discountPercent": "Qiimaha Dhimista (%)"
@@ -536,7 +536,7 @@
       "deadlineLabel": "Taariikhda Yoolka",
       "status": { "pending": "Sugaya", "reached": "Wuu Gaadhay", "missed": "Ma Gaadhin" }
     },
-    "fees": { "title": "Lacagaha", "empty": "Xog lacageed lama helin.", "table": { "term": "Xilliga", "amount": "Qadarka", "date": "Taariikhda", "status": "Xaaladda" } },
+    "fees": { "title": "Lacagaha", "historyTitle": "Taariikhda Bixinnada", "empty": "Wali lacag lama bixin.", "table": { "month": "Bisha", "amount": "Qadarka", "date": "Taariikhda", "status": "Xaaladda" } },
     "results": { "title": "Natiijooyinka", "empty": "Weli imtixaan looma qorin fasalkan.", "table": { "subject": "Maadada", "type": "Nooca", "marks": "Buundooyinka", "grade": "Darajada" }, "notEntered": "Lama gelin" },
     "messages": { "title": "Fariimaha", "empty": "Weli fariin lama dirin — dir fariintaada ugu horeysa macallinka ama maamulaha.", "composePlaceholder": "Qor fariintaada..." },
     "behaviour": { "title": "Anshaxa", "empty": "Wax faallo ah lama qorin." },

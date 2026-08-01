@@ -259,8 +259,13 @@ service cloud.firestore {
     // ===== feePayments ===== — diiwaan (ledger) bixin kasta, APPEND-ONLY:
     // marna lama badali karo, lamana tirtiri karo (sixitaanku waxaa lagu
     // sameeyaa diiwaan celceliya, ma aha in taariikhda la tafatiro).
+    // Waalidku wuxuu akhrin karaa KELIYA bixinnada ilmihiisa, oo KELIYA
+    // feeType=='student' (M.Qoys/Fasal safafkoodu ma lahan studentId dhab
+    // ah — sidaas darteed waxaa lagu xaddiday nooca doc-ga ka hor inta aan
+    // la eegin studentId, si aan looga fogaan khalad "field missing" ah).
     match /feePayments/{paymentId} {
-      allow read: if isStaffOf(resource.data.schoolCode);
+      allow read: if isStaffOf(resource.data.schoolCode)
+        || (resource.data.feeType == 'student' && isParentOfStudent(resource.data.schoolCode, resource.data.studentId));
       allow create: if isStaffOf(request.resource.data.schoolCode);
       allow update, delete: if false;
     }

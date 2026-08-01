@@ -25,3 +25,15 @@ export function studentFeeOwed(student) {
   }
   return base;
 }
+
+// Xaaladda ardayga ee BISHAAN — 'free' (Bilaash), 'paid' (La Bixiyay, waxaa
+// jira feePayment diiwan ah oo bishaas ah), 'unpaid' (Ma Bixin, ma jiro
+// feePayment bishaas ah weli). La wadaago Students.jsx, Overview.jsx,
+// NotificationsContext.jsx, iyo ParentPortal.jsx, si meel kastaa isla xisaab
+// isu isticmaasho — halkii mid kastaa uu gooni u dhisan lahaa xisaabtiisa.
+export function getMonthlyFeeStatus(student, feePayments, month) {
+  const feeType = getFeeType(student);
+  if (feeType === 'free') return 'free';
+  const isPaid = feePayments.some((p) => p.feeType === 'student' && p.studentId === student.id && p.month === month);
+  return isPaid ? 'paid' : 'unpaid';
+}

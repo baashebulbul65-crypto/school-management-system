@@ -6,6 +6,8 @@ import { useSettings } from '../../context/SettingsContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
+import { currentMonthValue } from '../../utils/somaliDate';
+import { getMonthlyFeeStatus } from '../../utils/studentFee';
 import StatCard from '../../components/dashboard/StatCard';
 import AbsentStudentsModal from '../../components/dashboard/AbsentStudentsModal';
 import AttendanceDonutChart from '../../components/dashboard/AttendanceDonutChart';
@@ -24,7 +26,7 @@ function Overview() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const { settings } = useSettings();
-  const { students, teachers, classes, subjects, exams, classFees, attendanceToday, feePayments } = useSchoolData();
+  const { students, teachers, classes, subjects, exams, attendanceToday, feePayments } = useSchoolData();
   const { notifications } = useNotifications();
   const [showAbsentModal, setShowAbsentModal] = useState(false);
 
@@ -64,14 +66,24 @@ function Overview() {
   const totalTeachers = teachers.length;
   const totalClasses = classes.length;
   const totalSubjects = subjects.length;
-  const feeDueStudents = students.filter((s) => s.fee !== 'paid').length;
 
-  const feesCollected = useMemo(() => {
-    const wadar = classFees.reduce((s, r) => s + r.total, 0);
-    const dhimis = classFees.reduce((s, r) => s + r.discount, 0);
-    const baaqi = classFees.reduce((s, r) => s + r.balance, 0);
-    return wadar - dhimis - baaqi;
-  }, [classFees]);
+  // Bishan — labadan waxay ka soo qaataan xisaabinta DHABTA AH ee feePayments
+  // (fiiri utils/studentFee.js), ma aha field-kii hore ee "fee" (paid/pending/
+  // overdue) ee la joojiyay, ama safafkii hore ee classFees ee aan hadda la
+  // sii cusboonaysiin (fiiri Finance.jsx).
+  const currentMonth = currentMonthValue();
+
+  const feeDueStudents = useMemo(
+    () => students.filter((s) => getMonthlyFeeStatus(s, feePayments, currentMonth) === 'unpaid').length,
+    [students, feePayments, currentMonth]
+  );
+
+  const feesCollected = useMemo(
+    () => feePayments
+      .filter((p) => p.feeType === 'student' && p.month === currentMonth)
+      .reduce((s, p) => s + (p.amount || 0), 0),
+    [feePayments, currentMonth]
+  );
 
   const attendanceCounts = useMemo(() => {
     const statusOf = (s) => attendanceToday.students[s.id] || 'present';

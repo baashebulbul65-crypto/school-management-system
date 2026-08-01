@@ -240,6 +240,18 @@
   padding: 32px;
 }
 
+.pp-fee-current-status{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pp-fee-amount{
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #0B1F2B;
+}
+
 /* Child switcher (multiple children) */
 .pp-child-switcher{
   display: flex;

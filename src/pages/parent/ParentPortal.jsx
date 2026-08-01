@@ -9,11 +9,13 @@ import { subscribeToStudentAttendanceHistory } from '../../firebase/attendance';
 import { subscribeToStudentQuranProgressHistory } from '../../firebase/quranProgress';
 import { subscribeToQuranTargetsForStudent } from '../../firebase/quranTargets';
 import { subscribeToStudentExamMarks } from '../../firebase/examMarks';
+import { subscribeToStudentFeePayments } from '../../firebase/finance';
 import { addChildToParent } from '../../firebase/auth';
 import { subscribeToThread, sendMessage, markMessagesRead } from '../../firebase/messages';
 import { subscribeToNotificationsForChildren, markNotificationsRead } from '../../firebase/notifications';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
-import { formatDMY } from '../../utils/somaliDate';
+import { formatDMY, currentMonthValue } from '../../utils/somaliDate';
+import { getMonthlyFeeStatus, studentFeeOwed } from '../../utils/studentFee';
 import '../../styles/dashboard-shared.css';
 import './ParentPortal.css';
 
@@ -86,6 +88,7 @@ function ParentPortal() {
   const [quranProgressHistory, setQuranProgressHistory] = useState([]);
   const [studentQuranTargets, setStudentQuranTargets] = useState([]);
   const [studentExamMarks, setStudentExamMarks] = useState([]);
+  const [feePaymentsHistory, setFeePaymentsHistory] = useState([]);
   const [threadMessages, setThreadMessages] = useState([]);
   const [messageDraft, setMessageDraft] = useState('');
   const messagesEndRef = useRef(null);
@@ -177,6 +180,23 @@ function ParentPortal() {
     return unsubscribe;
   }, [profile?.schoolCode, selectedChildId]);
 
+  // Taariikhda bixinnada lacagta ee ilmaha la doortay (feePayments dhab ah,
+  // halkii ay ka akhrin lahaayeen selectedChild.fees oo ah array hore oo
+  // marna aan la buuxin).
+  useEffect(() => {
+    if (!profile?.schoolCode || !selectedChildId) {
+      setFeePaymentsHistory([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToStudentFeePayments(
+      profile.schoolCode,
+      selectedChildId,
+      setFeePaymentsHistory,
+      (err) => reportError('Khalad ayaa dhacay markii taariikhda lacagta laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, selectedChildId]);
+
   // Fariimaha (Waalid <-> Shaqaale) ee ilmaha la doortay
   useEffect(() => {
     if (!profile?.schoolCode || !selectedChildId) {
@@ -264,6 +284,10 @@ function ParentPortal() {
   };
 
   const selectedChild = children.find((c) => c.id === selectedChildId) || null;
+
+  const currentMonth = currentMonthValue();
+  const feeStatus = selectedChild ? getMonthlyFeeStatus(selectedChild, feePaymentsHistory, currentMonth) : null;
+  const feeOwed = selectedChild ? studentFeeOwed(selectedChild) : 0;
 
   const latestQuranTarget = useMemo(() => {
     return studentQuranTargets.reduce((latest, qt) => (!latest || qt.createdAt > latest.createdAt ? qt : latest), null);
@@ -518,23 +542,26 @@ function ParentPortal() {
               {activeTab === 'fees' && (
                 <>
                   <h3 className="pp-card-title">{t('parentPortal.fees.title')}</h3>
-                  {(selectedChild.fees || []).length === 0 ? (
+                  <p className="pp-fee-current-status">
+                    <span className={`badge ${feeStatus === 'paid' ? 'badge-success' : feeStatus === 'free' ? 'badge-neutral' : 'badge-danger'}`}>
+                      {t(`finance.classDetail.stats.${feeStatus}`)}
+                    </span>
+                    {feeStatus !== 'free' && <span className="pp-fee-amount">${feeOwed.toFixed(2)}</span>}
+                  </p>
+
+                  <h3 className="pp-card-title" style={{ marginTop: 24 }}>{t('parentPortal.fees.historyTitle')}</h3>
+                  {feePaymentsHistory.length === 0 ? (
                     <p className="pp-empty-note">{t('parentPortal.fees.empty')}</p>
                   ) : (
                     <div className="data-table-wrap">
                       <table className="data-table">
-                        <thead><tr><th>{t('parentPortal.fees.table.term')}</th><th>{t('parentPortal.fees.table.amount')}</th><th>{t('parentPortal.fees.table.date')}</th><th>{t('parentPortal.fees.table.status')}</th></tr></thead>
+                        <thead><tr><th>{t('parentPortal.fees.table.month')}</th><th>{t('parentPortal.fees.table.amount')}</th><th>{t('parentPortal.fees.table.date')}</th></tr></thead>
                         <tbody>
-                          {selectedChild.fees.map((f, i) => (
-                            <tr key={i}>
-                              <td>{f.term}</td>
-                              <td>${f.amount}</td>
-                              <td className="cell-sub">{f.date}</td>
-                              <td>
-                                <span className={`badge ${f.status === 'paid' ? 'badge-success' : f.status === 'overdue' ? 'badge-danger' : 'badge-warning'}`}>
-                                  {t(`common.status.${f.status}`)}
-                                </span>
-                              </td>
+                          {feePaymentsHistory.map((p) => (
+                            <tr key={p.id}>
+                              <td>{p.month}</td>
+                              <td>${(p.amount || 0).toFixed(2)}</td>
+                              <td className="cell-sub">{p.date}</td>
                             </tr>
                           ))}
                         </tbody>

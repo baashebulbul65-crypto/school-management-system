@@ -58,11 +58,15 @@ export async function createAbsentNotification({ schoolCode, studentId, studentN
   });
 }
 
-// Hal ogeysiis oo firfircoon arday kasta — cusboonaysiin marka baaqiga
-// dib loo eego (setDoc waxay dib u dejinaysaa xaaladda la akhriyay).
-export async function createFeeNotification({ schoolCode, studentId, studentName, className }) {
-  await setDoc(doc(db, COLLECTION, `fee_${studentId}`), {
-    schoolCode, studentId, studentName, className,
+// Hal ogeysiis BIL-GAAR AH arday kasta (doc id: "fee_{studentId}_{month}") —
+// bishii cusub marka ay bilaabato waxaa si otomaatig ah u samaysma ogeysiis
+// cusub oo aan la akhrin, iyada oo aan la taaban ogeysiiskii bishii hore
+// (kaas oo u hadhaya taariikh/history). Waxaa loo yeeraa NotificationsContext
+// KELIYA haddii ogeysiin la mid ah aanu horeba u jirin (fiiri hubinta
+// rawNotifications), si aan mar walba dib loogu celin "aan la akhrin".
+export async function createFeeNotification({ schoolCode, studentId, studentName, className, month }) {
+  await setDoc(doc(db, COLLECTION, `fee_${studentId}_${month}`), {
+    schoolCode, studentId, studentName, className, month,
     type: 'fee',
     createdAt: new Date().toISOString(),
     readByStaff: false,

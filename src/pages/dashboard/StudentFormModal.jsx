@@ -18,7 +18,6 @@ const EMPTY_FORM = {
   section: 'A',
   rollNumber: '',
   subjects: '',
-  fee: 'pending',
   feeType: 'fixed',
   feeAmount: '',
   discountPercent: '',
@@ -52,7 +51,6 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
         section: student.section || 'A',
         rollNumber: student.rollNumber || '',
         subjects: (student.subjects || []).join(', '),
-        fee: student.fee || 'pending',
         feeType: getFeeType(student),
         feeAmount: student.feeAmount ?? '',
         discountPercent: student.discountPercent ?? '',
@@ -67,15 +65,6 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
 
   const update = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
-  // Arday "Bilaash" ah ma laha wax lacag ah oo la sugayo/dib u dhacay —
-  // sidaas darteed marka Nooca Fee-ga la beddelo "Bilaash", "Xaalada Lacagta"
-  // si toos ah waxay u noqonaysaa "La Bixiyay" (khaanaddu waa qarsoon tahay,
-  // ma aha mid la dooran karo — fiiri JSX-ka hoose).
-  const handleFeeTypeChange = (e) => {
-    const feeType = e.target.value;
-    setForm((f) => ({ ...f, feeType, fee: feeType === 'free' ? 'paid' : f.fee }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -88,7 +77,6 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
       ...form,
       subjects: subjectsArray,
       rollNumber: Number(form.rollNumber) || 0,
-      fee: form.feeType === 'free' ? 'paid' : form.fee,
       feeAmount: form.feeType === 'free' ? 0 : Number(form.feeAmount) || 0,
       discountPercent: form.feeType === 'discount' ? Number(form.discountPercent) || 0 : 0,
     };
@@ -207,19 +195,9 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
                   <option value="inactive">{t('common.status.inactive')}</option>
                 </select>
               </div>
-              {form.feeType !== 'free' && (
-                <div className="sfm-field">
-                  <label>{t('students.form.fields.feeStatus')}</label>
-                  <select value={form.fee} onChange={update('fee')}>
-                    <option value="paid">{t('common.status.paid')}</option>
-                    <option value="pending">{t('common.status.pending')}</option>
-                    <option value="overdue">{t('common.status.overdue')}</option>
-                  </select>
-                </div>
-              )}
               <div className="sfm-field">
                 <label>{t('students.form.fields.feeType')}</label>
-                <select value={form.feeType} onChange={handleFeeTypeChange}>
+                <select value={form.feeType} onChange={update('feeType')}>
                   <option value="fixed">{t('students.form.fields.feeTypeFixed')}</option>
                   <option value="free">{t('students.form.fields.feeTypeFree')}</option>
                   <option value="discount">{t('students.form.fields.feeTypeDiscount')}</option>
