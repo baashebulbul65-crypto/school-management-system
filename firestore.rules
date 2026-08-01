@@ -42,8 +42,15 @@ service cloud.firestore {
     // kale u ogolaaday 'owner' inuu maamulo (abuur/akhri/beddel/saar) shaqaalaha
     // kale ee isla dugsigiisa (bogga "Users") — fiiri firebase/staff.js.
     match /users/{userId} {
+      // MUHIIM (security fix, 2026-08-01): "self-create" waa in ay kaliya u
+      // ogolaataa 'student-parent' — haddii kale isticmaale kastaa (SDK-ga
+      // Firestore si toos ah, ma aha kaliya UI-ga app-ka) wuxuu qori karaa
+      // users/{naftiisa} isagoo dhigaya accountType:'staff', role:'owner',
+      // schoolCode: DUGSI KASTA — taasoo siin lahayd gelitaan owner-nimo oo
+      // BUUXA dugsi uusan lahayn (registerStaff() ma isticmaasho UI-gu hadda,
+      // marka self-create ee 'staff' looma baahna).
       allow create: if isSignedIn() && (
-        request.auth.uid == userId
+        (request.auth.uid == userId && request.resource.data.accountType == 'student-parent')
         || (me().accountType == 'staff' && me().role == 'owner'
             && me().schoolCode == request.resource.data.schoolCode
             && request.resource.data.accountType == 'staff')
@@ -53,8 +60,14 @@ service cloud.firestore {
         || (me().accountType == 'staff' && me().role == 'owner'
             && me().schoolCode == resource.data.schoolCode && resource.data.accountType == 'staff')
       );
+      // MUHIIM (security fix, 2026-08-01): "self-update" waa in ay kaliya u
+      // ogolaataa field-ka "childrenIds" (isla kii "Ku Dar Ilmo Kale" isticmaalo,
+      // fiiri firebase/auth.js: addChildToParent) — haddii kale isticmaale
+      // kastaa wuxuu isu beddeli lahaa role/accountType/schoolCode naftiisa
+      // (owner-nimo dugsi kasta) isaga oo aan la joogin xaqiijin kale.
       allow update: if isSignedIn() && (
-        request.auth.uid == userId
+        (request.auth.uid == userId
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['childrenIds']))
         || (me().accountType == 'staff' && me().role == 'owner'
             && me().schoolCode == resource.data.schoolCode && resource.data.accountType == 'staff'
             && request.resource.data.schoolCode == resource.data.schoolCode)
@@ -76,7 +89,12 @@ service cloud.firestore {
     // owner-only u yahay.
     match /schools/{schoolCode} {
       allow read: if isSignedIn() && me().schoolCode == resource.data.schoolCode;
-      allow create, update: if isStaffOf(request.resource.data.schoolCode) && me().role == 'owner';
+      // MUHIIM (security fix, 2026-08-01): waxaa lagu xaddiday doc ID-ga
+      // dhabta ah (path variable "schoolCode"), ma aha field-ka
+      // request.resource.data.schoolCode — hore waxaa suurtagal ahaa in
+      // owner dugsi A ah uu ku qoro/burburiyo doc-ka schools/{dugsi B} isaga
+      // oo isticmaalaya schoolCode-kiisa (A) gudaha payload-ka.
+      allow create, update: if isStaffOf(schoolCode) && me().role == 'owner';
       allow delete: if false;
     }
 
@@ -120,19 +138,26 @@ service cloud.firestore {
 
     // ===== classes ===== — shaqaale kastaa wuu maamuli karaa (bogga
     // "Fasallada" uma xayirna owner kaliya).
+    // MUHIIM (bug fix, 2026-08-01): "create" waxaa loo isticmaali jiray
+    // resource.data (kaas oo aan jirin marka doc-ku CUSUB yahay — Firestore
+    // Rules "resource" waa null marka la abuurayo) — taasi waxay keenaysay in
+    // "create" mar walba la XANNIBO si khalad ah, xitaa shaqaale sax ah.
     match /classes/{classDocId} {
-      allow read, create, update, delete: if isStaffOf(resource.data.schoolCode);
+      allow read, update, delete: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
     }
 
     // ===== subjects ===== — la mid ah classes (shaqaale kastaa wuu maamuli karaa).
     match /subjects/{subjectId} {
-      allow read, create, update, delete: if isStaffOf(resource.data.schoolCode);
+      allow read, update, delete: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
     }
 
     // ===== exams ===== (qeexidda imtixaanka — fiiri examMarks ee buundada
     // ardaygu ku qaatay) — shaqaale kastaa wuu maamuli karaa.
     match /exams/{examId} {
-      allow read, create, update, delete: if isStaffOf(resource.data.schoolCode);
+      allow read, update, delete: if isStaffOf(resource.data.schoolCode);
+      allow create: if isStaffOf(request.resource.data.schoolCode);
     }
 
     // ===== attendanceRecords ===== (doc id: "{date}_{studentId}")
