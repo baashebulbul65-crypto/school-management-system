@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { useNotifications } from '../../context/NotificationsContext';
+import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import StatCard from '../../components/dashboard/StatCard';
 import AbsentStudentsModal from '../../components/dashboard/AbsentStudentsModal';
 import AttendanceDonutChart from '../../components/dashboard/AttendanceDonutChart';
 import '../../styles/dashboard-shared.css';
 import './Overview.css';
-
-const ACTIVITY_TYPES = ['success', 'success', 'neutral', 'warning', 'neutral'];
 
 function getGreetingKey() {
   const hour = new Date().getHours();
@@ -24,14 +24,34 @@ function Overview() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const { settings } = useSettings();
-  const { students, teachers, classes, subjects, exams, classFees, attendanceToday } = useSchoolData();
+  const { students, teachers, classes, subjects, exams, classFees, attendanceToday, feePayments } = useSchoolData();
+  const { notifications } = useNotifications();
   const [showAbsentModal, setShowAbsentModal] = useState(false);
 
-  const recentActivity = t('overview.recentActivity.items', { returnObjects: true }).map((item, i) => ({
-    ...item,
-    id: i,
-    type: ACTIVITY_TYPES[i] || 'neutral',
-  }));
+  // Waxaa isku darsanaya dhacdooyinka dhabta ah ee ugu dambeeyay: lacagaha la
+  // ururiyay (feePayments) + ogeysiisyada (maqnaanshaha/lacagta baaqiga ah),
+  // labaduba waxay leeyihiin taariikh (createdAt) dhab ah — ma aha xog beebeen ah.
+  const recentActivity = useMemo(() => {
+    const paymentEvents = feePayments
+      .filter((p) => p.createdAt)
+      .map((p) => ({
+        id: `payment_${p.id}`,
+        type: 'success',
+        text: `Lacag $${(p.amount || 0).toLocaleString()} ayaa la ururiyay${p.collectedByName ? ` — ${p.collectedByName}` : ''}`,
+        time: p.createdAt,
+      }));
+    const notifEvents = notifications
+      .filter((n) => n.time)
+      .map((n) => ({
+        id: `notif_${n.id}`,
+        type: n.type === 'fee' ? 'warning' : 'neutral',
+        text: `${n.title} — ${n.description}`,
+        time: n.time,
+      }));
+    return [...paymentEvents, ...notifEvents]
+      .sort((a, b) => b.time.localeCompare(a.time))
+      .slice(0, 5);
+  }, [feePayments, notifications]);
 
   const dayNames = t('common.dayNames', { returnObjects: true });
   const monthNames = t('common.monthNames', { returnObjects: true });
@@ -195,12 +215,15 @@ function Overview() {
           </div>
 
           <div className="activity-list">
+            {recentActivity.length === 0 && (
+              <p style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>Weli dhaqdhaqaaq lama diiwaan gelin.</p>
+            )}
             {recentActivity.map((a) => (
               <div className="activity-row" key={a.id}>
                 <span className={`activity-dot ${a.type}`}></span>
                 <div className="activity-text">
                   <div>{a.text}</div>
-                  <div className="activity-time">{a.time}</div>
+                  <div className="activity-time">{formatRelativeTime(a.time)}</div>
                 </div>
               </div>
             ))}
