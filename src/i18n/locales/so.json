@@ -190,7 +190,8 @@
       "placeholders": {
         "grade": "Tusaale: Form 1", "room": "Tusaale: Qolka 101", "capacity": "Tusaale: 45",
         "classTeacher": "Tusaale: Cali Xasan Warsame", "subjects": "Xisaab, Ingiriisi, Sayniska",
-        "selectTeacher": "Dooro Macallin", "noTeachers": "Wali macallin lama abuurin — marka hore ku dar bogga Macallimiinta"
+        "selectTeacher": "Dooro Macallin", "noTeachers": "Wali macallin lama abuurin — marka hore ku dar bogga Macallimiinta",
+        "noSubjects": "Wali maadooyin lama abuurin — marka hore ku dar bogga Maadooyinka"
       },
       "submitAdd": "Abuur Fasalka"
     }

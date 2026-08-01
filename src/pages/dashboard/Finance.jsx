@@ -57,14 +57,17 @@ function Finance() {
   // liiska hore wuxuu eegayay STUDENTS OO DHAN, isaga oo aan xaqiijin in
   // className-kooda uu ku beegan yahay fasal dhab ah).
   const validClassNames = useMemo(() => new Set(classes.map((c) => classroomName(c))), [classes]);
+  // classId (xiriir dhab ah) waa la doortaa marka jira, si aan loo lumin
+  // ardayda marka fasal la beddelo (rename) — className waxaa loo isticmaalaa
+  // fallback kaliya ardayda aan weli la dib-u-kaydin dropdown-ka cusub.
   const realClassStudents = useMemo(
-    () => students.filter((s) => validClassNames.has(s.className)),
-    [students, validClassNames]
+    () => students.filter((s) => (s.classId ? classes.some((c) => c.id === s.classId) : validClassNames.has(s.className))),
+    [students, classes, validClassNames]
   );
 
   const financeClassRows = useMemo(() => classes.map((cls) => {
     const name = classroomName(cls);
-    const classStudents = realClassStudents.filter((s) => s.className === name);
+    const classStudents = realClassStudents.filter((s) => (s.classId ? s.classId === cls.id : s.className === name));
     let paidCount = 0, paidTotal = 0, unpaidCount = 0, unpaidTotal = 0, freeCount = 0;
     classStudents.forEach((s) => {
       const feeType = getFeeType(s);

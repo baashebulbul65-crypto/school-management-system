@@ -9,7 +9,7 @@ import './Classes.css';
 function Classes() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { classes, teachers, addClass, updateClass, removeClass } = useSchoolData();
+  const { classes, teachers, students, subjects, addClass, updateClass, removeClass } = useSchoolData();
   const [search, setSearch] = useState('');
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
@@ -70,7 +70,12 @@ function Classes() {
 
       <div className="classes-grid">
         {filtered.map((c) => {
-          const percent = Math.round((c.students / c.capacity) * 100);
+          // Tirada ardayda waa in la xisaabiyaa (derived) xogta DHABTA AH ee
+          // "students" — ma aha counter kaydsan (c.students), kaas oo mar
+          // walba ahaan lahaa 0 (weligiis lama cusboonaysiin, fiiri
+          // SchoolDataContext.jsx: addClass).
+          const studentCount = students.filter((s) => (s.classId ? s.classId === c.id : s.className === `${c.grade}${c.section}`)).length;
+          const percent = Math.round((studentCount / c.capacity) * 100);
           return (
             <div className="class-card" key={c.id}>
               <div className="class-card-top">
@@ -93,20 +98,30 @@ function Classes() {
                 {teachers.find((t) => t.id === c.classTeacherId)?.fullName || c.classTeacher || '—'}
               </p>
 
-              <div className="class-subjects">
-                {c.subjects.slice(0, 3).map((s) => (
-                  <span key={s} className="class-subject-tag">{s}</span>
-                ))}
-                {c.subjects.length > 3 && (
-                  <span className="class-subject-tag more">+{c.subjects.length - 3}</span>
-                )}
-              </div>
+              {(() => {
+                // subjectIds (xiriir dhab ah) haddii jiro, haddii kalese
+                // fallback-ka qoraalka hore (cls.subjects) ilaa fasalku dib
+                // loo kaydiyo dropdown-ka cusub.
+                const subjectNames = c.subjectIds
+                  ? c.subjectIds.map((id) => subjects.find((sub) => sub.id === id)?.name).filter(Boolean)
+                  : (c.subjects || []);
+                return (
+                  <div className="class-subjects">
+                    {subjectNames.slice(0, 3).map((s) => (
+                      <span key={s} className="class-subject-tag">{s}</span>
+                    ))}
+                    {subjectNames.length > 3 && (
+                      <span className="class-subject-tag more">+{subjectNames.length - 3}</span>
+                    )}
+                  </div>
+                );
+              })()}
 
               <div className="class-progress">
                 <div className="class-progress-bar">
                   <div className="class-progress-fill" style={{ width: `${percent}%` }}></div>
                 </div>
-                <span>{c.students}/{c.capacity}</span>
+                <span>{studentCount}/{c.capacity}</span>
               </div>
 
               <button className="btn-secondary class-open-btn" onClick={() => navigate(`/dashboard/classes/${c.id}`)}>
@@ -127,6 +142,7 @@ function Classes() {
         onSave={handleSaveClass}
         cls={editingClass}
         teachers={teachers}
+        subjects={subjects}
       />
     </div>
   );

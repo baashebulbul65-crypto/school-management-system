@@ -8,10 +8,10 @@ const EMPTY_FORM = {
   room: '',
   capacity: '',
   classTeacherId: '',
-  subjects: '',
+  subjectIds: [],
 };
 
-function ClassFormModal({ isOpen, onClose, onSave, cls, teachers = [] }) {
+function ClassFormModal({ isOpen, onClose, onSave, cls, teachers = [], subjects = [] }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
@@ -25,7 +25,7 @@ function ClassFormModal({ isOpen, onClose, onSave, cls, teachers = [] }) {
         room: cls.room || '',
         capacity: cls.capacity || '',
         classTeacherId: cls.classTeacherId || '',
-        subjects: (cls.subjects || []).join(', '),
+        subjectIds: cls.subjectIds || [],
       });
     } else {
       setForm(EMPTY_FORM);
@@ -37,6 +37,11 @@ function ClassFormModal({ isOpen, onClose, onSave, cls, teachers = [] }) {
 
   const update = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
+  const handleSubjectsChange = (e) => {
+    const selected = Array.from(e.target.selectedOptions, (o) => o.value);
+    setForm((f) => ({ ...f, subjectIds: selected }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -45,15 +50,13 @@ function ClassFormModal({ isOpen, onClose, onSave, cls, teachers = [] }) {
       return;
     }
 
-    const subjectsArray = form.subjects.split(',').map((s) => s.trim()).filter(Boolean);
-
     const payload = {
       grade: form.grade,
       section: form.section,
       room: form.room,
       capacity: Number(form.capacity) || 0,
       classTeacherId: form.classTeacherId,
-      subjects: subjectsArray,
+      subjectIds: form.subjectIds,
     };
 
     onSave(payload, cls?.id);
@@ -113,7 +116,20 @@ function ClassFormModal({ isOpen, onClose, onSave, cls, teachers = [] }) {
               </div>
               <div className="cfm-field full">
                 <label>{t('classes.form.fields.subjects')}</label>
-                <input type="text" value={form.subjects} onChange={update('subjects')} placeholder={t('classes.form.placeholders.subjects')} />
+                <select
+                  multiple
+                  value={form.subjectIds}
+                  onChange={handleSubjectsChange}
+                  size={Math.min(6, Math.max(3, subjects.length))}
+                  disabled={subjects.length === 0}
+                >
+                  {subjects.length === 0 && (
+                    <option value="" disabled>{t('classes.form.placeholders.noSubjects')}</option>
+                  )}
+                  {subjects.map((sub) => (
+                    <option key={sub.id} value={sub.id}>{sub.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
 

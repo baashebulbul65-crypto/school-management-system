@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useClassOptions } from '../../hooks/useClassOptions';
+import { useClassOptions, classroomName } from '../../hooks/useClassOptions';
+import { useSchoolData } from '../../context/SchoolDataContext';
 import { getFeeType } from '../../utils/studentFee';
 import './StudentFormModal.css';
 
@@ -14,7 +15,7 @@ const EMPTY_FORM = {
   parentPhone: '',
   parentEmail: '',
   address: '',
-  className: '',
+  classId: '',
   section: 'A',
   rollNumber: '',
   subjects: '',
@@ -31,9 +32,10 @@ function initials(name) {
 
 function StudentFormModal({ isOpen, onClose, onSave, student }) {
   const { t } = useTranslation();
+  const { classes } = useSchoolData();
   const [form, setForm] = useState(EMPTY_FORM);
   const isEditing = !!student;
-  const classOptions = useClassOptions(form.className);
+  const classOptions = useClassOptions(form.classId, { byId: true });
 
   useEffect(() => {
     if (student) {
@@ -47,7 +49,7 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
         parentPhone: student.parentPhone || '',
         parentEmail: student.parentEmail || '',
         address: student.address || '',
-        className: student.className || '',
+        classId: student.classId || '',
         section: student.section || 'A',
         rollNumber: student.rollNumber || '',
         subjects: (student.subjects || []).join(', '),
@@ -73,8 +75,16 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
       .map((s) => s.trim())
       .filter(Boolean);
 
+    // "className" waxaa laga soo saaraa fasalka la doortay (classId) — waxaa
+    // loo baahan yahay in ay sii jirto (denormalized) collections-ka kale ee
+    // isticmaala (attendanceRecords/exams/quranProgress/quranTargets/
+    // messages/notifications), si aan loo baahnayn in kuwaas la wada beddelo.
+    // Fiiri SchoolDataContext.jsx: updateClass waxay si otomaatig ah u
+    // cusboonaysiisaa qiimahan marka fasalku magaciisa beddelo (rename).
+    const selectedClass = classes.find((c) => c.id === form.classId);
     const payload = {
       ...form,
+      className: selectedClass ? classroomName(selectedClass) : '',
       subjects: subjectsArray,
       rollNumber: Number(form.rollNumber) || 0,
       feeAmount: form.feeType === 'free' ? 0 : Number(form.feeAmount) || 0,
@@ -159,7 +169,7 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
             <div className="sfm-grid">
               <div className="sfm-field">
                 <label>{t('students.form.fields.className')}</label>
-                <select value={form.className} onChange={update('className')} required disabled={classOptions.length === 0}>
+                <select value={form.classId} onChange={update('classId')} required disabled={classOptions.length === 0}>
                   <option value="" disabled>
                     {classOptions.length === 0 ? t('students.form.placeholders.noClasses') : t('students.form.placeholders.selectClass')}
                   </option>

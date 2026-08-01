@@ -15,13 +15,25 @@ export function classroomName(cls) {
 // haddii qiimaha/qiyamka hadda la doortay aanay ku jirin liiska fasallada
 // firfircoon (fasal la tirtiray), waxaa lagu darayaa sida ikhtiyaar dheeraad
 // ah si aan xogta la lumin.
-export function useClassOptions(currentValue) {
+//
+// byId: haddii `true` la dhigo, `value`-ga ikhtiyaar kastaa wuxuu noqonayaa
+// `cls.id` DHAB AH (xiriirka classId, fiiri StudentFormModal.jsx) halkii uu
+// ahaan lahaa qoraalka classroomName. TeacherFormModal.jsx (assignedClasses)
+// wuu sii isticmaali doonaa qaabkii hore (magac), sidaas darteed default-ku
+// waa `false` si aanu wax uga jabin halkaas.
+export function useClassOptions(currentValue, { byId = false } = {}) {
   const { classes } = useSchoolData();
-  const options = classes.map((c) => ({ value: classroomName(c), label: `${c.grade} - ${c.section}` }));
+  const options = classes.map((c) => ({
+    value: byId ? c.id : classroomName(c),
+    label: `${c.grade} - ${c.section}`,
+  }));
 
   const currentValues = Array.isArray(currentValue) ? currentValue : [currentValue];
   currentValues.filter(Boolean).forEach((v) => {
-    if (!options.some((o) => o.value === v)) options.unshift({ value: v, label: v });
+    if (!options.some((o) => o.value === v)) {
+      const orphanCls = byId ? classes.find((c) => c.id === v) : null;
+      options.unshift({ value: v, label: orphanCls ? classroomName(orphanCls) : v });
+    }
   });
 
   return options;

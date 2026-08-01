@@ -50,9 +50,12 @@ function ClassWorkspace() {
   const cls = classes.find((c) => String(c.id) === classId);
   const classroomName = cls ? `${cls.grade}${cls.section}` : '';
 
+  // classId (xiriir dhab ah) waa la doortaa marka jira, laakiin waxaa la
+  // sii ilaaliyaa fallback-ka className (ardayda aan weli la dib-u-kaydin
+  // dropdown-ka cusub, fiiri backfill-ka SchoolDataContext.jsx).
   const classStudents = useMemo(
-    () => students.filter((s) => s.className === classroomName),
-    [students, classroomName]
+    () => students.filter((s) => (cls ? s.classId === cls.id : false) || (!s.classId && s.className === classroomName)),
+    [students, classroomName, cls]
   );
 
   const classExams = useMemo(

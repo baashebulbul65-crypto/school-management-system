@@ -873,6 +873,29 @@ export function SchoolDataProvider({ children }) {
     );
   }, [profile?.schoolCode, profile?.accountType]);
 
+  // Hal mar per school — u buuxisa "classId" ardayda hore u haystay
+  // "className" kaliya (ka hor intaan xiriirka classId-ka dhabta ah la
+  // darin). Waxay isbarbardhigtaa className-ka ardayga iyo grade+section
+  // fasallada dhabta ah — khatar-yartahay maadaama className-kii hore laga
+  // soo doortay dropdown dhab ah (ma ahayn qoraal laba meelood oo gooni ah).
+  const classIdBackfillRef = useRef(null);
+  useEffect(() => {
+    if (!profile?.schoolCode || profile.accountType !== 'staff') return;
+    if (classIdBackfillRef.current === profile.schoolCode) return;
+    if (classes.length === 0 || allStudents.length === 0) return;
+    classIdBackfillRef.current = profile.schoolCode;
+    allStudents
+      .filter((s) => !s.classId && s.className)
+      .forEach((s) => {
+        const match = classes.find((c) => `${c.grade}${c.section}` === s.className);
+        if (match) {
+          updateStudentDoc(s.id, { classId: match.id }).catch((err) =>
+            reportError('Khalad ayaa dhacay markii classId-ga ardayga la buuxinayay:', err)
+          );
+        }
+      });
+  }, [profile?.schoolCode, profile?.accountType, classes, allStudents]);
+
   // Ogeysiiska lacagta bishii ("fee reminder") hadda si otomaatig ah ayaa loo
   // sameeyaa NotificationsContext.jsx (kaas oo bishii-bishii u wareega ardayda
   // "unpaid" ee dhabta ah ee feePayments) — ma aha mid gacan-gelin ah oo
@@ -996,22 +1019,44 @@ export function SchoolDataProvider({ children }) {
   };
 
   // ===== FASALLADA =====
+  // "students" (tirada ardayda) mar dambe lama kaydiyo doc-ka fasalka — waxaa
+  // laga soo xisaabiyaa (derived) collection-ka "students" ee dhabta ah
+  // marka la muujinayo (fiiri Classes.jsx), si aan loo helin counter joogto
+  // ah oo aan la cusboonaysiin (fiiri classId ee hoose).
   const addClass = async (payload) => {
     if (!profile?.schoolCode) return;
     try {
-      await createClassDoc(profile.schoolCode, { ...payload, students: 0 });
+      await createClassDoc(profile.schoolCode, payload);
     } catch (err) {
       reportError('Khalad ayaa dhacay markii fasalka la darayay:', err);
     }
   };
+
+  // Marka fasal magaciisu beddelmo (grade/section), ardayda isticmaala
+  // classId-kan waa in "className" (denormalized, fiiri students.js) si
+  // otomaatig ah loo cusboonaysiiyaa — haddii kale ardaydaasi way ka baxsan
+  // lahaayeen (invisible) ClassWorkspace/Finance/Xaadiris iyo intii kale,
+  // maadaama kuwaas ay weli isticmaalaan "className" qoraalka ah.
   const updateClass = async (id, payload) => {
     try {
       await updateClassDoc(id, payload);
+      const newClassroomName = `${payload.grade}${payload.section}`;
+      const affectedStudents = students.filter((s) => s.classId === id && s.className !== newClassroomName);
+      await Promise.all(affectedStudents.map((s) => updateStudentDoc(s.id, { className: newClassroomName })));
     } catch (err) {
       reportError('Khalad ayaa dhacay markii fasalka wax laga beddelayay:', err);
     }
   };
+
+  // Xannibaad: fasal aan la tirtiri karin haddii arday weli ku jiraan
+  // (classId match) — si aan loo yeelin arday "orphaned" ah oo ku xiran
+  // fasal aan hadda jirin.
   const removeClass = async (id) => {
+    const hasStudents = students.some((s) => s.classId === id);
+    if (hasStudents) {
+      reportError('Fasalkan waa in aad marka hore ka wareejisaa ardayda ka hor intaad tirtirin.', new Error('CLASS_HAS_STUDENTS'));
+      return;
+    }
     try {
       await deleteClassDoc(id);
     } catch (err) {
