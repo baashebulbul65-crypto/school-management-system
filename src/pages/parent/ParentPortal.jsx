@@ -298,6 +298,14 @@ function ParentPortal() {
     markNotificationsRead([n.id], 'parent').catch((err) =>
       reportError('Khalad ayaa dhacay markii ogeysiiska la calaamadinayay in la akhriyay:', err)
     );
+  };
+
+  const handleMarkAllNotifsRead = () => {
+    const unreadIds = notifications.filter((n) => !n.readByParent).map((n) => n.id);
+    if (unreadIds.length === 0) return;
+    markNotificationsRead(unreadIds, 'parent').catch((err) =>
+      reportError('Khalad ayaa dhacay markii dhammaan ogeysiisyada la calaamadinayay:', err)
+    );
     setShowNotifPanel(false);
     if (n.studentId !== selectedChildId) setSelectedChildId(n.studentId);
     setActiveTab(n.type === 'fee' ? 'fees' : 'attendance');
@@ -384,6 +392,12 @@ function ParentPortal() {
               <div className="pp-notif-panel">
                 <div className="pp-notif-panel-head">
                   <h3>{t('parentPortal.notifications.title')}</h3>
+                  {unreadNotifCount > 0 && (
+                    <button className="pp-notif-mark-all" onClick={handleMarkAllNotifsRead}>
+                      <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                      {t('parentPortal.notifications.markAllRead')} ({unreadNotifCount})
+                    </button>
+                  )}
                 </div>
                 <div className="pp-notif-list">
                   {notifications.length === 0 && (

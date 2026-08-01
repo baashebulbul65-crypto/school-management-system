@@ -86,8 +86,27 @@
 .pp-notif-panel-head{
   padding: 14px 16px;
   border-bottom: 1px solid #EDF1F4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 .pp-notif-panel-head h3{ font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 14px; color: #0B1F2B; }
+
+.pp-notif-mark-all{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2F80ED;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pp-notif-mark-all svg{ width: 14px; height: 14px; }
 
 .pp-notif-list{ max-height: 340px; overflow-y: auto; }
 .pp-notif-empty{ padding: 26px 16px; text-align: center; font-size: 13px; color: #94A3B8; }
