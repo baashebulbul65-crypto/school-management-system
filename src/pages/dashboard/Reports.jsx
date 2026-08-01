@@ -143,8 +143,23 @@ function Reports() {
     });
 
     autoTable(doc, {
+      head: [['Fasalka', 'Celceliska Imtixaanada (%)']],
+      body: examPerformanceByClass.map((c) => [c.className, c.avgPercent]),
+    });
+
+    autoTable(doc, {
+      head: [['Toddobaadka', 'Heerka Imaanshaha (%)']],
+      body: attendanceTrend.map((w) => [w.week, w.rate]),
+    });
+
+    autoTable(doc, {
       head: [['Ardayga', 'Fasalka', 'GPA']],
       body: topStudents.map((s) => [s.name, s.className, s.gpa.toFixed(2)]),
+    });
+
+    autoTable(doc, {
+      head: [['Macallinka', 'Heerka Imaanshaha (%)']],
+      body: teacherAttendanceSummary.map((t) => [t.name, t.rate]),
     });
 
     doc.save('kayd-warbixinta-guud.pdf');
