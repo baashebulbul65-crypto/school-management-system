@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import UserFormModal from './UserFormModal';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { subscribeToStaff, createStaffAccount, updateStaffDoc, setStaffStatus, removeStaffDoc } from '../../firebase/staff';
 import '../../styles/dashboard-shared.css';
 import './Users.css';
@@ -39,7 +40,13 @@ function initials(name) {
 
 function Users() {
   const { profile } = useAuth();
+  const { showError } = useToast();
   const [users, setUsers] = useState([]);
+
+  const reportError = (message, err) => {
+    console.error(message, err);
+    showError(message);
+  };
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [showFormModal, setShowFormModal] = useState(false);
@@ -53,7 +60,7 @@ function Users() {
     const unsubscribe = subscribeToStaff(
       profile.schoolCode,
       setUsers,
-      (err) => console.error('Khalad ayaa dhacay markii shaqaalaha laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii shaqaalaha laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
@@ -97,7 +104,7 @@ function Users() {
     try {
       await setStaffStatus(user.id, user.status === 'active' ? 'suspended' : 'active');
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii xaaladda shaqaalaha la beddelayay:', err);
+      reportError('Khalad ayaa dhacay markii xaaladda shaqaalaha la beddelayay:', err);
     }
   };
 
@@ -107,7 +114,7 @@ function Users() {
       try {
         await removeStaffDoc(userId);
       } catch (err) {
-        console.error('Khalad ayaa dhacay markii shaqaalaha la saarayay:', err);
+        reportError('Khalad ayaa dhacay markii shaqaalaha la saarayay:', err);
       }
     }
   };

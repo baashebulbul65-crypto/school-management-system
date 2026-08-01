@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
+import { useToast } from './ToastContext';
 import { subscribeToSchool, upsertSchoolSettings, updateSchoolLogo } from '../firebase/schools';
 import { validateLogoFile, fileToBase64 } from '../utils/logoImage';
 import i18n, { applyDirection } from '../i18n';
@@ -45,9 +46,15 @@ function readStoredLanguage() {
 
 export function SettingsProvider({ children }) {
   const { profile } = useAuth();
+  const { showError } = useToast();
   const [settings, setSettings] = useState(() => ({ ...DEFAULT_SETTINGS, language: readStoredLanguage() }));
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoError, setLogoError] = useState(null);
+
+  const reportError = (message, err) => {
+    console.error(message, err);
+    showError(message);
+  };
 
   // ===== Xogta dugsiga (Firestore doc "schools/{schoolCode}") — magaca,
   // fees-by-grade, sanadka waxbarasho, notification prefs, iyo logo-ga.
@@ -75,7 +82,7 @@ export function SettingsProvider({ children }) {
           notificationPrefs: school.notificationPrefs ?? prev.notificationPrefs,
         }));
       },
-      (err) => console.error('Khalad ayaa dhacay markii settings-ka dugsiga laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii settings-ka dugsiga laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode]);
@@ -85,7 +92,7 @@ export function SettingsProvider({ children }) {
     try {
       await upsertSchoolSettings(profile.schoolCode, fields);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii settings-ka dugsiga la kaydinayay:', err);
+      reportError('Khalad ayaa dhacay markii settings-ka dugsiga la kaydinayay:', err);
     }
   };
 

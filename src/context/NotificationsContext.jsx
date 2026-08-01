@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
+import { useToast } from './ToastContext';
 import { subscribeToAllNotifications, markNotificationsRead, deleteNotificationDoc } from '../firebase/notifications';
 
 const NotificationsContext = createContext(null);
@@ -11,7 +12,13 @@ const MESSAGE_KEYS = { fee: 'notifications.feeMessage', absent: 'notifications.a
 export function NotificationsProvider({ children }) {
   const { t } = useTranslation();
   const { profile } = useAuth();
+  const { showError } = useToast();
   const [rawNotifications, setRawNotifications] = useState([]);
+
+  const reportError = (message, err) => {
+    console.error(message, err);
+    showError(message);
+  };
 
   useEffect(() => {
     if (!profile?.schoolCode || profile?.accountType !== 'staff') {
@@ -21,7 +28,7 @@ export function NotificationsProvider({ children }) {
     const unsubscribe = subscribeToAllNotifications(
       profile.schoolCode,
       setRawNotifications,
-      (err) => console.error('Khalad ayaa dhacay markii ogeysiisyada laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii ogeysiisyada laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType]);
@@ -48,7 +55,7 @@ export function NotificationsProvider({ children }) {
     try {
       await markNotificationsRead([id], 'staff');
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii ogeysiiska la calaamadinayay in la akhriyay:', err);
+      reportError('Khalad ayaa dhacay markii ogeysiiska la calaamadinayay in la akhriyay:', err);
     }
   };
 
@@ -58,7 +65,7 @@ export function NotificationsProvider({ children }) {
     try {
       await markNotificationsRead(unreadIds, 'staff');
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii ogeysiisyada la calaamadinayay in la akhriyay:', err);
+      reportError('Khalad ayaa dhacay markii ogeysiisyada la calaamadinayay in la akhriyay:', err);
     }
   };
 
@@ -66,7 +73,7 @@ export function NotificationsProvider({ children }) {
     try {
       await deleteNotificationDoc(id);
     } catch (err) {
-      console.error('Khalad ayaa dhacay markii ogeysiiska la tirtirayay:', err);
+      reportError('Khalad ayaa dhacay markii ogeysiiska la tirtirayay:', err);
     }
   };
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { useToast } from '../../context/ToastContext';
 import { getStudentsByIds } from '../../firebase/students';
 import { subscribeToStudentAttendanceHistory } from '../../firebase/attendance';
 import { subscribeToStudentQuranProgressHistory } from '../../firebase/quranProgress';
@@ -59,7 +60,13 @@ function ParentPortal() {
   const [activeTab, setActiveTab] = useState('attendance');
   const { profile, logout } = useAuth();
   const { exams } = useSchoolData();
+  const { showError } = useToast();
   const navigate = useNavigate();
+
+  const reportError = (message, err) => {
+    console.error(message, err);
+    showError(message);
+  };
 
   const TABS = [
     { id: 'attendance', label: t('parentPortal.tabs.attendance') },
@@ -105,7 +112,7 @@ function ParentPortal() {
         setSelectedChildId((prev) => (prev && list.some((c) => c.id === prev) ? prev : list[0]?.id));
       })
       .catch((err) => {
-        console.error('Khalad ayaa dhacay markii ilmaha laga soo akhriyay:', err);
+        reportError('Khalad ayaa dhacay markii ilmaha laga soo akhriyay:', err);
         setChildrenLoading(false);
       });
   }, [childrenIds]);
@@ -120,7 +127,7 @@ function ParentPortal() {
       profile.schoolCode,
       selectedChildId,
       setAttendanceHistory,
-      (err) => console.error('Khalad ayaa dhacay markii imaanshaha laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii imaanshaha laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, selectedChildId]);
@@ -135,7 +142,7 @@ function ParentPortal() {
       profile.schoolCode,
       selectedChildId,
       setQuranProgressHistory,
-      (err) => console.error('Khalad ayaa dhacay markii garashada Quraanka laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii garashada Quraanka laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, selectedChildId]);
@@ -150,7 +157,7 @@ function ParentPortal() {
       profile.schoolCode,
       selectedChildId,
       setStudentQuranTargets,
-      (err) => console.error('Khalad ayaa dhacay markii yoolka Quraanka laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii yoolka Quraanka laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, selectedChildId]);
@@ -165,7 +172,7 @@ function ParentPortal() {
       profile.schoolCode,
       selectedChildId,
       setStudentExamMarks,
-      (err) => console.error('Khalad ayaa dhacay markii buundooyinka laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii buundooyinka laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, selectedChildId]);
@@ -180,7 +187,7 @@ function ParentPortal() {
       profile.schoolCode,
       selectedChildId,
       setThreadMessages,
-      (err) => console.error('Khalad ayaa dhacay markii fariimaha laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii fariimaha laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, selectedChildId]);
@@ -192,7 +199,7 @@ function ParentPortal() {
       .map((m) => m.id);
     if (unreadIds.length > 0) {
       markMessagesRead(unreadIds, 'parent').catch((err) =>
-        console.error('Khalad ayaa dhacay markii fariimaha la calaamadinayay in la akhriyay:', err)
+        reportError('Khalad ayaa dhacay markii fariimaha la calaamadinayay in la akhriyay:', err)
       );
     }
   }, [activeTab, threadMessages]);
@@ -230,7 +237,7 @@ function ParentPortal() {
       profile.schoolCode,
       childrenIds,
       setNotifications,
-      (err) => console.error('Khalad ayaa dhacay markii ogeysiisyada laga soo akhriyay:', err)
+      (err) => reportError('Khalad ayaa dhacay markii ogeysiisyada laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, childrenIds]);
@@ -249,7 +256,7 @@ function ParentPortal() {
 
   const handleNotifClick = (n) => {
     markNotificationsRead([n.id], 'parent').catch((err) =>
-      console.error('Khalad ayaa dhacay markii ogeysiiska la calaamadinayay in la akhriyay:', err)
+      reportError('Khalad ayaa dhacay markii ogeysiiska la calaamadinayay in la akhriyay:', err)
     );
     setShowNotifPanel(false);
     if (n.studentId !== selectedChildId) setSelectedChildId(n.studentId);
