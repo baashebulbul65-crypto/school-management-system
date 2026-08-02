@@ -59,19 +59,36 @@ function Finance() {
   const financeClassRows = useMemo(() => classes.map((cls) => {
     const name = classroomName(cls);
     const classStudents = realClassStudents.filter((s) => (s.classId ? s.classId === cls.id : s.className === name));
-    let paidCount = 0, paidTotal = 0, unpaidCount = 0, unpaidTotal = 0, freeCount = 0;
+    let paidCount = 0, paidTotal = 0, unpaidCount = 0, unpaidTotal = 0, freeCount = 0, discountTotal = 0;
     classStudents.forEach((s) => {
       const feeType = getFeeType(s);
       if (feeType === 'free') { freeCount += 1; return; }
       const owed = studentFeeOwed(s);
+      // Re-audit (2026-08-03, HIGH): "discount" hore waxaa si adag loogu
+      // dhigay 0 — kaadhka "Qiimaha Dhimista" (accSummary.dhimis) marnaba
+      // ma tarayin xitaa haddii ardayda qaar leeyihiin feeType='discount'
+      // dhab ah. Halkan waxaa lagu xisaabinayaa qadarka DHAB AH ee la
+      // dhimay (base - owed), ma aha qadarka la rabo ka dib dhimista
+      // (studentFeeOwed() ee kore horeba soo celisa tan labaad).
+      if (feeType === 'discount') {
+        const base = Number(s.feeAmount) || 0;
+        discountTotal += Math.max(0, base - owed);
+      }
       const isPaid = feePayments.some((p) => p.feeType === 'student' && p.studentId === s.id && p.month === monthValue);
       if (isPaid) { paidCount += 1; paidTotal += owed; } else { unpaidCount += 1; unpaidTotal += owed; }
     });
     return {
       id: cls.id, name,
       students: classStudents.length,
-      total: paidTotal + unpaidTotal,
-      discount: 0,
+      // "total" waa WADARTA GUUD (gross, ka hor dhimis) — waa in ay noqoto
+      // sidaas si ay accSummary.laUururiyey (wadar - dhimis - baaqi) u sii
+      // ahaato "waxa dhab ahaan la bixiyay" (paidTotal): paidTotal +
+      // unpaidTotal + discountTotal (gross) - discountTotal - unpaidTotal
+      // (net) = paidTotal. Haddii "total" la dhigi lahaa net (paidTotal +
+      // unpaidTotal oo qura), dhimista dhabta ah waa laga jari lahaa laba
+      // jeer (mar horeba ku jirta studentFeeOwed(), mar kale halkan).
+      total: paidTotal + unpaidTotal + discountTotal,
+      discount: discountTotal,
       balance: unpaidTotal,
       paidCount, paidTotal, unpaidCount, unpaidTotal, freeCount,
     };
