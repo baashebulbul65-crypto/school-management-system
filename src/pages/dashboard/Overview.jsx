@@ -26,7 +26,7 @@ function Overview() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const { settings } = useSettings();
-  const { students, teachers, classes, subjects, exams, attendanceToday, feePayments } = useSchoolData();
+  const { students, teachers, classes, subjects, exams, attendanceToday, feePayments, myClasses, myClassIds, myClassNames } = useSchoolData();
   const { notifications } = useNotifications();
   const [showAbsentModal, setShowAbsentModal] = useState(false);
 
@@ -36,6 +36,19 @@ function Overview() {
   // ogeysiisyada type=='fee' waxay kasoo baxaan collection "notifications"
   // (kaas oo aan xaddidnayn), sidaas darteed waa in halkanna la shaandhaystaa.
   const isTeacher = profile?.role === 'teacher';
+
+  // PRINCIPLE-KA GUUD (Teacher Role Scoping, 2026-08-02): macallinku
+  // dashboard-kiisa waa in uu ka arkaa KALIYA xogta la xiriirta
+  // fasalladiisa gaarka ah — ma aha xogta guud ee dugsiga oo dhan. myClassIds/
+  // myClassNames waa null marka isticmaaluhu yahay owner (ma jiro xaddidaad).
+  const myStudents = useMemo(
+    () => (myClassIds ? students.filter((s) => (s.classId ? myClassIds.has(s.classId) : myClassNames.has(s.className))) : students),
+    [students, myClassIds, myClassNames]
+  );
+  const myExams = useMemo(
+    () => (myClassIds ? exams.filter((e) => (e.classId ? myClassIds.has(e.classId) : myClassNames.has(e.className))) : exams),
+    [exams, myClassIds, myClassNames]
+  );
 
   // Waxaa isku darsanaya dhacdooyinka dhabta ah ee ugu dambeeyay: lacagaha la
   // ururiyay (feePayments) + ogeysiisyada (maqnaanshaha/lacagta baaqiga ah),
@@ -49,8 +62,10 @@ function Overview() {
         text: `Lacag $${(p.amount || 0).toLocaleString()} ayaa la ururiyay${p.collectedByName ? ` — ${p.collectedByName}` : ''}`,
         time: p.createdAt,
       }));
+    // notifications waxay horeba u shaandhaysan tahay (NotificationsContext.jsx)
+    // fee-ga iyo fasallada kale ee macallinka — halkan lama baahna filter dheeraad ah.
     const notifEvents = notifications
-      .filter((n) => n.time && !(isTeacher && n.type === 'fee'))
+      .filter((n) => n.time)
       .map((n) => ({
         id: `notif_${n.id}`,
         type: n.type === 'fee' ? 'warning' : 'neutral',
@@ -60,7 +75,7 @@ function Overview() {
     return [...paymentEvents, ...notifEvents]
       .sort((a, b) => b.time.localeCompare(a.time))
       .slice(0, 5);
-  }, [feePayments, notifications, isTeacher]);
+  }, [feePayments, notifications]);
 
   const dayNames = t('common.dayNames', { returnObjects: true });
   const monthNames = t('common.monthNames', { returnObjects: true });
@@ -69,10 +84,14 @@ function Overview() {
     return `${dayNames[d.getDay()]}, ${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
   };
 
-  const totalStudents = students.length;
+  const totalStudents = myStudents.length;
   const totalTeachers = teachers.length;
-  const totalClasses = classes.length;
-  const totalSubjects = subjects.length;
+  const totalClasses = myClasses ? myClasses.length : classes.length;
+  const totalSubjects = useMemo(() => {
+    if (!myClasses) return subjects.length;
+    const subjectIds = new Set(myClasses.flatMap((c) => c.subjectIds || []));
+    return subjectIds.size;
+  }, [myClasses, subjects]);
 
   // Bishan — labadan waxay ka soo qaataan xisaabinta DHABTA AH ee feePayments
   // (fiiri utils/studentFee.js), ma aha field-kii hore ee "fee" (paid/pending/
@@ -81,8 +100,8 @@ function Overview() {
   const currentMonth = currentMonthValue();
 
   const feeDueStudents = useMemo(
-    () => students.filter((s) => getMonthlyFeeStatus(s, feePayments, currentMonth) === 'unpaid').length,
-    [students, feePayments, currentMonth]
+    () => myStudents.filter((s) => getMonthlyFeeStatus(s, feePayments, currentMonth) === 'unpaid').length,
+    [myStudents, feePayments, currentMonth]
   );
 
   const feesCollected = useMemo(
@@ -95,28 +114,28 @@ function Overview() {
   const attendanceCounts = useMemo(() => {
     const statusOf = (s) => attendanceToday.students[s.id] || 'present';
     return {
-      present: students.filter((s) => statusOf(s) === 'present').length,
-      absent: students.filter((s) => statusOf(s) === 'absent').length,
-      leave: students.filter((s) => statusOf(s) === 'leave').length,
-      sick: students.filter((s) => statusOf(s) === 'sick').length,
+      present: myStudents.filter((s) => statusOf(s) === 'present').length,
+      absent: myStudents.filter((s) => statusOf(s) === 'absent').length,
+      leave: myStudents.filter((s) => statusOf(s) === 'leave').length,
+      sick: myStudents.filter((s) => statusOf(s) === 'sick').length,
     };
-  }, [students, attendanceToday]);
+  }, [myStudents, attendanceToday]);
 
-  const attendanceRate = students.length ? Math.round((attendanceCounts.present / students.length) * 100) : 0;
+  const attendanceRate = myStudents.length ? Math.round((attendanceCounts.present / myStudents.length) * 100) : 0;
 
   const absentStudents = useMemo(
     () =>
-      students
+      myStudents
         .filter((s) => attendanceToday.students[s.id] === 'absent')
         .map((s) => ({ id: s.id, name: s.fullName, className: s.className })),
-    [students, attendanceToday]
+    [myStudents, attendanceToday]
   );
 
   const upcomingExamsCount = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return exams.filter((e) => new Date(e.date) >= today).length;
-  }, [exams]);
+    return myExams.filter((e) => new Date(e.date) >= today).length;
+  }, [myExams]);
 
   const todayLabel = formatTodayLocalized();
   const adminName = profile?.fullName || t('overview.defaultAdminName');
@@ -139,14 +158,18 @@ function Overview() {
         </div>
 
         <div className="overview-header-actions">
-          <button className="btn-primary" onClick={() => navigate('/dashboard/students', { state: { openAdd: true } })}>
-            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            {t('overview.actions.addStudent')}
-          </button>
-          <button className="btn-secondary" onClick={() => navigate('/dashboard/teachers', { state: { openAdd: true } })}>
-            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            {t('overview.actions.addTeacher')}
-          </button>
+          {!isTeacher && (
+            <button className="btn-primary" onClick={() => navigate('/dashboard/students', { state: { openAdd: true } })}>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              {t('overview.actions.addStudent')}
+            </button>
+          )}
+          {!isTeacher && (
+            <button className="btn-secondary" onClick={() => navigate('/dashboard/teachers', { state: { openAdd: true } })}>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              {t('overview.actions.addTeacher')}
+            </button>
+          )}
           {!isTeacher && (
             <button className="btn-secondary" onClick={() => navigate('/dashboard/finance', { state: { openCollect: true } })}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
@@ -163,12 +186,14 @@ function Overview() {
           accent="mint"
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 14a4 4 0 100-8 4 4 0 000 8zM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>}
         />
-        <StatCard
-          label={t('overview.stats.totalTeachers')}
-          value={totalTeachers}
-          accent="navy"
-          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16v12H8l-4 4V4z"/></svg>}
-        />
+        {!isTeacher && (
+          <StatCard
+            label={t('overview.stats.totalTeachers')}
+            value={totalTeachers}
+            accent="navy"
+            icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16v12H8l-4 4V4z"/></svg>}
+          />
+        )}
         <StatCard
           label={t('overview.stats.totalClasses')}
           value={totalClasses}

@@ -34,12 +34,23 @@ function Attendance() {
   const {
     students, teachers, staff, attendanceToday, cycleAttendanceStatus, setStudentAttendanceStatus,
     addStaffMember, updateStaffMember, removeStaffMember,
-    allStudentAttendanceRecords, allStaffAttendanceRecords,
+    allStudentAttendanceRecords, allStaffAttendanceRecords, myClassIds, myClassNames,
   } = useSchoolData();
   // Add/Edit/Delete shaqaalaha roster-ka waa owner-kaliya (Teacher Role
   // Scoping audit, 2026-08-02) — la mid ah Classes.jsx/Subjects.jsx, fiiri
   // firestore.rules: staffRoster.
   const isOwner = profile?.role !== 'teacher';
+  // Macallinku, tabka "Ardayda", waa in uu kaliya arkaa/calaamadiyaa
+  // imaanshaha ardayda fasalladiisa gaarka ah — ma aha ardayda/xaadiriska
+  // dugsiga oo dhan (Teacher Role Scoping, 2026-08-02).
+  const myStudents = useMemo(
+    () => (myClassIds ? students.filter((s) => (s.classId ? myClassIds.has(s.classId) : myClassNames.has(s.className))) : students),
+    [students, myClassIds, myClassNames]
+  );
+  const myStudentAttendanceRecords = useMemo(
+    () => (myClassIds ? allStudentAttendanceRecords.filter((r) => myClassNames.has(r.className)) : allStudentAttendanceRecords),
+    [allStudentAttendanceRecords, myClassIds, myClassNames]
+  );
   const [category, setCategory] = useState('students');
   const [period, setPeriod] = useState('daily');
   const [date] = useState(todayISODate());
@@ -84,7 +95,7 @@ function Attendance() {
 
   const list = useMemo(() => {
     if (category === 'students') {
-      return students.map((s) => ({
+      return myStudents.map((s) => ({
         id: s.id,
         name: s.fullName,
         sub: `${s.className} · ${s.studentId}`,
@@ -106,7 +117,7 @@ function Attendance() {
       sub: s.sub,
       status: attendanceToday.staff[s.id] || 'present',
     }));
-  }, [category, students, teachers, staff, attendanceToday]);
+  }, [category, myStudents, teachers, staff, attendanceToday]);
 
   const todayCounts = useMemo(() => {
     const counts = { total: list.length };
@@ -118,9 +129,9 @@ function Attendance() {
   }, [list, category]);
 
   const periodRecords = useMemo(() => {
-    if (category === 'students') return allStudentAttendanceRecords;
+    if (category === 'students') return myStudentAttendanceRecords;
     return allStaffAttendanceRecords.filter((r) => r.category === category);
-  }, [category, allStudentAttendanceRecords, allStaffAttendanceRecords]);
+  }, [category, myStudentAttendanceRecords, allStaffAttendanceRecords]);
 
   const stats = period === 'daily'
     ? { ...todayCounts, rate: todayCounts.total ? Math.round((todayCounts.present / todayCounts.total) * 100) : 0 }

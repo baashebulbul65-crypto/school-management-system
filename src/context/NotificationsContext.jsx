@@ -17,7 +17,7 @@ export function NotificationsProvider({ children }) {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const { showError } = useToast();
-  const { students, feePayments } = useSchoolData();
+  const { students, feePayments, myClassNames } = useSchoolData();
   const { settings } = useSettings();
   const [rawNotifications, setRawNotifications] = useState([]);
 
@@ -65,9 +65,28 @@ export function NotificationsProvider({ children }) {
       });
   }, [students, feePayments, rawNotifications, profile?.schoolCode, profile?.accountType, settings.notificationPrefs.feeReminders]);
 
+  // PRINCIPLE-KA GUUD (Teacher Role Scoping, 2026-08-02): macallinku waa in
+  // uu arkaa KALIYA ogeysiisyada la xiriira fasalladiisa gaarka ah — Finance
+  // ('fee') gebi ahaanba waa mamnuuc isaga (fiiri Overview.jsx/finance
+  // rules), 'absent' waxaa lagu xaddidaa fasalladiisa (className, myClassNames
+  // null = owner, ma jiro xaddidaad). Noocyo mustaqbal ah oo aan lahayn
+  // className (fiiri firebase/notifications.js — hadda kaliya fee/absent ayaa
+  // dhab ahaan la abuuraa) waxay sii muuqan doonaan, maadaama aanay xog
+  // gaar-fasal ah lahayn oo la xaddidi karo.
+  const visibleRawNotifications = useMemo(
+    () =>
+      rawNotifications.filter((n) => {
+        if (profile?.role !== 'teacher') return true;
+        if (n.type === 'fee') return false;
+        if (n.className) return myClassNames?.has(n.className) ?? false;
+        return true;
+      }),
+    [rawNotifications, profile?.role, myClassNames]
+  );
+
   const notifications = useMemo(
     () =>
-      rawNotifications.map((n) => ({
+      visibleRawNotifications.map((n) => ({
         id: n.id,
         type: n.type,
         title: t(`notifications.types.${n.type}.title`, n.type),
@@ -78,7 +97,7 @@ export function NotificationsProvider({ children }) {
         read: n.readByStaff,
         link: LINKS[n.type],
       })),
-    [rawNotifications, t]
+    [visibleRawNotifications, t]
   );
 
   const unreadCount = useMemo(() => notifications.filter((n) => !n.read).length, [notifications]);
@@ -92,7 +111,7 @@ export function NotificationsProvider({ children }) {
   };
 
   const markAllAsRead = async () => {
-    const unreadIds = rawNotifications.filter((n) => !n.readByStaff).map((n) => n.id);
+    const unreadIds = visibleRawNotifications.filter((n) => !n.readByStaff).map((n) => n.id);
     if (unreadIds.length === 0) return;
     try {
       await markNotificationsRead(unreadIds, 'staff');

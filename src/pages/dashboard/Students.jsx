@@ -24,13 +24,19 @@ function Students() {
   const { profile } = useAuth();
   const {
     students, studentsLoading, addStudent, updateStudent, deleteStudent, cycleStudentAttendanceRecord, seedDemoStudents,
-    allStudentAttendanceRecords, feePayments,
+    allStudentAttendanceRecords, feePayments, myClassIds, myClassNames,
   } = useSchoolData();
   // Macallinku gebi ahaanba wuu ka mamnuucan yahay Finance-ka, xitaa xaaladda
   // lacagta ardayda fasalkiisa (Teacher Role Scoping audit, 2026-08-02) —
   // "Ku Dar Arday" waa owner-kaliya, gudarkiisu waa ku xiran yahay Firestore
   // Rules-ka cusub (fiiri firestore.rules: students create).
   const isOwner = profile?.role !== 'teacher';
+  // Macallinku wuxuu kaliya arkaa ardayda fasalladiisa gaarka ah (myClassIds/
+  // myClassNames, fiiri SchoolDataContext.jsx) — ma aha ardayda dugsiga oo
+  // dhan (Teacher Role Scoping, 2026-08-02).
+  const visibleStudents = myClassIds
+    ? students.filter((s) => (s.classId ? myClassIds.has(s.classId) : myClassNames.has(s.className)))
+    : students;
   const currentMonth = currentMonthValue();
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('all');
@@ -38,7 +44,7 @@ function Students() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
 
-  const selectedStudent = students.find((s) => s.id === selectedStudentId) || null;
+  const selectedStudent = visibleStudents.find((s) => s.id === selectedStudentId) || null;
 
   const selectedStudentAttendance = useMemo(
     () => allStudentAttendanceRecords
@@ -47,9 +53,9 @@ function Students() {
     [allStudentAttendanceRecords, selectedStudentId]
   );
 
-  const classes = useMemo(() => ['all', ...new Set(students.map((s) => s.className))], [students]);
+  const classes = useMemo(() => ['all', ...new Set(visibleStudents.map((s) => s.className))], [visibleStudents]);
 
-  const filtered = students.filter((s) => {
+  const filtered = visibleStudents.filter((s) => {
     const matchesSearch = s.fullName.toLowerCase().includes(search.toLowerCase()) || s.studentId.toLowerCase().includes(search.toLowerCase());
     const matchesClass = classFilter === 'all' || s.className === classFilter;
     return matchesSearch && matchesClass;
@@ -61,7 +67,7 @@ function Students() {
   };
 
   useEffect(() => {
-    if (location.state?.openAdd) {
+    if (location.state?.openAdd && isOwner) {
       openAddModal();
       navigate(location.pathname, { replace: true, state: {} });
     }
@@ -174,7 +180,7 @@ function Students() {
               {studentsLoading && (
                 <tr><td colSpan="7" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.loading')}</td></tr>
               )}
-              {!studentsLoading && filtered.length === 0 && students.length === 0 && (
+              {!studentsLoading && filtered.length === 0 && isOwner && students.length === 0 && (
                 <tr>
                   <td colSpan="7" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>
                     {t('students.emptyNoStudents')}
@@ -186,7 +192,7 @@ function Students() {
                   </td>
                 </tr>
               )}
-              {!studentsLoading && filtered.length === 0 && students.length > 0 && (
+              {!studentsLoading && filtered.length === 0 && !(isOwner && students.length === 0) && (
                 <tr><td colSpan="7" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.noResults')}</td></tr>
               )}
             </tbody>
@@ -194,7 +200,7 @@ function Students() {
         </div>
 
         <div className="table-pagination">
-          <span className="pagination-info">{t('students.pagination', { shown: filtered.length, total: students.length })}</span>
+          <span className="pagination-info">{t('students.pagination', { shown: filtered.length, total: visibleStudents.length })}</span>
           <div className="pagination-controls">
             <button className="page-btn active">1</button>
           </div>

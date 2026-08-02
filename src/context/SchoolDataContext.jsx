@@ -579,6 +579,24 @@ export function SchoolDataProvider({ children }) {
     return unsubscribe;
   }, [profile?.schoolCode]);
 
+  // ===== TEACHER ROLE SCOPING (2026-08-02) =====
+  // Xisaabin dhexe (single source of truth) oo loo isticmaalo dhammaan
+  // bogagga/context-yada — macallinku waa in uu arkaa KALIYA xogta la
+  // xiriirta fasalladiisa gaarka ah (classTeacherId === profile.teacherDocId),
+  // ma aha xogta guud ee dugsiga (fiiri Students.jsx/Attendance.jsx/
+  // Overview.jsx/NotificationsContext.jsx). null = ma jiro xaddidaad (owner/
+  // staff kale — dhammaan fasallada dugsiga).
+  const myClasses = useMemo(() => {
+    if (profile?.role !== 'teacher') return null;
+    return classes.filter((c) => c.classTeacherId === profile?.teacherDocId);
+  }, [classes, profile?.role, profile?.teacherDocId]);
+
+  const myClassIds = useMemo(() => (myClasses ? new Set(myClasses.map((c) => c.id)) : null), [myClasses]);
+  const myClassNames = useMemo(
+    () => (myClasses ? new Set(myClasses.map((c) => `${c.grade}${c.section}`)) : null),
+    [myClasses]
+  );
+
   // ===== MAADOOYINKA (Firestore collection "subjects") =====
   useEffect(() => {
     if (!profile?.schoolCode) {
@@ -1241,6 +1259,7 @@ export function SchoolDataProvider({ children }) {
     students, studentsLoading, addStudent, updateStudent, deleteStudent, cycleStudentAttendanceRecord, seedDemoStudents,
     deletedStudents, restoreStudent, permanentlyDeleteStudent,
     setStudentAttendanceStatus,
+    myClasses, myClassIds, myClassNames,
     teachers, addTeacher, updateTeacher, cycleTeacherAttendanceRecord,
     classes, addClass, updateClass, removeClass,
     subjects, addSubject, updateSubject, removeSubject,
