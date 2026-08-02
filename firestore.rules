@@ -22,6 +22,15 @@ service cloud.firestore {
       return isSignedIn() && me().accountType == 'staff' && me().schoolCode == schoolCode;
     }
 
+    // Sida isStaffOf, laakiin waxay sidoo kale hubisaa in doorku yahay
+    // 'owner' — waxaa loo isticmaalaa xogta owner-ku kaliya arki/maamuli karo
+    // (Finance-ka oo dhan, add/edit/delete fasal, abuurista arday cusub),
+    // si 'teacher' aanu si toos ah Firestore SDK-ka ugu marin xannibaadda
+    // UI/route-ka (fiiri README: Teacher Role Scoping audit, 2026-08-02).
+    function isOwnerStaffOf(schoolCode) {
+      return isStaffOf(schoolCode) && me().role == 'owner';
+    }
+
     function isParentAccount() {
       return isSignedIn() && me().accountType == 'student-parent';
     }
@@ -129,7 +138,10 @@ service cloud.firestore {
     // natiijooyin, iwm) sida hore laga sameyn jiray.
     match /students/{studentDocId} {
       allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, studentDocId);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      // Abuuridda arday CUSUB waa owner-kaliya (Teacher Role Scoping audit) —
+      // macallinku wuu sii wax ka beddeli karaa arday jira (xaadiris/dhibco/
+      // Quraan, fiiri "update" hoose), ma abuuri karo mid cusub.
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
       allow update: if isStaffOf(resource.data.schoolCode);
       // Tirtiridda joogtada ah (permanent delete, "Trash") waa mid aan la soo
       // celin karin — waxaa loo xaddidayaa 'owner' kaliya, si la mid ah sida
@@ -159,15 +171,21 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // ===== classes ===== — shaqaale kastaa wuu maamuli karaa (bogga
-    // "Fasallada" uma xayirna owner kaliya).
+    // ===== classes =====
+    // Akhris: shaqaale kasta (macallinku wuu u baahan yahay ClassWorkspace-
+    // kiisa + liiska Classes.jsx, xitaa haddii UI-gu ku xaddidayo fasalkiisa
+    // kaliya). Add/Edit/Delete: owner-kaliya (Teacher Role Scoping audit,
+    // 2026-08-02) — hore waxay ahayd "shaqaale kastaa wuu maamuli karaa",
+    // taasoo u ogolaan jirtay macallin inuu wax ka beddelo/tirtiro fasal
+    // kale oo aan kiisa ahayn.
     // MUHIIM (bug fix, 2026-08-01): "create" waxaa loo isticmaali jiray
     // resource.data (kaas oo aan jirin marka doc-ku CUSUB yahay — Firestore
     // Rules "resource" waa null marka la abuurayo) — taasi waxay keenaysay in
     // "create" mar walba la XANNIBO si khalad ah, xitaa shaqaale sax ah.
     match /classes/{classDocId} {
-      allow read, update, delete: if isStaffOf(resource.data.schoolCode);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow update, delete: if isOwnerStaffOf(resource.data.schoolCode);
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
     }
 
     // ===== subjects ===== — la mid ah classes (shaqaale kastaa wuu maamuli karaa).
@@ -258,14 +276,18 @@ service cloud.firestore {
     }
 
     // ===== financeExpenses / financeIncome =====
+    // Finance-ka OO DHAN waa owner-kaliya (Teacher Role Scoping audit,
+    // 2026-08-02) — hore "isStaffOf" ayaa la isticmaali jiray, taasoo u
+    // ogolaan jirtay macallin inuu Firestore SDK-ka si toos ah uga akhriyo
+    // xogta maaliyadeed xitaa haddii UI-ga/route-ka Finance.jsx laga qariyay.
     match /financeExpenses/{expenseId} {
-      allow read: if isStaffOf(resource.data.schoolCode);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow read: if isOwnerStaffOf(resource.data.schoolCode);
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
       allow update, delete: if false;
     }
     match /financeIncome/{incomeId} {
-      allow read: if isStaffOf(resource.data.schoolCode);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow read: if isOwnerStaffOf(resource.data.schoolCode);
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
       allow update, delete: if false;
     }
 
@@ -273,13 +295,13 @@ service cloud.firestore {
     // total/discount) KALIYA, balance-ku KUMA jiro halkan (waxaa laga soo
     // xisaabiyaa "feePayments" ee hoose, fiiri SchoolDataContext.jsx).
     match /classFees/{rowId} {
-      allow read: if isStaffOf(resource.data.schoolCode);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow read: if isOwnerStaffOf(resource.data.schoolCode);
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
       allow update, delete: if false;
     }
     match /familyFees/{rowId} {
-      allow read: if isStaffOf(resource.data.schoolCode);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow read: if isOwnerStaffOf(resource.data.schoolCode);
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
       allow update, delete: if false;
     }
 
@@ -290,32 +312,33 @@ service cloud.firestore {
     // feeType=='student' (M.Qoys/Fasal safafkoodu ma lahan studentId dhab
     // ah — sidaas darteed waxaa lagu xaddiday nooca doc-ga ka hor inta aan
     // la eegin studentId, si aan looga fogaan khalad "field missing" ah).
+    // Staff-ka: owner-kaliya (fiiri financeExpenses kore).
     match /feePayments/{paymentId} {
-      allow read: if isStaffOf(resource.data.schoolCode)
+      allow read: if isOwnerStaffOf(resource.data.schoolCode)
         || (resource.data.feeType == 'student' && isParentOfStudent(resource.data.schoolCode, resource.data.studentId));
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
       allow update, delete: if false;
     }
 
     // ===== financeSalaries ===== — "status" (pending/paid) kaliya ayaa la
     // beddeli karaa (fiiri firebase/finance.js: setSalaryStatus).
     match /financeSalaries/{salaryId} {
-      allow read: if isStaffOf(resource.data.schoolCode);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
-      allow update: if isStaffOf(resource.data.schoolCode)
+      allow read: if isOwnerStaffOf(resource.data.schoolCode);
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
+      allow update: if isOwnerStaffOf(resource.data.schoolCode)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
       allow delete: if false;
     }
 
     // ===== financeDiscounts / financeDocuments ===== — diiwaan, APPEND-ONLY.
     match /financeDiscounts/{discountId} {
-      allow read: if isStaffOf(resource.data.schoolCode);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow read: if isOwnerStaffOf(resource.data.schoolCode);
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
       allow update, delete: if false;
     }
     match /financeDocuments/{documentId} {
-      allow read: if isStaffOf(resource.data.schoolCode);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow read: if isOwnerStaffOf(resource.data.schoolCode);
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
       allow update, delete: if false;
     }
 

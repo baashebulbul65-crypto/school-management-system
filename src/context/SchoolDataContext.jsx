@@ -613,9 +613,13 @@ export function SchoolDataProvider({ children }) {
   }, [profile?.schoolCode]);
 
   // ===== XISAABAADKA (Firestore collections "financeExpenses"/"financeIncome"/
-  // "classFees"/"familyFees"/"feePayments") — staff-only, schoolCode-wide. =====
+  // "classFees"/"familyFees"/"feePayments") — OWNER-KALIYA (Teacher Role
+  // Scoping audit, 2026-08-02) — firestore.rules-ku hadda wuxuu xannibayaa
+  // 'teacher' akhris ahaan, sidaas darteed halkan sidoo kale waa in la
+  // xannibaa si aan permission-denied error toast loo arag macallin kasta
+  // oo login gareeya. =====
   useEffect(() => {
-    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff' || profile?.role === 'teacher') {
       setExpenses([]);
       return undefined;
     }
@@ -625,10 +629,10 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii kharashaadka laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role]);
 
   useEffect(() => {
-    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff' || profile?.role === 'teacher') {
       setIncome([]);
       return undefined;
     }
@@ -638,10 +642,10 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii dakhliga laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role]);
 
   useEffect(() => {
-    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff' || profile?.role === 'teacher') {
       setClassFeeRows([]);
       return undefined;
     }
@@ -651,10 +655,10 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii safafka lacagta fasalka laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role]);
 
   useEffect(() => {
-    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff' || profile?.role === 'teacher') {
       setFamilyFeeRows([]);
       return undefined;
     }
@@ -664,10 +668,10 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii safafka lacagta qoyska laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role]);
 
   useEffect(() => {
-    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff' || profile?.role === 'teacher') {
       setFeePayments([]);
       return undefined;
     }
@@ -677,10 +681,10 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii bixinada lacagta laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role]);
 
   useEffect(() => {
-    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff' || profile?.role === 'teacher') {
       setSalaries([]);
       return undefined;
     }
@@ -690,10 +694,10 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii mushaharka laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role]);
 
   useEffect(() => {
-    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff' || profile?.role === 'teacher') {
       setDiscounts([]);
       return undefined;
     }
@@ -703,10 +707,10 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii dhimista/deeqaha laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role]);
 
   useEffect(() => {
-    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff' || profile?.role === 'teacher') {
       setFinanceDocuments([]);
       return undefined;
     }
@@ -716,7 +720,7 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii invoices/receipts laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role]);
 
   const addSalary = async (payload) => {
     if (!profile?.schoolCode) return;

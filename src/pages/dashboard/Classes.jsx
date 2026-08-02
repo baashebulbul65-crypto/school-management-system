@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import ClassFormModal from './ClassFormModal';
 import '../../styles/dashboard-shared.css';
@@ -9,12 +10,23 @@ import './Classes.css';
 function Classes() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const { classes, teachers, students, subjects, addClass, updateClass, removeClass } = useSchoolData();
   const [search, setSearch] = useState('');
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
 
-  const filtered = classes.filter((c) =>
+  // Macallinku gebi ahaanba wuu ka mamnuucan yahay class-management (add/
+  // edit/delete), xitaa fasalkiisa gaarka ah — wuxuu isticmaalaa ClassWorkspace
+  // (xaadiris/dhibco/Quraan). Wuxuu kaliya arkaa fasalka/fasallada uu
+  // classTeacherId ahaan loo xilsaaray, ma aha liiska dugsiga oo dhan
+  // (Teacher Role Scoping audit, 2026-08-02).
+  const isOwner = profile?.role !== 'teacher';
+  const visibleClasses = isOwner
+    ? classes
+    : classes.filter((c) => c.classTeacherId === profile?.teacherDocId);
+
+  const filtered = visibleClasses.filter((c) =>
     `${c.grade} ${c.section}`.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -50,10 +62,12 @@ function Classes() {
           <h2>{t('classes.pageTitle')}</h2>
           <p>{t('classes.pageSubtitle')}</p>
         </div>
-        <button className="btn-primary" onClick={openAddModal}>
-          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          {t('classes.addNew')}
-        </button>
+        {isOwner && (
+          <button className="btn-primary" onClick={openAddModal}>
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            {t('classes.addNew')}
+          </button>
+        )}
       </div>
 
       <div className="table-toolbar">
@@ -82,14 +96,16 @@ function Classes() {
                 <div className="class-card-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/></svg>
                 </div>
-                <div className="class-card-actions">
-                  <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(c)}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
-                  </button>
-                  <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteClass(c.id, `${c.grade} ${c.section}`)}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
-                  </button>
-                </div>
+                {isOwner && (
+                  <div className="class-card-actions">
+                    <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(c)}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
+                    </button>
+                    <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteClass(c.id, `${c.grade} ${c.section}`)}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
+                    </button>
+                  </div>
+                )}
               </div>
 
               <h3>{c.grade} - {c.section}</h3>

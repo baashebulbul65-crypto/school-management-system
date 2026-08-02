@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { getMonthlyFeeStatus } from '../../utils/studentFee';
 import { currentMonthValue } from '../../utils/somaliDate';
@@ -20,10 +21,16 @@ function Students() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const {
     students, studentsLoading, addStudent, updateStudent, deleteStudent, cycleStudentAttendanceRecord, seedDemoStudents,
     allStudentAttendanceRecords, feePayments,
   } = useSchoolData();
+  // Macallinku gebi ahaanba wuu ka mamnuucan yahay Finance-ka, xitaa xaaladda
+  // lacagta ardayda fasalkiisa (Teacher Role Scoping audit, 2026-08-02) —
+  // "Ku Dar Arday" waa owner-kaliya, gudarkiisu waa ku xiran yahay Firestore
+  // Rules-ka cusub (fiiri firestore.rules: students create).
+  const isOwner = profile?.role !== 'teacher';
   const currentMonth = currentMonthValue();
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('all');
@@ -89,10 +96,12 @@ function Students() {
           <h2>{t('students.pageTitle')}</h2>
           <p>{t('students.pageSubtitle')}</p>
         </div>
-        <button className="btn-primary" onClick={openAddModal}>
-          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          {t('students.addNew')}
-        </button>
+        {isOwner && (
+          <button className="btn-primary" onClick={openAddModal}>
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            {t('students.addNew')}
+          </button>
+        )}
       </div>
 
       <div className="dash-card">
@@ -122,7 +131,7 @@ function Students() {
                 <th>{t('students.table.class')}</th>
                 <th>{t('students.table.gender')}</th>
                 <th>{t('students.table.status')}</th>
-                <th>{t('students.table.fee')}</th>
+                {isOwner && <th>{t('students.table.fee')}</th>}
                 <th></th>
               </tr>
             </thead>
@@ -139,12 +148,14 @@ function Students() {
                   <td>{s.className}</td>
                   <td>{s.gender}</td>
                   <td><span className={`badge ${STATUS_CLS[s.status]}`}>{t(`common.status.${s.status}`)}</span></td>
-                  <td>
-                    {(() => {
-                      const feeStatus = getMonthlyFeeStatus(s, feePayments, currentMonth);
-                      return <span className={`badge ${FEE_CLS[feeStatus]}`}>{t(FEE_LABEL_KEY[feeStatus])}</span>;
-                    })()}
-                  </td>
+                  {isOwner && (
+                    <td>
+                      {(() => {
+                        const feeStatus = getMonthlyFeeStatus(s, feePayments, currentMonth);
+                        return <span className={`badge ${FEE_CLS[feeStatus]}`}>{t(FEE_LABEL_KEY[feeStatus])}</span>;
+                      })()}
+                    </td>
+                  )}
                   <td>
                     <div className="row-actions">
                       <button className="row-action-btn" title={t('common.actions.view')} onClick={() => setSelectedStudentId(s.id)}>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { currentMonthValue } from '../../utils/somaliDate';
 import { getMonthlyFeeStatus, studentFeeOwed } from '../../utils/studentFee';
@@ -21,8 +22,14 @@ function InfoRow({ label, value }) {
 
 function StudentProfileModal({ student, attendanceRecords, onClose, onToggleAttendance }) {
   const { t } = useTranslation();
+  const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState('guud');
   const { feePayments } = useSchoolData();
+  // Macallinku gebi ahaanba wuu ka mamnuucan yahay Finance-ka — xitaa
+  // xaaladda lacagta fasalkiisa gaarka ah (Teacher Role Scoping audit,
+  // 2026-08-02). feePayments-ku waa madhan macallinka (fiiri
+  // SchoolDataContext.jsx), sidaas darteed tab-kan waa in laga qariyaa.
+  const isTeacher = profile?.role === 'teacher';
 
   if (!student) return null;
 
@@ -41,7 +48,7 @@ function StudentProfileModal({ student, attendanceRecords, onClose, onToggleAtte
     { id: 'waxbarasho', label: t('students.profile.tabs.academic') },
     { id: 'imaanshaha', label: t('students.profile.tabs.attendance') },
     { id: 'natiijo', label: t('students.profile.tabs.results') },
-    { id: 'lacag', label: t('students.profile.tabs.fees') },
+    ...(isTeacher ? [] : [{ id: 'lacag', label: t('students.profile.tabs.fees') }]),
     { id: 'anshax', label: t('students.profile.tabs.behaviour') },
     { id: 'dukumenti', label: t('students.profile.tabs.documents') },
   ];
@@ -163,7 +170,7 @@ function StudentProfileModal({ student, attendanceRecords, onClose, onToggleAtte
             </div>
           )}
 
-          {activeTab === 'lacag' && (
+          {!isTeacher && activeTab === 'lacag' && (
             <div>
               <p className="spm-fee-current-status">
                 <span className={`badge ${feeStatus === 'paid' ? 'badge-success' : feeStatus === 'free' ? 'badge-neutral' : 'badge-danger'}`}>
