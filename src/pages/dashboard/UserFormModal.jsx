@@ -22,6 +22,29 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
 
   const update = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
+  // Marka la doorto macallin ka mid ah dropdown-ka "Xiriirinta Diiwaanka
+  // Macallinka" — si otomaatig ah uga soo buuxi Magaca/Emailka diiwaanka
+  // Teachers ee la doortay (haddii ay jiraan), si loo ilaaliyo in isku qof
+  // uusan yeelan laba email oo kala duwan (mid Teachers, mid Users). Field
+  // madhan (tusaale email aan la gelin) lama qasbo — waxaa la boodaa,
+  // qiimaha jira (haddii uu jiro) ayaa la sii daayaa. Email-ka akoon hore
+  // (isEditing) lama taabto — akoontu waa in ay sii haysataa email-kiisii
+  // dhabta ah (fiiri "Email-ka ma bedeli karto akoon hore" hoose), sidaas
+  // darteed kaliya abuurista account CUSUB ayaa email lagu buuxinayaa.
+  // Haddii owner-ku dib u qoro (override) qiimo laga soo buuxiyay, taasi
+  // waa la sii daayaa — halkan waxaa la taabanayaa kaliya marka dropdown-ka
+  // teacherDocId la doorto, ma aha mar kasta oo modal-ku dib u render sameeyo.
+  const handleTeacherSelect = (e) => {
+    const teacherDocId = e.target.value;
+    const selectedTeacher = teacherOptions.find((tc) => tc.id === teacherDocId);
+    setForm((f) => ({
+      ...f,
+      teacherDocId,
+      fullName: selectedTeacher?.fullName || f.fullName,
+      email: !isEditing && selectedTeacher?.email ? selectedTeacher.email : f.email,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -101,7 +124,7 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
               {form.role === 'Teacher' && (
                 <div className="ufm-field full">
                   <label>Xiriirinta Diiwaanka Macallinka *</label>
-                  <select value={form.teacherDocId} onChange={update('teacherDocId')} required>
+                  <select value={form.teacherDocId} onChange={handleTeacherSelect} required>
                     <option value="">-- Dooro macallinka --</option>
                     {teacherOptions.map((t) => (
                       <option key={t.id} value={t.id}>{t.fullName}</option>
