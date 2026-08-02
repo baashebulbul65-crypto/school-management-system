@@ -42,7 +42,7 @@ function initials(name) {
 function Users() {
   const { profile } = useAuth();
   const { showError } = useToast();
-  const { teachers } = useSchoolData();
+  const { teachers, cascadeUnlinkTeacher } = useSchoolData();
   const [users, setUsers] = useState([]);
 
   const reportError = (message, err) => {
@@ -120,6 +120,15 @@ function Users() {
     if (userId === profile?.uid) return;
     if (window.confirm(`Ma hubtaa inaad ka saarayso "${name}" nidaamka? Tallaabadan lama noqon karo.`)) {
       try {
+        // Haddii shaqaalahan uu xiriir la lahaa diiwaan "teachers" (macallin),
+        // marka hore ka nadiifi fasallada/maadooyinka isaga hor intaan
+        // account-ka gelitaanka la tirtirin (fiiri SchoolDataContext.jsx:
+        // cascadeUnlinkTeacher) — haddii kale fasal/maado ayaa sii muujin
+        // lahaa macallin aan hadda jirin.
+        const target = users.find((u) => u.id === userId);
+        if (target?.teacherDocId) {
+          await cascadeUnlinkTeacher(target.teacherDocId);
+        }
         await removeStaffDoc(userId);
       } catch (err) {
         reportError('Khalad ayaa dhacay markii shaqaalaha la saarayay:', err);

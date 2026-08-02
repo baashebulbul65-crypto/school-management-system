@@ -174,7 +174,7 @@ function Classes() {
         onClose={() => setShowFormModal(false)}
         onSave={handleSaveClass}
         cls={editingClass}
-        teachers={teachers}
+        teachers={teachers.filter((tc) => tc.status !== 'inactive')}
         subjects={subjects}
       />
     </div>

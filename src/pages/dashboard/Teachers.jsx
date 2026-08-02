@@ -6,7 +6,8 @@ import TeacherProfileModal from './TeacherProfileModal';
 import TeacherFormModal from './TeacherFormModal';
 import '../../styles/dashboard-shared.css';
 
-const STATUS_CLS = { active: 'badge-success', leave: 'badge-warning' };
+const STATUS_CLS = { active: 'badge-success', leave: 'badge-warning', inactive: 'badge-neutral' };
+const STATUS_LABEL_KEY = { active: 'common.status.active', leave: 'common.leave', inactive: 'common.status.inactive' };
 
 function initials(name) {
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
@@ -116,7 +117,7 @@ function Teachers() {
                   <td>{t2.subject}</td>
                   <td>{t2.assignedClasses.join(', ')}</td>
                   <td className="cell-sub">{t2.phone}</td>
-                  <td><span className={`badge ${STATUS_CLS[t2.status]}`}>{t2.status === 'active' ? t('common.status.active') : t('common.leave')}</span></td>
+                  <td><span className={`badge ${STATUS_CLS[t2.status] || STATUS_CLS.active}`}>{t(STATUS_LABEL_KEY[t2.status] || STATUS_LABEL_KEY.active)}</span></td>
                   <td>
                     <div className="row-actions">
                       <button className="row-action-btn" title={t('common.actions.view')} onClick={() => setSelectedTeacherId(t2.id)}>

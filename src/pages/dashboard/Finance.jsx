@@ -603,7 +603,7 @@ function Finance() {
         onClose={() => setShowEntryModal(false)}
         onSave={handleSaveEntry}
         type={entryType}
-        teachers={teachers}
+        teachers={teachers.filter((tc) => tc.status !== 'inactive')}
       />
 
       {viewMode === 'family' && (

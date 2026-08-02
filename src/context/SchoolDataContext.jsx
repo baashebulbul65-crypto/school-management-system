@@ -9,9 +9,9 @@ import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
 import { useSettings } from './SettingsContext';
 import { subscribeToStudents, createStudentDoc, updateStudentDoc, softDeleteStudentDoc, restoreStudentDoc, deleteStudentDoc, backfillStudentLookups } from '../firebase/students';
-import { subscribeToTeachers, createTeacherDoc, updateTeacherDoc } from '../firebase/teachers';
-import { subscribeToClasses, createClassDoc, updateClassDoc, deleteClassDoc } from '../firebase/classes';
-import { subscribeToSubjects, createSubjectDoc, updateSubjectDoc, deleteSubjectDoc } from '../firebase/subjects';
+import { subscribeToTeachers, createTeacherDoc, updateTeacherDoc, deactivateTeacherDoc } from '../firebase/teachers';
+import { subscribeToClasses, createClassDoc, updateClassDoc, deleteClassDoc, unlinkTeacherFromClasses } from '../firebase/classes';
+import { subscribeToSubjects, createSubjectDoc, updateSubjectDoc, deleteSubjectDoc, unlinkTeacherFromSubjects } from '../firebase/subjects';
 import { subscribeToExams, createExamDoc, updateExamDoc, deleteExamDoc } from '../firebase/exams';
 import {
   subscribeToExpenses, createExpenseDoc,
@@ -1151,6 +1151,22 @@ export function SchoolDataProvider({ children }) {
     }
   };
 
+  // Marka macallin laga saaro bogga "Users" ("Ka Saar" shaqaale) — waxaa loo
+  // baahan yahay in dhinac kasta oo la xiriira uu ka nadiifsanaado ka hor
+  // intaan diiwaanka gelitaanka (users/{uid}) la tirtirin (fiiri Users.jsx).
+  // Fasallada/maadooyinka waa la nadiifiyaa (classTeacherId/teacherId -> null),
+  // diiwaanka "teachers" waa loo beddelaa status:'inactive' (ma tirtiro, fiiri
+  // firestore.rules: teachers allow delete: if false). Xogta taariikheed
+  // (attendanceRecords/notifications/examMarks/quranProgress/quranTargets/
+  // financeSalaries) SI ULA KAC AH looma taabto — classTeacherId/teacherId
+  // ku jira kuwaas waa snapshot waqtigii la qoray, ma aha xiriir nool.
+  const cascadeUnlinkTeacher = async (teacherDocId) => {
+    if (!profile?.schoolCode || !teacherDocId) return;
+    await unlinkTeacherFromClasses(profile.schoolCode, teacherDocId);
+    await unlinkTeacherFromSubjects(profile.schoolCode, teacherDocId);
+    await deactivateTeacherDoc(teacherDocId);
+  };
+
   // Cycle-ka taariikhda hore ee TeacherProfileModal — 3-da xaalado ee
   // "maanta" ee macallimiinta isticmaalaan (NEXT_STATUS, fiiri kore).
   const cycleTeacherAttendanceRecord = async (teacherId, date) => {
@@ -1359,7 +1375,7 @@ export function SchoolDataProvider({ children }) {
     deletedStudents, restoreStudent, permanentlyDeleteStudent,
     setStudentAttendanceStatus,
     myClasses, myClassIds, myClassNames,
-    teachers, addTeacher, updateTeacher, cycleTeacherAttendanceRecord,
+    teachers, addTeacher, updateTeacher, cycleTeacherAttendanceRecord, cascadeUnlinkTeacher,
     classes, addClass, updateClass, removeClass,
     subjects, addSubject, updateSubject, removeSubject,
     exams, examMarks, addExam, updateExam, removeExam, updateExamMark,

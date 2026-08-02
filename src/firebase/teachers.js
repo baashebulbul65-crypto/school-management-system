@@ -25,3 +25,13 @@ export async function createTeacherDoc(schoolCode, data) {
 export async function updateTeacherDoc(teacherId, data) {
   await updateDoc(doc(db, COLLECTION, teacherId), data);
 }
+
+// Marka macallin laga saaro nidaamka (Users.jsx "Ka Saar") — diiwaanka
+// "teachers" lafteeda LAMA TIRTIRO (firestore.rules: allow delete: if false,
+// isla mabda'a diiwaannada taariikheed ee kale), waxaa loo beddelaa
+// status:'inactive' si Teachers.jsx uu u muujiyo xaaladdiisa oo
+// ClassFormModal/SubjectFormModal/FinanceEntryModal aysan mar dambe ku xulan
+// karin (fiiri SchoolDataContext.jsx: cascadeUnlinkTeacher).
+export async function deactivateTeacherDoc(teacherId) {
+  await updateDoc(doc(db, COLLECTION, teacherId), { status: 'inactive' });
+}

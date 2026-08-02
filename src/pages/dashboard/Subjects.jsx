@@ -133,7 +133,7 @@ function Subjects() {
         onClose={() => setShowFormModal(false)}
         onSave={handleSaveSubject}
         subject={editingSubject}
-        teachers={teachers}
+        teachers={teachers.filter((tc) => tc.status !== 'inactive')}
       />
     </div>
   );
