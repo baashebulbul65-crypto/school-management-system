@@ -18,8 +18,19 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
+    // "status" (Suspend Enforcement, 2026-08-02): shaqaale la joojiyay
+    // (status:'suspended', fiiri firebase/staff.js: setStaffStatus) waa in
+    // uu KA XANNIBMAA xogta oo dhan halkan (rules-ka), ma aha kaliya UI-ga
+    // (Users.jsx badge) ama xannibaadda login-ka ee loginStaff() — haddii
+    // kale session horeba furan (browser tab) wuu sii akhrin/qori karaa xog
+    // xitaa ka dib markii la joojiyo. .get(...,'active') halkii .status
+    // toos ah loo isticmaali lahaa — doc-yada shaqaalaha hore loo abuuray
+    // (ka hor 'status' la darin) ma laha field-kan, waa in ay 'active' ahaadaan
+    // default ahaan (isla fallback-ka Users.jsx: u.status || 'active'), ma
+    // aha in ay khalad (deny) ka dhasho maqnaanshaha field-ka.
     function isStaffOf(schoolCode) {
-      return isSignedIn() && me().accountType == 'staff' && me().schoolCode == schoolCode;
+      return isSignedIn() && me().accountType == 'staff' && me().schoolCode == schoolCode
+        && me().get('status', 'active') != 'suspended';
     }
 
     // Sida isStaffOf, laakiin waxay sidoo kale hubisaa in doorku yahay
@@ -89,6 +100,11 @@ service cloud.firestore {
     // Isticmaale kastaa wuxuu akhriyi/beddeli karaa profile-kiisa. Waxaa sidoo
     // kale u ogolaaday 'owner' inuu maamulo (abuur/akhri/beddel/saar) shaqaalaha
     // kale ee isla dugsigiisa (bogga "Users") — fiiri firebase/staff.js.
+    // "isOwnerStaffOf(...) && accountType=='staff'" (Suspend Enforcement,
+    // 2026-08-02) halkii lagu celcelin lahaa "me().accountType=='staff' &&
+    // me().role=='owner'" gudaha afartaas (create/read/update/delete) — si
+    // owner la joojiyay (status:'suspended') isaguna uusan u awoodin inuu
+    // maamulo shaqaalaha kale intii uu la joojiyay (fiiri isStaffOf kore).
     match /users/{userId} {
       // MUHIIM (security fix, 2026-08-01): "self-create" waa in ay kaliya u
       // ogolaataa 'student-parent' — haddii kale isticmaale kastaa (SDK-ga
@@ -99,14 +115,12 @@ service cloud.firestore {
       // marka self-create ee 'staff' looma baahna).
       allow create: if isSignedIn() && (
         (request.auth.uid == userId && request.resource.data.accountType == 'student-parent')
-        || (me().accountType == 'staff' && me().role == 'owner'
-            && me().schoolCode == request.resource.data.schoolCode
+        || (isOwnerStaffOf(request.resource.data.schoolCode)
             && request.resource.data.accountType == 'staff')
       );
       allow read: if isSignedIn() && (
         request.auth.uid == userId
-        || (me().accountType == 'staff' && me().role == 'owner'
-            && me().schoolCode == resource.data.schoolCode && resource.data.accountType == 'staff')
+        || (isOwnerStaffOf(resource.data.schoolCode) && resource.data.accountType == 'staff')
       );
       // MUHIIM (security fix, 2026-08-01): "self-update" waa in ay kaliya u
       // ogolaataa field-ka "childrenIds" (isla kii "Ku Dar Ilmo Kale" isticmaalo,
@@ -116,16 +130,15 @@ service cloud.firestore {
       allow update: if isSignedIn() && (
         (request.auth.uid == userId
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['childrenIds']))
-        || (me().accountType == 'staff' && me().role == 'owner'
-            && me().schoolCode == resource.data.schoolCode && resource.data.accountType == 'staff'
+        || (isOwnerStaffOf(resource.data.schoolCode) && resource.data.accountType == 'staff'
             && request.resource.data.schoolCode == resource.data.schoolCode)
       );
       // Ma tirtiro Firebase Auth account-ka (SDK-ga browser-ku uma oggola —
       // waa loo baahan yahay Admin SDK/backend), laakiin tirtiridda doc-kan
       // waa in ay xannibto gelitaanka oo dhan (fiiri firebase/staff.js:
       // removeStaffDoc) — ma iska saari karo naftaada.
-      allow delete: if isSignedIn() && me().accountType == 'staff' && me().role == 'owner'
-        && me().schoolCode == resource.data.schoolCode && resource.data.accountType == 'staff'
+      allow delete: if isSignedIn() && isOwnerStaffOf(resource.data.schoolCode)
+        && resource.data.accountType == 'staff'
         && request.auth.uid != userId;
     }
 
