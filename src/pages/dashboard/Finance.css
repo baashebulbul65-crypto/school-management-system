@@ -146,7 +146,12 @@
 .acc-toolbar{
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* justify-content: space-between (hore) waxay u baahnayd 2 ilmo (toggle-ka
+     M.Qoys + calendar-ka) — hadda toggle-ka la saaray, calendar-ku waa
+     kaliya ilmaha, marka space-between wuxuu u dhaqaajin jiray bidix (start)
+     halkii uu ku sii jirin lahaa midig, taasoo keentay in panel-ka furmaya
+     (right:0, u fidaya bidix) uu ka baxo gidaarka bidix ee shaashadda. */
+  justify-content: flex-end;
   margin-bottom: 22px;
   flex-wrap: wrap;
   gap: 12px;
