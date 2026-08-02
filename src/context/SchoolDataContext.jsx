@@ -268,11 +268,14 @@ export function SchoolDataProvider({ children }) {
     return unsubscribe;
   }, [profile?.schoolCode, profile?.role, profile?.teacherDocId]);
 
-  // "forDate" ayaa la wadaagaa labadaba: calaamadinta "maanta" ee Attendance.jsx
-  // (setStudentAttendanceStatus, date=maanta) iyo cyclinga taariikhda hore ee
-  // StudentProfileModal (cycleStudentAttendanceRecord, date=maalin la doortay).
-  const setStudentAttendanceForDate = async (studentId, className, date, status) => {
+  // Xaaladda xaadiriska ardayga (Joog/Maqan/Fasax/Buka) waa in ay ka dhacdo
+  // KALIYA gudaha ClassWorkspace.jsx tab-ka Xaadiris, maalinta HADDA ah oo
+  // qura (Attendance-scoping audit, 2026-08-03) — Attendance.jsx tab-ka
+  // "Ardayda" iyo StudentProfileModal (taariikhda hore) hadda waa akhris-
+  // kaliya, ma wicaan function-kan.
+  const setStudentAttendanceStatus = async (studentId, className, status) => {
     if (!profile?.schoolCode) return;
+    const date = todayISODate();
     // classTeacherId denormalized (Teacher Firestore Hardening, 2026-08-02) —
     // kaydsan record-ka lafteeda si firestore.rules-ku ugu xaddidi karo
     // akhrinta macallinka (fiiri firebase/attendance.js). student.classId waa
@@ -299,20 +302,6 @@ export function SchoolDataProvider({ children }) {
         reportError('Khalad ayaa dhacay markii ogeysiiska maqnaanshaha la abuurayay:', err);
       }
     }
-  };
-
-  const setStudentAttendanceStatus = (studentId, className, status) =>
-    setStudentAttendanceForDate(studentId, className, todayISODate(), status);
-
-  // Cycle-ka 4-da xaalado ee ardayda isticmaalaan (fiiri Attendance.jsx
-  // STATUS_DEFS.students) — loo isticmaalaa marka StudentProfileModal la
-  // gujiyo maalin taariikhdeed ah si loo beddelo xaaladdeeda.
-  const STUDENT_NEXT_STATUS = { present: 'absent', absent: 'leave', leave: 'sick', sick: 'present' };
-
-  const cycleStudentAttendanceRecord = (studentId, className, date) => {
-    const existing = allStudentAttendanceRecords.find((r) => r.studentId === studentId && r.date === date);
-    const nextStatus = STUDENT_NEXT_STATUS[existing?.status || 'present'];
-    return setStudentAttendanceForDate(studentId, className, date, nextStatus);
   };
 
   // ===== TAARIIKHDA IMAANSHAHA OO DHAN (Firestore collections "attendanceRecords"
@@ -1361,7 +1350,7 @@ export function SchoolDataProvider({ children }) {
   };
 
   const value = {
-    students, studentsLoading, addStudent, updateStudent, deleteStudent, cycleStudentAttendanceRecord, seedDemoStudents,
+    students, studentsLoading, addStudent, updateStudent, deleteStudent, seedDemoStudents,
     deletedStudents, restoreStudent, permanentlyDeleteStudent,
     setStudentAttendanceStatus,
     myClasses, myClassIds, myClassNames,

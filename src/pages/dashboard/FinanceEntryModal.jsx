@@ -12,12 +12,20 @@ const EMPTY_FORMS = {
   documents: { type: 'invoice', party: '', amount: '', date: '' },
 };
 
-const TITLES = {
-  expenses: 'Ku Dar Kharash Cusub',
-  income: 'Ku Dar Dakhli Cusub',
-  salary: 'Ku Dar Mushahar',
-  discounts: 'Ku Dar Dhimis/Deeq Waxbarasho',
-  documents: 'Ku Dar Invoice/Receipt',
+const TITLE_KEYS = {
+  expenses: 'finance.entryModal.addExpenseTitle',
+  income: 'finance.entryModal.addIncomeTitle',
+  salary: 'finance.entryModal.addSalaryTitle',
+  discounts: 'finance.entryModal.addDiscountTitle',
+  documents: 'finance.entryModal.addDocumentTitle',
+};
+
+const SUBMIT_KEYS = {
+  expenses: 'finance.entryModal.submitExpense',
+  income: 'finance.entryModal.submitIncome',
+  salary: 'finance.entryModal.submitSalary',
+  discounts: 'finance.entryModal.submitDiscount',
+  documents: 'finance.entryModal.submitDocument',
 };
 
 function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], students = [] }) {
@@ -58,7 +66,7 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], stude
       <div className="fem-modal">
         <div className="fem-header">
           <div>
-            <h2>{TITLES[type]}</h2>
+            <h2>{t(TITLE_KEYS[type] || TITLE_KEYS.expenses)}</h2>
             <p>{t('finance.entryModal.fillInfo')}</p>
           </div>
           <button className="fem-close" onClick={onClose} type="button">
@@ -89,11 +97,11 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], stude
                 <>
                   <div className="fem-field">
                     <label>{t('finance.salary.table.staff')}</label>
-                    <input type="text" value={form.staffName} onChange={update('staffName')} placeholder="Tusaale: Cali Xasan Warsame" required />
+                    <input type="text" value={form.staffName} onChange={update('staffName')} placeholder={t('finance.entryModal.staffNamePlaceholder')} required />
                   </div>
                   <div className="fem-field">
                     <label>{t('finance.salary.table.role')}</label>
-                    <input type="text" value={form.role} onChange={update('role')} placeholder="Tusaale: Macallin - Xisaabta" />
+                    <input type="text" value={form.role} onChange={update('role')} placeholder={t('finance.entryModal.rolePlaceholder')} />
                   </div>
                   <div className="fem-field full">
                     <label>{t('finance.salary.linkTeacher')}</label>
@@ -107,7 +115,7 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], stude
                   </div>
                   <div className="fem-field full">
                     <label>{t('finance.salary.table.month')}</label>
-                    <input type="text" value={form.month} onChange={update('month')} placeholder="Tusaale: Luulyo 2026" />
+                    <input type="text" value={form.month} onChange={update('month')} placeholder={t('finance.entryModal.monthPlaceholder')} />
                   </div>
                 </>
               )}
@@ -134,7 +142,7 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], stude
                   </div>
                   <div className="fem-field full">
                     <label>{t('finance.discounts.table.reason')}</label>
-                    <input type="text" value={form.reason} onChange={update('reason')} placeholder="Tusaale: Deeq waxbarasho - buundo sare" />
+                    <input type="text" value={form.reason} onChange={update('reason')} placeholder={t('finance.entryModal.reasonPlaceholder')} />
                   </div>
                 </>
               )}
@@ -150,7 +158,7 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], stude
                   </div>
                   <div className="fem-field">
                     <label>{t('finance.documents.table.party')}</label>
-                    <input type="text" value={form.party} onChange={update('party')} placeholder="Tusaale: Ismaaciil Cabdi Xasan" required />
+                    <input type="text" value={form.party} onChange={update('party')} placeholder={t('finance.entryModal.partyPlaceholder')} required />
                   </div>
                 </>
               )}
@@ -180,7 +188,7 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], stude
 
           <div className="fem-footer">
             <button type="button" className="btn-secondary" onClick={onClose}>{t('common.cancel')}</button>
-            <button type="submit" className="btn-primary">Ku Dar</button>
+            <button type="submit" className="btn-primary">{t(SUBMIT_KEYS[type] || SUBMIT_KEYS.expenses)}</button>
           </div>
         </form>
       </div>

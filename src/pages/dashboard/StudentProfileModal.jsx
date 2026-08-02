@@ -20,7 +20,7 @@ function InfoRow({ label, value }) {
   );
 }
 
-function StudentProfileModal({ student, attendanceRecords, onClose, onToggleAttendance }) {
+function StudentProfileModal({ student, attendanceRecords, onClose }) {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState('guud');
@@ -131,12 +131,7 @@ function StudentProfileModal({ student, attendanceRecords, onClose, onToggleAtte
                   <p className="spm-note">Weli imaansho ma jiro.</p>
                 )}
                 {attendanceRecords?.map((a) => (
-                  <button
-                    key={a.date}
-                    className={`attendance-cell ${a.status}`}
-                    onClick={() => onToggleAttendance?.(student.id, a.date)}
-                    title={a.date}
-                  >
+                  <div key={a.date} className={`attendance-cell ${a.status}`} title={a.date}>
                     <span className="attendance-date">{a.date.split('-')[2]}</span>
                     <span className="attendance-status">
                       {a.status === 'present' ? t('common.present')
@@ -144,7 +139,7 @@ function StudentProfileModal({ student, attendanceRecords, onClose, onToggleAtte
                         : a.status === 'sick' ? t('common.sick')
                         : t('common.absent')}
                     </span>
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>

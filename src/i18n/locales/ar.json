@@ -124,7 +124,7 @@
         "parentName": "اسم ولي الأمر", "relation": "صلة القرابة", "parentPhone": "هاتف ولي الأمر",
         "className": "الفصل", "section": "الشعبة", "rollNumber": "الرقم التسلسلي", "subjectsSection": "المواد"
       },
-      "attendanceNote": "اضغط على أي يوم لتغيير حالة الحضور (حاضر/غائب).",
+      "attendanceNote": "للعرض فقط — سجل الحضور اليومي. يتم تسجيل الحضور من صفحة \"فصولي\" (تبويب الحضور).",
       "table": { "subject": "المادة", "marks": "الدرجات", "total": "الإجمالي", "grade": "التقدير", "month": "الشهر", "amount": "المبلغ", "date": "التاريخ" },
       "feeHistoryTitle": "سجل الدفعات",
       "noFeeHistory": "لم يتم دفع أي رسوم بعد.",
@@ -317,6 +317,8 @@
       ]
     },
     "salary": {
+      "addNew": "إضافة راتب",
+      "markPaid": "دفع",
       "table": { "staff": "الموظف", "role": "الدور", "amount": "المبلغ", "month": "الشهر", "status": "الحالة" },
       "linkTeacher": "ربط بمعلم (اختياري)",
       "linkTeacherNone": "-- لا يوجد (ليس معلمًا، أو غير مرتبط) --",
@@ -330,6 +332,7 @@
       ]
     },
     "discounts": {
+      "addNew": "إضافة خصم/منحة",
       "table": { "student": "الطالب", "type": "النوع", "amount": "المبلغ", "reason": "السبب" },
       "scholarship": "منحة دراسية",
       "discount": "خصم",
@@ -341,6 +344,7 @@
       ]
     },
     "documents": {
+      "addNew": "إضافة فاتورة/إيصال",
       "table": { "no": "الرقم", "type": "النوع", "party": "الجهة", "amount": "المبلغ", "date": "التاريخ" },
       "invoice": "فاتورة",
       "receipt": "إيصال",
@@ -353,18 +357,29 @@
     "entryModal": {
       "addExpenseTitle": "إضافة مصروف جديد",
       "addIncomeTitle": "إضافة دخل جديد",
+      "addSalaryTitle": "إضافة راتب",
+      "addDiscountTitle": "إضافة خصم/منحة دراسية",
+      "addDocumentTitle": "إضافة فاتورة/إيصال",
       "fillInfo": "يرجى تعبئة المعلومات أدناه",
       "category": "الفئة *",
       "categories": { "Mushahar": "رواتب", "Adeegyada": "خدمات", "Qalabka": "معدات", "Dhismaha": "مبنى", "Gaadiid": "نقل", "Dayactir": "صيانة", "Kale": "أخرى" },
       "source": "مصدر الدخل *",
       "sourcePlaceholder": "مثال: رسوم الطلاب",
+      "staffNamePlaceholder": "مثال: علي حسن ورسمي",
+      "rolePlaceholder": "مثال: معلم - رياضيات",
+      "monthPlaceholder": "مثال: يوليو 2026",
+      "reasonPlaceholder": "مثال: منحة دراسية - تفوق أكاديمي",
+      "partyPlaceholder": "مثال: إسماعيل عبدي حسن",
       "amount": "المبلغ ($) *",
       "amountPlaceholder": "مثال: 200",
       "description": "الوصف",
       "descriptionPlaceholder": "وصف مختصر",
       "date": "التاريخ",
       "submitExpense": "إضافة المصروف",
-      "submitIncome": "إضافة الدخل"
+      "submitIncome": "إضافة الدخل",
+      "submitSalary": "إضافة الراتب",
+      "submitDiscount": "إضافة الخصم",
+      "submitDocument": "إضافة السجل"
     },
     "classDetail": {
       "back": "رجوع",
@@ -429,8 +444,9 @@
     "today": "اليوم",
     "total": "الإجمالي",
     "markingTitle": "تسجيل الحضور — {{date}}",
-    "noteStudents": "اضغط على الحالة المناسبة لكل طالب.",
+    "noteStudents": "للعرض فقط — يتم تسجيل حضور الطلاب من صفحة \"فصولي\" (تبويب الحضور).",
     "noteOthers": "اضغط على الحالة للتبديل بينها: حاضر ← غائب ← متأخر",
+    "notMarkedYet": "لم يُسجَّل بعد",
     "table": { "name": "الاسم", "details": "التفاصيل", "status": "الحالة" },
     "reportsTitle": "التقارير",
     "attendanceRate": "% معدل الحضور"

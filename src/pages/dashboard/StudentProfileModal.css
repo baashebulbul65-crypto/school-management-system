@@ -196,10 +196,7 @@
   border-radius:10px;
   border:1.5px solid var(--line);
   background:#fff;
-  cursor:pointer;
-  transition: transform 0.15s ease;
 }
-.attendance-cell:hover{ transform: translateY(-2px); }
 .attendance-date{ font-family:'Poppins', sans-serif; font-weight:700; font-size:14px; color: var(--navy); }
 .attendance-status{ font-size:9.5px; font-weight:600; color: var(--grey-text); }
 

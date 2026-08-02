@@ -421,7 +421,7 @@ function Finance() {
           <div className="fin-card-toolbar">
             <button className="btn-primary" onClick={() => openEntryModal('salary')}>
               <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              Ku Dar Mushahar
+              {t('finance.salary.addNew')}
             </button>
           </div>
           <div className="data-table-wrap">
@@ -450,7 +450,7 @@ function Finance() {
                       <td><span className={`badge ${b.cls}`}>{b.label}</span></td>
                       <td>
                         {s.status === 'pending' && (
-                          <button className="btn-secondary" onClick={() => markSalaryPaid(s.id)}>Bixi</button>
+                          <button className="btn-secondary" onClick={() => markSalaryPaid(s.id)}>{t('finance.salary.markPaid')}</button>
                         )}
                       </td>
                     </tr>
@@ -471,7 +471,7 @@ function Finance() {
           <div className="fin-card-toolbar">
             <button className="btn-primary" onClick={() => openEntryModal('discounts')}>
               <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              Ku Dar Dhimis/Deeq
+              {t('finance.discounts.addNew')}
             </button>
           </div>
           <div className="data-table-wrap">
@@ -505,7 +505,7 @@ function Finance() {
           <div className="fin-card-toolbar">
             <button className="btn-primary" onClick={() => openEntryModal('documents')}>
               <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              Ku Dar Invoice/Receipt
+              {t('finance.documents.addNew')}
             </button>
           </div>
           <div className="data-table-wrap">

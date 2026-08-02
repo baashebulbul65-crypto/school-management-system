@@ -197,7 +197,7 @@ function ClassWorkspace() {
               <thead><tr><th>{t('classWorkspace.attendance.table.student')}</th><th>{t('classWorkspace.attendance.table.status')}</th></tr></thead>
               <tbody>
                 {classStudents.map((s) => {
-                  const status = attendanceToday.students[s.id] || 'present';
+                  const status = attendanceToday.students[s.id] || null;
                   return (
                     <tr key={s.id}>
                       <td>

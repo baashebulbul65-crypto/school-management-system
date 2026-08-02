@@ -124,7 +124,7 @@
         "parentName": "Magaca Waalidka", "relation": "Xiriirka", "parentPhone": "Telefoonka Waalidka",
         "className": "Fasalka", "section": "Qaybta (Section)", "rollNumber": "Roll Number", "subjectsSection": "Maadooyinka"
       },
-      "attendanceNote": "Guji maalin kasta si aad u beddesho xaaladda imaanshaha (Present/Absent).",
+      "attendanceNote": "Akhris-kaliya — diiwaanka imaanshaha maalinlaha ah. Waxaa laga calaamadiyaa bogga \"Fasalladayda\" tab-ka Xaadiris.",
       "table": { "subject": "Maadada", "marks": "Buundooyinka", "total": "Wadarta", "grade": "Darajada", "month": "Bisha", "amount": "Qadarka", "date": "Taariikhda" },
       "feeHistoryTitle": "Taariikhda Bixinnada",
       "noFeeHistory": "Wali lacag lama bixin.",
@@ -317,6 +317,8 @@
       ]
     },
     "salary": {
+      "addNew": "Ku Dar Mushahar",
+      "markPaid": "Bixi",
       "table": { "staff": "Shaqaale", "role": "Doorka", "amount": "Qadarka", "month": "Bisha", "status": "Xaaladda" },
       "linkTeacher": "Xiriirinta Macallinka (ikhtiyaari)",
       "linkTeacherNone": "-- Ma jiro (macallin ma aha, ama lama xirin) --",
@@ -330,6 +332,7 @@
       ]
     },
     "discounts": {
+      "addNew": "Ku Dar Dhimis/Deeq",
       "table": { "student": "Arday", "type": "Nooca", "amount": "Qadarka", "reason": "Sababta" },
       "scholarship": "Deeq Waxbarasho",
       "discount": "Dhimis",
@@ -341,6 +344,7 @@
       ]
     },
     "documents": {
+      "addNew": "Ku Dar Invoice/Receipt",
       "table": { "no": "Lambarka", "type": "Nooca", "party": "Qofka", "amount": "Qadarka", "date": "Taariikhda" },
       "invoice": "Invoice",
       "receipt": "Receipt",
@@ -353,18 +357,29 @@
     "entryModal": {
       "addExpenseTitle": "Ku Dar Kharash Cusub",
       "addIncomeTitle": "Ku Dar Dakhli Cusub",
+      "addSalaryTitle": "Ku Dar Mushahar",
+      "addDiscountTitle": "Ku Dar Dhimis/Deeq Waxbarasho",
+      "addDocumentTitle": "Ku Dar Invoice/Receipt",
       "fillInfo": "Buuxi macluumaadka hoose",
       "category": "Qaybta (Category) *",
       "categories": { "Mushahar": "Mushahar", "Adeegyada": "Adeegyada", "Qalabka": "Qalabka", "Dhismaha": "Dhismaha", "Gaadiid": "Gaadiid", "Dayactir": "Dayactir", "Kale": "Kale" },
       "source": "Isha Dakhliga (Source) *",
       "sourcePlaceholder": "Tusaale: Fees Ardayda",
+      "staffNamePlaceholder": "Tusaale: Cali Xasan Warsame",
+      "rolePlaceholder": "Tusaale: Macallin - Xisaabta",
+      "monthPlaceholder": "Tusaale: Luulyo 2026",
+      "reasonPlaceholder": "Tusaale: Deeq waxbarasho - buundo sare",
+      "partyPlaceholder": "Tusaale: Ismaaciil Cabdi Xasan",
       "amount": "Qadarka ($) *",
       "amountPlaceholder": "Tusaale: 200",
       "description": "Sharraxaad",
       "descriptionPlaceholder": "Faahfaahin gaaban",
       "date": "Taariikhda",
       "submitExpense": "Ku Dar Kharashka",
-      "submitIncome": "Ku Dar Dakhliga"
+      "submitIncome": "Ku Dar Dakhliga",
+      "submitSalary": "Ku Dar Mushaharka",
+      "submitDiscount": "Ku Dar Dhimista",
+      "submitDocument": "Ku Dar Diiwaanka"
     },
     "classDetail": {
       "back": "Noqo",
@@ -429,8 +444,9 @@
     "today": "Maanta",
     "total": "Wadarta",
     "markingTitle": "Calaamadinta Imaanshaha — {{date}}",
-    "noteStudents": "Guji xaaladda ku habboon arday kasta.",
+    "noteStudents": "Akhris-kaliya — xaaladda xaadiriska ardayda waxaa laga calaamadiyaa bogga \"Fasalladayda\" tab-ka Xaadiris.",
     "noteOthers": "Guji xaaladda si aad u wareejiso: Joog → Maqan → Daahid",
+    "notMarkedYet": "Wali Lama Calaamadin",
     "table": { "name": "Magaca", "details": "Faahfaahin", "status": "Xaaladda" },
     "reportsTitle": "Warbixinnada",
     "attendanceRate": "% Heerka Imaanshaha"

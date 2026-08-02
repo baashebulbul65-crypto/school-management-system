@@ -32,7 +32,7 @@ function Attendance() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const {
-    students, teachers, staff, attendanceToday, cycleAttendanceStatus, setStudentAttendanceStatus,
+    students, teachers, staff, attendanceToday, cycleAttendanceStatus,
     addStaffMember, updateStaffMember, removeStaffMember,
     allStudentAttendanceRecords, allStaffAttendanceRecords, myClassIds, myClassNames,
   } = useSchoolData();
@@ -100,7 +100,7 @@ function Attendance() {
         name: s.fullName,
         sub: `${s.className} · ${s.studentId}`,
         className: s.className,
-        status: attendanceToday.students[s.id] || 'present',
+        status: attendanceToday.students[s.id] || null,
       }));
     }
     if (category === 'teachers') {
@@ -137,13 +137,11 @@ function Attendance() {
     ? { ...todayCounts, rate: todayCounts.total ? Math.round((todayCounts.present / todayCounts.total) * 100) : 0 }
     : computePeriodStats(periodRecords, statusDefs.map((d) => d.key), PERIOD_DAYS[period]);
 
-  const handleMark = (person, statusKey) => {
-    if (category === 'students') {
-      setStudentAttendanceStatus(person.id, person.className, statusKey);
-    } else {
-      cycleAttendanceStatus(category, person.id);
-    }
-  };
+  // Xaaladda xaadiriska ARDAYDA (Joog/Maqan/Fasax/Buka) waa in ay ka dhacdo
+  // KALIYA ClassWorkspace.jsx tab-ka Xaadiris (fiiri README) — halkan
+  // (bogga "Xaadiris" ee guud) waa akhris-kaliya ardayda, sidaas darteed
+  // handleMark-ku kaliya wuxuu u shaqeeyaa macallimiinta/shaqaalaha.
+  const handleMark = (person) => cycleAttendanceStatus(category, person.id);
 
   const openAddStaffModal = () => { setEditingStaffMember(null); setShowStaffModal(true); };
   const openEditStaffModal = (person) => { setEditingStaffMember({ id: person.id, name: person.name, sub: person.sub }); setShowStaffModal(true); };
@@ -237,19 +235,15 @@ function Attendance() {
                   <td className="cell-sub">{p.sub}</td>
                   <td>
                     {category === 'students' ? (
-                      <div className="att-status-btn-group">
-                        {statusDefs.map((def) => (
-                          <button
-                            key={def.key}
-                            className={`att-status-btn ${def.key}${p.status === def.key ? ' active' : ''}`}
-                            onClick={() => handleMark(p, def.key)}
-                          >
-                            {def.label}
-                          </button>
-                        ))}
-                      </div>
+                      p.status ? (
+                        <span className={`att-status-btn ${p.status}`}>
+                          {statusDefs.find((d) => d.key === p.status)?.label || p.status}
+                        </span>
+                      ) : (
+                        <span className="att-status-btn neutral">{t('attendance.notMarkedYet')}</span>
+                      )
                     ) : (
-                      <button className={`att-status-btn ${p.status}`} onClick={() => handleMark(p, null)}>
+                      <button className={`att-status-btn ${p.status}`} onClick={() => handleMark(p)}>
                         {statusDefs.find((d) => d.key === p.status)?.label || p.status}
                       </button>
                     )}

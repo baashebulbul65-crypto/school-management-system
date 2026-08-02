@@ -23,7 +23,7 @@ function Students() {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const {
-    students, studentsLoading, addStudent, updateStudent, deleteStudent, cycleStudentAttendanceRecord, seedDemoStudents,
+    students, studentsLoading, addStudent, updateStudent, deleteStudent, seedDemoStudents,
     allStudentAttendanceRecords, feePayments, myClassIds, myClassNames,
   } = useSchoolData();
   // Macallinku gebi ahaanba wuu ka mamnuucan yahay Finance-ka, xitaa xaaladda
@@ -212,7 +212,6 @@ function Students() {
           student={selectedStudent}
           attendanceRecords={selectedStudentAttendance}
           onClose={() => setSelectedStudentId(null)}
-          onToggleAttendance={(studentId, date) => cycleStudentAttendanceRecord(studentId, selectedStudent.className, date)}
         />
       )}
 

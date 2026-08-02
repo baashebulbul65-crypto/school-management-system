@@ -111,6 +111,13 @@
 .att-status-btn.late{ background: #FFF7E0; color: #C99A1F; }
 .att-status-btn.leave{ background: #FFF7E0; color: #C99A1F; }
 .att-status-btn.sick{ background: #F3E8FD; color: #9333EA; }
+.att-status-btn.neutral{ background: #EEF1F4; color: #64748B; }
+
+/* Ardayda bogga "Xaadiris" ee guud (Attendance.jsx) waa akhris-kaliya —
+   span ma aha button, sidaas darteed cursor/hover-ka badhanka lama isticmaalo
+   (calaamadintu waxay ka dhacdaa KALIYA ClassWorkspace.jsx). */
+span.att-status-btn{ cursor: default; }
+span.att-status-btn:hover{ transform: none; }
 
 /* Group of quick-action buttons (Students: Joog/Maqan/Fasax/Buka) */
 .att-status-btn-group{
