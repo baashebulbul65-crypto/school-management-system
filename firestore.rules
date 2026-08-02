@@ -188,10 +188,14 @@ service cloud.firestore {
       allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
     }
 
-    // ===== subjects ===== — la mid ah classes (shaqaale kastaa wuu maamuli karaa).
+    // ===== subjects =====
+    // Akhris: shaqaale kasta. Add/Edit/Delete: owner-kaliya (Teacher Role
+    // Scoping audit, 2026-08-02) — hore waxay ahayd "shaqaale kastaa wuu
+    // maamuli karaa", la mid ahayd classes ka hor intii aan taas la xaddidin.
     match /subjects/{subjectId} {
-      allow read, update, delete: if isStaffOf(resource.data.schoolCode);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow update, delete: if isOwnerStaffOf(resource.data.schoolCode);
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
     }
 
     // ===== exams ===== (qeexidda imtixaanka — fiiri examMarks ee buundada
@@ -213,11 +217,14 @@ service cloud.firestore {
     }
 
     // ===== staffRoster ===== — liiska shaqaalaha aan macallimiinta ahayn
-    // (Maamule, Xisaabiye, Ilaaliye, iwm) ee bogga Attendance tabka "Staff" —
-    // shaqaale kastaa wuu maamuli karaa, la mid ah classes/subjects.
+    // (Maamule, Xisaabiye, Ilaaliye, iwm) ee bogga Attendance tabka "Staff".
+    // Akhris: shaqaale kasta. Add/Edit/Delete: owner-kaliya (Teacher Role
+    // Scoping audit, 2026-08-02) — hore la mid ahayd classes/subjects ka hor
+    // intii aan taas la xaddidin.
     match /staffRoster/{rosterId} {
-      allow read, update, delete: if isStaffOf(resource.data.schoolCode);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow read: if isStaffOf(resource.data.schoolCode);
+      allow update, delete: if isOwnerStaffOf(resource.data.schoolCode);
+      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
     }
 
     // ===== staffAttendanceRecords ===== (doc id: "{category}_{date}_{personId}")

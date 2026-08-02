@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import SubjectFormModal from './SubjectFormModal';
 import '../../styles/dashboard-shared.css';
@@ -10,7 +11,11 @@ function initials(name) {
 
 function Subjects() {
   const { t } = useTranslation();
+  const { profile } = useAuth();
   const { subjects, teachers, addSubject, updateSubject, removeSubject } = useSchoolData();
+  // Add/Edit/Delete waa owner-kaliya (Teacher Role Scoping audit, 2026-08-02)
+  // — la mid ah Classes.jsx, fiiri firestore.rules: subjects.
+  const isOwner = profile?.role !== 'teacher';
   const [search, setSearch] = useState('');
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingSubject, setEditingSubject] = useState(null);
@@ -51,10 +56,12 @@ function Subjects() {
           <h2>{t('subjects.pageTitle')}</h2>
           <p>{t('subjects.pageSubtitle')}</p>
         </div>
-        <button className="btn-primary" onClick={openAddModal}>
-          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          {t('subjects.addNew')}
-        </button>
+        {isOwner && (
+          <button className="btn-primary" onClick={openAddModal}>
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            {t('subjects.addNew')}
+          </button>
+        )}
       </div>
 
       <div className="dash-card">
@@ -96,14 +103,16 @@ function Subjects() {
                   <td><span className="badge badge-neutral">{s.credit} {t('subjects.creditUnit')}</span></td>
                   <td className="cell-sub">{s.weeklyHours} {t('subjects.hoursPerWeek')}</td>
                   <td>
-                    <div className="row-actions">
-                      <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(s)}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
-                      </button>
-                      <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteSubject(s.id, s.name)}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
-                      </button>
-                    </div>
+                    {isOwner && (
+                      <div className="row-actions">
+                        <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(s)}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
+                        </button>
+                        <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteSubject(s.id, s.name)}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { todayISODate, isoDateDaysAgo } from '../../utils/somaliDate';
 import StaffMemberFormModal from './StaffMemberFormModal';
@@ -29,11 +30,16 @@ function initials(name) {
 
 function Attendance() {
   const { t } = useTranslation();
+  const { profile } = useAuth();
   const {
     students, teachers, staff, attendanceToday, cycleAttendanceStatus, setStudentAttendanceStatus,
     addStaffMember, updateStaffMember, removeStaffMember,
     allStudentAttendanceRecords, allStaffAttendanceRecords,
   } = useSchoolData();
+  // Add/Edit/Delete shaqaalaha roster-ka waa owner-kaliya (Teacher Role
+  // Scoping audit, 2026-08-02) — la mid ah Classes.jsx/Subjects.jsx, fiiri
+  // firestore.rules: staffRoster.
+  const isOwner = profile?.role !== 'teacher';
   const [category, setCategory] = useState('students');
   const [period, setPeriod] = useState('daily');
   const [date] = useState(todayISODate());
@@ -168,7 +174,7 @@ function Attendance() {
             </button>
           ))}
         </div>
-        {category === 'staff' && (
+        {category === 'staff' && isOwner && (
           <button className="btn-primary" onClick={openAddStaffModal}>
             <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             Ku Dar Shaqaale
@@ -205,7 +211,7 @@ function Attendance() {
                 <th>{t('attendance.table.name')}</th>
                 <th>{t('attendance.table.details')}</th>
                 <th>{t('attendance.table.status')}</th>
-                {category === 'staff' && <th></th>}
+                {category === 'staff' && isOwner && <th></th>}
               </tr>
             </thead>
             <tbody>
@@ -237,7 +243,7 @@ function Attendance() {
                       </button>
                     )}
                   </td>
-                  {category === 'staff' && (
+                  {category === 'staff' && isOwner && (
                     <td>
                       <div className="row-actions">
                         <button className="row-action-btn" title="Wax Ka Beddel" onClick={() => openEditStaffModal(p)}>
@@ -252,7 +258,7 @@ function Attendance() {
                 </tr>
               ))}
               {category === 'staff' && list.length === 0 && (
-                <tr><td colSpan="4" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>Wali shaqaale lama darin.</td></tr>
+                <tr><td colSpan={isOwner ? 4 : 3} style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>Wali shaqaale lama darin.</td></tr>
               )}
             </tbody>
           </table>
