@@ -4,6 +4,14 @@ import { useSchoolData } from '../../context/SchoolDataContext';
 import { classroomName } from '../../hooks/useClassOptions';
 import './TeacherProfileModal.css';
 
+// Isla habka Teachers.jsx (liiska) — hubi 'inactive' (macallin la saaray,
+// cascadeUnlinkTeacher) si aan lagu qalin qaadin "Fasax" (leave) haddii
+// mustaqbalka profile-kan loo furi karo macallin 'inactive' ah (hadda
+// Teachers.jsx horeba wuu ka qariyaa liiska, marka ma la gaari karo, laakiin
+// waa in muuqaalku sax yahay haddii taasi isbeddesho).
+const STATUS_CLS = { active: 'badge-success', leave: 'badge-warning', inactive: 'badge-neutral' };
+const STATUS_LABEL_KEY = { active: 'common.status.active', leave: 'common.leave', inactive: 'common.status.inactive' };
+
 function initials(name) {
   return name ? name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase() : '';
 }
@@ -28,7 +36,6 @@ function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAtte
     { id: 'guud', label: t('teachers.profile.tabs.general') },
     { id: 'imaanshaha', label: t('teachers.profile.tabs.attendance') },
     { id: 'mushahar', label: t('teachers.profile.tabs.salary') },
-    { id: 'dukumenti', label: t('teachers.profile.tabs.documents') },
   ];
 
   // Audit (2026-08-02, gap #3) — fasallada la muujinayo halkan hadda waxaa
@@ -41,7 +48,6 @@ function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAtte
   // teacher.salary (array hore oo mar walba madhan, marnaba lama qorin,
   // fiiri commit-kii ka saaray student.fees ee isla dhibaatadaas ahaa).
   const salary = salaries.filter((s) => s.teacherId === teacher.id);
-  const documents = teacher.documents || [];
 
   return (
     <div className="tpm-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -58,8 +64,8 @@ function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAtte
             <div className="tpm-header-info">
               <h2>{teacher.fullName}</h2>
               <p>{teacher.teacherId} &middot; {teacher.subject}</p>
-              <span className={`badge ${teacher.status === 'active' ? 'badge-success' : 'badge-warning'}`}>
-                {teacher.status === 'active' ? t('common.status.active') : t('common.leave')}
+              <span className={`badge ${STATUS_CLS[teacher.status] || STATUS_CLS.active}`}>
+                {t(STATUS_LABEL_KEY[teacher.status] || STATUS_LABEL_KEY.active)}
               </span>
             </div>
           </div>
@@ -150,29 +156,6 @@ function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAtte
                     ))}
                   </tbody>
                 </table>
-              )}
-            </div>
-          )}
-
-          {activeTab === 'dukumenti' && (
-            <div className="documents-list">
-              {documents.length === 0 ? (
-                <p className="tpm-note">{t('teachers.profile.noDocuments')}</p>
-              ) : (
-                documents.map((d, i) => (
-                  <div key={i} className="document-row">
-                    <div className="document-icon">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
-                    </div>
-                    <div className="document-info">
-                      <div className="document-name">{d.name}</div>
-                      <div className="document-meta">{d.type} &middot; {d.uploadDate}</div>
-                    </div>
-                    <button className="row-action-btn" title={t('common.actions.download')}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                    </button>
-                  </div>
-                ))
               )}
             </div>
           )}

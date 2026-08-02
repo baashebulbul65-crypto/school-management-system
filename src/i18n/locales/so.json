@@ -163,14 +163,13 @@
       "submitAdd": "Ku Dar Macallinka"
     },
     "profile": {
-      "tabs": { "general": "Macluumaadka Guud", "attendance": "Imaanshaha", "salary": "Mushaharka", "documents": "Dukumentiyada" },
+      "tabs": { "general": "Macluumaadka Guud", "attendance": "Imaanshaha", "salary": "Mushaharka" },
       "info": { "fullName": "Magaca Buuxa", "teacherId": "Teacher ID", "phone": "Telefoonka", "email": "Email", "qualification": "Shahaadada (Qualification)", "subject": "Maadada" },
       "assignedClassesSection": "Fasallada Loo Xilsaaray",
       "noAssignedClasses": "Weli fasal loo xilsaaray ma jiro.",
       "attendanceNote": "Guji maalin kasta si aad u beddesho xaaladda imaanshaha (Present/Absent).",
       "noAttendance": "Weli imaansho ma jiro.",
       "noSalary": "Weli mushahar lama diiwaan gelin.",
-      "noDocuments": "Weli dukumenti lama geli.",
       "table": { "month": "Bisha", "amount": "Qadarka", "payDate": "Taariikhda Bixinta", "status": "Xaaladda" }
     }
   },
@@ -323,6 +322,7 @@
       "linkTeacher": "Xiriirinta Macallinka (ikhtiyaari)",
       "linkTeacherNone": "-- Ma jiro (macallin ma aha, ama lama xirin) --",
       "linkTeacherHint": "Haddii shaqaalahani uu yahay macallin ku jira bogga Macallimiinta, ku xir halkan si mushaharkan uu ugu soo baxo profile-kiisa.",
+      "notLinkedTooltip": "Lama xirin diiwaanka Macallinka — haddii shaqaalahani uu yahay macallin, mushaharkan kuma soo bixi doono profile-kiisa (bogga Macallimiinta).",
       "items": [
         { "staffName": "Cali Xasan Warsame", "role": "Macallin - Xisaabta", "month": "Luulyo 2026" },
         { "staffName": "Faadumo Nuur Cige", "role": "Macallin - Ingiriisi", "month": "Luulyo 2026" },

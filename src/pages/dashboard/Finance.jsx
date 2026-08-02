@@ -502,7 +502,18 @@ function Finance() {
                   const b = statusBadge(s.status);
                   return (
                     <tr key={s.id}>
-                      <td>{s.staffName}</td>
+                      <td>
+                        {s.staffName}
+                        {!s.teacherId && (
+                          <span
+                            className="cell-sub"
+                            style={{ marginInlineStart: 6, cursor: 'help' }}
+                            title={t('finance.salary.notLinkedTooltip')}
+                          >
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline', verticalAlign: 'middle' }}><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+                          </span>
+                        )}
+                      </td>
                       <td className="cell-sub">{s.role}</td>
                       <td className="cell-amount">${s.amount}</td>
                       <td>{s.month}</td>
