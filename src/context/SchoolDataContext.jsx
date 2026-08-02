@@ -835,10 +835,24 @@ export function SchoolDataProvider({ children }) {
     }
   };
 
+  // Finance audit (2026-08-04, buttons-work-as-intended pass): hore
+  // "Ku Dar Dhimis/Deeq" wuxuu kaliya samayn jiray diiwaan (financeDiscounts,
+  // tab-ka Discounts + tirada "Q.Dhimis"), laakiin ma taaban jirin xisaabinta
+  // DHABTA AH ee lacagta ardaygaas (studentFeeOwed(), kaas oo isticmaala
+  // student.feeType/discountPercent — kaliya laga beddeli jiray
+  // StudentFormModal). Sidaas darteed maamulaha wuxuu u arki jiray in dhimis
+  // la siiyay, laakiin ardaygu wuu bixin jiray qadarkiisii buuxa. Hadda waxaa
+  // sidoo kale la cusboonaysiinayaa diiwaanka ardayga si dhimistu/deeqdu si
+  // dhab ah ugu dhaqmaan lacagta.
   const addDiscount = async (payload) => {
-    if (!profile?.schoolCode) return;
+    if (!profile?.schoolCode || !payload.studentId) return;
     try {
       await createDiscountDoc(profile.schoolCode, payload);
+      if (payload.type === 'scholarship') {
+        await updateStudentDoc(payload.studentId, { feeType: 'free' });
+      } else {
+        await updateStudentDoc(payload.studentId, { feeType: 'discount', discountPercent: Number(payload.discountPercent) || 0 });
+      }
     } catch (err) {
       reportError('Khalad ayaa dhacay markii dhimista/deeqda la darayay:', err);
     }

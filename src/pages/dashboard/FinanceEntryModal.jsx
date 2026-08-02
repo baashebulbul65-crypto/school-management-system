@@ -8,7 +8,7 @@ const EMPTY_FORMS = {
   expenses: { category: EXPENSE_CATEGORIES[0], description: '', amount: '', date: '' },
   income: { source: '', description: '', amount: '', date: '' },
   salary: { staffName: '', role: '', amount: '', month: '', teacherId: '' },
-  discounts: { studentId: '', student: '', type: 'discount', amount: '', reason: '' },
+  discounts: { studentId: '', student: '', type: 'discount', amount: '', discountPercent: '', reason: '' },
   documents: { type: 'invoice', party: '', amount: '', date: '' },
 };
 
@@ -57,6 +57,7 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], stude
   const handleSubmit = (e) => {
     e.preventDefault();
     const payload = { ...form, amount: Number(form.amount) || 0 };
+    if (type === 'discounts') payload.discountPercent = Number(form.discountPercent) || 0;
     onSave(payload, type);
     onClose();
   };
@@ -140,6 +141,21 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], stude
                       <option value="scholarship">{t('finance.discounts.scholarship')}</option>
                     </select>
                   </div>
+                  {form.type === 'discount' && (
+                    <div className="fem-field">
+                      <label>{t('students.form.fields.discountPercent')}</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={form.discountPercent}
+                        onChange={update('discountPercent')}
+                        placeholder={t('students.form.placeholders.discountPercent')}
+                        required
+                      />
+                      <span className="fem-hint">{t('finance.discounts.discountPercentHint')}</span>
+                    </div>
+                  )}
                   <div className="fem-field full">
                     <label>{t('finance.discounts.table.reason')}</label>
                     <input type="text" value={form.reason} onChange={update('reason')} placeholder={t('finance.entryModal.reasonPlaceholder')} />

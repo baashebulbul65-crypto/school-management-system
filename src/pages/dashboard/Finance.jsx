@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import jsPDF from 'jspdf';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { useSettings } from '../../context/SettingsContext';
 import { classroomName } from '../../hooks/useClassOptions';
 import { currentMonthValue } from '../../utils/somaliDate';
 import { getFeeType, studentFeeOwed } from '../../utils/studentFee';
@@ -14,6 +16,7 @@ import './Finance.css';
 
 function Finance() {
   const { t } = useTranslation();
+  const { settings } = useSettings();
   const {
     classes, students, teachers, feePayments,
     expenses, income, addExpense, addIncome,
@@ -166,6 +169,26 @@ function Finance() {
   };
 
   const handlePrint = () => window.print();
+
+  // Finance audit (2026-08-04, buttons-work-as-intended pass): badhanka
+  // "Print/PDF" ee saf kasta (tab-ka Invoices & Receipts) hore wuxuu
+  // isticmaali jiray isla handlePrint() guud (window.print()) — kaas oo
+  // daabici jiray BOGGA OO DHAN (dhammaan safafka), ma ahayn dukumeentigaas
+  // gaarka ah ee la gujiyay. Hadda waxaa loo dhisay PDF gaar u ah safkaas
+  // kaliya, isla qaabka jsPDF ee Reports.jsx (handleExportPDF) horeba
+  // isticmaalo.
+  const handlePrintDocument = (d) => {
+    const doc = new jsPDF();
+    const title = d.type === 'invoice' ? t('finance.documents.invoice') : t('finance.documents.receipt');
+    doc.setFontSize(16);
+    doc.text(`${settings.school.name || ''} — ${title}`, 14, 18);
+    doc.setFontSize(11);
+    doc.text(`${t('finance.documents.table.no')}: ${d.no}`, 14, 32);
+    doc.text(`${t('finance.documents.table.party')}: ${d.party}`, 14, 40);
+    doc.text(`${t('finance.documents.table.amount')}: $${d.amount}`, 14, 48);
+    doc.text(`${t('finance.documents.table.date')}: ${d.date || ''}`, 14, 56);
+    doc.save(`${d.no}.pdf`);
+  };
 
   const TABS = [
     { id: 'accounting', label: t('finance.tabs.accounting') },
@@ -524,7 +547,7 @@ function Finance() {
                     <td className="cell-amount">${d.amount}</td>
                     <td className="cell-sub">{d.date}</td>
                     <td>
-                      <button className="row-action-btn" title={t('finance.printPdf')} onClick={handlePrint}>
+                      <button className="row-action-btn" title={t('finance.printPdf')} onClick={() => handlePrintDocument(d)}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
                       </button>
                     </td>
