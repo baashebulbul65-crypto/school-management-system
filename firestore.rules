@@ -31,6 +31,22 @@ service cloud.firestore {
       return isStaffOf(schoolCode) && me().role == 'owner';
     }
 
+    // Teacher Firestore Hardening (2026-08-02): waxaa loo isticmaalaa
+    // attendanceRecords/notifications — macallinku wuxuu si toos ah Firestore
+    // uga akhrin karaa KALIYA records-ka fasalladiisa gaarka ah, ma aha
+    // fasallada kale/xogta guud ee dugsiga (xitaa haddii uu isku dayo
+    // query/get toos ah oo aan mari doonin UI-ga). recordClassTeacherId waa
+    // field "classTeacherId" ee record-ka (denormalized marka la abuurayo,
+    // fiiri firebase/attendance.js iyo notifications.js) — records-kii hore
+    // ee aan lahayn field-kan (ka hor backfill-ka) waxay noqonayaan null
+    // marka la akhriyo (get(...,null)), taasoo macallinku u xannibaysa (owner
+    // ayaa arka dhammaantood xitaa kuwa hore).
+    function isMyClassData(schoolCode, recordClassTeacherId) {
+      return isOwnerStaffOf(schoolCode)
+        || (isStaffOf(schoolCode) && me().role == 'teacher'
+            && recordClassTeacherId != null && recordClassTeacherId == me().teacherDocId);
+    }
+
     function isParentAccount() {
       return isSignedIn() && me().accountType == 'student-parent';
     }
@@ -210,8 +226,14 @@ service cloud.firestore {
     }
 
     // ===== attendanceRecords ===== (doc id: "{date}_{studentId}")
+    // Akhris: owner wuxuu arkaa dhammaantiisa; macallinku wuxuu KALIYA arkaa
+    // records-ka fasalladiisa (classTeacherId, Teacher Firestore Hardening
+    // 2026-08-02, fiiri isMyClassData kore). Qoris: weli isStaffOf (shaqaale
+    // kastaa wuu qori karaa — xaddidaadda UI-ga (Attendance.jsx) ayaa xakameeya
+    // liiska ardayda macallinku arko, ma aha rules-ka).
     match /attendanceRecords/{recordId} {
-      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
+      allow read: if isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null))
+        || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
       allow create, update: if isStaffOf(request.resource.data.schoolCode);
       allow delete: if false;
     }
@@ -356,8 +378,18 @@ service cloud.firestore {
     // eego) — sidaas darteed shaqaalaha waa in ay si buuxda u update-gareyn
     // karaan (ma aha kaliya calaamadinta readByStaff). Waalidku wuxuu kaliya
     // beddeli karaa "readByParent".
+    // Akhris (Teacher Firestore Hardening, 2026-08-02): type=='fee' waa
+    // owner-kaliya (isla mabda'a financeExpenses iwm — macallinku gebi
+    // ahaanba wuu ka mamnuucan yahay lacagta); noocyada kale (tusaale
+    // 'absent') waxaa lagu xaddidayaa fasalka macallinka (isMyClassData,
+    // classTeacherId). Qoris: weli isStaffOf (macallinku wuu abuuri karaa
+    // ogeysiin maqnaanshaha ardaygiisa marka uu calaamadiyo "Maqan").
     match /notifications/{notificationId} {
-      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
+      allow read: if
+        (resource.data.type == 'fee'
+          ? isOwnerStaffOf(resource.data.schoolCode)
+          : isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null)))
+        || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
       allow create: if isStaffOf(request.resource.data.schoolCode);
 
       allow update: if

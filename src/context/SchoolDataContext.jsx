@@ -26,13 +26,14 @@ import {
 import {
   subscribeToAttendanceByDate, setStudentAttendanceRecord, subscribeToAllAttendanceRecords,
   subscribeToStaffAttendanceByDate, setStaffAttendanceRecord, subscribeToAllStaffAttendanceRecords,
+  backfillAttendanceClassScoping,
 } from '../firebase/attendance';
 import { subscribeToStaffRoster, createStaffRosterDoc, updateStaffRosterDoc, deleteStaffRosterDoc } from '../firebase/staffRoster';
 import { subscribeToExamMarks, setExamMarkRecord } from '../firebase/examMarks';
 import { subscribeToQuranProgressByDate, setQuranProgressRecord } from '../firebase/quranProgress';
 import { subscribeToQuranTargets, createQuranTargetDoc, updateQuranTargetDoc } from '../firebase/quranTargets';
 import { subscribeToAllThreads, sendMessage as sendMessageDoc, markMessagesRead } from '../firebase/messages';
-import { createAbsentNotification } from '../firebase/notifications';
+import { createAbsentNotification, backfillNotificationClassScoping } from '../firebase/notifications';
 import { todayISODate } from '../utils/somaliDate';
 import { studentFeeOwed } from '../utils/studentFee';
 
@@ -239,14 +240,26 @@ export function SchoolDataProvider({ children }) {
   const [allStaffAttendanceRecords, setAllStaffAttendanceRecords] = useState([]);
 
   // ===== IMAANSHAHA ARDAYDA MAANTA (Firestore collection "attendanceRecords") =====
+  // "classTeacherId" (Teacher Firestore Hardening, 2026-08-02): macallinku
+  // query-giisu waa in uu si toos ah u xaddidan yahay fasalladiisa (firestore.
+  // rules-ku hadda ku tiirsan yahay field-kan), haddii kale (owner) query-gu
+  // waa schoolCode-wide sida hore. Macallin aan ku xirneyn diiwaanka Teachers
+  // (teacherDocId maqan) — lama sameeyo query, waa madhan (fiiri Classes.jsx
+  // "notLinked" oo isla mabda'a).
   useEffect(() => {
     if (!profile?.schoolCode) {
       setStudentAttendanceToday({});
       return undefined;
     }
+    if (profile?.role === 'teacher' && !profile?.teacherDocId) {
+      setStudentAttendanceToday({});
+      return undefined;
+    }
+    const classTeacherId = profile?.role === 'teacher' ? profile.teacherDocId : null;
     const unsubscribe = subscribeToAttendanceByDate(
       profile.schoolCode,
       todayISODate(),
+      classTeacherId,
       (records) => {
         const map = {};
         records.forEach((r) => { map[r.studentId] = r.status; });
@@ -255,26 +268,33 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii imaanshaha maanta laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode]);
+  }, [profile?.schoolCode, profile?.role, profile?.teacherDocId]);
 
   // "forDate" ayaa la wadaagaa labadaba: calaamadinta "maanta" ee Attendance.jsx
   // (setStudentAttendanceStatus, date=maanta) iyo cyclinga taariikhda hore ee
   // StudentProfileModal (cycleStudentAttendanceRecord, date=maalin la doortay).
   const setStudentAttendanceForDate = async (studentId, className, date, status) => {
     if (!profile?.schoolCode) return;
+    // classTeacherId denormalized (Teacher Firestore Hardening, 2026-08-02) —
+    // kaydsan record-ka lafteeda si firestore.rules-ku ugu xaddidi karo
+    // akhrinta macallinka (fiiri firebase/attendance.js). student.classId waa
+    // la door-biday className marka la heli karo (isla fallback-ka meelaha kale).
+    const student = students.find((s) => s.id === studentId);
+    const studentClass = classes.find((c) => (student?.classId ? c.id === student.classId : `${c.grade}${c.section}` === className));
+    const classTeacherId = studentClass?.classTeacherId || null;
     try {
-      await setStudentAttendanceRecord(profile.schoolCode, date, studentId, className, status);
+      await setStudentAttendanceRecord(profile.schoolCode, date, studentId, className, classTeacherId, status);
     } catch (err) {
       reportError('Khalad ayaa dhacay markii imaanshaha ardayga la kaydinayay:', err);
     }
     if (status === 'absent' && settings.notificationPrefs.attendanceAlerts) {
-      const student = students.find((s) => s.id === studentId);
       try {
         await createAbsentNotification({
           schoolCode: profile.schoolCode,
           studentId,
           studentName: student?.fullName || '',
           className,
+          classTeacherId,
           date,
         });
       } catch (err) {
@@ -306,13 +326,19 @@ export function SchoolDataProvider({ children }) {
       setAllStudentAttendanceRecords([]);
       return undefined;
     }
+    if (profile?.role === 'teacher' && !profile?.teacherDocId) {
+      setAllStudentAttendanceRecords([]);
+      return undefined;
+    }
+    const classTeacherId = profile?.role === 'teacher' ? profile.teacherDocId : null;
     const unsubscribe = subscribeToAllAttendanceRecords(
       profile.schoolCode,
+      classTeacherId,
       setAllStudentAttendanceRecords,
       (err) => reportError('Khalad ayaa dhacay markii taariikhda imaanshaha ardayda laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role, profile?.teacherDocId]);
 
   useEffect(() => {
     if (!profile?.schoolCode || profile?.accountType !== 'staff') {
@@ -596,6 +622,27 @@ export function SchoolDataProvider({ children }) {
     () => (myClasses ? new Set(myClasses.map((c) => `${c.grade}${c.section}`)) : null),
     [myClasses]
   );
+
+  // Hal mar per school — u buuxisa 'classTeacherId' record-yadii xaadiriska/
+  // ogaysiisyada 'absent' ee hore loo abuuray ka hor intaan field-kaas cusub
+  // la darin (Teacher Firestore Hardening, 2026-08-02 — firestore.rules-ku
+  // hadda ku tiirsan yahay field-kan si loo xaddidiyo akhrinta macallinka).
+  // Isla mabda'a backfillStudentLookups kore. Wuxuu sugayaa 'classes' inay
+  // soo gaadhaan si loo dhiso xiriirka className -> classTeacherId.
+  const backfilledClassScopingRef = useRef(null);
+  useEffect(() => {
+    if (!profile?.schoolCode || profile.accountType !== 'staff') return;
+    if (classes.length === 0) return;
+    if (backfilledClassScopingRef.current === profile.schoolCode) return;
+    backfilledClassScopingRef.current = profile.schoolCode;
+    const classNameToTeacherId = new Map(classes.map((c) => [`${c.grade}${c.section}`, c.classTeacherId || null]));
+    backfillAttendanceClassScoping(profile.schoolCode, classNameToTeacherId).catch((err) =>
+      reportError('Khalad ayaa dhacay markii xaadiriska la buuxinayay (classTeacherId):', err)
+    );
+    backfillNotificationClassScoping(profile.schoolCode, classNameToTeacherId).catch((err) =>
+      reportError('Khalad ayaa dhacay markii ogeysiisyada la buuxinayay (classTeacherId):', err)
+    );
+  }, [profile?.schoolCode, profile?.accountType, classes]);
 
   // ===== MAADOOYINKA (Firestore collection "subjects") =====
   useEffect(() => {

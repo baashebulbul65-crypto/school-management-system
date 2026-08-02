@@ -26,18 +26,29 @@ export function NotificationsProvider({ children }) {
     showError(message);
   };
 
+  // "classTeacherId" (Teacher Firestore Hardening, 2026-08-02): macallinku
+  // query-giisu waa in uu si toos ah u xaddidan yahay type=='absent' +
+  // fasalladiisa (firestore.rules-ku hadda ku tiirsan yahay), haddii kale
+  // (owner) query-gu waa schoolCode-wide sida hore. Macallin aan ku xirneyn
+  // diiwaanka Teachers — lama sameeyo query, waa madhan.
   useEffect(() => {
     if (!profile?.schoolCode || profile?.accountType !== 'staff') {
       setRawNotifications([]);
       return undefined;
     }
+    if (profile?.role === 'teacher' && !profile?.teacherDocId) {
+      setRawNotifications([]);
+      return undefined;
+    }
+    const classTeacherId = profile?.role === 'teacher' ? profile.teacherDocId : null;
     const unsubscribe = subscribeToAllNotifications(
       profile.schoolCode,
+      classTeacherId,
       setRawNotifications,
       (err) => reportError('Khalad ayaa dhacay markii ogeysiisyada laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role, profile?.teacherDocId]);
 
   // Xasuusinta Lacagta ("fee reminder") — otomaatig, ma aha gacan-gelin.
   // Bishii-bishii waxaan u wareegnaa ardayda "unpaid" ee dhabta ah (fiiri

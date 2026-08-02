@@ -5,7 +5,7 @@
 // oo la xalliyay marka la abuurayo, si looga fogaado query cusub oo aan
 // horey loo tijaabin ee users.childrenIds array-contains ah).
 
-import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, doc, setDoc, updateDoc, deleteDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from './config';
 
 const COLLECTION = 'notifications';
@@ -14,9 +14,18 @@ function sortByCreatedAtDesc(docs) {
   return docs.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-// Waxaa isticmaala dhinaca Shaqaalaha — dhammaan ogeysiisyada dugsiga hal listener ah.
-export function subscribeToAllNotifications(schoolCode, onChange, onError) {
-  const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode));
+// Waxaa isticmaala dhinaca Shaqaalaha — dhammaan ogeysiisyada dugsiga hal
+// listener ah (owner). "classTeacherId" (Teacher Firestore Hardening,
+// 2026-08-02) — haddii la gudbiyo (macallin), query-gu wuxuu si toos ah u
+// xaddidaa type=='absent' + classTeacherId-diisa kaliya, maadaama
+// firestore.rules-ku hadda xannibayo macallin uga akhriyo ogeysiisyo 'fee' ah
+// ama kuwa fasallada kale (query-ga oo isku darsan schoolCode-wide oo aan
+// xaddidnayn ayaa Firestore ku diidi lahaa oo dhan, ma aha qayb kaliya, fiiri
+// firestore.rules: notifications).
+export function subscribeToAllNotifications(schoolCode, classTeacherId, onChange, onError) {
+  const constraints = [where('schoolCode', '==', schoolCode)];
+  if (classTeacherId) constraints.push(where('type', '==', 'absent'), where('classTeacherId', '==', classTeacherId));
+  const q = query(collection(db, COLLECTION), ...constraints);
   return onSnapshot(
     q,
     (snap) => onChange(sortByCreatedAtDesc(snap.docs.map((d) => ({ id: d.id, ...d.data() })))),
@@ -48,9 +57,9 @@ export function subscribeToNotificationsForChildren(schoolCode, studentIds, onCh
 // tuso (message) laguma kaydiyo doc-ka — waxaa loo dhisaa marka la soo bandhigo
 // (studentName/className), si luuqadda (so/ar) ay noqoto tan isticmaaluhu hadda
 // dooranayo, ee aysan ku xayirneyn luuqaddii shaqaaluhu ku sameeyay ogeysiiska.
-export async function createAbsentNotification({ schoolCode, studentId, studentName, className, date }) {
+export async function createAbsentNotification({ schoolCode, studentId, studentName, className, classTeacherId, date }) {
   await setDoc(doc(db, COLLECTION, `absent_${date}_${studentId}`), {
-    schoolCode, studentId, studentName, className, date,
+    schoolCode, studentId, studentName, className, classTeacherId: classTeacherId || null, date,
     type: 'absent',
     createdAt: new Date().toISOString(),
     readByStaff: false,
@@ -82,4 +91,21 @@ export async function markNotificationsRead(notificationIds, readerRole) {
 
 export async function deleteNotificationDoc(id) {
   await deleteDoc(doc(db, COLLECTION, id));
+}
+
+// Hal mar loo isticmaalo (Teacher Firestore Hardening, 2026-08-02) — u
+// buuxisa 'classTeacherId' ogeysiisyada 'absent' ee hore loo abuuray ka hor
+// intaan field-kaas cusub la darin (fiiri backfillAttendanceClassScoping,
+// firebase/attendance.js — isla mabda'a). Ogeysiisyada 'fee' uma baahna
+// classTeacherId (owner-kaliya ayaa akhriyaya, fiiri firestore.rules).
+export async function backfillNotificationClassScoping(schoolCode, classNameToTeacherId) {
+  const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode), where('type', '==', 'absent'));
+  const snap = await getDocs(q);
+  await Promise.all(
+    snap.docs.map((d) => {
+      const data = d.data();
+      if (data.classTeacherId !== undefined) return null;
+      return updateDoc(doc(db, COLLECTION, d.id), { classTeacherId: classNameToTeacherId.get(data.className) || null });
+    })
+  );
 }

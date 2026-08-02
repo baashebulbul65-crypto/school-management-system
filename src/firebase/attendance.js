@@ -3,7 +3,7 @@
 // waa "{date}_{studentId}" (deterministic), si calaamadinta labaad ee isla
 // maalinta ay u beddesho isla record-ka halkii ay u abuuri lahayd mid cusub.
 
-import { collection, doc, setDoc, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, doc, setDoc, updateDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from './config';
 
 const COLLECTION = 'attendanceRecords';
@@ -12,8 +12,15 @@ function recordId(date, studentId) {
   return `${date}_${studentId}`;
 }
 
-export function subscribeToAttendanceByDate(schoolCode, date, onChange, onError) {
-  const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode), where('date', '==', date));
+// "classTeacherId" (Teacher Firestore Hardening, 2026-08-02): haddii la
+// gudbiyo (macallin), query-ga waxaa lagu daraa 'classTeacherId' si Firestore
+// Rules-ku ay u ogolaadaan KALIYA records-ka fasalka macallinkan — haddii kale
+// (owner/null) query-gu waa schoolCode-wide sida hore. Fiiri firestore.rules:
+// attendanceRecords.
+export function subscribeToAttendanceByDate(schoolCode, date, classTeacherId, onChange, onError) {
+  const constraints = [where('schoolCode', '==', schoolCode), where('date', '==', date)];
+  if (classTeacherId) constraints.push(where('classTeacherId', '==', classTeacherId));
+  const q = query(collection(db, COLLECTION), ...constraints);
   return onSnapshot(
     q,
     (snap) => onChange(snap.docs.map((d) => d.data())),
@@ -21,17 +28,20 @@ export function subscribeToAttendanceByDate(schoolCode, date, onChange, onError)
   );
 }
 
-export async function setStudentAttendanceRecord(schoolCode, date, studentId, className, status) {
+export async function setStudentAttendanceRecord(schoolCode, date, studentId, className, classTeacherId, status) {
   await setDoc(doc(db, COLLECTION, recordId(date, studentId)), {
-    schoolCode, date, studentId, className, status,
+    schoolCode, date, studentId, className, classTeacherId: classTeacherId || null, status,
   });
 }
 
 // Dhammaan diiwaanka imaanshaha ee ARDAYDA OO DHAN (taariikhda oo dhan, ma
 // ahan hal maalin) — waxaa isticmaala bogga Attendance ee warbixinnada
-// toddobaadka/bisha/sanadka (fiiri Attendance.jsx).
-export function subscribeToAllAttendanceRecords(schoolCode, onChange, onError) {
-  const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode));
+// toddobaadka/bisha/sanadka (fiiri Attendance.jsx). "classTeacherId" — fiiri
+// faallada subscribeToAttendanceByDate kore.
+export function subscribeToAllAttendanceRecords(schoolCode, classTeacherId, onChange, onError) {
+  const constraints = [where('schoolCode', '==', schoolCode)];
+  if (classTeacherId) constraints.push(where('classTeacherId', '==', classTeacherId));
+  const q = query(collection(db, COLLECTION), ...constraints);
   return onSnapshot(
     q,
     (snap) => onChange(snap.docs.map((d) => d.data())),
@@ -92,5 +102,23 @@ export function subscribeToAllStaffAttendanceRecords(schoolCode, onChange, onErr
     q,
     (snap) => onChange(snap.docs.map((d) => d.data())),
     onError
+  );
+}
+
+// Hal mar loo isticmaalo (Teacher Firestore Hardening, 2026-08-02) — u
+// buuxisa 'classTeacherId' record-yadii ARDAYDA ee hore loo abuuray ka hor
+// intaan field-kaas cusub la darin (firestore.rules-ku hadda ku tiirsan
+// yahay), iyada oo ka soo qaadaysa xiriirka className -> classTeacherId ee
+// fasallada hadda (Map, fiiri SchoolDataContext.jsx). Records-ka horeba
+// leh field-ka (xitaa null) waa la boodaa — ma dib-u-qorin.
+export async function backfillAttendanceClassScoping(schoolCode, classNameToTeacherId) {
+  const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode));
+  const snap = await getDocs(q);
+  await Promise.all(
+    snap.docs.map((d) => {
+      const data = d.data();
+      if (data.classTeacherId !== undefined) return null;
+      return updateDoc(doc(db, COLLECTION, d.id), { classTeacherId: classNameToTeacherId.get(data.className) || null });
+    })
   );
 }
