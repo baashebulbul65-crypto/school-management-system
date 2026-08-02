@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { todayISODate, formatDMY } from '../../utils/somaliDate';
 import QuranTargetFormModal from './QuranTargetFormModal';
@@ -17,6 +18,7 @@ function initials(name) {
 
 function ClassWorkspace() {
   const { t } = useTranslation();
+  const { profile } = useAuth();
   const { classId } = useParams();
   const navigate = useNavigate();
   const {
@@ -48,6 +50,17 @@ function ClassWorkspace() {
 
   const cls = classes.find((c) => String(c.id) === classId);
   const classroomName = cls ? `${cls.grade}${cls.section}` : '';
+
+  // Audit (2026-08-02): ClassWorkspace ma haysan xannibaad teacher-ownership
+  // ah — macallin si toos ah URL (classId) ugu marin karay fasal aan kiisa
+  // ahayn (classes-ka oo dhan si sax ah loogu akhriyo browser-ka, isla
+  // marka Classes.jsx UI-gu kaliya tuso kiisiisa) oo wuu QORI KARAY
+  // xaadiris/buundo/Quran fasalkaas (rules-ka write-yadu weli isStaffOf
+  // oo qura, ma xaddidna classTeacherId — fiiri firestore.rules). Halkan
+  // waa xannibaadda UI-ga (isla mabda'a Classes.jsx/Attendance.jsx:
+  // myClassIds); rules-ka firestore.rules-ku sidoo kale hadda ku xiran
+  // yahay classTeacherId marka la qorayo (defense-in-depth, ma aha UI-kaliya).
+  const notMyClass = profile?.role === 'teacher' && !!cls && cls.classTeacherId !== profile?.teacherDocId;
 
   // classId (xiriir dhab ah) waa la doortaa marka jira, laakiin waxaa la
   // sii ilaaliyaa fallback-ka className (ardayda aan weli la dib-u-kaydin
@@ -106,7 +119,7 @@ function ClassWorkspace() {
     });
   };
 
-  if (!cls) {
+  if (!cls || notMyClass) {
     return (
       <div className="dash-card cw-not-found">
         <p>{t('classWorkspace.notFound')}</p>
