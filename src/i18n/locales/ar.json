@@ -285,7 +285,7 @@
     "printPdf": "طباعة / PDF",
     "tabs": { "accounting": "الحسابات", "expenses": "المصروفات", "income": "الدخل", "salary": "الرواتب", "discounts": "الخصومات والمنح", "documents": "الفواتير والإيصالات" },
     "summaryCards": { "total": "الإجمالي", "collected": "تم تحصيله", "uncollected": "لم يُحصّل", "discountValue": "قيمة الخصم", "remaining": "المتبقي", "expenses": "المصروفات" },
-    "statsBox": { "classes": "الفصول", "totalStudents": "الطلاب", "paymentsCount": "الدفعات", "discountRecipients": "مستفيدو الخصم", "freeCount": "مجاني", "unpaidCount": "غير مدفوع" },
+    "statsBox": { "classes": "الفصول", "totalStudents": "الطلاب", "paymentsCount": "الدفعات", "discountRecipients": "مستفيدو الخصم", "freeCount": "مجاني" },
     "allClasses": "الفصول",
     "donutChart": {
       "title": "الحالة المالية العامة",

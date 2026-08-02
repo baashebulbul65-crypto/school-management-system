@@ -133,7 +133,6 @@ function Finance() {
     discountRecipients: discounts.filter((d) => d.type === 'discount').length,
     // "Bilaash" waa tirada ARDAYDA DHABTA AH ee feeType==='free'.
     scholarshipCount: financeClassRows.reduce((s, r) => s + r.freeCount, 0),
-    unpaidCount: financeClassRows.reduce((s, r) => s + r.unpaidCount, 0),
   }), [feePayments, discounts, financeClassRows]);
 
   // ----- Kharashka/Dakhliga -----
@@ -285,7 +284,6 @@ function Finance() {
                   <strong>{extraStats.scholarshipCount}</strong>
                   <span>{t('finance.statsBox.freeCount')}</span>
                 </div>
-                <div className="acc-stat"><strong>{extraStats.unpaidCount}</strong><span>{t('finance.statsBox.unpaidCount')}</span></div>
               </div>
             </div>
           </div>

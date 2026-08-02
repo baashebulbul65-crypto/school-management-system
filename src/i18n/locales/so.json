@@ -285,7 +285,7 @@
     "printPdf": "Print / PDF",
     "tabs": { "accounting": "Xisaabaadka", "expenses": "Kharashka", "income": "Dakhliga", "salary": "Mushaharka", "discounts": "Dhimis & Deeq", "documents": "Invoices & Receipts" },
     "summaryCards": { "total": "Wadar", "collected": "La Ururiyey", "uncollected": "Aan La Ururin", "discountValue": "Qiimo Dhimis", "remaining": "Hadhaa", "expenses": "Kharashaad" },
-    "statsBox": { "classes": "Fasalo", "totalStudents": "Arday", "paymentsCount": "L.Bixisa", "discountRecipients": "Q.Dhimis", "freeCount": "Bilaash", "unpaidCount": "A.Baska" },
+    "statsBox": { "classes": "Fasalo", "totalStudents": "Arday", "paymentsCount": "L.Bixisa", "discountRecipients": "Q.Dhimis", "freeCount": "Bilaash" },
     "allClasses": "Fasalada",
     "donutChart": {
       "title": "Xaaladda Lacagta Guud",
