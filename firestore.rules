@@ -259,22 +259,32 @@ service cloud.firestore {
     }
 
     // ===== examMarks ===== (doc id: "{examId}_{studentId}")
+    // Akhris (Teacher Firestore Hardening, faafinta labaad 2026-08-02):
+    // macallinku wuxuu KALIYA arkaa buundooyinka fasalladiisa (classTeacherId,
+    // isMyClassData kore) — owner wuu arkaa dhammaantiisa.
     match /examMarks/{recordId} {
-      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
+      allow read: if isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null))
+        || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
       allow create, update: if isStaffOf(request.resource.data.schoolCode);
       allow delete: if false;
     }
 
     // ===== quranProgress ===== (doc id: "{date}_{studentId}")
+    // Akhris (Teacher Firestore Hardening, faafinta labaad 2026-08-02): isla
+    // mabda'a examMarks kore.
     match /quranProgress/{recordId} {
-      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
+      allow read: if isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null))
+        || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
       allow create, update: if isStaffOf(request.resource.data.schoolCode);
       allow delete: if false;
     }
 
     // ===== quranTargets =====
+    // Akhris (Teacher Firestore Hardening, faafinta labaad 2026-08-02): isla
+    // mabda'a examMarks kore.
     match /quranTargets/{targetId} {
-      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
+      allow read: if isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null))
+        || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
       allow create, update: if isStaffOf(request.resource.data.schoolCode);
       allow delete: if false;
     }

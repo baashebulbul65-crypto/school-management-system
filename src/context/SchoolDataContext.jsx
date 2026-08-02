@@ -29,9 +29,9 @@ import {
   backfillAttendanceClassScoping,
 } from '../firebase/attendance';
 import { subscribeToStaffRoster, createStaffRosterDoc, updateStaffRosterDoc, deleteStaffRosterDoc } from '../firebase/staffRoster';
-import { subscribeToExamMarks, setExamMarkRecord } from '../firebase/examMarks';
-import { subscribeToQuranProgressByDate, setQuranProgressRecord } from '../firebase/quranProgress';
-import { subscribeToQuranTargets, createQuranTargetDoc, updateQuranTargetDoc } from '../firebase/quranTargets';
+import { subscribeToExamMarks, setExamMarkRecord, backfillExamMarksClassScoping } from '../firebase/examMarks';
+import { subscribeToQuranProgressByDate, setQuranProgressRecord, backfillQuranProgressClassScoping } from '../firebase/quranProgress';
+import { subscribeToQuranTargets, createQuranTargetDoc, updateQuranTargetDoc, backfillQuranTargetsClassScoping } from '../firebase/quranTargets';
 import { subscribeToAllThreads, sendMessage as sendMessageDoc, markMessagesRead } from '../firebase/messages';
 import { createAbsentNotification, backfillNotificationClassScoping } from '../firebase/notifications';
 import { todayISODate } from '../utils/somaliDate';
@@ -446,9 +446,15 @@ export function SchoolDataProvider({ children }) {
       setQuranProgressToday({});
       return undefined;
     }
+    if (profile?.role === 'teacher' && !profile?.teacherDocId) {
+      setQuranProgressToday({});
+      return undefined;
+    }
+    const classTeacherId = profile?.role === 'teacher' ? profile.teacherDocId : null;
     const unsubscribe = subscribeToQuranProgressByDate(
       profile.schoolCode,
       todayISODate(),
+      classTeacherId,
       (records) => {
         const map = {};
         records.forEach((r) => { map[r.studentId] = { result: r.result, surah: r.surah }; });
@@ -457,12 +463,15 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii horumarka Quraanka laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role, profile?.teacherDocId]);
 
   const setQuranProgress = async (studentId, className, result, surah) => {
     if (!profile?.schoolCode) return;
     try {
-      await setQuranProgressRecord(profile.schoolCode, todayISODate(), studentId, className, result, surah);
+      const student = students.find((s) => s.id === studentId);
+      const studentClass = classes.find((c) => (student?.classId ? c.id === student.classId : `${c.grade}${c.section}` === className));
+      const classTeacherId = studentClass?.classTeacherId || null;
+      await setQuranProgressRecord(profile.schoolCode, todayISODate(), studentId, className, result, surah, classTeacherId);
     } catch (err) {
       reportError('Khalad ayaa dhacay markii horumarka Quraanka la kaydinayay:', err);
     }
@@ -480,13 +489,19 @@ export function SchoolDataProvider({ children }) {
       setQuranTargetsState([]);
       return undefined;
     }
+    if (profile?.role === 'teacher' && !profile?.teacherDocId) {
+      setQuranTargetsState([]);
+      return undefined;
+    }
+    const classTeacherId = profile?.role === 'teacher' ? profile.teacherDocId : null;
     const unsubscribe = subscribeToQuranTargets(
       profile.schoolCode,
+      classTeacherId,
       setQuranTargetsState,
       (err) => reportError('Khalad ayaa dhacay markii yoolalka Quraanka laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role, profile?.teacherDocId]);
 
   // Upsert: haddii arday leeyahay yool "pending" ah oo horeba u jira, waa la
   // cusbooneysiinayaa meeshiisa; haddii kalese (mid horey uma jirin, ama tii
@@ -500,8 +515,10 @@ export function SchoolDataProvider({ children }) {
       if (existing) {
         await updateQuranTargetDoc(existing.id, data);
       } else {
+        const targetClass = classes.find((c) => c.id === classId);
+        const classTeacherId = targetClass?.classTeacherId || null;
         await createQuranTargetDoc(profile.schoolCode, {
-          studentId, studentName, className, classId,
+          studentId, studentName, className, classId, classTeacherId,
           status: 'pending',
           decidedAt: null,
           createdAt: new Date().toISOString(),
@@ -636,13 +653,39 @@ export function SchoolDataProvider({ children }) {
     if (backfilledClassScopingRef.current === profile.schoolCode) return;
     backfilledClassScopingRef.current = profile.schoolCode;
     const classNameToTeacherId = new Map(classes.map((c) => [`${c.grade}${c.section}`, c.classTeacherId || null]));
+    const classIdToTeacherId = new Map(classes.map((c) => [c.id, c.classTeacherId || null]));
     backfillAttendanceClassScoping(profile.schoolCode, classNameToTeacherId).catch((err) =>
       reportError('Khalad ayaa dhacay markii xaadiriska la buuxinayay (classTeacherId):', err)
     );
     backfillNotificationClassScoping(profile.schoolCode, classNameToTeacherId).catch((err) =>
       reportError('Khalad ayaa dhacay markii ogeysiisyada la buuxinayay (classTeacherId):', err)
     );
+    backfillQuranProgressClassScoping(profile.schoolCode, classNameToTeacherId).catch((err) =>
+      reportError('Khalad ayaa dhacay markii horumarka Quraanka la buuxinayay (classTeacherId):', err)
+    );
+    backfillQuranTargetsClassScoping(profile.schoolCode, classIdToTeacherId).catch((err) =>
+      reportError('Khalad ayaa dhacay markii yoolalka Quraanka la buuxinayay (classTeacherId):', err)
+    );
   }, [profile?.schoolCode, profile?.accountType, classes]);
+
+  // examMarks waxay u baahan tahay xiriirka examId -> classTeacherId (via
+  // exam.classId -> class.classTeacherId), sidaas darteed effect gooni ah
+  // ayaa u sugaya IN LABADABA 'classes' iyo 'exams' la soo shubay (haddii
+  // 'exams' weli madhan yahay maadaama uu si isku mid ah u soo shubmayo, in
+  // la sugo ayaa ka fiican in si khalad ah loogu qoro classTeacherId:null
+  // buundooyin dhab ah oo aan weli la eegin).
+  const backfilledExamMarksRef = useRef(null);
+  useEffect(() => {
+    if (!profile?.schoolCode || profile.accountType !== 'staff') return;
+    if (classes.length === 0 || exams.length === 0) return;
+    if (backfilledExamMarksRef.current === profile.schoolCode) return;
+    backfilledExamMarksRef.current = profile.schoolCode;
+    const classIdToTeacherId = new Map(classes.map((c) => [c.id, c.classTeacherId || null]));
+    const examIdToTeacherId = new Map(exams.map((e) => [e.id, classIdToTeacherId.get(e.classId) || null]));
+    backfillExamMarksClassScoping(profile.schoolCode, examIdToTeacherId).catch((err) =>
+      reportError('Khalad ayaa dhacay markii buundooyinka la buuxinayay (classTeacherId):', err)
+    );
+  }, [profile?.schoolCode, profile?.accountType, classes, exams]);
 
   // ===== MAADOOYINKA (Firestore collection "subjects") =====
   useEffect(() => {
@@ -900,8 +943,14 @@ export function SchoolDataProvider({ children }) {
       setExamMarks({});
       return undefined;
     }
+    if (profile?.role === 'teacher' && !profile?.teacherDocId) {
+      setExamMarks({});
+      return undefined;
+    }
+    const classTeacherId = profile?.role === 'teacher' ? profile.teacherDocId : null;
     const unsubscribe = subscribeToExamMarks(
       profile.schoolCode,
+      classTeacherId,
       (records) => {
         const map = {};
         records.forEach((r) => {
@@ -913,7 +962,7 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii buundooyinka laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role, profile?.teacherDocId]);
 
   // ===== ARDAYDA (Firestore collection "students") =====
   useEffect(() => {
@@ -1229,7 +1278,10 @@ export function SchoolDataProvider({ children }) {
   const updateExamMark = async (examId, studentId, value) => {
     if (!profile?.schoolCode) return;
     try {
-      await setExamMarkRecord(profile.schoolCode, examId, studentId, value === '' ? '' : Number(value));
+      const exam = exams.find((e) => e.id === examId);
+      const examClass = classes.find((c) => c.id === exam?.classId);
+      const classTeacherId = examClass?.classTeacherId || null;
+      await setExamMarkRecord(profile.schoolCode, examId, studentId, value === '' ? '' : Number(value), classTeacherId);
     } catch (err) {
       reportError('Khalad ayaa dhacay markii buundada la kaydinayay:', err);
     }
