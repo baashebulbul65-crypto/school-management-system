@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './UserFormModal.css';
 
 const EMPTY_FORM = { fullName: '', email: '', role: 'Teacher', password: '', teacherDocId: '' };
 
 function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOptions = [] }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -49,7 +51,7 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
     e.preventDefault();
 
     if (!isEditing && form.password.length < 6) {
-      setError('Furaha Sirta waa in uu ka koobnaadaa ugu yaraan 6 xaraf.');
+      setError(t('users.form.errors.passwordTooShort'));
       return;
     }
 
@@ -57,7 +59,7 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
     // (Teacher Role Scoping audit, 2026-08-02) — haddii aan la xirin, macallinku
     // 0 fasal ayuu arki doonaa (fiiri Classes.jsx: profile.teacherDocId).
     if (form.role === 'Teacher' && !form.teacherDocId) {
-      setError('Fadlan xulo diiwaanka Macallinka — haddii kale macallinku ma arki doono fasalkiisa.');
+      setError(t('users.form.errors.teacherLinkRequired'));
       return;
     }
 
@@ -76,10 +78,10 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
     } catch (err) {
       setError(
         err.code === 'auth/email-already-in-use'
-          ? 'Email-kan horeba waa la isticmaalayaa.'
+          ? t('users.form.errors.emailInUse')
           : err.code === 'auth/invalid-email'
-          ? 'Email-ku ma saxna.'
-          : 'Khalad ayaa dhacay. Fadlan isku day mar kale.'
+          ? t('users.form.errors.invalidEmail')
+          : t('users.form.errors.generic')
       );
     } finally {
       setSubmitting(false);
@@ -91,8 +93,8 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
       <div className="ufm-modal">
         <div className="ufm-header">
           <div>
-            <h2>{isEditing ? 'Wax Ka Beddel Shaqaalaha' : 'Ku Dar Shaqaale Cusub'}</h2>
-            <p>{isEditing ? user.email : 'Buuxi macluumaadka hoose'}</p>
+            <h2>{isEditing ? t('users.form.editTitle') : t('users.form.addTitle')}</h2>
+            <p>{isEditing ? user.email : t('users.form.fillInfo')}</p>
           </div>
           <button className="ufm-close" onClick={onClose} type="button">
             <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -106,52 +108,48 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
 
             <div className="ufm-grid">
               <div className="ufm-field full">
-                <label>Magaca Buuxa *</label>
-                <input type="text" value={form.fullName} onChange={update('fullName')} placeholder="Tusaale: Sahra Maxamed Cige" required />
+                <label>{t('users.form.fields.fullName')}</label>
+                <input type="text" value={form.fullName} onChange={update('fullName')} placeholder={t('users.form.placeholders.fullName')} required />
               </div>
               <div className="ufm-field full">
-                <label>Email *</label>
-                <input type="email" value={form.email} onChange={update('email')} placeholder="tusaale@kayd.com" required disabled={isEditing} />
-                {isEditing && <span className="ufm-hint">Email-ka ma bedeli karto akoon hore.</span>}
+                <label>{t('users.form.fields.email')}</label>
+                <input type="email" value={form.email} onChange={update('email')} placeholder={t('users.form.placeholders.email')} required disabled={isEditing} />
+                {isEditing && <span className="ufm-hint">{t('users.form.hints.emailLocked')}</span>}
               </div>
               <div className="ufm-field full">
-                <label>Doorka (Role) *</label>
+                <label>{t('users.form.fields.role')}</label>
                 <select value={form.role} onChange={update('role')}>
-                  {roleOptions.map((r) => <option key={r}>{r}</option>)}
+                  {roleOptions.map((r) => <option key={r} value={r}>{t(`users.roles.${r}`)}</option>)}
                 </select>
               </div>
 
               {form.role === 'Teacher' && (
                 <div className="ufm-field full">
-                  <label>Xiriirinta Diiwaanka Macallinka *</label>
+                  <label>{t('users.form.fields.teacherLink')}</label>
                   <select value={form.teacherDocId} onChange={handleTeacherSelect} required>
-                    <option value="">-- Dooro macallinka --</option>
-                    {teacherOptions.map((t) => (
-                      <option key={t.id} value={t.id}>{t.fullName}</option>
+                    <option value="">{t('users.form.placeholders.teacherSelect')}</option>
+                    {teacherOptions.map((tc) => (
+                      <option key={tc.id} value={tc.id}>{tc.fullName}</option>
                     ))}
                   </select>
-                  <span className="ufm-hint">
-                    Waajib — macallinku wuxuu ku xiran yahay xiriirintan si uu u arko oo u furo fasalkiisa
-                    gaarka ah (bogga "Fasallada"). Haddii macallinku aan weli ku jirin bogga "Macallimiinta",
-                    ku dar isaga halkaas marka hore.
-                  </span>
+                  <span className="ufm-hint">{t('users.form.hints.teacherLink')}</span>
                 </div>
               )}
 
               {!isEditing && (
                 <div className="ufm-field full">
-                  <label>Furaha Sirta Bilowga ah *</label>
-                  <input type="password" value={form.password} onChange={update('password')} placeholder="Ugu yaraan 6 xaraf" required />
-                  <span className="ufm-hint">Shaqaaluhu wuu bedeli kari doonaa marka uu markiiba galo.</span>
+                  <label>{t('users.form.fields.password')}</label>
+                  <input type="password" value={form.password} onChange={update('password')} placeholder={t('users.form.placeholders.password')} required />
+                  <span className="ufm-hint">{t('users.form.hints.password')}</span>
                 </div>
               )}
             </div>
           </div>
 
           <div className="ufm-footer">
-            <button type="button" className="btn-secondary" onClick={onClose} disabled={submitting}>Jooji</button>
+            <button type="button" className="btn-secondary" onClick={onClose} disabled={submitting}>{t('common.cancel')}</button>
             <button type="submit" className="btn-primary" disabled={submitting}>
-              {submitting ? '...' : isEditing ? 'Kaydi Isbeddelka' : 'Ku Dar Shaqaalaha'}
+              {submitting ? t('users.form.submitting') : isEditing ? t('users.form.submitEdit') : t('users.form.submitAdd')}
             </button>
           </div>
         </form>

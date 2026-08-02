@@ -130,8 +130,13 @@ service cloud.firestore {
       allow update: if isSignedIn() && (
         (request.auth.uid == userId
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['childrenIds']))
+        // "request.resource.data.accountType == resource.data.accountType" (Audit
+        // hardening, 2026-08-02, gap #6) — hore update-ku ma xaqiijin lahayn in
+        // 'accountType' weli 'staff' ahaado ka dib update-ka (kaliya doc-gii HORE
+        // ayaa la hubin jiray), isla mabda'a schoolCode-ka pin-ka ah ee hoose.
         || (isOwnerStaffOf(resource.data.schoolCode) && resource.data.accountType == 'staff'
-            && request.resource.data.schoolCode == resource.data.schoolCode)
+            && request.resource.data.schoolCode == resource.data.schoolCode
+            && request.resource.data.accountType == resource.data.accountType)
       );
       // Ma tirtiro Firebase Auth account-ka (SDK-ga browser-ku uma oggola —
       // waa loo baahan yahay Admin SDK/backend), laakiin tirtiridda doc-kan

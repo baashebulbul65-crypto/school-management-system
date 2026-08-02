@@ -21,6 +21,7 @@
     "status": {
       "active": "Firfircoon",
       "inactive": "Aan Firfircoonayn",
+      "suspended": "La Joojiyay",
       "paid": "La Bixiyay",
       "pending": "Sugaya",
       "overdue": "Dib U Dhacay"
@@ -171,6 +172,62 @@
       "noSalary": "Weli mushahar lama diiwaan gelin.",
       "noDocuments": "Weli dukumenti lama geli.",
       "table": { "month": "Bisha", "amount": "Qadarka", "payDate": "Taariikhda Bixinta", "status": "Xaaladda" }
+    }
+  },
+  "users": {
+    "pageTitle": "Shaqaalaha",
+    "pageSubtitle": "Maamul akoonada shaqaalaha iyo doorarkooda (School Owner, Principal, Accountant, iwm).",
+    "addNew": "Ku Dar Shaqaale",
+    "searchPlaceholder": "Raadi magaca ama email-ka...",
+    "allRoles": "Dhammaan Doorarka",
+    "roles": {
+      "School Owner": "Milkiilaha Dugsiga",
+      "Principal": "Maamule",
+      "Vice Principal": "Ku-xigeenka Maamulaha",
+      "Accountant": "Xisaabiye",
+      "Receptionist": "Soo-dhaweeye",
+      "Teacher": "Macallin"
+    },
+    "table": {
+      "staff": "Shaqaale", "email": "Email", "role": "Doorka", "teacherLink": "Xiriirinta Macallinka",
+      "status": "Xaaladda", "joined": "Ku Biiray", "notLinked": "— lama xirin —"
+    },
+    "cannotChangeSelfStatus": "Ma bedeli kartid xaaladdaada",
+    "cannotRemoveSelf": "Ma iska saari kartid nafta",
+    "confirmRemove": "Ma hubtaa inaad ka saarayso \"{{name}}\" nidaamka? Tallaabadan lama noqon karo.",
+    "errors": {
+      "fetchFailed": "Khalad ayaa dhacay markii shaqaalaha laga soo akhriyay:",
+      "statusUpdateFailed": "Khalad ayaa dhacay markii xaaladda shaqaalaha la beddelayay:",
+      "removeFailed": "Khalad ayaa dhacay markii shaqaalaha la saarayay:"
+    },
+    "pagination": "Muujinaya {{shown}} ee {{total}} shaqaale",
+    "form": {
+      "editTitle": "Wax Ka Beddel Shaqaalaha",
+      "addTitle": "Ku Dar Shaqaale Cusub",
+      "fillInfo": "Buuxi macluumaadka hoose",
+      "fields": {
+        "fullName": "Magaca Buuxa *", "email": "Email *", "role": "Doorka (Role) *",
+        "teacherLink": "Xiriirinta Diiwaanka Macallinka *", "password": "Furaha Sirta Bilowga ah *"
+      },
+      "placeholders": {
+        "fullName": "Tusaale: Sahra Maxamed Cige", "email": "tusaale@kayd.com",
+        "teacherSelect": "-- Dooro macallinka --", "password": "Ugu yaraan 6 xaraf"
+      },
+      "hints": {
+        "emailLocked": "Email-ka ma bedeli karto akoon hore.",
+        "teacherLink": "Waajib — macallinku wuxuu ku xiran yahay xiriirintan si uu u arko oo u furo fasalkiisa gaarka ah (bogga \"Fasallada\"). Haddii macallinku aan weli ku jirin bogga \"Macallimiinta\", ku dar isaga halkaas marka hore.",
+        "password": "Shaqaaluhu wuu bedeli kari doonaa marka uu markiiba galo."
+      },
+      "errors": {
+        "passwordTooShort": "Furaha Sirta waa in uu ka koobnaadaa ugu yaraan 6 xaraf.",
+        "teacherLinkRequired": "Fadlan xulo diiwaanka Macallinka — haddii kale macallinku ma arki doono fasalkiisa.",
+        "emailInUse": "Email-kan horeba waa la isticmaalayaa.",
+        "invalidEmail": "Email-ku ma saxna.",
+        "generic": "Khalad ayaa dhacay. Fadlan isku day mar kale."
+      },
+      "submitting": "...",
+      "submitEdit": "Kaydi Isbeddelka",
+      "submitAdd": "Ku Dar Shaqaalaha"
     }
   },
   "classes": {
