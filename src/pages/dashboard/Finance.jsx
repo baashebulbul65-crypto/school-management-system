@@ -128,12 +128,22 @@ function Finance() {
 
   const totalStudents = useMemo(() => financeClassRows.reduce((s, r) => s + r.students, 0), [financeClassRows]);
 
-  const extraStats = useMemo(() => ({
-    paymentsCount: feePayments.length,
-    discountRecipients: discounts.filter((d) => d.type === 'discount').length,
+  const extraStats = useMemo(() => {
     // "Bilaash" waa tirada ARDAYDA DHABTA AH ee feeType==='free'.
-    scholarshipCount: financeClassRows.reduce((s, r) => s + r.freeCount, 0),
-  }), [feePayments, discounts, financeClassRows]);
+    const scholarshipCount = financeClassRows.reduce((s, r) => s + r.freeCount, 0);
+    // Fiiro (2026-08-03): "L.Bixisa" hore waxay ahayd "feePayments.length"
+    // (dhammaan diiwaanka lacag-bixinta ee TAARIIKHDA OO DHAN — bilo hore,
+    // noocyo kale) — mid aan la filayn. "L.Bixisa" waa in ay noqoto tirada
+    // ardayda AAN BILAASH AHAYN (fee-paying population): wadarta ardayda
+    // - tirada bilaashka, iyada oo aan xisaabin haddii ay bishan bixiyeen
+    // iyo in kale (tusaale: 40 arday, 5 bilaash → 35 waa L.Bixisa).
+    const paymentsCount = financeClassRows.reduce((s, r) => s + r.students, 0) - scholarshipCount;
+    return {
+      paymentsCount,
+      discountRecipients: discounts.filter((d) => d.type === 'discount').length,
+      scholarshipCount,
+    };
+  }, [discounts, financeClassRows]);
 
   // ----- Kharashka/Dakhliga -----
   const expenseCategories = useMemo(() => {
