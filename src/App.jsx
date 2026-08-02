@@ -65,7 +65,7 @@ function App() {
         <Route path="exams" element={<Exams />} />
         <Route path="reports" element={<RequireRole allow={['owner']}><Reports /></RequireRole>} />
         <Route path="notifications" element={<Notifications />} />
-        <Route path="settings" element={<RequireRole allow={['owner']}><Settings /></RequireRole>} />
+        <Route path="settings" element={<Settings />} />
         <Route path="users" element={<RequireRole allow={['owner']}><Users /></RequireRole>} />
         <Route path="trash" element={<RequireRole allow={['owner']}><Trash /></RequireRole>} />
       </Route>

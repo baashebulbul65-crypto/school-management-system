@@ -39,8 +39,13 @@ function Settings() {
     addFeeGrade, removeFeeGrade, updateNotificationPref, uploadLogo, removeLogo, logoUploading, logoError,
   } = useSettings();
   const { profile } = useAuth();
+  // Macallinku wuxuu kaliya arkaa/gaadhaa tab-ka "Akoonkayga" (beddelidda
+  // password-ka) — tabyada kale (dugsiga, lacagta, sanadka waxbarasho,
+  // ogeysiisyada) waa owner-kaliya, la mid ah bogga "Dejinta" ee UI-gu
+  // owner-only ahaan jiray (Teacher Role Scoping audit, 2026-08-02).
+  const isOwner = profile?.role !== 'teacher';
 
-  const [activeTab, setActiveTab] = useState('school');
+  const [activeTab, setActiveTab] = useState(isOwner ? 'school' : 'account');
   const [schoolForm, setSchoolForm] = useState(settings.school);
   const [newGradeName, setNewGradeName] = useState('');
   const [newGradeAmount, setNewGradeAmount] = useState('');
@@ -53,13 +58,15 @@ function Settings() {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
-  const TABS = [
-    { id: 'school', label: t('settings.tabs.school') },
-    { id: 'fees', label: t('settings.tabs.fees') },
-    { id: 'academic', label: t('settings.tabs.academic') },
-    { id: 'notifications', label: t('settings.tabs.notifications') },
-    { id: 'account', label: t('settings.tabs.account') },
-  ];
+  const TABS = isOwner
+    ? [
+        { id: 'school', label: t('settings.tabs.school') },
+        { id: 'fees', label: t('settings.tabs.fees') },
+        { id: 'academic', label: t('settings.tabs.academic') },
+        { id: 'notifications', label: t('settings.tabs.notifications') },
+        { id: 'account', label: t('settings.tabs.account') },
+      ]
+    : [{ id: 'account', label: t('settings.tabs.account') }];
 
   const NOTIFICATION_ITEMS = [
     { key: 'feeReminders', label: t('settings.notifications.items.feeReminders.label'), desc: t('settings.notifications.items.feeReminders.desc') },
