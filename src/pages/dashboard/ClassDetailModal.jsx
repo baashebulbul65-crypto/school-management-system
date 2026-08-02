@@ -4,51 +4,21 @@ import { useSchoolData } from '../../context/SchoolDataContext';
 import { getFeeType, studentFeeOwed } from '../../utils/studentFee';
 import './ClassDetailModal.css';
 
-const SAMPLE_NAMES = [
-  'Shucayb Xasan Cabdi', 'Axmed Xaawo Nuur', 'Cabdiraxmaan Warsame', 'Xamse Diriye Cismaan',
-  'Yaacquub Xasan Cige', 'Cimraan Nuur Maxamed', 'Cabdi Maxamuud Cige', 'Cabdilaahi Salaan Cali',
-  'Xamse Mukhtaar Cige', 'Cabdi Fatax Cabdillaahi', 'Cabdirisaaq Maxamed Cumar', 'Faarax Aadan Warsame',
-  'Xasan Cige Maxamed', 'Nuur Cali Ibraahim', 'Warsame Cige Aadan', 'Cali Xasan Warsame',
-  'Maxamed Xuseen Cige', 'Sacdiyo Xasan Nuur', 'Amiina Cabdulle', 'Xaawo Maxamed Cali',
-];
-
-// M.Qoys (family) — safafka qoyska lama xirin arday DHAB AH (ma jiro
-// className la mid ah), sidaas darteed halkan waxaa weli lagu isticmaalaa
-// roster tijaabo ah oo ka soo baxa tirooyinka safka (total/balance/discount).
-// Fasalada (class) way ka duwan yihiin — fiiri classRoster ee hoose, kaas oo
-// ka soo saaraa ARDAYDA DHABTA AH ee "students" collection-ka Firestore.
-function buildFamilyRoster(row) {
-  if (!row) return [];
-  const count = row.students;
-  const perFee = Math.max(1, Math.round(row.total / count));
-  const unpaidCount = row.balance > 0 ? Math.max(1, Math.round(row.balance / perFee)) : 0;
-  const freeCount = row.discount > 0 ? Math.max(1, Math.round(row.discount / perFee)) : 0;
-  const paidCount = Math.max(0, count - unpaidCount - freeCount);
-
-  const roster = [];
-  let idx = 0;
-  for (let i = 0; i < paidCount && idx < count; i++, idx++) {
-    roster.push({ id: idx + 1, name: SAMPLE_NAMES[idx % SAMPLE_NAMES.length], status: 'paid', amount: perFee });
-  }
-  for (let i = 0; i < unpaidCount && idx < count; i++, idx++) {
-    roster.push({ id: idx + 1, name: SAMPLE_NAMES[idx % SAMPLE_NAMES.length], status: 'unpaid', amount: perFee });
-  }
-  for (let i = 0; i < freeCount && idx < count; i++, idx++) {
-    roster.push({ id: idx + 1, name: SAMPLE_NAMES[idx % SAMPLE_NAMES.length], status: 'free', amount: 0 });
-  }
-  return roster;
-}
-
-function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
+// M.Qoys (family) — Finance audit (2026-08-03, gap CRITICAL #1): tan hore
+// waxay isticmaali jirtay roster BEENSAN (magacyo random ah oo "SAMPLE_NAMES"
+// ka yimid, ma ahayn arday dhab ah), maadaama safafka qoyska aan lala
+// xiriirin arday/qoys DHAB AH (ma jiro className/studentId la mid ah).
+// Guji-yaal "Qabo Lacagta" oo qof-qof ah ma kaydin jirin waxba Firestore
+// ahaan — kaliya local state ayay beddeli jireen. Modal-kani hadda waa
+// CLASS VIEW OO QURA (roster dhab ah oo ka yimid "students" collection-ka
+// Firestore) — lacagta safka M.Qoys waxaa lagu qaataa "Qabo Lacagta" button-
+// ka Finance.jsx (FeeCollectionModal), oo horeba diiwaan dhab ah u qoraa
+// feePayments.
+function ClassDetailModal({ row, monthValue, onClose }) {
   const { t } = useTranslation();
   const { students, feePayments, collectStudentFee } = useSchoolData();
   const [sortBy, setSortBy] = useState('default');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [familyRoster, setFamilyRoster] = useState([]);
-
-  useEffect(() => {
-    if (viewMode === 'family') setFamilyRoster(buildFamilyRoster(row));
-  }, [row, viewMode]);
 
   // Marka fasal kale la furo, filter-ka/kala-soocidda hore ha ku hadhin.
   useEffect(() => {
@@ -56,14 +26,14 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
     setSortBy('default');
   }, [row?.id]);
 
-  // Fasalada — liiska ARDAYDA DHABTA AH ee fasalkan (Firestore "students"),
-  // xaaladdoodana waxaa laga soo xisaabiyaa feeAmount + feePayments-ka
-  // bishaas la doortay (monthValue) — ma aha roster tijaabo ah. Marka bil
-  // cusub bilaabmayso (monthValue is beddesha), ma jiro feePayment bishaas
-  // ah weli, sidaas darteed ardayda dhammaantood dib ayay ugu noqdaan
-  // "Aan Bixin" iyada oo aan gacan lagu bedelin (fiiri collectStudentFee).
-  const classRoster = useMemo(() => {
-    if (viewMode !== 'class' || !row) return [];
+  // Liiska ARDAYDA DHABTA AH ee fasalkan (Firestore "students"), xaaladdoodana
+  // waxaa laga soo xisaabiyaa feeAmount + feePayments-ka bishaas la doortay
+  // (monthValue). Marka bil cusub bilaabmayso (monthValue is beddesha), ma
+  // jiro feePayment bishaas ah weli, sidaas darteed ardayda dhammaantood dib
+  // ayay ugu noqdaan "Aan Bixin" iyada oo aan gacan lagu bedelin (fiiri
+  // collectStudentFee).
+  const roster = useMemo(() => {
+    if (!row) return [];
     // row.id waa classId dhabta ah (fiiri Finance.jsx: financeClassRows) —
     // waa in la isticmaalo halkii la isticmaali lahaa className kaliya, si
     // liiskan uu had iyo jeer la mid noqdo tirada Finance.jsx table-kiisa.
@@ -83,9 +53,7 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
           discountPercent: Number(s.discountPercent) || 0,
         };
       });
-  }, [viewMode, students, feePayments, row, monthValue]);
-
-  const roster = viewMode === 'class' ? classRoster : familyRoster;
+  }, [students, feePayments, row, monthValue]);
 
   if (!row) return null;
 
@@ -94,9 +62,8 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
     const bixiyey = roster.filter((r) => r.status === 'paid').length;
     const aanBixin = roster.filter((r) => r.status === 'unpaid').length;
     const bilaash = roster.filter((r) => r.status === 'free').length;
-    const aBaska = viewMode === 'class' ? (row.unpaidTotal || 0) : 0;
-    return { total, bixiyey, aanBixin, bilaash, qiimoDhimista: row.discount || 0, aBaska };
-  }, [roster, row, viewMode]);
+    return { total, bixiyey, aanBixin, bilaash, qiimoDhimista: row.discount || 0, aBaska: row.unpaidTotal || 0 };
+  }, [roster, row]);
 
   // Filter-ka xaaladda (Dhammaan/Bixiyay/Ma Bixin/Bilaash) iyo kala-soocidda
   // A-Z waa laba shay oo kala duwan oo isku shaqeeya: marka hore liiska waxaa
@@ -120,12 +87,7 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
     if (!person) return;
     const confirmed = window.confirm(t('finance.classDetail.confirmCollect', { name: person.name }));
     if (!confirmed) return;
-    if (viewMode === 'class') {
-      collectStudentFee(rosterId, monthValue);
-    } else {
-      setFamilyRoster((prev) => prev.map((r) => (r.id === rosterId ? { ...r, status: 'paid' } : r)));
-      onCollected?.(row.id, person.amount);
-    }
+    collectStudentFee(rosterId, monthValue);
   };
 
   const handlePrint = () => window.print();
@@ -137,7 +99,7 @@ function ClassDetailModal({ row, viewMode, monthValue, onClose, onCollected }) {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           {t('finance.classDetail.back')}
         </button>
-        <div className="cdm-title">{row.name} <span>{row.shift}</span></div>
+        <div className="cdm-title">{row.name}</div>
         <div className="cdm-toolbar-right">
           <button className="cdm-icon-btn" title={t('finance.classDetail.print')} onClick={handlePrint}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>

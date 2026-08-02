@@ -139,8 +139,6 @@ function Finance() {
   // ahayn kuwo gacan lagu geliyay.
   const handleCollectPayment = ({ rowId, amount, method, date }) => collectFamilyFee(rowId, amount, method, date);
 
-  const handleCollectDetail = (rowId, amount) => collectFamilyFee(rowId, amount);
-
   const handleSaveFeeRow = (payload) => addFamilyFeeRow(payload);
 
   // ----- Kharashka/Dakhliga -----
@@ -370,7 +368,11 @@ function Finance() {
                 </thead>
                 <tbody>
                   {filteredRows.map((r, i) => (
-                    <tr key={r.id} className="acc-row-clickable" onClick={() => setSelectedRowId(r.id)}>
+                    <tr
+                      key={r.id}
+                      className={viewMode === 'class' ? 'acc-row-clickable' : ''}
+                      onClick={() => viewMode === 'class' && setSelectedRowId(r.id)}
+                    >
                       <td className="cell-sub">{i + 1}</td>
                       <td>
                         <div className="cell-name">{r.name}</div>
@@ -635,13 +637,11 @@ function Finance() {
         </>
       )}
 
-      {selectedRow && (
+      {selectedRow && viewMode === 'class' && (
         <ClassDetailModal
           row={selectedRow}
-          viewMode={viewMode}
           monthValue={monthValue}
           onClose={() => setSelectedRowId(null)}
-          onCollected={handleCollectDetail}
         />
       )}
 
