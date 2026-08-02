@@ -9,7 +9,7 @@
 // oo Firebase Auth SDK-ka browser-ka ah leeyahay.
 
 import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, setDoc, updateDoc, deleteDoc, getDocs, onSnapshot, query, where, serverTimestamp } from 'firebase/firestore';
 import { db, getSecondaryAuth } from './config';
 
 const COLLECTION = 'users';
@@ -70,4 +70,18 @@ export async function setStaffStatus(uid, status) {
 // firestore.rules) — doc la'aan, isticmaaluhu waxba kama akhrin/qori karo.
 export async function removeStaffDoc(uid) {
   await deleteDoc(doc(db, COLLECTION, uid));
+}
+
+// Loo isticmaalo Teachers.jsx "Ka Saar" — hubinta ka hor in macallinkan (teachers/{teacherDocId})
+// uu weli haysto account gelitaan (users doc, teacherDocId isku xiran) ka hor intaan la
+// tirtirin/la nadiifin (haddii kale account-ku wuxuu ku hadhi lahaa xiriir aan la eegin).
+export async function findLinkedStaffAccount(schoolCode, teacherDocId) {
+  const q = query(
+    collection(db, COLLECTION),
+    where('schoolCode', '==', schoolCode),
+    where('accountType', '==', 'staff'),
+    where('teacherDocId', '==', teacherDocId)
+  );
+  const snap = await getDocs(q);
+  return snap.docs[0]?.data() || null;
 }

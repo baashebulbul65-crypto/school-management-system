@@ -139,6 +139,9 @@
     "searchPlaceholder": "Raadi magaca ama maadada...",
     "table": { "teacher": "Macallin", "email": "Email", "subject": "Maadada", "classes": "Fasallada", "phone": "Telefoon", "status": "Xaaladda" },
     "pagination": "Muujinaya {{shown}} ee {{total}} macallin",
+    "confirmRemove": "Ma hubtaa inaad ka saarayso macallinka \"{{name}}\"? Fasallada/maadooyinka uu ahaa waa la nadiifin doonaa (loo dhigi doonaa madhan), xogtiisa taariikheed (xaadiris, mushahar, iwm) way sii jiraysaa.",
+    "linkedAccountBlocked": "Macallinkan account gelitaan ah (bogga Users) ayuu haystaa — marka hore ka saar account-kaas Users.jsx, dabadeedna macallinka ka saar halkan.",
+    "removeError": "Khalad ayaa dhacay markii macallinka la saarayay.",
     "form": {
       "editTitle": "Wax Ka Beddel Macallinka",
       "addTitle": "Ku Dar Macallin Cusub",

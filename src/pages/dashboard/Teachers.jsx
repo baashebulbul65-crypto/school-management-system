@@ -1,7 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { findLinkedStaffAccount } from '../../firebase/staff';
 import TeacherProfileModal from './TeacherProfileModal';
 import TeacherFormModal from './TeacherFormModal';
 import '../../styles/dashboard-shared.css';
@@ -17,7 +20,9 @@ function Teachers() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const { teachers, addTeacher, updateTeacher, cycleTeacherAttendanceRecord, allStaffAttendanceRecords } = useSchoolData();
+  const { profile } = useAuth();
+  const { showError } = useToast();
+  const { teachers, addTeacher, updateTeacher, cycleTeacherAttendanceRecord, cascadeUnlinkTeacher, allStaffAttendanceRecords } = useSchoolData();
   const [search, setSearch] = useState('');
   const [selectedTeacherId, setSelectedTeacherId] = useState(null);
   const [showFormModal, setShowFormModal] = useState(false);
@@ -32,7 +37,13 @@ function Teachers() {
     [allStaffAttendanceRecords, selectedTeacherId]
   );
 
-  const filtered = teachers.filter((t) =>
+  // Macallimiinta 'inactive' (la saaray, fiiri cascadeUnlinkTeacher) waa in
+  // aysan ka muuqan liiska caadiga ah — sida ay ka baxeen Users.jsx/Classes.jsx,
+  // waa in ay sidoo kale ka baxaan halkan (xogtoodu weli waxay ku jirtaa
+  // Firestore taariikh ahaan, kaliya ma muuqato UI-gan).
+  const activeTeachers = teachers.filter((t) => t.status !== 'inactive');
+
+  const filtered = activeTeachers.filter((t) =>
     t.fullName.toLowerCase().includes(search.toLowerCase()) || t.subject.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -59,6 +70,27 @@ function Teachers() {
       updateTeacher(teacherId, payload);
     } else {
       addTeacher(payload);
+    }
+  };
+
+  // "Ka Saar" gaar ah oo Teachers.jsx (madax-bannaan Users.jsx) — la mid ah
+  // habka Users.jsx isticmaalo marka macallin laga saaro halkaas (fiiri
+  // cascadeUnlinkTeacher: nadiifiya classes/subjects, status->inactive, ma
+  // tirtiro dhab ahaan). Haddii macallinkan uu weli haysto account gelitaan
+  // (Users.jsx, teacherDocId isku xiran), waa la diidayaa — si aan looga
+  // tagin account gelitaan ah oo aan lahayn macallin la xiriira.
+  const handleRemoveTeacher = async (teacher) => {
+    if (!window.confirm(t('teachers.confirmRemove', { name: teacher.fullName }))) return;
+    try {
+      const linkedAccount = await findLinkedStaffAccount(profile.schoolCode, teacher.id);
+      if (linkedAccount) {
+        showError(t('teachers.linkedAccountBlocked'));
+        return;
+      }
+      await cascadeUnlinkTeacher(teacher.id);
+    } catch (err) {
+      console.error('Khalad ayaa dhacay markii macallinka la saarayay:', err);
+      showError(t('teachers.removeError'));
     }
   };
 
@@ -126,6 +158,9 @@ function Teachers() {
                       <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(t2)}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
                       </button>
+                      <button className="row-action-btn" title={t('common.actions.delete')} onClick={() => handleRemoveTeacher(t2)}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -138,7 +173,7 @@ function Teachers() {
         </div>
 
         <div className="table-pagination">
-          <span className="pagination-info">{t('teachers.pagination', { shown: filtered.length, total: teachers.length })}</span>
+          <span className="pagination-info">{t('teachers.pagination', { shown: filtered.length, total: activeTeachers.length })}</span>
         </div>
       </div>
 
