@@ -8,7 +8,7 @@ const EMPTY_FORMS = {
   expenses: { category: EXPENSE_CATEGORIES[0], description: '', amount: '', date: '' },
   income: { source: '', description: '', amount: '', date: '' },
   salary: { staffName: '', role: '', amount: '', month: '', teacherId: '' },
-  discounts: { student: '', type: 'discount', amount: '', reason: '' },
+  discounts: { studentId: '', student: '', type: 'discount', amount: '', reason: '' },
   documents: { type: 'invoice', party: '', amount: '', date: '' },
 };
 
@@ -20,7 +20,7 @@ const TITLES = {
   documents: 'Ku Dar Invoice/Receipt',
 };
 
-function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [] }) {
+function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], students = [] }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORMS[type] || EMPTY_FORMS.expenses);
 
@@ -31,6 +31,20 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [] }) {
   if (!isOpen) return null;
 
   const update = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
+
+  // Finance audit (2026-08-03, gap CRITICAL #2): khaanadda "arday" ee
+  // Discounts/Scholarships hore waxay ahayd qoraal bilaash ah (ma jirin
+  // xiriir dhab ah la arday-ka dhabta ah, marka ay khaldantahay/khaldanaan
+  // karto). Hadda waa dropdown arday DHAB ah — "studentId" waa xiriirka
+  // (fiiri firestore.rules/students), "student" waa magaca la kaydiyo
+  // (denormalized, la mid ah staffName ee mushaharka) si liiska Discounts
+  // uu si fudud u tuso magaca isaga oo aan mar walba u baahnayn in la
+  // xisaabiyo (get) diiwaanka ardayga.
+  const handleStudentSelect = (e) => {
+    const studentId = e.target.value;
+    const selected = students.find((s) => s.id === studentId);
+    setForm((f) => ({ ...f, studentId, student: selected?.fullName || '' }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -102,7 +116,14 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [] }) {
                 <>
                   <div className="fem-field">
                     <label>{t('finance.discounts.table.student')}</label>
-                    <input type="text" value={form.student} onChange={update('student')} placeholder="Tusaale: Cabdiraxman Yoonis" required />
+                    <select value={form.studentId} onChange={handleStudentSelect} required disabled={students.length === 0}>
+                      <option value="" disabled>
+                        {students.length === 0 ? t('finance.discounts.noStudents') : t('finance.discounts.selectStudent')}
+                      </option>
+                      {students.map((s) => (
+                        <option key={s.id} value={s.id}>{s.fullName}</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="fem-field">
                     <label>{t('finance.discounts.table.type')}</label>

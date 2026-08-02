@@ -332,6 +332,8 @@
       "table": { "student": "Arday", "type": "Nooca", "amount": "Qadarka", "reason": "Sababta" },
       "scholarship": "Deeq Waxbarasho",
       "discount": "Dhimis",
+      "selectStudent": "-- Dooro Ardayga --",
+      "noStudents": "Wali arday lama diiwaan gelin — marka hore ku dar bogga Ardayda",
       "items": [
         { "student": "Cabdiraxman Yoonis", "reason": "Walaalo dhowr ah oo isku dugsi ah" },
         { "student": "Sacdiyo Xasan Nuur", "reason": "Deeq waxbarasho - buundo sare" }

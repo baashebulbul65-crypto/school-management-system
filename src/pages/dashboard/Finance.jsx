@@ -520,6 +520,7 @@ function Finance() {
         onSave={handleSaveEntry}
         type={entryType}
         teachers={teachers.filter((tc) => tc.status !== 'inactive')}
+        students={students}
       />
 
       {selectedRow && (
