@@ -117,7 +117,7 @@
       "submitAdd": "Ku Dar Ardayga"
     },
     "profile": {
-      "tabs": { "general": "Macluumaadka Guud", "academic": "Waxbarasho", "attendance": "Imaanshaha", "results": "Natiijooyinka", "fees": "Lacagta", "behaviour": "Anshaxa", "documents": "Dukumentiyada" },
+      "tabs": { "general": "Macluumaadka Guud", "academic": "Waxbarasho", "attendance": "Imaanshaha", "results": "Natiijooyinka", "fees": "Lacagta" },
       "info": {
         "fullName": "Magaca Buuxa", "studentId": "Student ID", "gender": "Jinsiga", "dob": "Taariikhda Dhalashada",
         "phone": "Telefoonka", "address": "Cinwaanka", "parentSection": "Macluumaadka Waalidka",
@@ -125,11 +125,10 @@
         "className": "Fasalka", "section": "Qaybta (Section)", "rollNumber": "Roll Number", "subjectsSection": "Maadooyinka"
       },
       "attendanceNote": "Akhris-kaliya — diiwaanka imaanshaha maalinlaha ah. Waxaa laga calaamadiyaa bogga \"Fasalladayda\" tab-ka Xaadiris.",
-      "table": { "subject": "Maadada", "marks": "Buundooyinka", "total": "Wadarta", "grade": "Darajada", "month": "Bisha", "amount": "Qadarka", "date": "Taariikhda" },
+      "noAttendance": "Weli imaansho ma jiro.",
+      "table": { "subject": "Maadada", "marks": "Buundooyinka", "grade": "Darajada", "month": "Bisha", "amount": "Qadarka", "date": "Taariikhda" },
       "feeHistoryTitle": "Taariikhda Bixinnada",
       "noFeeHistory": "Wali lacag lama bixin.",
-      "noBehaviour": "Wax faallo ah lama qorin.",
-      "noDocuments": "Wax dukumenti ah laguma soo shubin.",
       "qrCode": "QR Code"
     }
   },
@@ -656,7 +655,7 @@
     "addChildNotFound": "Diiwaan ID-gan lama helin dugsigan — fadlan hubi qoraalka.",
     "addChildGenericError": "Wax baa qaldamay. Fadlan mar kale isku day.",
     "attendanceRateLabel": "Heerka Imaanshaha",
-    "tabs": { "attendance": "Imaanshaha", "fees": "Lacagaha", "results": "Natiijooyinka", "messages": "Fariimaha", "behaviour": "Anshaxa", "examdates": "Taariikhaha Imtixaanka", "quran": "Quraanka" },
+    "tabs": { "attendance": "Imaanshaha", "fees": "Lacagaha", "results": "Natiijooyinka", "messages": "Fariimaha", "examdates": "Taariikhaha Imtixaanka", "quran": "Quraanka" },
     "attendance": { "title": "Imaanshaha", "empty": "Xog imaanshaha lama duubin weli ilmahan." },
     "quran": {
       "progressTitle": "Garashada Quraanka Maalinlaha ah",
@@ -673,7 +672,6 @@
     "fees": { "title": "Lacagaha", "historyTitle": "Taariikhda Bixinnada", "empty": "Wali lacag lama bixin.", "table": { "month": "Bisha", "amount": "Qadarka", "date": "Taariikhda", "status": "Xaaladda" } },
     "results": { "title": "Natiijooyinka", "empty": "Weli imtixaan looma qorin fasalkan.", "table": { "subject": "Maadada", "type": "Nooca", "marks": "Buundooyinka", "grade": "Darajada" }, "notEntered": "Lama gelin" },
     "messages": { "title": "Fariimaha", "empty": "Weli fariin lama dirin — dir fariintaada ugu horeysa macallinka ama maamulaha.", "composePlaceholder": "Qor fariintaada..." },
-    "behaviour": { "title": "Anshaxa", "empty": "Wax faallo ah lama qorin." },
     "examdates": { "title": "Taariikhaha Imtixaanka", "empty": "Ma jiro imtixaan soo socda fasalkan.", "table": { "subject": "Maadada", "type": "Nooca", "date": "Taariikhda" } },
     "notifications": { "title": "Ogeysiisyada", "empty": "Ogeysiis lama helin.", "markAllRead": "Calaamadee Dhammaan" }
   },

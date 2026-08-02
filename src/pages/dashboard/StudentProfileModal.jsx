@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { currentMonthValue } from '../../utils/somaliDate';
 import { getMonthlyFeeStatus, studentFeeOwed } from '../../utils/studentFee';
+import { gradeFromPercent } from '../../utils/grades';
 import './StudentProfileModal.css';
 
 function initials(name) {
@@ -24,7 +25,7 @@ function StudentProfileModal({ student, attendanceRecords, onClose }) {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState('guud');
-  const { feePayments } = useSchoolData();
+  const { feePayments, exams, examMarks } = useSchoolData();
   // Macallinku gebi ahaanba wuu ka mamnuucan yahay Finance-ka — xitaa
   // xaaladda lacagta fasalkiisa gaarka ah (Teacher Role Scoping audit,
   // 2026-08-02). feePayments-ku waa madhan macallinka (fiiri
@@ -43,14 +44,24 @@ function StudentProfileModal({ student, attendanceRecords, onClose }) {
     .filter((p) => p.feeType === 'student' && p.studentId === student.id)
     .sort((a, b) => b.month.localeCompare(a.month));
 
+  // Buundooyinka DHABta ah ee ardaygan (collection "examMarks"), lagu xiray
+  // imtixaannada fasalkiisa — isla xisaabta "Report Card" ee Exams.jsx
+  // isticmaasho, halkii ay ka akhrin lahayd "student.examResults" (field
+  // hore oo kaliya loo qoray ardayda tijaabada, waligiis madhan ardayda dhabta ah).
+  const studentExams = exams.filter((e) => (student.classId ? e.classId === student.classId : e.className === student.className));
+  const examRows = studentExams.map((exam) => {
+    const mark = examMarks[exam.id]?.[student.id];
+    const hasMark = mark !== undefined && mark !== '';
+    const pct = hasMark ? (mark / exam.maxMarks) * 100 : null;
+    return { exam, mark, hasMark, gradeInfo: pct !== null ? gradeFromPercent(pct) : null };
+  });
+
   const TABS = [
     { id: 'guud', label: t('students.profile.tabs.general') },
     { id: 'waxbarasho', label: t('students.profile.tabs.academic') },
     { id: 'imaanshaha', label: t('students.profile.tabs.attendance') },
     { id: 'natiijo', label: t('students.profile.tabs.results') },
     ...(isTeacher ? [] : [{ id: 'lacag', label: t('students.profile.tabs.fees') }]),
-    { id: 'anshax', label: t('students.profile.tabs.behaviour') },
-    { id: 'dukumenti', label: t('students.profile.tabs.documents') },
   ];
 
   return (
@@ -128,7 +139,7 @@ function StudentProfileModal({ student, attendanceRecords, onClose }) {
               <p className="spm-note">{t('students.profile.attendanceNote')}</p>
               <div className="attendance-grid">
                 {(!attendanceRecords || attendanceRecords.length === 0) && (
-                  <p className="spm-note">Weli imaansho ma jiro.</p>
+                  <p className="spm-note">{t('students.profile.noAttendance')}</p>
                 )}
                 {attendanceRecords?.map((a) => (
                   <div key={a.date} className={`attendance-cell ${a.status}`} title={a.date}>
@@ -149,17 +160,25 @@ function StudentProfileModal({ student, attendanceRecords, onClose }) {
             <div className="data-table-wrap">
               <table className="data-table">
                 <thead>
-                  <tr><th>{t('students.profile.table.subject')}</th><th>{t('students.profile.table.marks')}</th><th>{t('students.profile.table.total')}</th><th>{t('students.profile.table.grade')}</th></tr>
+                  <tr><th>{t('students.profile.table.subject')}</th><th>{t('students.profile.table.marks')}</th><th>{t('students.profile.table.grade')}</th></tr>
                 </thead>
                 <tbody>
-                  {student.examResults?.map((r) => (
-                    <tr key={r.subject}>
-                      <td>{r.subject}</td>
-                      <td>{r.marks}</td>
-                      <td>{r.maxMarks}</td>
-                      <td><span className={`badge ${r.grade === 'A' ? 'badge-success' : r.grade === 'F' ? 'badge-danger' : 'badge-warning'}`}>{r.grade}</span></td>
+                  {examRows.map(({ exam, mark, hasMark, gradeInfo }) => (
+                    <tr key={exam.id}>
+                      <td>{exam.subject}</td>
+                      <td>{hasMark ? `${mark}/${exam.maxMarks}` : t('exams.notEntered')}</td>
+                      <td>
+                        {gradeInfo ? (
+                          <span className={`badge ${gradeInfo.grade === 'A' ? 'badge-success' : gradeInfo.grade === 'F' ? 'badge-danger' : 'badge-warning'}`}>
+                            {gradeInfo.grade}
+                          </span>
+                        ) : '—'}
+                      </td>
                     </tr>
                   ))}
+                  {examRows.length === 0 && (
+                    <tr><td colSpan="3" style={{ textAlign: 'center', color: '#94A3B8', padding: '24px' }}>{t('common.noResults')}</td></tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -195,41 +214,6 @@ function StudentProfileModal({ student, attendanceRecords, onClose }) {
                   </table>
                 </div>
               )}
-            </div>
-          )}
-
-          {activeTab === 'anshax' && (
-            <div className="behaviour-list">
-              {(!student.behaviour || student.behaviour.length === 0) && <p className="spm-note">{t('students.profile.noBehaviour')}</p>}
-              {student.behaviour?.map((b, i) => (
-                <div key={i} className={`behaviour-item ${b.type}`}>
-                  <span className="behaviour-dot"></span>
-                  <div>
-                    <p>{b.note}</p>
-                    <span className="behaviour-date">{b.date}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {activeTab === 'dukumenti' && (
-            <div className="documents-list">
-              {(!student.documents || student.documents.length === 0) && <p className="spm-note">{t('students.profile.noDocuments')}</p>}
-              {student.documents?.map((d, i) => (
-                <div key={i} className="document-row">
-                  <div className="document-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
-                  </div>
-                  <div className="document-info">
-                    <div className="document-name">{d.name}</div>
-                    <div className="document-meta">{d.type} &middot; {d.uploadDate}</div>
-                  </div>
-                  <button className="row-action-btn" title={t('common.actions.download')}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                  </button>
-                </div>
-              ))}
             </div>
           )}
 

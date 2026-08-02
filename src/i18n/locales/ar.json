@@ -117,7 +117,7 @@
       "submitAdd": "إضافة الطالب"
     },
     "profile": {
-      "tabs": { "general": "المعلومات العامة", "academic": "الدراسة", "attendance": "الحضور", "results": "النتائج", "fees": "الرسوم", "behaviour": "السلوك", "documents": "المستندات" },
+      "tabs": { "general": "المعلومات العامة", "academic": "الدراسة", "attendance": "الحضور", "results": "النتائج", "fees": "الرسوم" },
       "info": {
         "fullName": "الاسم الكامل", "studentId": "رقم الطالب", "gender": "الجنس", "dob": "تاريخ الميلاد",
         "phone": "رقم الهاتف", "address": "العنوان", "parentSection": "معلومات ولي الأمر",
@@ -125,11 +125,10 @@
         "className": "الفصل", "section": "الشعبة", "rollNumber": "الرقم التسلسلي", "subjectsSection": "المواد"
       },
       "attendanceNote": "للعرض فقط — سجل الحضور اليومي. يتم تسجيل الحضور من صفحة \"فصولي\" (تبويب الحضور).",
-      "table": { "subject": "المادة", "marks": "الدرجات", "total": "الإجمالي", "grade": "التقدير", "month": "الشهر", "amount": "المبلغ", "date": "التاريخ" },
+      "noAttendance": "لا يوجد سجل حضور بعد.",
+      "table": { "subject": "المادة", "marks": "الدرجات", "grade": "التقدير", "month": "الشهر", "amount": "المبلغ", "date": "التاريخ" },
       "feeHistoryTitle": "سجل الدفعات",
       "noFeeHistory": "لم يتم دفع أي رسوم بعد.",
-      "noBehaviour": "لم تتم إضافة أي ملاحظات.",
-      "noDocuments": "لم يتم رفع أي مستندات.",
       "qrCode": "رمز QR"
     }
   },
@@ -656,7 +655,7 @@
     "addChildNotFound": "لم يتم العثور على رقم التسجيل هذا في المدرسة — يرجى التحقق من الرقم.",
     "addChildGenericError": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
     "attendanceRateLabel": "معدل الحضور",
-    "tabs": { "attendance": "الحضور", "fees": "الرسوم", "results": "النتائج", "messages": "الرسائل", "behaviour": "السلوك", "examdates": "مواعيد الامتحانات", "quran": "القرآن" },
+    "tabs": { "attendance": "الحضور", "fees": "الرسوم", "results": "النتائج", "messages": "الرسائل", "examdates": "مواعيد الامتحانات", "quran": "القرآن" },
     "attendance": { "title": "الحضور", "empty": "لم يتم تسجيل بيانات حضور لهذا الابن بعد." },
     "quran": {
       "progressTitle": "الحفظ اليومي للقرآن",
@@ -673,7 +672,6 @@
     "fees": { "title": "الرسوم", "historyTitle": "سجل الدفعات", "empty": "لم يتم دفع أي رسوم بعد.", "table": { "month": "الشهر", "amount": "المبلغ", "date": "التاريخ", "status": "الحالة" } },
     "results": { "title": "النتائج", "empty": "لم يتم تسجيل أي امتحان لهذا الفصل بعد.", "table": { "subject": "المادة", "type": "النوع", "marks": "الدرجات", "grade": "التقدير" }, "notEntered": "لم تُدخل" },
     "messages": { "title": "الرسائل", "empty": "لا توجد رسائل بعد — أرسل رسالتك الأولى إلى المعلم أو الإدارة.", "composePlaceholder": "اكتب رسالتك..." },
-    "behaviour": { "title": "السلوك", "empty": "لم تتم إضافة أي ملاحظات." },
     "examdates": { "title": "مواعيد الامتحانات", "empty": "لا توجد امتحانات قادمة لهذا الفصل.", "table": { "subject": "المادة", "type": "النوع", "date": "التاريخ" } },
     "notifications": { "title": "الإشعارات", "empty": "لا توجد إشعارات.", "markAllRead": "تحديد الكل كمقروء" }
   },

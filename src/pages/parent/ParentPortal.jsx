@@ -75,7 +75,6 @@ function ParentPortal() {
     { id: 'fees', label: t('parentPortal.tabs.fees') },
     { id: 'results', label: t('parentPortal.tabs.results') },
     { id: 'messages', label: t('parentPortal.tabs.messages') },
-    { id: 'behaviour', label: t('parentPortal.tabs.behaviour') },
     { id: 'examdates', label: t('parentPortal.tabs.examdates') },
   ];
 
@@ -667,27 +666,6 @@ function ParentPortal() {
                       </button>
                     </form>
                   </div>
-                </>
-              )}
-
-              {activeTab === 'behaviour' && (
-                <>
-                  <h3 className="pp-card-title">{t('parentPortal.behaviour.title')}</h3>
-                  {(selectedChild.behaviour || []).length === 0 ? (
-                    <p className="pp-empty-note">{t('parentPortal.behaviour.empty')}</p>
-                  ) : (
-                    <div className="pp-behaviour-list">
-                      {selectedChild.behaviour.map((b, i) => (
-                        <div key={i} className={`pp-behaviour-item ${b.type}`}>
-                          <span className="pp-behaviour-dot"></span>
-                          <div>
-                            <p>{b.note}</p>
-                            <span className="pp-behaviour-date">{b.date}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </>
               )}
 

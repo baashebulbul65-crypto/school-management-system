@@ -165,22 +165,23 @@ service cloud.firestore {
     }
 
     // ===== students =====
-    // Akhris: Shaqaalaha dugsigaas + kaliya Waalidka runtida ah ee ilmahan
-    // (childrenIds). Raadinta Diiwaan ID marka ilmo la xirayo waxay isticmaashaa
-    // collection-ka 'studentLookup' (fiiri hoos) — ma aha in Waalid kasta
-    // uu akhrin karo dhammaan xogta ardayda dugsiga (magac, taleefan, lacag,
-    // natiijooyin, iwm) sida hore laga sameyn jiray.
+    // Akhris: macallinku KALIYA arday fasalkiisa ah (isMyClassData, Students
+    // audit 2026-08-03 — hore waxay ahayd isStaffOf oo dhan-dugsi ah, taasoo
+    // u oggolaan jirtay macallin uu SDK-ga si toos ah ugu akhriyo xogta
+    // lacageed/shakhsi ee ardayda fasallada kale). Owner-ku wuu arkaa
+    // dhammaantood (isMyClassData -> isOwnerStaffOf). Waalidka runtida ah ee
+    // ilmahan (childrenIds) sidoo kale — raadinta Diiwaan ID marka ilmo la
+    // xirayo waxay isticmaashaa collection-ka 'studentLookup' (fiiri hoos).
     match /students/{studentDocId} {
-      allow read: if isStaffOf(resource.data.schoolCode) || isParentOfStudent(resource.data.schoolCode, studentDocId);
-      // Abuuridda arday CUSUB waa owner-kaliya (Teacher Role Scoping audit) —
-      // macallinku wuu sii wax ka beddeli karaa arday jira (xaadiris/dhibco/
-      // Quraan, fiiri "update" hoose), ma abuuri karo mid cusub.
-      allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
-      allow update: if isStaffOf(resource.data.schoolCode);
-      // Tirtiridda joogtada ah (permanent delete, "Trash") waa mid aan la soo
-      // celin karin — waxaa loo xaddidayaa 'owner' kaliya, si la mid ah sida
-      // bogga "Trash" ee UI-gu owner-only u yahay.
-      allow delete: if isStaffOf(resource.data.schoolCode) && me().role == 'owner';
+      allow read: if isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null))
+        || isParentOfStudent(resource.data.schoolCode, studentDocId);
+      // Abuurid/wax-ka-beddel/tirtir (soft iyo joogto) waa owner-kaliya —
+      // xogta ardayga waxaa ku jira lacagta (feeAmount/feeType/discountPercent)
+      // ee horeba Finance-ku owner-kaliya u yeelay; macallinku ma laha sabab
+      // uu si toos ah u wax-ka-beddelo doc-ka ardayga (xaadiris/buundo/Quraan
+      // waxay ku jiraan collections gaar ah oo horeba isMyClassData ku xaddan).
+      allow create, update: if isOwnerStaffOf(request.resource.data.schoolCode);
+      allow delete: if isOwnerStaffOf(resource.data.schoolCode);
     }
 
     // ===== studentLookup =====

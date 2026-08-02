@@ -4,19 +4,12 @@ import autoTable from 'jspdf-autotable';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { classroomName } from '../../hooks/useClassOptions';
+import { gradeFromPercent } from '../../utils/grades';
 import ExamFormModal from './ExamFormModal';
 import '../../styles/dashboard-shared.css';
 import './Exams.css';
 
 const EXAM_TYPES = ['Midterm', 'Final', 'Monthly', 'Quiz', 'Oral', 'Practical'];
-
-function gradeFromPercent(pct) {
-  if (pct >= 80) return { grade: 'A', gpa: 4.0 };
-  if (pct >= 65) return { grade: 'B', gpa: 3.0 };
-  if (pct >= 50) return { grade: 'C', gpa: 2.0 };
-  if (pct >= 40) return { grade: 'D', gpa: 1.0 };
-  return { grade: 'F', gpa: 0.0 };
-}
 
 function initials(name) {
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();

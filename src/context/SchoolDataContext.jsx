@@ -8,7 +8,7 @@ import { createContext, useContext, useState, useEffect, useMemo, useRef } from 
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
 import { useSettings } from './SettingsContext';
-import { subscribeToStudents, createStudentDoc, updateStudentDoc, softDeleteStudentDoc, restoreStudentDoc, deleteStudentDoc, backfillStudentLookups } from '../firebase/students';
+import { subscribeToStudents, createStudentDoc, updateStudentDoc, softDeleteStudentDoc, restoreStudentDoc, deleteStudentDoc, backfillStudentLookups, backfillStudentClassScoping } from '../firebase/students';
 import { subscribeToTeachers, createTeacherDoc, updateTeacherDoc, deactivateTeacherDoc } from '../firebase/teachers';
 import { subscribeToClasses, createClassDoc, updateClassDoc, deleteClassDoc, unlinkTeacherFromClasses, unlinkSubjectFromClasses } from '../firebase/classes';
 import { subscribeToSubjects, createSubjectDoc, updateSubjectDoc, deleteSubjectDoc, unlinkTeacherFromSubjects } from '../firebase/subjects';
@@ -63,18 +63,6 @@ const DEMO_STUDENTS_SEED = [
     status: 'active',
     feeType: 'fixed',
     feeAmount: 120,
-    examResults: [
-      { subject: 'Xisaab', marks: 82, maxMarks: 100, grade: 'A' },
-      { subject: 'Ingiriisi', marks: 74, maxMarks: 100, grade: 'B' },
-      { subject: 'Sayniska', marks: 65, maxMarks: 100, grade: 'C' },
-    ],
-    behaviour: [
-      { note: 'Ka qayb qaatay tartanka akhriska - meesha 1aad', date: '2026-05-02', type: 'positive' },
-    ],
-    documents: [
-      { name: 'Shahaadada Dhalashada', type: 'PDF', uploadDate: '2026-01-05' },
-      { name: 'Sawirka Ardayga', type: 'JPG', uploadDate: '2026-01-05' },
-    ],
   },
   {
     id: 2,
@@ -94,12 +82,6 @@ const DEMO_STUDENTS_SEED = [
     status: 'active',
     feeType: 'fixed',
     feeAmount: 120,
-    examResults: [
-      { subject: 'Xisaab', marks: 91, maxMarks: 100, grade: 'A' },
-      { subject: 'Ingiriisi', marks: 88, maxMarks: 100, grade: 'A' },
-    ],
-    behaviour: [],
-    documents: [{ name: 'Shahaadada Dhalashada', type: 'PDF', uploadDate: '2026-01-06' }],
   },
   {
     id: 3,
@@ -119,11 +101,6 @@ const DEMO_STUDENTS_SEED = [
     status: 'active',
     feeType: 'fixed',
     feeAmount: 120,
-    examResults: [{ subject: 'Xisaab', marks: 48, maxMarks: 100, grade: 'F' }],
-    behaviour: [
-      { note: 'Fasalka ka daahay 3 jeer bishan', date: '2026-06-20', type: 'negative' },
-    ],
-    documents: [],
   },
   {
     id: 4,
@@ -143,9 +120,6 @@ const DEMO_STUDENTS_SEED = [
     status: 'inactive',
     feeType: 'fixed',
     feeAmount: 120,
-    examResults: [{ subject: 'Ingiriisi', marks: 55, maxMarks: 100, grade: 'C' }],
-    behaviour: [],
-    documents: [],
   },
   {
     id: 5,
@@ -165,12 +139,6 @@ const DEMO_STUDENTS_SEED = [
     status: 'active',
     feeType: 'fixed',
     feeAmount: 150,
-    examResults: [
-      { subject: 'Fiisigis', marks: 77, maxMarks: 100, grade: 'B' },
-      { subject: 'Kiimikada', marks: 85, maxMarks: 100, grade: 'A' },
-    ],
-    behaviour: [],
-    documents: [{ name: 'Ratiga Fasalka Hore', type: 'PDF', uploadDate: '2026-02-01' }],
   },
   {
     id: 6,
@@ -190,9 +158,6 @@ const DEMO_STUDENTS_SEED = [
     status: 'active',
     feeType: 'fixed',
     feeAmount: 120,
-    examResults: [{ subject: 'Taariikh', marks: 69, maxMarks: 100, grade: 'C' }],
-    behaviour: [],
-    documents: [],
   },
 ];
 
@@ -653,6 +618,9 @@ export function SchoolDataProvider({ children }) {
     backfillQuranTargetsClassScoping(profile.schoolCode, classIdToTeacherId).catch((err) =>
       reportError('Khalad ayaa dhacay markii yoolalka Quraanka la buuxinayay (classTeacherId):', err)
     );
+    backfillStudentClassScoping(profile.schoolCode, classIdToTeacherId).catch((err) =>
+      reportError('Khalad ayaa dhacay markii ardayda la buuxinayay (classTeacherId):', err)
+    );
   }, [profile?.schoolCode, profile?.accountType, classes]);
 
   // examMarks waxay u baahan tahay xiriirka examId -> classTeacherId (via
@@ -1031,9 +999,6 @@ export function SchoolDataProvider({ children }) {
       await createStudentDoc(profile.schoolCode, {
         ...payload,
         studentId: `STU-${1040 + allStudents.length + 1}`,
-        examResults: [],
-        behaviour: [],
-        documents: [],
       });
     } catch (err) {
       reportError('Khalad ayaa dhacay markii ardayga la darayay:', err);
@@ -1181,8 +1146,17 @@ export function SchoolDataProvider({ children }) {
     try {
       await updateClassDoc(id, payload);
       const newClassroomName = `${payload.grade}${payload.section}`;
-      const affectedStudents = students.filter((s) => s.classId === id && s.className !== newClassroomName);
-      await Promise.all(affectedStudents.map((s) => updateStudentDoc(s.id, { className: newClassroomName })));
+      const newClassTeacherId = payload.classTeacherId || null;
+      // classTeacherId waa in la cusboonaysiiyaa ardayda fasalkan marka
+      // macallinka fasalka la beddelo (reassign) — haddii kale
+      // firestore.rules-ka "students" (isMyClassData) wuxuu sii xannibi
+      // doonaa macallinka CUSUB xitaa ardaydiisa cusub (Students audit, 2026-08-03).
+      const affectedStudents = students.filter((s) => s.classId === id
+        && (s.className !== newClassroomName || (s.classTeacherId || null) !== newClassTeacherId));
+      await Promise.all(affectedStudents.map((s) => updateStudentDoc(s.id, {
+        className: newClassroomName,
+        classTeacherId: newClassTeacherId,
+      })));
       // Isla sida ardayda — imtixaannada classId-gan leh waa in "className"
       // (denormalized) la cusboonaysiiyaa, si Exams.jsx/ClassWorkspace/
       // Reports.jsx (kuwaas oo isticmaala qoraalkan) aysan u dhaqmin xog

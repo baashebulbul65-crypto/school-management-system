@@ -91,6 +91,22 @@ export async function findStudentByStudentId(schoolCode, studentId) {
   return { id: data.studentDocId, studentId: data.studentId };
 }
 
+// Hal mar per school — u buuxisa 'classTeacherId' ardaydii hore loo abuuray
+// ka hor intaan field-kaas cusub la darin (Students audit, 2026-08-03 —
+// firestore.rules-ku hadda ku tiirsan yahay field-kan si loo xaddidiyo
+// akhrinta macallinka, isla mabda'a backfillAttendanceClassScoping).
+export async function backfillStudentClassScoping(schoolCode, classIdToTeacherId) {
+  const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode));
+  const snap = await getDocs(q);
+  await Promise.all(
+    snap.docs.map((d) => {
+      const data = d.data();
+      if (data.classTeacherId !== undefined) return null;
+      return updateDoc(doc(db, COLLECTION, d.id), { classTeacherId: classIdToTeacherId.get(data.classId) || null });
+    })
+  );
+}
+
 // Hal mar loo isticmaalo — u abuurta lookup doc-yada ardayda hore loo abuuray
 // ka hor intaan collection-ka 'studentLookup' la darin (fiiri SchoolDataContext).
 export async function backfillStudentLookups(schoolCode) {

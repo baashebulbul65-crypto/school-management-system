@@ -399,15 +399,6 @@
   .pp-chat{ height: 400px; }
 }
 
-/* Behaviour */
-.pp-behaviour-list{ display: flex; flex-direction: column; gap: 16px; }
-.pp-behaviour-item{ display: flex; gap: 12px; align-items: flex-start; }
-.pp-behaviour-item p{ font-size: 14px; color: #0B1F2B; margin-bottom: 3px; }
-.pp-behaviour-date{ font-size: 12px; color: #94A3B8; }
-.pp-behaviour-dot{ width: 9px; height: 9px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-.pp-behaviour-item.positive .pp-behaviour-dot{ background: #16C784; }
-.pp-behaviour-item.negative .pp-behaviour-dot{ background: #E5533F; }
-
 @media (max-width: 640px){
   .pp-header{ padding: 16px 20px; }
   .pp-welcome{ display: none; }

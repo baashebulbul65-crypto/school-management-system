@@ -101,10 +101,15 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
     // messages/notifications), si aan loo baahnayn in kuwaas la wada beddelo.
     // Fiiri SchoolDataContext.jsx: updateClass waxay si otomaatig ah u
     // cusboonaysiisaa qiimahan marka fasalku magaciisa beddelo (rename).
+    // "classTeacherId" isla si kale waa loo denormalize-gareeyaa (Teacher
+    // Role Scoping) — firestore.rules "students" akhrinta macallinku waxay
+    // ku tiirsan tahay field-kan si loo xaddidiyo kaliya ardayda fasalkiisa
+    // (fiiri students audit, 2026-08-03).
     const selectedClass = classes.find((c) => c.id === form.classId);
     const payload = {
       ...form,
       className: selectedClass ? classroomName(selectedClass) : '',
+      classTeacherId: selectedClass?.classTeacherId || null,
       subjects: subjectsArray,
       rollNumber: Number(form.rollNumber) || 0,
       feeAmount: form.feeType === 'free' ? 0 : Number(form.feeAmount) || 0,
