@@ -1221,11 +1221,21 @@ export function SchoolDataProvider({ children }) {
     }
   };
 
-  // Xannibaad: fasal aan la tirtiri karin haddii arday weli ku jiraan
-  // (classId match) — si aan loo yeelin arday "orphaned" ah oo ku xiran
-  // fasal aan hadda jirin.
+  // Xannibaad: fasal aan la tirtiri karin haddii arday weli ku jiraan.
+  // Audit (2026-08-02, gap #1 — Classes audit qayb 2aad): hore waxaa la
+  // hubin jiray "classId" oo qura — laakiin Classes.jsx/ClassDetailModal/
+  // ClassWorkspace/Finance.jsx dhammaantood waxay tirinayaan/muujinayaan
+  // ardayda iyaga oo isticmaalaya dual-check (classId haddii jiro, haddii
+  // kale className fallback ardayda hore ee aan weli la dib-u-kaydin
+  // backfill-ka cusub, fiiri classIdBackfillRef kore). Guard-kani hadda waa
+  // in uu isla dual-check-aas isticmaalo — haddii kale fasal UI-gu tusayo
+  // inuu arday hayo (className fallback) wuu tirtiri karayay isaga oo
+  // "orphaned" ka dhigaya ardaygaas (classId/className u hadhaya fasal aan
+  // jirin).
   const removeClass = async (id) => {
-    const hasStudents = students.some((s) => s.classId === id);
+    const cls = classes.find((c) => c.id === id);
+    const className = cls ? `${cls.grade}${cls.section}` : null;
+    const hasStudents = students.some((s) => (s.classId ? s.classId === id : s.className === className));
     if (hasStudents) {
       reportError('Fasalkan waa in aad marka hore ka wareejisaa ardayda ka hor intaad tirtirin.', new Error('CLASS_HAS_STUDENTS'));
       return;
