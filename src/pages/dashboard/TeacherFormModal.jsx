@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useClassOptions } from '../../hooks/useClassOptions';
+import { useSchoolData } from '../../context/SchoolDataContext';
+import { classroomName } from '../../hooks/useClassOptions';
 import './TeacherFormModal.css';
 
 const EMPTY_FORM = {
@@ -9,7 +10,6 @@ const EMPTY_FORM = {
   email: '',
   qualification: '',
   subject: '',
-  assignedClasses: [],
   status: 'active',
 };
 
@@ -20,10 +20,21 @@ function initials(name) {
 
 function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
   const { t } = useTranslation();
+  const { classes } = useSchoolData();
   const [form, setForm] = useState(EMPTY_FORM);
-  const [error, setError] = useState('');
   const isEditing = !!teacher;
-  const classOptions = useClassOptions(form.assignedClasses);
+
+  // Audit (2026-08-02, gap #3 — assignedClasses vs classTeacherId): fasallada
+  // macallinku dhigo hore waxaa lagu kaydin jiray field GOONI ah oo teacher
+  // doc-ka ku jira ("assignedClasses", la beddelo multi-select-kan), taasoo
+  // MARNA aan lala xiriirin xiriirka DHABTA AH (classes.classTeacherId, kaas
+  // oo Classes.jsx/ClassFormModal maamula, oo ay ku tiirsan yihiin rules-ka/
+  // role-scoping-ka oo dhan). Labadaas waxay is khaldi karaan (owner-ku wuxuu
+  // halkan dhigi karaa "Fasal X" isaga oo Classes.jsx-ka classTeacherId-giisu
+  // uu yahay macallin kale). Halkan hadda waa MUUQAAL OO QURA (read-only),
+  // lagana soo xisaabiyaa xogta DHABTA AH ee "classes" — lagama beddeli karo
+  // halkan, waxaa ka beddela bogga "Fasallada" (ClassFormModal-ka).
+  const assignedClasses = isEditing ? classes.filter((c) => c.classTeacherId === teacher.id) : [];
 
   useEffect(() => {
     if (teacher) {
@@ -33,33 +44,19 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
         email: teacher.email || '',
         qualification: teacher.qualification || '',
         subject: teacher.subject || '',
-        assignedClasses: teacher.assignedClasses || [],
         status: teacher.status || 'active',
       });
     } else {
       setForm(EMPTY_FORM);
     }
-    setError('');
   }, [teacher, isOpen]);
 
   if (!isOpen) return null;
 
   const update = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
-  const handleClassesChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions, (o) => o.value);
-    setForm((f) => ({ ...f, assignedClasses: selected }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // ===== VALIDATION: macallin kastaa waa in uu leeyahay ugu yaraan hal fasal =====
-    if (form.assignedClasses.length === 0) {
-      setError(t('teachers.form.errorNoClass'));
-      return;
-    }
-
     onSave(form, teacher?.id);
     onClose();
   };
@@ -82,8 +79,6 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
 
         <form onSubmit={handleSubmit}>
           <div className="tfm-body">
-
-            {error && <div className="tfm-error">{error}</div>}
 
             <div className="tfm-section-label">{t('teachers.form.sections.personal')}</div>
             <div className="tfm-grid">
@@ -120,22 +115,14 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
               </div>
               <div className="tfm-field full">
                 <label>{t('teachers.form.fields.assignedClasses')}</label>
-                <select
-                  multiple
-                  value={form.assignedClasses}
-                  onChange={handleClassesChange}
-                  size={Math.min(6, Math.max(3, classOptions.length))}
-                  disabled={classOptions.length === 0}
-                  required
-                >
-                  {classOptions.length === 0 && (
-                    <option value="" disabled>{t('teachers.form.noClasses')}</option>
-                  )}
-                  {classOptions.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
-                <span className="tfm-hint">{t('teachers.form.hint')}</span>
+                <p className="tfm-readonly-value">
+                  {!isEditing
+                    ? t('teachers.form.assignAfterCreate')
+                    : assignedClasses.length === 0
+                    ? t('teachers.form.noAssignedClassesYet')
+                    : assignedClasses.map((c) => classroomName(c)).join(', ')}
+                </p>
+                <span className="tfm-hint">{t('teachers.form.assignClassesHint')}</span>
               </div>
             </div>
 

@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { findLinkedStaffAccount } from '../../firebase/staff';
+import { classroomName } from '../../hooks/useClassOptions';
 import TeacherProfileModal from './TeacherProfileModal';
 import TeacherFormModal from './TeacherFormModal';
 import '../../styles/dashboard-shared.css';
@@ -22,7 +23,7 @@ function Teachers() {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const { showError } = useToast();
-  const { teachers, addTeacher, updateTeacher, cycleTeacherAttendanceRecord, cascadeUnlinkTeacher, allStaffAttendanceRecords } = useSchoolData();
+  const { teachers, classes, addTeacher, updateTeacher, cycleTeacherAttendanceRecord, cascadeUnlinkTeacher, allStaffAttendanceRecords } = useSchoolData();
   const [search, setSearch] = useState('');
   const [selectedTeacherId, setSelectedTeacherId] = useState(null);
   const [showFormModal, setShowFormModal] = useState(false);
@@ -147,7 +148,7 @@ function Teachers() {
                   </td>
                   <td className="cell-sub">{t2.email}</td>
                   <td>{t2.subject}</td>
-                  <td>{t2.assignedClasses.join(', ')}</td>
+                  <td>{classes.filter((c) => c.classTeacherId === t2.id).map((c) => classroomName(c)).join(', ') || '—'}</td>
                   <td className="cell-sub">{t2.phone}</td>
                   <td><span className={`badge ${STATUS_CLS[t2.status] || STATUS_CLS.active}`}>{t(STATUS_LABEL_KEY[t2.status] || STATUS_LABEL_KEY.active)}</span></td>
                   <td>

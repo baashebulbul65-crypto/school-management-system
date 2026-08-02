@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { classroomName } from '../../hooks/useClassOptions';
 import './TeacherProfileModal.css';
 
 function initials(name) {
@@ -18,7 +19,7 @@ function InfoRow({ label, value }) {
 
 function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAttendance }) {
   const { t } = useTranslation();
-  const { salaries } = useSchoolData();
+  const { classes, salaries } = useSchoolData();
   const [activeTab, setActiveTab] = useState('guud');
 
   if (!teacher) return null;
@@ -30,7 +31,11 @@ function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAtte
     { id: 'dukumenti', label: t('teachers.profile.tabs.documents') },
   ];
 
-  const assignedClasses = teacher.assignedClasses || [];
+  // Audit (2026-08-02, gap #3) — fasallada la muujinayo halkan hadda waxaa
+  // laga soo xisaabiyaa xiriirka DHABTA AH (classes.classTeacherId), ma aha
+  // field-kii hore ee teacher.assignedClasses (oo aan lahayn xiriir dhab ah,
+  // fiiri TeacherFormModal.jsx).
+  const assignedClasses = classes.filter((c) => c.classTeacherId === teacher.id);
   const attendance = attendanceRecords || [];
   // Mushaharka DHABTA AH (financeSalaries, la xiriiray teacherId) — ma aha
   // teacher.salary (array hore oo mar walba madhan, marnaba lama qorin,
@@ -89,7 +94,7 @@ function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAtte
                   <p className="tpm-note">{t('teachers.profile.noAssignedClasses')}</p>
                 ) : (
                   assignedClasses.map((c) => (
-                    <span key={c} className="tpm-tag">{c}</span>
+                    <span key={c.id} className="tpm-tag">{classroomName(c)}</span>
                   ))
                 )}
               </div>

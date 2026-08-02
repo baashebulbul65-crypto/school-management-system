@@ -133,3 +133,14 @@
   color: var(--grey-text);
   margin-top: 2px;
 }
+
+.tfm-readonly-value{
+  padding:11px 13px;
+  border:1.5px solid var(--line);
+  border-radius:10px;
+  font-size:13.5px;
+  font-family:'Inter', sans-serif;
+  color: var(--grey-text);
+  background: #F8FAFB;
+  margin:0;
+}

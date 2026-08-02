@@ -147,19 +147,19 @@
       "editTitle": "Wax Ka Beddel Macallinka",
       "addTitle": "Ku Dar Macallin Cusub",
       "fillInfo": "Buuxi macluumaadka hoose",
-      "errorNoClass": "Macallinku waa in uu leeyahay ugu yaraan hal fasal oo loo xilsaaray.",
       "sections": { "personal": "Macluumaadka Shakhsiga", "academic": "Waxbarasho" },
       "fields": {
         "fullName": "Magaca Buuxa *", "phone": "Telefoonka", "email": "Email",
         "qualification": "Shahaadada (Qualification)", "subject": "Maadada *", "status": "Xaaladda",
-        "assignedClasses": "Fasallada Loo Xilsaaray *"
+        "assignedClasses": "Fasallada Loo Xilsaaray"
       },
       "placeholders": {
         "fullName": "Tusaale: Cali Xasan Warsame", "phone": "+252 61 ...", "email": "tusaale@kayd.com",
         "qualification": "Tusaale: BSc Xisaabta - Jaamacadda...", "subject": "Tusaale: Xisaabta"
       },
-      "noClasses": "Wali fasal lama abuurin — marka hore ku dar bogga Fasallada",
-      "hint": "Riix oo hay Ctrl (Cmd ee Mac) si aad u dooratid dhowr fasal. Macallin kastaa waa in uu leeyahay ugu yaraan hal fasal.",
+      "noAssignedClassesYet": "Weli fasal looma xilsaarin.",
+      "assignAfterCreate": "Marka macallinka la kaydiyo, waxaad ka xilsaari kartaa fasal bogga \"Fasallada\".",
+      "assignClassesHint": "Fasallada macallinku dhigo waxaa laga maamulaa bogga \"Fasallada\" (Classes) — halkaas dooro macallinkan sida \"Macallinka Fasalka\". Halkan waa muuqaal oo qura, lagama beddeli karo.",
       "submitAdd": "Ku Dar Macallinka"
     },
     "profile": {
