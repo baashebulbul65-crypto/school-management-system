@@ -10,7 +10,7 @@ import { useToast } from './ToastContext';
 import { useSettings } from './SettingsContext';
 import { subscribeToStudents, createStudentDoc, updateStudentDoc, softDeleteStudentDoc, restoreStudentDoc, deleteStudentDoc, backfillStudentLookups } from '../firebase/students';
 import { subscribeToTeachers, createTeacherDoc, updateTeacherDoc, deactivateTeacherDoc } from '../firebase/teachers';
-import { subscribeToClasses, createClassDoc, updateClassDoc, deleteClassDoc, unlinkTeacherFromClasses } from '../firebase/classes';
+import { subscribeToClasses, createClassDoc, updateClassDoc, deleteClassDoc, unlinkTeacherFromClasses, unlinkSubjectFromClasses } from '../firebase/classes';
 import { subscribeToSubjects, createSubjectDoc, updateSubjectDoc, deleteSubjectDoc, unlinkTeacherFromSubjects } from '../firebase/subjects';
 import { subscribeToExams, createExamDoc, updateExamDoc, deleteExamDoc } from '../firebase/exams';
 import {
@@ -1270,8 +1270,14 @@ export function SchoolDataProvider({ children }) {
       reportError('Khalad ayaa dhacay markii maadada wax laga beddelayay:', err);
     }
   };
+  // Audit (2026-08-02, Classes qayb 2aad, gap LOW): ka hor intaan subject-ka
+  // la tirtirin, ka saar (arrayRemove) dhammaan fasallada "subjectIds" uu ku
+  // jiray — haddii kale ID-giisu wuu ku hadhi lahaa fasallada gudahooda
+  // (orphan, aan la nadiifin marnaba).
   const removeSubject = async (id) => {
+    if (!profile?.schoolCode) return;
     try {
+      await unlinkSubjectFromClasses(profile.schoolCode, id);
       await deleteSubjectDoc(id);
     } catch (err) {
       reportError('Khalad ayaa dhacay markii maadada la tirtirayay:', err);
