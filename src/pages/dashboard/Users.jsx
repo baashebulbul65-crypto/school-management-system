@@ -105,7 +105,7 @@ function Users() {
   const linkedTeacherIds = new Set(
     users.filter((u) => u.teacherDocId && u.id !== editingUser?.id).map((u) => u.teacherDocId)
   );
-  const availableTeacherOptions = teachers.filter((t) => t.status !== 'inactive' && !linkedTeacherIds.has(t.id));
+  const availableTeacherOptions = teachers.filter((tc) => tc.status !== 'inactive' && !linkedTeacherIds.has(tc.id));
 
   const openAddModal = () => { setEditingUser(null); setShowFormModal(true); };
   const openEditModal = (user) => { setEditingUser(user); setShowFormModal(true); };
