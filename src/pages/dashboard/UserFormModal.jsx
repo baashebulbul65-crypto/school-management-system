@@ -126,8 +126,10 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
               {form.role === 'Teacher' && (
                 <div className="ufm-field full">
                   <label>{t('users.form.fields.teacherLink')}</label>
-                  <select value={form.teacherDocId} onChange={handleTeacherSelect} required>
-                    <option value="">{t('users.form.placeholders.teacherSelect')}</option>
+                  <select value={form.teacherDocId} onChange={handleTeacherSelect} required disabled={teacherOptions.length === 0}>
+                    <option value="" disabled={teacherOptions.length === 0}>
+                      {teacherOptions.length === 0 ? t('users.form.placeholders.noAvailableTeachers') : t('users.form.placeholders.teacherSelect')}
+                    </option>
                     {teacherOptions.map((tc) => (
                       <option key={tc.id} value={tc.id}>{tc.fullName}</option>
                     ))}

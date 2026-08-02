@@ -211,7 +211,8 @@
       },
       "placeholders": {
         "fullName": "Tusaale: Sahra Maxamed Cige", "email": "tusaale@kayd.com",
-        "teacherSelect": "-- Dooro macallinka --", "password": "Ugu yaraan 6 xaraf"
+        "teacherSelect": "-- Dooro macallinka --", "password": "Ugu yaraan 6 xaraf",
+        "noAvailableTeachers": "Macallin aan account lagu xirin lama helin (dhammaantiis horeba account bay leeyihiin, ama wali macallin lama abuurin — bogga Macallimiinta ku dar mid cusub)."
       },
       "hints": {
         "emailLocked": "Email-ka ma bedeli karto akoon hore.",
