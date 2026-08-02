@@ -78,8 +78,7 @@ function Classes() {
 
       {notLinked && (
         <div className="dash-card" style={{ textAlign: 'center', padding: '24px', color: '#B45309', background: '#FFFBEB' }}>
-          Akoonkaaga lama xirin diiwaanka Macallinka, sidaas darteed ma aragto fasalkaaga. La xiriir Maamulaha
-          dugsiga si uu bogga "Shaqaalaha" kaaga xiro ("Xiriirinta Diiwaanka Macallinka").
+          {t('classes.notLinked')}
         </div>
       )}
 
