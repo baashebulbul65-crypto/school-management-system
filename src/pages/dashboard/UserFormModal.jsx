@@ -30,6 +30,14 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
       return;
     }
 
+    // Xiriirinta diiwaanka Macallinka waa WAAJIB marka doorku yahay Teacher
+    // (Teacher Role Scoping audit, 2026-08-02) — haddii aan la xirin, macallinku
+    // 0 fasal ayuu arki doonaa (fiiri Classes.jsx: profile.teacherDocId).
+    if (form.role === 'Teacher' && !form.teacherDocId) {
+      setError('Fadlan xulo diiwaanka Macallinka — haddii kale macallinku ma arki doono fasalkiisa.');
+      return;
+    }
+
     const payload = {
       fullName: form.fullName,
       email: form.email,
@@ -92,16 +100,17 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
 
               {form.role === 'Teacher' && (
                 <div className="ufm-field full">
-                  <label>Xiriirinta Diiwaanka Macallinka</label>
-                  <select value={form.teacherDocId} onChange={update('teacherDocId')}>
-                    <option value="">-- Ma jiro (weli lama xirin) --</option>
+                  <label>Xiriirinta Diiwaanka Macallinka *</label>
+                  <select value={form.teacherDocId} onChange={update('teacherDocId')} required>
+                    <option value="">-- Dooro macallinka --</option>
                     {teacherOptions.map((t) => (
                       <option key={t.id} value={t.id}>{t.fullName}</option>
                     ))}
                   </select>
                   <span className="ufm-hint">
-                    Haddii macallinkani horeba ugu jiro bogga "Macallimiinta", ku xir halkan si fasalladiisa
-                    si sax ah loogu muujiyo (fariimaha, iwm) — ikhtiyaari.
+                    Waajib — macallinku wuxuu ku xiran yahay xiriirintan si uu u arko oo u furo fasalkiisa
+                    gaarka ah (bogga "Fasallada"). Haddii macallinku aan weli ku jirin bogga "Macallimiinta",
+                    ku dar isaga halkaas marka hore.
                   </span>
                 </div>
               )}

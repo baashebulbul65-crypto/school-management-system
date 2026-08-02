@@ -22,6 +22,12 @@ function Classes() {
   // classTeacherId ahaan loo xilsaaray, ma aha liiska dugsiga oo dhan
   // (Teacher Role Scoping audit, 2026-08-02).
   const isOwner = profile?.role !== 'teacher';
+  // Haddii macallinku uusan weli ku xirneyn diiwaanka Teachers (teacherDocId
+  // maqan — fiiri UserFormModal.jsx, hadda waajib marka la abuurayo akoon
+  // cusub, laakiin akoonada hore ee la abuuray ka hor waxay wali yeelan
+  // karaan taas), waa in la muujiyaa fariin cad, ma aha "0 fasal" oo aan la
+  // kala saarin khalad iyo xaalad caadi ah (Teacher Role Scoping audit).
+  const notLinked = !isOwner && !profile?.teacherDocId;
   const visibleClasses = isOwner
     ? classes
     : classes.filter((c) => c.classTeacherId === profile?.teacherDocId);
@@ -70,18 +76,28 @@ function Classes() {
         )}
       </div>
 
-      <div className="table-toolbar">
-        <div className="table-search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input
-            type="text"
-            placeholder={t('classes.searchPlaceholder')}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      {notLinked && (
+        <div className="dash-card" style={{ textAlign: 'center', padding: '24px', color: '#B45309', background: '#FFFBEB' }}>
+          Akoonkaaga lama xirin diiwaanka Macallinka, sidaas darteed ma aragto fasalkaaga. La xiriir Maamulaha
+          dugsiga si uu bogga "Shaqaalaha" kaaga xiro ("Xiriirinta Diiwaanka Macallinka").
         </div>
-      </div>
+      )}
 
+      {!notLinked && (
+        <div className="table-toolbar">
+          <div className="table-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input
+              type="text"
+              placeholder={t('classes.searchPlaceholder')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
+      )}
+
+      {!notLinked && (
       <div className="classes-grid">
         {filtered.map((c) => {
           // Tirada ardayda waa in la xisaabiyaa (derived) xogta DHABTA AH ee
@@ -151,6 +167,7 @@ function Classes() {
           <p style={{ color: '#94A3B8', gridColumn: '1 / -1', textAlign: 'center', padding: '32px' }}>{t('common.noResults')}</p>
         )}
       </div>
+      )}
 
       <ClassFormModal
         isOpen={showFormModal}

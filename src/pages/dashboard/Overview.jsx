@@ -30,6 +30,13 @@ function Overview() {
   const { notifications } = useNotifications();
   const [showAbsentModal, setShowAbsentModal] = useState(false);
 
+  // Macallinku gebi ahaanba wuu ka mamnuucan yahay xogta lacagta, xitaa
+  // dashboard-ka guud (Teacher Role Scoping audit, 2026-08-02) — feePayments
+  // waa madhan macallinka horeba (fiiri SchoolDataContext.jsx), laakiin
+  // ogeysiisyada type=='fee' waxay kasoo baxaan collection "notifications"
+  // (kaas oo aan xaddidnayn), sidaas darteed waa in halkanna la shaandhaystaa.
+  const isTeacher = profile?.role === 'teacher';
+
   // Waxaa isku darsanaya dhacdooyinka dhabta ah ee ugu dambeeyay: lacagaha la
   // ururiyay (feePayments) + ogeysiisyada (maqnaanshaha/lacagta baaqiga ah),
   // labaduba waxay leeyihiin taariikh (createdAt) dhab ah — ma aha xog beebeen ah.
@@ -43,7 +50,7 @@ function Overview() {
         time: p.createdAt,
       }));
     const notifEvents = notifications
-      .filter((n) => n.time)
+      .filter((n) => n.time && !(isTeacher && n.type === 'fee'))
       .map((n) => ({
         id: `notif_${n.id}`,
         type: n.type === 'fee' ? 'warning' : 'neutral',
@@ -53,7 +60,7 @@ function Overview() {
     return [...paymentEvents, ...notifEvents]
       .sort((a, b) => b.time.localeCompare(a.time))
       .slice(0, 5);
-  }, [feePayments, notifications]);
+  }, [feePayments, notifications, isTeacher]);
 
   const dayNames = t('common.dayNames', { returnObjects: true });
   const monthNames = t('common.monthNames', { returnObjects: true });
@@ -140,10 +147,12 @@ function Overview() {
             <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             {t('overview.actions.addTeacher')}
           </button>
-          <button className="btn-secondary" onClick={() => navigate('/dashboard/finance', { state: { openCollect: true } })}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-            {t('overview.actions.collectFee')}
-          </button>
+          {!isTeacher && (
+            <button className="btn-secondary" onClick={() => navigate('/dashboard/finance', { state: { openCollect: true } })}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              {t('overview.actions.collectFee')}
+            </button>
+          )}
         </div>
       </div>
 
@@ -172,18 +181,22 @@ function Overview() {
           accent="coral"
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/><path d="M8 7h8M8 11h8"/></svg>}
         />
-        <StatCard
-          label={t('overview.stats.feesCollected')}
-          value={`$${feesCollected.toLocaleString()}`}
-          accent="mint"
-          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>}
-        />
-        <StatCard
-          label={t('overview.stats.feeDueStudents')}
-          value={feeDueStudents}
-          accent="navy"
-          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>}
-        />
+        {!isTeacher && (
+          <StatCard
+            label={t('overview.stats.feesCollected')}
+            value={`$${feesCollected.toLocaleString()}`}
+            accent="mint"
+            icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>}
+          />
+        )}
+        {!isTeacher && (
+          <StatCard
+            label={t('overview.stats.feeDueStudents')}
+            value={feeDueStudents}
+            accent="navy"
+            icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>}
+          />
+        )}
         <StatCard
           label={t('overview.stats.attendanceToday')}
           value={`${attendanceRate}%`}
