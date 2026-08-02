@@ -1,5 +1,5 @@
 // firebase/finance.js
-// Xisaabaadka dugsiga: kharashaadka, dakhliga, safafka lacagta fasalka/qoyska
+// Xisaabaadka dugsiga: kharashaadka, dakhliga, safafka lacagta fasalka
 // (qeexid kaliya — balance-ku KUMA kaydsana halkan), iyo "feePayments" oo ah
 // diiwaan (ledger) bixin kasta oo la ururiyay. Balance-ka safka waxaa laga
 // soo xisaabiyaa (derive) isu geynta feePayments-ka la xiriira row-gaas,
@@ -11,7 +11,6 @@ import { db } from './config';
 const EXPENSES_COLLECTION = 'financeExpenses';
 const INCOME_COLLECTION = 'financeIncome';
 const CLASS_FEES_COLLECTION = 'classFees';
-const FAMILY_FEES_COLLECTION = 'familyFees';
 const FEE_PAYMENTS_COLLECTION = 'feePayments';
 const SALARIES_COLLECTION = 'financeSalaries';
 const DISCOUNTS_COLLECTION = 'financeDiscounts';
@@ -50,15 +49,6 @@ export function subscribeToClassFees(schoolCode, onChange, onError) {
 }
 export async function createClassFeeRowDoc(schoolCode, data) {
   const docRef = await addDoc(collection(db, CLASS_FEES_COLLECTION), { ...data, schoolCode });
-  return docRef.id;
-}
-
-// ===== Safafka Lacagta - Qoyska (qeexid, ma aha balance) =====
-export function subscribeToFamilyFees(schoolCode, onChange, onError) {
-  return subscribeToCollection(FAMILY_FEES_COLLECTION, schoolCode, onChange, onError);
-}
-export async function createFamilyFeeRowDoc(schoolCode, data) {
-  const docRef = await addDoc(collection(db, FAMILY_FEES_COLLECTION), { ...data, schoolCode });
   return docRef.id;
 }
 

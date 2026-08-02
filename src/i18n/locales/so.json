@@ -284,11 +284,9 @@
     "printExport": "PDF Export / Print",
     "printPdf": "Print / PDF",
     "tabs": { "accounting": "Xisaabaadka", "expenses": "Kharashka", "income": "Dakhliga", "salary": "Mushaharka", "discounts": "Dhimis & Deeq", "documents": "Invoices & Receipts" },
-    "toggle": { "byClass": "Fasalada", "byFamily": "M.Qoys" },
     "summaryCards": { "total": "Wadar", "collected": "La Ururiyey", "uncollected": "Aan La Ururin", "discountValue": "Qiimo Dhimis", "remaining": "Hadhaa", "expenses": "Kharashaad" },
-    "statsBox": { "classes": "Fasalo", "families": "Qoysas", "totalStudents": "Arday", "paymentsCount": "L.Bixisa", "discountRecipients": "Q.Dhimis", "freeCount": "Bilaash", "unpaidCount": "A.Baska" },
+    "statsBox": { "classes": "Fasalo", "totalStudents": "Arday", "paymentsCount": "L.Bixisa", "discountRecipients": "Q.Dhimis", "freeCount": "Bilaash", "unpaidCount": "A.Baska" },
     "allClasses": "Fasalada",
-    "collectFee": "Lacag-Qabo",
     "donutChart": {
       "title": "Xaaladda Lacagta Guud",
       "paid": "La Bixiyay",
@@ -296,7 +294,7 @@
       "discount": "Dhimis",
       "centerLabel": "Wadarta Guud"
     },
-    "table": { "no": "No", "class": "Fasal", "family": "Qoyska", "students": "Arday", "total": "Total ($)", "discount": "Q.Dhimis ($)", "balance": "Baaqi ($)", "totalRow": "Total", "paidStudents": "La Bixiyay", "unpaidStudents": "Ma Bixin" },
+    "table": { "no": "No", "class": "Fasal", "students": "Arday", "totalRow": "Total", "paidStudents": "La Bixiyay", "unpaidStudents": "Ma Bixin" },
     "expenses": {
       "addNew": "Ku Dar Kharash",
       "table": { "category": "Nooca", "description": "Sharraxaad", "amount": "Qadarka", "date": "Taariikhda" },
@@ -364,31 +362,6 @@
       "date": "Taariikhda",
       "submitExpense": "Ku Dar Kharashka",
       "submitIncome": "Ku Dar Dakhliga"
-    },
-    "collectModal": {
-      "title": "Lacag-Qabo",
-      "subtitle": "Diiwaan geli lacagta la helay",
-      "classOrFamily": "Fasalka / Qoyska *",
-      "balanceLabel": "Baaqi",
-      "amount": "Qadarka ($) *",
-      "amountPlaceholder": "Tusaale: 50",
-      "method": "Habka Bixinta",
-      "methods": { "Cash": "Cash", "Bangi (Bank)": "Bangi (Bank)", "EVC/Zaad (Mobile Money)": "EVC/Zaad (Mobile Money)" },
-      "date": "Taariikhda",
-      "confirm": "Xaqiiji Lacag-Qabashada"
-    },
-    "addFeeRow": {
-      "button": "Ku Dar Saf Cusub",
-      "title": "Ku Dar Saf Cusub",
-      "subtitle": "Buuxi macluumaadka safka cusub",
-      "name": "Magaca (Fasalka/Qoyska) *",
-      "namePlaceholder": "Tusaale: Fasal 5 - Xaawo",
-      "shift": "Wakhtiga (Shift)",
-      "shiftPlaceholder": "Tusaale: Sabaxi",
-      "students": "Tirada Ardayda *",
-      "total": "Wadarta ($) *",
-      "discount": "Qiimo Dhimis ($)",
-      "submit": "Ku Dar Safka"
     },
     "classDetail": {
       "back": "Noqo",

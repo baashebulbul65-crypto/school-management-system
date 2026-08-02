@@ -284,11 +284,9 @@
     "printExport": "تصدير PDF / طباعة",
     "printPdf": "طباعة / PDF",
     "tabs": { "accounting": "الحسابات", "expenses": "المصروفات", "income": "الدخل", "salary": "الرواتب", "discounts": "الخصومات والمنح", "documents": "الفواتير والإيصالات" },
-    "toggle": { "byClass": "الفصول", "byFamily": "العائلات" },
     "summaryCards": { "total": "الإجمالي", "collected": "تم تحصيله", "uncollected": "لم يُحصّل", "discountValue": "قيمة الخصم", "remaining": "المتبقي", "expenses": "المصروفات" },
-    "statsBox": { "classes": "الفصول", "families": "العائلات", "totalStudents": "الطلاب", "paymentsCount": "الدفعات", "discountRecipients": "مستفيدو الخصم", "freeCount": "مجاني", "unpaidCount": "غير مدفوع" },
+    "statsBox": { "classes": "الفصول", "totalStudents": "الطلاب", "paymentsCount": "الدفعات", "discountRecipients": "مستفيدو الخصم", "freeCount": "مجاني", "unpaidCount": "غير مدفوع" },
     "allClasses": "الفصول",
-    "collectFee": "تحصيل الرسوم",
     "donutChart": {
       "title": "الحالة المالية العامة",
       "paid": "تم الدفع",
@@ -296,7 +294,7 @@
       "discount": "الخصم",
       "centerLabel": "الإجمالي الكلي"
     },
-    "table": { "no": "الرقم", "class": "الفصل", "family": "العائلة", "students": "الطلاب", "total": "الإجمالي ($)", "discount": "الخصم ($)", "balance": "الرصيد ($)", "totalRow": "الإجمالي", "paidStudents": "تم الدفع", "unpaidStudents": "لم يُدفع" },
+    "table": { "no": "الرقم", "class": "الفصل", "students": "الطلاب", "totalRow": "الإجمالي", "paidStudents": "تم الدفع", "unpaidStudents": "لم يُدفع" },
     "expenses": {
       "addNew": "إضافة مصروف",
       "table": { "category": "النوع", "description": "الوصف", "amount": "المبلغ", "date": "التاريخ" },
@@ -364,31 +362,6 @@
       "date": "التاريخ",
       "submitExpense": "إضافة المصروف",
       "submitIncome": "إضافة الدخل"
-    },
-    "collectModal": {
-      "title": "تحصيل الرسوم",
-      "subtitle": "سجّل المبلغ الذي تم تحصيله",
-      "classOrFamily": "الفصل / العائلة *",
-      "balanceLabel": "الرصيد",
-      "amount": "المبلغ ($) *",
-      "amountPlaceholder": "مثال: 50",
-      "method": "طريقة الدفع",
-      "methods": { "Cash": "نقدًا", "Bangi (Bank)": "بنك (Bank)", "EVC/Zaad (Mobile Money)": "EVC/Zaad (محفظة إلكترونية)" },
-      "date": "التاريخ",
-      "confirm": "تأكيد التحصيل"
-    },
-    "addFeeRow": {
-      "button": "إضافة صف جديد",
-      "title": "إضافة صف جديد",
-      "subtitle": "املأ بيانات الصف الجديد",
-      "name": "الاسم (الفصل/العائلة) *",
-      "namePlaceholder": "مثال: الفصل 5 - حواء",
-      "shift": "الفترة (Shift)",
-      "shiftPlaceholder": "مثال: صباحي",
-      "students": "عدد الطلاب *",
-      "total": "الإجمالي ($) *",
-      "discount": "قيمة الخصم ($)",
-      "submit": "إضافة الصف"
     },
     "classDetail": {
       "back": "رجوع",

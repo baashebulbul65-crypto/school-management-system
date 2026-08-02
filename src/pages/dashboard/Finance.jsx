@@ -1,5 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { classroomName } from '../../hooks/useClassOptions';
@@ -8,8 +7,6 @@ import { getFeeType, studentFeeOwed } from '../../utils/studentFee';
 import FinanceDonutChart from '../../components/dashboard/FinanceDonutChart';
 import MonthCalendarPicker from '../../components/dashboard/MonthCalendarPicker';
 import FinanceEntryModal from './FinanceEntryModal';
-import FeeCollectionModal from './FeeCollectionModal';
-import AddFeeRowModal from './AddFeeRowModal';
 import ClassDetailModal from './ClassDetailModal';
 import FeeCategoryListModal from './FeeCategoryListModal';
 import '../../styles/dashboard-shared.css';
@@ -17,10 +14,8 @@ import './Finance.css';
 
 function Finance() {
   const { t } = useTranslation();
-  const location = useLocation();
-  const navigate = useNavigate();
   const {
-    classes, students, teachers, familyFees, collectFamilyFee, addFamilyFeeRow, feePayments,
+    classes, students, teachers, feePayments,
     expenses, income, addExpense, addIncome,
     salaries, addSalary, markSalaryPaid,
     discounts, addDiscount,
@@ -29,11 +24,8 @@ function Finance() {
   const [activeTab, setActiveTab] = useState('accounting');
 
   // ----- Xisaabaadka state -----
-  const [viewMode, setViewMode] = useState('class'); // 'class' | 'family'
   const [monthValue, setMonthValue] = useState(currentMonthValue());
   const [classFilter, setClassFilter] = useState('all');
-  const [showCollectModal, setShowCollectModal] = useState(false);
-  const [showAddRowModal, setShowAddRowModal] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
 
   const [showEntryModal, setShowEntryModal] = useState(false);
@@ -42,8 +34,7 @@ function Finance() {
 
   // Safafka fasalada (Xisaabaadka > Fasalada) waxaa hadda si toos ah looga
   // soo saaraa xogta DHAB AH ee "classes" + "students" + "feePayments" ee
-  // bishaas la doortay (monthValue) — ma aha safaf gacan lagu geliyay
-  // (fiiri AddFeeRowModal, kaas oo hadda KELIYA loo isticmaalo M.Qoys).
+  // bishaas la doortay (monthValue) — ma aha safaf gacan lagu geliyay.
   // Sidaas darteed fasal kasta oo Classes.jsx lagu abuuro wuxuu si otomaatig
   // ah ugu soo muuqdaa halkan, iyo bishii cusub marka ay bilaabato arday
   // kastaa wuxuu dib ugu noqdaa "Aan Bixin" (ma jiro feePayment bishaas ah weli).
@@ -96,50 +87,37 @@ function Finance() {
     [realClassStudents]
   );
 
-  const activeRows = viewMode === 'class' ? financeClassRows : familyFees;
-  const selectedRow = activeRows.find((r) => r.id === selectedRowId) || null;
+  const selectedRow = financeClassRows.find((r) => r.id === selectedRowId) || null;
 
   const filteredRows = useMemo(() => {
-    if (viewMode === 'family' || classFilter === 'all') return activeRows;
-    return activeRows.filter((r) => r.name === classFilter);
-  }, [activeRows, classFilter, viewMode]);
+    if (classFilter === 'all') return financeClassRows;
+    return financeClassRows.filter((r) => r.name === classFilter);
+  }, [financeClassRows, classFilter]);
 
   const uniqueClassNames = useMemo(() => classes.map((c) => classroomName(c)), [classes]);
 
   // ----- Xisaabaadka summary (waxaa laga soo xisaabiyay xogta table-ka) -----
   const accSummary = useMemo(() => {
-    const wadar = activeRows.reduce((s, r) => s + r.total, 0);
-    const dhimis = activeRows.reduce((s, r) => s + r.discount, 0);
-    const baaqi = activeRows.reduce((s, r) => s + r.balance, 0);
+    const wadar = financeClassRows.reduce((s, r) => s + r.total, 0);
+    const dhimis = financeClassRows.reduce((s, r) => s + r.discount, 0);
+    const baaqi = financeClassRows.reduce((s, r) => s + r.balance, 0);
     const laUururiyey = wadar - dhimis - baaqi;
     const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
     // "Hadhaa" = lacagta la haysto ka dib kharashaadka (la ururiyey - kharash),
     // ma aha "Aan La Ururin" (baaqi) — labadaas waa laba shay oo kala duwan.
     const remaining = laUururiyey - totalExpenses;
     return { wadar, dhimis, baaqi, laUururiyey, totalExpenses, remaining };
-  }, [activeRows, expenses]);
+  }, [financeClassRows, expenses]);
 
-  const totalStudents = useMemo(() => activeRows.reduce((s, r) => s + r.students, 0), [activeRows]);
+  const totalStudents = useMemo(() => financeClassRows.reduce((s, r) => s + r.students, 0), [financeClassRows]);
 
   const extraStats = useMemo(() => ({
     paymentsCount: feePayments.length,
     discountRecipients: discounts.filter((d) => d.type === 'discount').length,
-    // Fasalada: "Bilaash" waa tirada ARDAYDA DHABTA AH ee feeType==='free'.
-    scholarshipCount: viewMode === 'class'
-      ? financeClassRows.reduce((s, r) => s + r.freeCount, 0)
-      : discounts.filter((d) => d.type === 'scholarship').length,
-    unpaidCount: viewMode === 'class'
-      ? financeClassRows.reduce((s, r) => s + r.unpaidCount, 0)
-      : activeRows.filter((r) => r.balance > 0).length,
-  }), [feePayments, discounts, activeRows, viewMode, financeClassRows]);
-
-  // Qabashada lacagta arday-gaarka ah (fasalada) waxay ka dhacdaa gudaha
-  // ClassDetailModal (fiiri collectStudentFee) — labadan hoose hadda waxay u
-  // adeegaan KELIYA M.Qoys (family), maadaama safafka fasalada aan hadda
-  // ahayn kuwo gacan lagu geliyay.
-  const handleCollectPayment = ({ rowId, amount, method, date }) => collectFamilyFee(rowId, amount, method, date);
-
-  const handleSaveFeeRow = (payload) => addFamilyFeeRow(payload);
+    // "Bilaash" waa tirada ARDAYDA DHABTA AH ee feeType==='free'.
+    scholarshipCount: financeClassRows.reduce((s, r) => s + r.freeCount, 0),
+    unpaidCount: financeClassRows.reduce((s, r) => s + r.unpaidCount, 0),
+  }), [feePayments, discounts, financeClassRows]);
 
   // ----- Kharashka/Dakhliga -----
   const expenseCategories = useMemo(() => {
@@ -162,19 +140,6 @@ function Finance() {
   };
 
   const handlePrint = () => window.print();
-
-  useEffect(() => {
-    if (location.state?.openCollect) {
-      setActiveTab('accounting');
-      // FeeCollectionModal-ka guud (safaf-doorasho) hadda waxaa loo isticmaalaa
-      // KELIYA M.Qoys — fasalada lacagtoodu waxay ka dhacdaa arday kasta oo
-      // gudaha ClassDetailModal ah (fiiri "Fur Fasalka").
-      setViewMode('family');
-      setShowCollectModal(true);
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.state]);
 
   const TABS = [
     { id: 'accounting', label: t('finance.tabs.accounting') },
@@ -217,16 +182,6 @@ function Finance() {
       {activeTab === 'accounting' && (
         <div>
           <div className="acc-toolbar">
-            <div className="acc-toggle">
-              <button className={`acc-toggle-btn ${viewMode === 'class' ? 'active' : ''}`} onClick={() => setViewMode('class')}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/></svg>
-                {t('finance.toggle.byClass')}
-              </button>
-              <button className={`acc-toggle-btn ${viewMode === 'family' ? 'active' : ''}`} onClick={() => setViewMode('family')}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-                {t('finance.toggle.byFamily')}
-              </button>
-            </div>
             <MonthCalendarPicker value={monthValue} onChange={setMonthValue} />
           </div>
 
@@ -305,14 +260,11 @@ function Finance() {
               </div>
 
               <div className="acc-stats-box">
-                <div className="acc-stat"><strong>{viewMode === 'class' ? financeClassRows.length : familyFees.length}</strong><span>{viewMode === 'class' ? t('finance.statsBox.classes') : t('finance.statsBox.families')}</span></div>
+                <div className="acc-stat"><strong>{financeClassRows.length}</strong><span>{t('finance.statsBox.classes')}</span></div>
                 <div className="acc-stat"><strong>{totalStudents}</strong><span>{t('finance.statsBox.totalStudents')}</span></div>
                 <div className="acc-stat"><strong>{extraStats.paymentsCount}</strong><span>{t('finance.statsBox.paymentsCount')}</span></div>
                 <div className="acc-stat"><strong>{extraStats.discountRecipients}</strong><span>{t('finance.statsBox.discountRecipients')}</span></div>
-                <div
-                  className={`acc-stat ${viewMode === 'class' ? 'acc-stat-clickable' : ''}`}
-                  onClick={() => viewMode === 'class' && setShowFreeModal(true)}
-                >
+                <div className="acc-stat acc-stat-clickable" onClick={() => setShowFreeModal(true)}>
                   <strong>{extraStats.scholarshipCount}</strong>
                   <span>{t('finance.statsBox.freeCount')}</span>
                 </div>
@@ -323,24 +275,10 @@ function Finance() {
 
           {/* FILTER ROW */}
           <div className="acc-filter-row">
-            {viewMode === 'class' ? (
-              <select className="acc-filter-select" value={classFilter} onChange={(e) => setClassFilter(e.target.value)}>
-                <option value="all">{t('finance.allClasses')}</option>
-                {uniqueClassNames.map((n) => <option key={n} value={n}>{n}</option>)}
-              </select>
-            ) : <div />}
-            {viewMode === 'family' && (
-              <div style={{ display: 'flex', gap: 10 }}>
-                <button className="btn-secondary" onClick={() => setShowAddRowModal(true)} type="button">
-                  <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                  {t('finance.addFeeRow.button')}
-                </button>
-                <button className="acc-collect-btn" onClick={() => setShowCollectModal(true)} disabled={activeRows.length === 0}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-                  {t('finance.collectFee')}
-                </button>
-              </div>
-            )}
+            <select className="acc-filter-select" value={classFilter} onChange={(e) => setClassFilter(e.target.value)}>
+              <option value="all">{t('finance.allClasses')}</option>
+              {uniqueClassNames.map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
           </div>
 
           {/* TABLE */}
@@ -350,71 +288,36 @@ function Finance() {
                 <thead>
                   <tr>
                     <th>{t('finance.table.no')}</th>
-                    <th>{viewMode === 'class' ? t('finance.table.class') : t('finance.table.family')}</th>
+                    <th>{t('finance.table.class')}</th>
                     <th>{t('finance.table.students')}</th>
-                    {viewMode === 'class' ? (
-                      <>
-                        <th>{t('finance.table.paidStudents')}</th>
-                        <th>{t('finance.table.unpaidStudents')}</th>
-                      </>
-                    ) : (
-                      <>
-                        <th>{t('finance.table.total')}</th>
-                        <th>{t('finance.table.discount')}</th>
-                        <th>{t('finance.table.balance')}</th>
-                      </>
-                    )}
+                    <th>{t('finance.table.paidStudents')}</th>
+                    <th>{t('finance.table.unpaidStudents')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredRows.map((r, i) => (
-                    <tr
-                      key={r.id}
-                      className={viewMode === 'class' ? 'acc-row-clickable' : ''}
-                      onClick={() => viewMode === 'class' && setSelectedRowId(r.id)}
-                    >
+                    <tr key={r.id} className="acc-row-clickable" onClick={() => setSelectedRowId(r.id)}>
                       <td className="cell-sub">{i + 1}</td>
                       <td>
                         <div className="cell-name">{r.name}</div>
-                        {r.shift && <div className="cell-sub">{r.shift}</div>}
                       </td>
                       <td>{r.students}</td>
-                      {viewMode === 'class' ? (
-                        <>
-                          <td className="cell-amount">{r.paidCount} (${r.paidTotal.toFixed(2)})</td>
-                          <td className={`cell-amount ${r.unpaidCount ? 'acc-baaqi-owed' : ''}`}>{r.unpaidCount} (${r.unpaidTotal.toFixed(2)})</td>
-                        </>
-                      ) : (
-                        <>
-                          <td className="cell-amount">${r.total.toFixed(2)}</td>
-                          <td className="cell-sub">{r.discount ? `$${r.discount.toFixed(2)}` : ''}</td>
-                          <td className={`cell-amount ${r.balance ? 'acc-baaqi-owed' : ''}`}>{r.balance ? `$${r.balance.toFixed(2)}` : ''}</td>
-                        </>
-                      )}
+                      <td className="cell-amount">{r.paidCount} (${r.paidTotal.toFixed(2)})</td>
+                      <td className={`cell-amount ${r.unpaidCount ? 'acc-baaqi-owed' : ''}`}>{r.unpaidCount} (${r.unpaidTotal.toFixed(2)})</td>
                     </tr>
                   ))}
                   {filteredRows.length === 0 && (
-                    <tr><td colSpan="6" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.noResults')}</td></tr>
+                    <tr><td colSpan="5" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.noResults')}</td></tr>
                   )}
                 </tbody>
                 {filteredRows.length > 0 && (
                   <tfoot>
                     <tr className="acc-total-row">
                       <td></td>
-                      <td>{t('finance.table.totalRow')} ({filteredRows.length}) {viewMode === 'class' ? t('finance.table.class') : t('finance.table.family')}</td>
+                      <td>{t('finance.table.totalRow')} ({filteredRows.length}) {t('finance.table.class')}</td>
                       <td>{filteredRows.reduce((s, r) => s + r.students, 0)}</td>
-                      {viewMode === 'class' ? (
-                        <>
-                          <td className="cell-amount">{filteredRows.reduce((s, r) => s + r.paidCount, 0)} (${filteredRows.reduce((s, r) => s + r.paidTotal, 0).toFixed(2)})</td>
-                          <td className="cell-amount">{filteredRows.reduce((s, r) => s + r.unpaidCount, 0)} (${filteredRows.reduce((s, r) => s + r.unpaidTotal, 0).toFixed(2)})</td>
-                        </>
-                      ) : (
-                        <>
-                          <td className="cell-amount">${filteredRows.reduce((s, r) => s + r.total, 0).toFixed(2)}</td>
-                          <td className="cell-amount">${filteredRows.reduce((s, r) => s + r.discount, 0).toFixed(2)}</td>
-                          <td className="cell-amount">${filteredRows.reduce((s, r) => s + r.balance, 0).toFixed(2)}</td>
-                        </>
-                      )}
+                      <td className="cell-amount">{filteredRows.reduce((s, r) => s + r.paidCount, 0)} (${filteredRows.reduce((s, r) => s + r.paidTotal, 0).toFixed(2)})</td>
+                      <td className="cell-amount">{filteredRows.reduce((s, r) => s + r.unpaidCount, 0)} (${filteredRows.reduce((s, r) => s + r.unpaidTotal, 0).toFixed(2)})</td>
                     </tr>
                   </tfoot>
                 )}
@@ -619,25 +522,7 @@ function Finance() {
         teachers={teachers.filter((tc) => tc.status !== 'inactive')}
       />
 
-      {viewMode === 'family' && (
-        <>
-          <FeeCollectionModal
-            isOpen={showCollectModal}
-            onClose={() => setShowCollectModal(false)}
-            onCollect={handleCollectPayment}
-            rows={activeRows}
-          />
-
-          <AddFeeRowModal
-            isOpen={showAddRowModal}
-            onClose={() => setShowAddRowModal(false)}
-            onSave={handleSaveFeeRow}
-            viewMode={viewMode}
-          />
-        </>
-      )}
-
-      {selectedRow && viewMode === 'class' && (
+      {selectedRow && (
         <ClassDetailModal
           row={selectedRow}
           monthValue={monthValue}

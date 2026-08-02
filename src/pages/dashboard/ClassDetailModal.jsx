@@ -4,16 +4,11 @@ import { useSchoolData } from '../../context/SchoolDataContext';
 import { getFeeType, studentFeeOwed } from '../../utils/studentFee';
 import './ClassDetailModal.css';
 
-// M.Qoys (family) — Finance audit (2026-08-03, gap CRITICAL #1): tan hore
-// waxay isticmaali jirtay roster BEENSAN (magacyo random ah oo "SAMPLE_NAMES"
-// ka yimid, ma ahayn arday dhab ah), maadaama safafka qoyska aan lala
-// xiriirin arday/qoys DHAB AH (ma jiro className/studentId la mid ah).
-// Guji-yaal "Qabo Lacagta" oo qof-qof ah ma kaydin jirin waxba Firestore
-// ahaan — kaliya local state ayay beddeli jireen. Modal-kani hadda waa
-// CLASS VIEW OO QURA (roster dhab ah oo ka yimid "students" collection-ka
-// Firestore) — lacagta safka M.Qoys waxaa lagu qaataa "Qabo Lacagta" button-
-// ka Finance.jsx (FeeCollectionModal), oo horeba diiwaan dhab ah u qoraa
-// feePayments.
+// Finance audit (2026-08-03): qaybta M.Qoys (family) — labadaba roster-ka
+// beensan ee tan hore isticmaali jirtay (gap CRITICAL #1) iyo qaybta M.Qoys
+// ee Finance.jsx oo dhan (gap CRITICAL #2) — waa la saaray gebi ahaanba.
+// Modal-kani hadda waa CLASS VIEW OO QURA: roster dhab ah oo ka yimid
+// "students" collection-ka Firestore.
 function ClassDetailModal({ row, monthValue, onClose }) {
   const { t } = useTranslation();
   const { students, feePayments, collectStudentFee } = useSchoolData();

@@ -17,7 +17,6 @@ import {
   subscribeToExpenses, createExpenseDoc,
   subscribeToIncome, createIncomeDoc,
   subscribeToClassFees, createClassFeeRowDoc,
-  subscribeToFamilyFees, createFamilyFeeRowDoc,
   subscribeToFeePayments, createFeePaymentDoc,
   subscribeToSalaries, createSalaryDoc, setSalaryStatus,
   subscribeToDiscounts, createDiscountDoc,
@@ -225,7 +224,6 @@ export function SchoolDataProvider({ children }) {
   const [exams, setExams] = useState([]);
   const [examMarks, setExamMarks] = useState({});
   const [classFeeRows, setClassFeeRows] = useState([]);
-  const [familyFeeRows, setFamilyFeeRows] = useState([]);
   const [feePayments, setFeePayments] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [income, setIncome] = useState([]);
@@ -721,7 +719,7 @@ export function SchoolDataProvider({ children }) {
   }, [profile?.schoolCode]);
 
   // ===== XISAABAADKA (Firestore collections "financeExpenses"/"financeIncome"/
-  // "classFees"/"familyFees"/"feePayments") — OWNER-KALIYA (Teacher Role
+  // "classFees"/"feePayments") — OWNER-KALIYA (Teacher Role
   // Scoping audit, 2026-08-02) — firestore.rules-ku hadda wuxuu xannibayaa
   // 'teacher' akhris ahaan, sidaas darteed halkan sidoo kale waa in la
   // xannibaa si aan permission-denied error toast loo arag macallin kasta
@@ -761,19 +759,6 @@ export function SchoolDataProvider({ children }) {
       profile.schoolCode,
       setClassFeeRows,
       (err) => reportError('Khalad ayaa dhacay markii safafka lacagta fasalka laga soo akhriyay:', err)
-    );
-    return unsubscribe;
-  }, [profile?.schoolCode, profile?.accountType, profile?.role]);
-
-  useEffect(() => {
-    if (!profile?.schoolCode || profile?.accountType !== 'staff' || profile?.role === 'teacher') {
-      setFamilyFeeRows([]);
-      return undefined;
-    }
-    const unsubscribe = subscribeToFamilyFees(
-      profile.schoolCode,
-      setFamilyFeeRows,
-      (err) => reportError('Khalad ayaa dhacay markii safafka lacagta qoyska laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType, profile?.role]);
@@ -896,7 +881,6 @@ export function SchoolDataProvider({ children }) {
     });
 
   const classFees = useMemo(() => withDerivedBalance(classFeeRows, 'class'), [classFeeRows, feePayments]);
-  const familyFees = useMemo(() => withDerivedBalance(familyFeeRows, 'family'), [familyFeeRows, feePayments]);
 
   const addExpense = async (payload) => {
     if (!profile?.schoolCode) return;
@@ -922,15 +906,6 @@ export function SchoolDataProvider({ children }) {
       await createClassFeeRowDoc(profile.schoolCode, payload);
     } catch (err) {
       reportError('Khalad ayaa dhacay markii safka lacagta fasalka la darayay:', err);
-    }
-  };
-
-  const addFamilyFeeRow = async (payload) => {
-    if (!profile?.schoolCode) return;
-    try {
-      await createFamilyFeeRowDoc(profile.schoolCode, payload);
-    } catch (err) {
-      reportError('Khalad ayaa dhacay markii safka lacagta qoyska la darayay:', err);
     }
   };
 
@@ -1339,7 +1314,6 @@ export function SchoolDataProvider({ children }) {
     }
   };
   const collectClassFee = (rowId, amount, method, date) => collectFee('class', rowId, amount, method, date);
-  const collectFamilyFee = (rowId, amount, method, date) => collectFee('family', rowId, amount, method, date);
 
   // Fii-ga arday-gaarka ah (Finance > Fasalada) — hal diiwaan (feePayments) per
   // arday+bil, ma aha counter la is dhimo. Bishii cusub markay bilaabato,
@@ -1395,7 +1369,7 @@ export function SchoolDataProvider({ children }) {
     classes, addClass, updateClass, removeClass,
     subjects, addSubject, updateSubject, removeSubject,
     exams, examMarks, addExam, updateExam, removeExam, updateExamMark,
-    classFees, familyFees, collectClassFee, collectFamilyFee, addClassFeeRow, addFamilyFeeRow, feePayments, collectStudentFee,
+    classFees, collectClassFee, addClassFeeRow, feePayments, collectStudentFee,
     expenses, income, addExpense, addIncome,
     salaries, addSalary, markSalaryPaid,
     discounts, addDiscount,
