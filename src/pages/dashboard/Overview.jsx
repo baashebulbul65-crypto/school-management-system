@@ -112,7 +112,7 @@ function Overview() {
   );
 
   const attendanceCounts = useMemo(() => {
-    const statusOf = (s) => attendanceToday.students[s.id] || 'present';
+    const statusOf = (s) => attendanceToday.students[s.id] || null;
     return {
       present: myStudents.filter((s) => statusOf(s) === 'present').length,
       absent: myStudents.filter((s) => statusOf(s) === 'absent').length,

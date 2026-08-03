@@ -1323,7 +1323,12 @@ export function SchoolDataProvider({ children }) {
   const cycleAttendanceStatus = async (category, id) => {
     if (!profile?.schoolCode) return;
     const currentMap = category === 'teachers' ? teacherAttendanceToday : staffAttendanceToday;
-    const nextStatus = NEXT_STATUS[currentMap[id] || 'present'];
+    // Qofka aan weli la calaamadin (currentMap[id] maqan) — riixitaanka kowaad
+    // waa in uu dhigaa 'present', ma aha in uu si toos ah ugu boodo 'absent'
+    // (Attendance audit, 2026-08-03 — hore default-display-ku wuxuu ahaa
+    // 'present', marka riixitaanka kowaad ee NEXT_STATUS['present'] wuxuu si
+    // ula kac ah ugu boodi jiray 'absent').
+    const nextStatus = currentMap[id] ? NEXT_STATUS[currentMap[id]] : 'present';
     try {
       await setStaffAttendanceRecord(profile.schoolCode, category, todayISODate(), id, nextStatus);
     } catch (err) {

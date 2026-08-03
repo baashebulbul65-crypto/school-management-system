@@ -104,18 +104,24 @@ function Attendance() {
       }));
     }
     if (category === 'teachers') {
-      return teachers.map((t2) => ({
+      // "status !== 'inactive'" — macallin la saaray (cascadeUnlinkTeacher)
+      // ma tirtiro doc-ka, wuxuu u beddelaa 'inactive' (firestore.rules:
+      // teachers allow delete: if false). Teachers.jsx horeba shaandheeyaa
+      // isla shay-gan (activeTeachers) — halkan waa la iloobay, taasoo
+      // macallin la saaray uu ku muuqday liiska "maanta joogaan" (Attendance
+      // audit, 2026-08-03).
+      return teachers.filter((t2) => t2.status !== 'inactive').map((t2) => ({
         id: t2.id,
         name: t2.fullName,
         sub: `${t2.subject} · ${t2.teacherId}`,
-        status: attendanceToday.teachers[t2.id] || 'present',
+        status: attendanceToday.teachers[t2.id] || null,
       }));
     }
     return staff.map((s) => ({
       id: s.id,
       name: s.name,
       sub: s.sub,
-      status: attendanceToday.staff[s.id] || 'present',
+      status: attendanceToday.staff[s.id] || null,
     }));
   }, [category, myStudents, teachers, staff, attendanceToday]);
 
@@ -234,19 +240,27 @@ function Attendance() {
                   </td>
                   <td className="cell-sub">{p.sub}</td>
                   <td>
-                    {category === 'students' ? (
-                      p.status ? (
-                        <span className={`att-status-btn ${p.status}`}>
-                          {statusDefs.find((d) => d.key === p.status)?.label || p.status}
-                        </span>
+                    {(() => {
+                      const label = p.status
+                        ? (statusDefs.find((d) => d.key === p.status)?.label || p.status)
+                        : t('attendance.notMarkedYet');
+                      if (category === 'students') {
+                        return <span className={`att-status-btn ${p.status || 'neutral'}`}>{label}</span>;
+                      }
+                      // Calaamadinta xaadiriska macallimiinta/shaqaalaha waa
+                      // owner-kaliya (Attendance audit, 2026-08-03) — macallin
+                      // kale (colleague) ma laha sabab uu u beddelo xaaladda
+                      // qof kale, isla mabda'a firestore.rules
+                      // staffAttendanceRecords (isOwnerStaffOf). Macallinku
+                      // wuu arki karaa (read), ma qori karo (write).
+                      return isOwner ? (
+                        <button className={`att-status-btn ${p.status || 'neutral'}`} onClick={() => handleMark(p)}>
+                          {label}
+                        </button>
                       ) : (
-                        <span className="att-status-btn neutral">{t('attendance.notMarkedYet')}</span>
-                      )
-                    ) : (
-                      <button className={`att-status-btn ${p.status}`} onClick={() => handleMark(p)}>
-                        {statusDefs.find((d) => d.key === p.status)?.label || p.status}
-                      </button>
-                    )}
+                        <span className={`att-status-btn ${p.status || 'neutral'}`}>{label}</span>
+                      );
+                    })()}
                   </td>
                   {category === 'staff' && isOwner && (
                     <td>

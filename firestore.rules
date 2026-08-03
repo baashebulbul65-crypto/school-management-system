@@ -280,11 +280,14 @@ service cloud.firestore {
     }
 
     // ===== staffAttendanceRecords ===== (doc id: "{category}_{date}_{personId}")
-    // Imaanshaha "maanta" ee macallimiinta/shaqaalaha — staff-only, ma jiro
-    // akhris waalid (kama duwana attendanceRecords ee ardayda).
+    // Akhris: shaqaale kasta (staff-only, ma jiro akhris waalid — kama
+    // duwana attendanceRecords ee ardayda). Qoris: owner-kaliya (Attendance
+    // audit, 2026-08-03 — hore waxay ahayd isStaffOf, taasoo u oggolaan
+    // jirtay macallin uu beddelo xaaladda macallin/shaqaale KALE; isla
+    // mabda'a staffRoster kore, oo horeba owner-kaliya u yeelay).
     match /staffAttendanceRecords/{recordId} {
       allow read: if isStaffOf(resource.data.schoolCode);
-      allow create, update: if isStaffOf(request.resource.data.schoolCode);
+      allow create, update: if isOwnerStaffOf(request.resource.data.schoolCode);
       allow delete: if false;
     }
 
