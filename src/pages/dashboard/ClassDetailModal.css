@@ -115,6 +115,11 @@
 .cdm-table-wrap{
   max-width: 780px;
   margin: 0 auto;
+  /* Mobile audit (2026-08-03, MEDIUM #3): isla .data-table-wrap guud
+     (dashboard-shared.css) — haddii aan tan la darin, table-ku wuxuu ku
+     jaraayaa (clip) body{overflow-x:hidden} (global.css) shaashad yar,
+     halkii uu scroll u bixi lahaa. */
+  overflow-x: auto;
 }
 .cdm-table{
   width: 100%;

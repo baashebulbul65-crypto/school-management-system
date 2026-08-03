@@ -82,6 +82,40 @@
   color: var(--navy);
 }
 
+/* ===== TABS (page-section tabs, e.g. Finance/ClassWorkspace) =====
+   Halkan ayaa laga dhigay (2026-08-03, mobile audit CRITICAL #1) — hore
+   waxay ku jireen Finance.css, laakiin ClassWorkspace.jsx isla className-
+   yadan ayuu isticmaalaa (macallinku wuxuu isticmaalaa ClassWorkspace, laakiin
+   marnaba ma furi karo bogga Finance — RequireRole allow=['owner'], App.jsx),
+   sidaas darteed Finance.css marnaba kuma soo dhici doonto session-kiisa
+   (route-based code splitting, React.lazy). Halkan (dashboard-shared.css,
+   oo bog kastaa soo dejiyo) ayay ku jiraan si tab-bar-ku u helo naqshaddiisa
+   meel kasta oo la isticmaalo, iyada oo aan ku xirnayn in bog kale la booqday. */
+.fin-tabs{
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 24px;
+  scrollbar-width: none;
+}
+.fin-tabs::-webkit-scrollbar{ display: none; }
+.fin-tab{
+  white-space: nowrap;
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--grey-text);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  border-radius: 8px 8px 0 0;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.fin-tab:hover{ color: var(--navy); background: #F7F9FA; }
+.fin-tab.active{ color: var(--navy); border-bottom-color: var(--mint); font-weight: 700; }
+
 /* ===== TOOLBAR (search + filter above tables) ===== */
 .table-toolbar{
   display:flex;

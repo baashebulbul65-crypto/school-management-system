@@ -1,7 +1,10 @@
 .toast-container {
   position: fixed;
   bottom: 24px;
-  right: 24px;
+  /* Mobile audit (2026-08-03, LOW): "right:24px" toos ah — isla codsigii
+     MonthCalendarPicker (fiiri MonthCalendarPicker.css) — logical property
+     ayaa la beddelay si loo waafajiyo habka kale ee app-ka oo dhan (RTL). */
+  inset-inline-end: 24px;
   z-index: 3000;
   display: flex;
   flex-direction: column;
@@ -46,8 +49,8 @@
 
 @media (max-width: 480px) {
   .toast-container {
-    left: 16px;
-    right: 16px;
+    inset-inline-start: 16px;
+    inset-inline-end: 16px;
     max-width: none;
   }
 }

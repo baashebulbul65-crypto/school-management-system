@@ -15,7 +15,11 @@
 .mcp-panel{
   position: absolute;
   top: calc(100% + 8px);
-  right: 0;
+  /* Mobile audit (2026-08-03, MEDIUM #4): "right:0" toos ah wuu sii adkaysan
+     jiray dhinaca right-ka jireed xitaa RTL (Carabi) — property logical-ka
+     ah ("inset-inline-end") ayaa si otomaatig ah ugu wareegta dhinaca saxda
+     ah labada jiho (LTR/RTL), isla mabda'a Sidebar.css/dashboard-shared.css. */
+  inset-inline-end: 0;
   z-index: 60;
   background: #fff;
   border: 1px solid var(--line);

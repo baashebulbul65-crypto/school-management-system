@@ -55,31 +55,10 @@
 .fin-alerts-text strong{ font-size: 13.5px; color: var(--navy); display: block; margin-bottom: 3px; }
 .fin-alerts-text p{ font-size: 12.5px; color: var(--grey-text); }
 
-/* Tabs */
-.fin-tabs{
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 24px;
-  scrollbar-width: none;
-}
-.fin-tabs::-webkit-scrollbar{ display: none; }
-.fin-tab{
-  white-space: nowrap;
-  background: none;
-  border: none;
-  padding: 12px 20px;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--grey-text);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  border-radius: 8px 8px 0 0;
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-}
-.fin-tab:hover{ color: var(--navy); background: #F7F9FA; }
-.fin-tab.active{ color: var(--navy); border-bottom-color: var(--mint); font-weight: 700; }
+/* .fin-tabs/.fin-tab (2026-08-03, mobile audit CRITICAL #1) — u guuray
+   dashboard-shared.css, maadaama ClassWorkspace.jsx isla className-yadan
+   isticmaalo isaga oo aan marnaba soo dejin karin Finance.css (macallinku
+   marnaba ma furi karo bogga Finance, RequireRole allow=['owner']). */
 
 .fin-card-title{
   font-family: 'Poppins', sans-serif;
@@ -269,7 +248,11 @@
 }
 @media (max-width: 560px){
   .acc-summary-cards{ grid-template-columns: 1fr; }
-  .acc-stats-box{ grid-template-columns: repeat(3, 1fr); }
+  /* Mobile audit (2026-08-03, MEDIUM #2): hore halkan waxaa ku qornaa
+     "repeat(3, 1fr)" oo isku mid ah qiimaha asalka ah (goobta 227 kore) —
+     macnaheedu wuxuu ahaa in 5 shay (Fasalo/Arday/L.Bixisa/Q.Dhimis/Bilaash)
+     ay sii ku ciriirsanaan lahaayeen 3 column marka shaashadu aad u yaraato. */
+  .acc-stats-box{ grid-template-columns: repeat(2, 1fr); }
 }
 
 /* Xisaabaadka table — clickable rows + total footer */
