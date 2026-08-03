@@ -120,6 +120,7 @@ function Users() {
         title: payload.title,
         role: permissionTier(payload.title),
         teacherDocId: payload.teacherDocId,
+        salaryAmount: payload.salaryAmount,
       });
     } else {
       await createStaffAccount({
@@ -130,6 +131,7 @@ function Users() {
         role: permissionTier(payload.title),
         title: payload.title,
         teacherDocId: payload.teacherDocId,
+        salaryAmount: payload.salaryAmount,
       });
     }
   };

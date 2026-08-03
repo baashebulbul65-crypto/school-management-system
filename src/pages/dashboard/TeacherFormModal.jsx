@@ -11,6 +11,7 @@ const EMPTY_FORM = {
   qualification: '',
   subject: '',
   status: 'active',
+  salaryAmount: '',
 };
 
 function initials(name) {
@@ -45,6 +46,7 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
         qualification: teacher.qualification || '',
         subject: teacher.subject || '',
         status: teacher.status || 'active',
+        salaryAmount: teacher.salaryAmount || '',
       });
     } else {
       setForm(EMPTY_FORM);
@@ -57,7 +59,7 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(form, teacher?.id);
+    onSave({ ...form, salaryAmount: Number(form.salaryAmount) || 0 }, teacher?.id);
     onClose();
   };
 
@@ -112,6 +114,11 @@ function TeacherFormModal({ isOpen, onClose, onSave, teacher }) {
                   <option value="active">{t('common.status.active')}</option>
                   <option value="leave">{t('common.leave')}</option>
                 </select>
+              </div>
+              <div className="tfm-field">
+                <label>{t('teachers.form.fields.salaryAmount')}</label>
+                <input type="number" min="0" value={form.salaryAmount} onChange={update('salaryAmount')} placeholder={t('teachers.form.placeholders.salaryAmount')} />
+                <span className="tfm-hint">{t('teachers.form.salaryAmountHint')}</span>
               </div>
               <div className="tfm-field full">
                 <label>{t('teachers.form.fields.assignedClasses')}</label>

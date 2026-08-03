@@ -6,6 +6,7 @@ import { useSettings } from '../../context/SettingsContext';
 import { classroomName } from '../../hooks/useClassOptions';
 import { currentMonthValue } from '../../utils/somaliDate';
 import { getFeeType, studentFeeOwed } from '../../utils/studentFee';
+import { getMonthlySalaryStatus } from '../../utils/staffSalary';
 import FinanceDonutChart from '../../components/dashboard/FinanceDonutChart';
 import MonthCalendarPicker from '../../components/dashboard/MonthCalendarPicker';
 import FinanceEntryModal from './FinanceEntryModal';
@@ -20,7 +21,7 @@ function Finance() {
   const {
     classes, students, teachers, feePayments,
     expenses, income, addExpense, addIncome,
-    salaries, addSalary, markSalaryPaid,
+    salaries, payrollList, payStaffSalary,
     discounts, addDiscount,
     financeDocuments, addFinanceDocument,
   } = useSchoolData();
@@ -28,6 +29,18 @@ function Finance() {
 
   // ----- Xisaabaadka state -----
   const [monthValue, setMonthValue] = useState(currentMonthValue());
+  // Mushaharka waa mar walba BISHAN (ma aha bil la doorto) — isla habka
+  // feePayments ee ardayda: bil kasta oo cusub bilaabata, shaqaale kastaa
+  // wuxuu dib ugu noqdaa "Sugaya" ilaa la bixiyo (fiiri utils/staffSalary.js).
+  const salaryMonth = currentMonthValue();
+  const payrollRows = useMemo(
+    () => payrollList.map((p) => ({ ...p, status: getMonthlySalaryStatus(p.personId, salaries, salaryMonth) })),
+    [payrollList, salaries, salaryMonth]
+  );
+  const salaryHistory = useMemo(
+    () => [...salaries].sort((a, b) => (b.month || '').localeCompare(a.month || '')),
+    [salaries]
+  );
   const [classFilter, setClassFilter] = useState('all');
   const [selectedRowId, setSelectedRowId] = useState(null);
 
@@ -163,9 +176,18 @@ function Finance() {
   const handleSaveEntry = (payload, type) => {
     if (type === 'expenses') addExpense(payload);
     else if (type === 'income') addIncome(payload);
-    else if (type === 'salary') addSalary(payload);
     else if (type === 'discounts') addDiscount(payload);
     else if (type === 'documents') addFinanceDocument(payload);
+  };
+
+  // Badhanka "Bixi Mushaharka" (tab-ka Mushaharka) — xaqiijin ka hor
+  // (window.confirm, isla habka "Ka Saar" ee Users.jsx/Teachers.jsx), dabadeed
+  // waa la bixiyaa bishan si otomaatig ah (diiwaan cusub + kharash, fiiri
+  // SchoolDataContext.jsx: payStaffSalary).
+  const handlePaySalary = (person) => {
+    if (window.confirm(t('finance.salary.confirmPay', { name: person.staffName }))) {
+      payStaffSalary(person, salaryMonth);
+    }
   };
 
   const handlePrint = () => window.print();
@@ -441,46 +463,54 @@ function Finance() {
       {/* SALARY TAB */}
       {activeTab === 'salary' && (
         <div className="dash-card">
-          <div className="fin-card-toolbar">
-            <button className="btn-primary" onClick={() => openEntryModal('salary')}>
-              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              {t('finance.salary.addNew')}
-            </button>
+          <div className="fin-card-toolbar" style={{ justifyContent: 'flex-start' }}>
+            <span className="cell-sub">{t('finance.salary.monthLabel', { month: salaryMonth })}</span>
           </div>
           <div className="data-table-wrap">
             <table className="data-table">
-              <thead><tr><th>{t('finance.salary.table.staff')}</th><th>{t('finance.salary.table.role')}</th><th>{t('finance.salary.table.amount')}</th><th>{t('finance.salary.table.month')}</th><th>{t('finance.salary.table.status')}</th><th></th></tr></thead>
+              <thead><tr><th>{t('finance.salary.table.staff')}</th><th>{t('finance.salary.table.role')}</th><th>{t('finance.salary.table.amount')}</th><th>{t('finance.salary.table.status')}</th><th></th></tr></thead>
               <tbody>
-                {salaries.map((s) => {
-                  const b = statusBadge(s.status);
+                {payrollRows.map((p) => {
+                  const b = statusBadge(p.status);
                   return (
-                    <tr key={s.id}>
-                      <td>
-                        {s.staffName}
-                        {!s.teacherId && (
-                          <span
-                            className="cell-sub"
-                            style={{ marginInlineStart: 6, cursor: 'help' }}
-                            title={t('finance.salary.notLinkedTooltip')}
-                          >
-                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline', verticalAlign: 'middle' }}><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
-                          </span>
-                        )}
-                      </td>
-                      <td className="cell-sub">{s.role}</td>
-                      <td className="cell-amount">${s.amount}</td>
-                      <td>{s.month}</td>
+                    <tr key={p.personId}>
+                      <td>{p.staffName}</td>
+                      <td className="cell-sub">{p.role}</td>
+                      <td className="cell-amount">${p.amount}</td>
                       <td><span className={`badge ${b.cls}`}>{b.label}</span></td>
                       <td>
-                        {s.status === 'pending' && (
-                          <button className="btn-secondary" onClick={() => markSalaryPaid(s.id)}>{t('finance.salary.markPaid')}</button>
+                        {p.status === 'pending' && (
+                          <button className="btn-secondary" onClick={() => handlePaySalary(p)}>{t('finance.salary.payNow')}</button>
                         )}
                       </td>
                     </tr>
                   );
                 })}
-                {salaries.length === 0 && (
-                  <tr><td colSpan="6" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.noResults')}</td></tr>
+                {payrollRows.length === 0 && (
+                  <tr><td colSpan="5" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('finance.salary.emptyPayroll')}</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="fin-card-toolbar" style={{ justifyContent: 'flex-start', marginTop: 22 }}>
+            <span className="fin-category-name" style={{ fontSize: 15 }}>{t('finance.salary.historyTitle')}</span>
+          </div>
+          <div className="data-table-wrap">
+            <table className="data-table">
+              <thead><tr><th>{t('finance.salary.table.staff')}</th><th>{t('finance.salary.table.role')}</th><th>{t('finance.salary.table.amount')}</th><th>{t('finance.salary.table.month')}</th><th>{t('teachers.profile.table.payDate')}</th></tr></thead>
+              <tbody>
+                {salaryHistory.map((s) => (
+                  <tr key={s.id}>
+                    <td>{s.staffName}</td>
+                    <td className="cell-sub">{s.role}</td>
+                    <td className="cell-amount">${s.amount}</td>
+                    <td>{s.month}</td>
+                    <td className="cell-sub">{s.date || '—'}</td>
+                  </tr>
+                ))}
+                {salaryHistory.length === 0 && (
+                  <tr><td colSpan="5" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('common.noResults')}</td></tr>
                 )}
               </tbody>
             </table>
@@ -567,7 +597,6 @@ function Finance() {
         onClose={() => setShowEntryModal(false)}
         onSave={handleSaveEntry}
         type={entryType}
-        teachers={teachers.filter((tc) => tc.status !== 'inactive')}
         students={students}
       />
 

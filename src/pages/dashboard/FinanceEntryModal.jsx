@@ -7,7 +7,6 @@ const EXPENSE_CATEGORIES = ['Mushahar', 'Adeegyada', 'Qalabka', 'Dhismaha', 'Gaa
 const EMPTY_FORMS = {
   expenses: { category: EXPENSE_CATEGORIES[0], description: '', amount: '', date: '' },
   income: { source: '', description: '', amount: '', date: '' },
-  salary: { staffName: '', role: '', amount: '', month: '', teacherId: '' },
   discounts: { studentId: '', student: '', type: 'discount', amount: '', discountPercent: '', reason: '' },
   documents: { type: 'invoice', party: '', amount: '', date: '' },
 };
@@ -15,7 +14,6 @@ const EMPTY_FORMS = {
 const TITLE_KEYS = {
   expenses: 'finance.entryModal.addExpenseTitle',
   income: 'finance.entryModal.addIncomeTitle',
-  salary: 'finance.entryModal.addSalaryTitle',
   discounts: 'finance.entryModal.addDiscountTitle',
   documents: 'finance.entryModal.addDocumentTitle',
 };
@@ -23,12 +21,11 @@ const TITLE_KEYS = {
 const SUBMIT_KEYS = {
   expenses: 'finance.entryModal.submitExpense',
   income: 'finance.entryModal.submitIncome',
-  salary: 'finance.entryModal.submitSalary',
   discounts: 'finance.entryModal.submitDiscount',
   documents: 'finance.entryModal.submitDocument',
 };
 
-function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], students = [] }) {
+function FinanceEntryModal({ isOpen, onClose, onSave, type, students = [] }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORMS[type] || EMPTY_FORMS.expenses);
 
@@ -94,33 +91,6 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], stude
                 </div>
               )}
 
-              {type === 'salary' && (
-                <>
-                  <div className="fem-field">
-                    <label>{t('finance.salary.table.staff')}</label>
-                    <input type="text" value={form.staffName} onChange={update('staffName')} placeholder={t('finance.entryModal.staffNamePlaceholder')} required />
-                  </div>
-                  <div className="fem-field">
-                    <label>{t('finance.salary.table.role')}</label>
-                    <input type="text" value={form.role} onChange={update('role')} placeholder={t('finance.entryModal.rolePlaceholder')} />
-                  </div>
-                  <div className="fem-field full">
-                    <label>{t('finance.salary.linkTeacher')}</label>
-                    <select value={form.teacherId} onChange={update('teacherId')}>
-                      <option value="">{t('finance.salary.linkTeacherNone')}</option>
-                      {teachers.map((tc) => (
-                        <option key={tc.id} value={tc.id}>{tc.fullName}</option>
-                      ))}
-                    </select>
-                    <span className="fem-hint">{t('finance.salary.linkTeacherHint')}</span>
-                  </div>
-                  <div className="fem-field full">
-                    <label>{t('finance.salary.table.month')}</label>
-                    <input type="text" value={form.month} onChange={update('month')} placeholder={t('finance.entryModal.monthPlaceholder')} />
-                  </div>
-                </>
-              )}
-
               {type === 'discounts' && (
                 <>
                   <div className="fem-field">
@@ -179,7 +149,7 @@ function FinanceEntryModal({ isOpen, onClose, onSave, type, teachers = [], stude
                 </>
               )}
 
-              {(type === 'salary' || type === 'discounts' || type === 'expenses' || type === 'income' || type === 'documents') && (
+              {(type === 'discounts' || type === 'expenses' || type === 'income' || type === 'documents') && (
                 <div className="fem-field">
                   <label>{t('finance.entryModal.amount')}</label>
                   <input type="number" value={form.amount} onChange={update('amount')} placeholder={t('finance.entryModal.amountPlaceholder')} required />

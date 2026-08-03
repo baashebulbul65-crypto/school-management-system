@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './UserFormModal.css';
 
-const EMPTY_FORM = { fullName: '', email: '', role: 'Teacher', password: '', teacherDocId: '' };
+const EMPTY_FORM = { fullName: '', email: '', role: 'Teacher', password: '', teacherDocId: '', salaryAmount: '' };
 
 function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOptions = [] }) {
   const { t } = useTranslation();
@@ -13,7 +13,7 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
 
   useEffect(() => {
     if (user) {
-      setForm({ fullName: user.fullName, email: user.email, role: user.title, password: '', teacherDocId: user.teacherDocId || '' });
+      setForm({ fullName: user.fullName, email: user.email, role: user.title, password: '', teacherDocId: user.teacherDocId || '', salaryAmount: user.salaryAmount || '' });
     } else {
       setForm(EMPTY_FORM);
     }
@@ -69,6 +69,11 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
       title: form.role,
       password: form.password,
       teacherDocId: form.role === 'Teacher' ? (form.teacherDocId || null) : null,
+      // Mushaharka shaqaalaha aan macallin ahayn waxaa lagu kaydiyaa halkan
+      // (users/{uid}.salaryAmount) — macallinka mushaharkiisu wuxuu ku jiraa
+      // diiwaanka teachers (TeacherFormModal), si aan hal qof loo yeelan laba
+      // isha xog (fiiri utils/staffSalary.js: buildPayrollList).
+      salaryAmount: form.role === 'Teacher' ? 0 : (Number(form.salaryAmount) || 0),
     };
     setSubmitting(true);
     setError('');
@@ -135,6 +140,14 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
                     ))}
                   </select>
                   <span className="ufm-hint">{t('users.form.hints.teacherLink')}</span>
+                </div>
+              )}
+
+              {form.role !== 'Teacher' && (
+                <div className="ufm-field full">
+                  <label>{t('users.form.fields.salaryAmount')}</label>
+                  <input type="number" min="0" value={form.salaryAmount} onChange={update('salaryAmount')} placeholder={t('users.form.placeholders.salaryAmount')} />
+                  <span className="ufm-hint">{t('users.form.hints.salaryAmount')}</span>
                 </div>
               )}
 

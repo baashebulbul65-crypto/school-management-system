@@ -18,10 +18,12 @@ import {
   subscribeToIncome, createIncomeDoc,
   subscribeToClassFees, createClassFeeRowDoc,
   subscribeToFeePayments, createFeePaymentDoc,
-  subscribeToSalaries, createSalaryDoc, setSalaryStatus,
+  subscribeToSalaries, createSalaryDoc,
   subscribeToDiscounts, createDiscountDoc,
   subscribeToDocuments, createDocumentDoc,
 } from '../firebase/finance';
+import { subscribeToStaff } from '../firebase/staff';
+import { buildPayrollList } from '../utils/staffSalary';
 import {
   subscribeToAttendanceByDate, setStudentAttendanceRecord, subscribeToAllAttendanceRecords,
   subscribeToStaffAttendanceByDate, setStaffAttendanceRecord, subscribeToAllStaffAttendanceRecords,
@@ -193,6 +195,7 @@ export function SchoolDataProvider({ children }) {
   const [expenses, setExpenses] = useState([]);
   const [income, setIncome] = useState([]);
   const [salaries, setSalaries] = useState([]);
+  const [staffAccounts, setStaffAccounts] = useState([]);
   const [discounts, setDiscounts] = useState([]);
   const [financeDocuments, setFinanceDocuments] = useState([]);
   const [staff, setStaff] = useState([]);
@@ -762,6 +765,23 @@ export function SchoolDataProvider({ children }) {
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType, profile?.role]);
 
+  // Liiska shaqaalaha login-ka leh (users, accountType:'staff') — waxaa
+  // loo isticmaalaa payroll-ka (Finance > Mushaharka), si loo helo
+  // salaryAmount-ka shaqaalaha aan macallin ahayn (Owner/Principal/VP/
+  // Accountant/Receptionist). Isla mabda'a salaries kore: owner-kaliya.
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff' || profile?.role === 'teacher') {
+      setStaffAccounts([]);
+      return undefined;
+    }
+    const unsubscribe = subscribeToStaff(
+      profile.schoolCode,
+      setStaffAccounts,
+      (err) => reportError('Khalad ayaa dhacay markii shaqaalaha laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType, profile?.role]);
+
   useEffect(() => {
     if (!profile?.schoolCode || profile?.accountType !== 'staff' || profile?.role === 'teacher') {
       setDiscounts([]);
@@ -788,34 +808,38 @@ export function SchoolDataProvider({ children }) {
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType, profile?.role]);
 
-  const addSalary = async (payload) => {
+  // Liiska payroll-ka otomaatig ah (isla habka fee-ga ardayda) — waxaa laga
+  // soo ururiyaa teachers (salaryAmount) + staffAccounts (salaryAmount, aan
+  // macallin ahayn). Fiiri utils/staffSalary.js.
+  const payrollList = useMemo(() => buildPayrollList(teachers, staffAccounts), [teachers, staffAccounts]);
+
+  // Bixinta mushaharka hal qof (bishaas) — waxaa loo isticmaalaa Finance.jsx
+  // badhanka "Bixi Mushaharka". Isla habka collectStudentFee: waxaa la abuuraa
+  // diiwaan CUSUB oo append-only (ma jiro "pending" doc oo la beddelo), oo si
+  // otomaatig ah ugu daraa qaybta Kharashaadka (financeExpenses) — si
+  // xisaabaadka guud (Xisaabaadka tab-ka + "Hadhaa"/wadarta kharashka) ay u
+  // sii ahaadaan xog dhab ah.
+  const payStaffSalary = async (person, month) => {
     if (!profile?.schoolCode) return;
     try {
-      await createSalaryDoc(profile.schoolCode, payload);
+      await createSalaryDoc(profile.schoolCode, {
+        personId: person.personId,
+        personType: person.personType,
+        teacherId: person.teacherId,
+        staffName: person.staffName,
+        role: person.role,
+        amount: person.amount,
+        month,
+        date: todayISODate(),
+      });
+      await createExpenseDoc(profile.schoolCode, {
+        category: 'Mushahar',
+        description: `Mushaharka ${person.staffName || ''}${person.role ? ` - ${person.role}` : ''} (${month})`.trim(),
+        amount: person.amount || 0,
+        date: todayISODate(),
+      });
     } catch (err) {
-      reportError('Khalad ayaa dhacay markii mushaharka la darayay:', err);
-    }
-  };
-
-  // Marka mushahar la bixiyo, waa in uu si otomaatig ah ugu galaa qaybta
-  // Kharashaadka (financeExpenses) — si xisaabaadka guud (Xisaabaadka tab-ka +
-  // "Hadhaa"/wadarta kharashka) ay u sii ahaadaan xog dhab ah, mana aha in
-  // mushaharka la bixiyay uu kaliya "status" ka beddelo bogga Mushaharka isaga
-  // oo aan gudbin qaybta kharashaadka.
-  const markSalaryPaid = async (id) => {
-    try {
-      await setSalaryStatus(id, 'paid');
-      const salary = salaries.find((s) => s.id === id);
-      if (salary && profile?.schoolCode) {
-        await createExpenseDoc(profile.schoolCode, {
-          category: 'Mushahar',
-          description: `Mushaharka ${salary.staffName || ''}${salary.role ? ` - ${salary.role}` : ''}${salary.month ? ` (${salary.month})` : ''}`.trim(),
-          amount: salary.amount || 0,
-          date: todayISODate(),
-        });
-      }
-    } catch (err) {
-      reportError('Khalad ayaa dhacay markii mushaharka la calaamadinayay in la bixiyay:', err);
+      reportError('Khalad ayaa dhacay markii mushaharka la bixinayay:', err);
     }
   };
 
@@ -1369,7 +1393,7 @@ export function SchoolDataProvider({ children }) {
     exams, examMarks, addExam, updateExam, removeExam, updateExamMark,
     classFees, collectClassFee, addClassFeeRow, feePayments, collectStudentFee,
     expenses, income, addExpense, addIncome,
-    salaries, addSalary, markSalaryPaid,
+    salaries, payrollList, payStaffSalary,
     discounts, addDiscount,
     financeDocuments, addFinanceDocument,
     staff, addStaffMember, updateStaffMember, removeStaffMember,

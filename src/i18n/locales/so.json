@@ -150,12 +150,15 @@
       "fields": {
         "fullName": "Magaca Buuxa *", "phone": "Telefoonka", "email": "Email",
         "qualification": "Shahaadada (Qualification)", "subject": "Maadada *", "status": "Xaaladda",
+        "salaryAmount": "Mushaharka Bishii ($)",
         "assignedClasses": "Fasallada Loo Xilsaaray"
       },
       "placeholders": {
         "fullName": "Tusaale: Cali Xasan Warsame", "phone": "+252 61 ...", "email": "tusaale@kayd.com",
-        "qualification": "Tusaale: BSc Xisaabta - Jaamacadda...", "subject": "Tusaale: Xisaabta"
+        "qualification": "Tusaale: BSc Xisaabta - Jaamacadda...", "subject": "Tusaale: Xisaabta",
+        "salaryAmount": "Tusaale: 150"
       },
+      "salaryAmountHint": "Qiimaha mushaharka macallinku qaadanayo bil kasta — bil kasta oo cusub bilaabata wuxuu dib ugu noqdaa \"Sugaya\" ilaa Finance-ka lagu diiwaan-geliyo bixinta (fiiri bogga Finance, tab-ka Mushaharka).",
       "noAssignedClassesYet": "Weli fasal looma xilsaarin.",
       "assignAfterCreate": "Marka macallinka la kaydiyo, waxaad ka xilsaari kartaa fasal bogga \"Fasallada\".",
       "assignClassesHint": "Fasallada macallinku dhigo waxaa laga maamulaa bogga \"Fasallada\" (Classes) — halkaas dooro macallinkan sida \"Macallinka Fasalka\". Halkan waa muuqaal oo qura, lagama beddeli karo.",
@@ -205,17 +208,20 @@
       "fillInfo": "Buuxi macluumaadka hoose",
       "fields": {
         "fullName": "Magaca Buuxa *", "email": "Email *", "role": "Doorka (Role) *",
-        "teacherLink": "Xiriirinta Diiwaanka Macallinka *", "password": "Furaha Sirta Bilowga ah *"
+        "teacherLink": "Xiriirinta Diiwaanka Macallinka *", "password": "Furaha Sirta Bilowga ah *",
+        "salaryAmount": "Mushaharka Bishii ($)"
       },
       "placeholders": {
         "fullName": "Tusaale: Sahra Maxamed Cige", "email": "tusaale@kayd.com",
         "teacherSelect": "-- Dooro macallinka --", "password": "Ugu yaraan 6 xaraf",
-        "noAvailableTeachers": "Macallin aan account lagu xirin lama helin (dhammaantiis horeba account bay leeyihiin, ama wali macallin lama abuurin — bogga Macallimiinta ku dar mid cusub)."
+        "noAvailableTeachers": "Macallin aan account lagu xirin lama helin (dhammaantiis horeba account bay leeyihiin, ama wali macallin lama abuurin — bogga Macallimiinta ku dar mid cusub).",
+        "salaryAmount": "Tusaale: 100"
       },
       "hints": {
         "emailLocked": "Email-ka ma bedeli karto akoon hore.",
         "teacherLink": "Waajib — macallinku wuxuu ku xiran yahay xiriirintan si uu u arko oo u furo fasalkiisa gaarka ah (bogga \"Fasallada\"). Haddii macallinku aan weli ku jirin bogga \"Macallimiinta\", ku dar isaga halkaas marka hore.",
-        "password": "Shaqaaluhu wuu bedeli kari doonaa marka uu markiiba galo."
+        "password": "Shaqaaluhu wuu bedeli kari doonaa marka uu markiiba galo.",
+        "salaryAmount": "Qiimaha mushaharka shaqaalahan qaadanayo bil kasta — bil kasta oo cusub bilaabata wuxuu dib ugu noqdaa \"Sugaya\" ilaa Finance-ka lagu diiwaan-geliyo bixinta (fiiri bogga Finance, tab-ka Mushaharka)."
       },
       "errors": {
         "passwordTooShort": "Furaha Sirta waa in uu ka koobnaadaa ugu yaraan 6 xaraf.",
@@ -316,19 +322,12 @@
       ]
     },
     "salary": {
-      "addNew": "Ku Dar Mushahar",
-      "markPaid": "Bixi",
-      "table": { "staff": "Shaqaale", "role": "Doorka", "amount": "Qadarka", "month": "Bisha", "status": "Xaaladda" },
-      "linkTeacher": "Xiriirinta Macallinka (ikhtiyaari)",
-      "linkTeacherNone": "-- Ma jiro (macallin ma aha, ama lama xirin) --",
-      "linkTeacherHint": "Haddii shaqaalahani uu yahay macallin ku jira bogga Macallimiinta, ku xir halkan si mushaharkan uu ugu soo baxo profile-kiisa.",
-      "notLinkedTooltip": "Lama xirin diiwaanka Macallinka — haddii shaqaalahani uu yahay macallin, mushaharkan kuma soo bixi doono profile-kiisa (bogga Macallimiinta).",
-      "items": [
-        { "staffName": "Cali Xasan Warsame", "role": "Macallin - Xisaabta", "month": "Luulyo 2026" },
-        { "staffName": "Faadumo Nuur Cige", "role": "Macallin - Ingiriisi", "month": "Luulyo 2026" },
-        { "staffName": "Xasan Cabdulle Nuur", "role": "Maamule Guud", "month": "Luulyo 2026" },
-        { "staffName": "Zaynab Cali Warsame", "role": "Xisaabiye", "month": "Luulyo 2026" }
-      ]
+      "payNow": "Bixi Mushaharka",
+      "confirmPay": "Ma hubtaa inaad mushaharka siinayso {{name}}?",
+      "monthLabel": "Bisha: {{month}}",
+      "emptyPayroll": "Weli shaqaale mushahar leh (salaryAmount) lama diiwaan gelin — ku dar bogga Macallimiinta ama Users.",
+      "historyTitle": "Taariikhda Bixinnada",
+      "table": { "staff": "Shaqaale", "role": "Doorka", "amount": "Qadarka", "month": "Bisha", "status": "Xaaladda" }
     },
     "discounts": {
       "addNew": "Ku Dar Dhimis/Deeq",
@@ -357,7 +356,6 @@
     "entryModal": {
       "addExpenseTitle": "Ku Dar Kharash Cusub",
       "addIncomeTitle": "Ku Dar Dakhli Cusub",
-      "addSalaryTitle": "Ku Dar Mushahar",
       "addDiscountTitle": "Ku Dar Dhimis/Deeq Waxbarasho",
       "addDocumentTitle": "Ku Dar Invoice/Receipt",
       "fillInfo": "Buuxi macluumaadka hoose",
@@ -365,9 +363,6 @@
       "categories": { "Mushahar": "Mushahar", "Adeegyada": "Adeegyada", "Qalabka": "Qalabka", "Dhismaha": "Dhismaha", "Gaadiid": "Gaadiid", "Dayactir": "Dayactir", "Kale": "Kale" },
       "source": "Isha Dakhliga (Source) *",
       "sourcePlaceholder": "Tusaale: Fees Ardayda",
-      "staffNamePlaceholder": "Tusaale: Cali Xasan Warsame",
-      "rolePlaceholder": "Tusaale: Macallin - Xisaabta",
-      "monthPlaceholder": "Tusaale: Luulyo 2026",
       "reasonPlaceholder": "Tusaale: Deeq waxbarasho - buundo sare",
       "partyPlaceholder": "Tusaale: Ismaaciil Cabdi Xasan",
       "amount": "Qadarka ($) *",
@@ -377,7 +372,6 @@
       "date": "Taariikhda",
       "submitExpense": "Ku Dar Kharashka",
       "submitIncome": "Ku Dar Dakhliga",
-      "submitSalary": "Ku Dar Mushaharka",
       "submitDiscount": "Ku Dar Dhimista",
       "submitDocument": "Ku Dar Diiwaanka"
     },

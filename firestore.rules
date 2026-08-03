@@ -391,14 +391,14 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // ===== financeSalaries ===== — "status" (pending/paid) kaliya ayaa la
-    // beddeli karaa (fiiri firebase/finance.js: setSalaryStatus).
+    // ===== financeSalaries ===== — diiwaan (ledger), isla habka feePayments
+    // (kore): waxaa la abuuraa KALIYA marka mushahar la bixiyo, marnaba lama
+    // beddelo — xaaladda "Sugaya" ma aha doc halkan, waxaa laga soo
+    // xisaabiyaa (derive) client-ka (fiiri utils/staffSalary.js).
     match /financeSalaries/{salaryId} {
       allow read: if isOwnerStaffOf(resource.data.schoolCode);
       allow create: if isOwnerStaffOf(request.resource.data.schoolCode);
-      allow update: if isOwnerStaffOf(resource.data.schoolCode)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
-      allow delete: if false;
+      allow update, delete: if false;
     }
 
     // ===== financeDiscounts / financeDocuments ===== — diiwaan, APPEND-ONLY.

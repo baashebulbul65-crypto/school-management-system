@@ -82,17 +82,16 @@ export async function createFeePaymentDoc(data) {
   return docRef.id;
 }
 
-// ===== Mushaharka Shaqaalaha (financeSalaries) — "status" (pending/paid)
-// waa kaliya field-ka la beddeli karo (fiiri firestore.rules) =====
+// ===== Mushaharka Shaqaalaha (financeSalaries) — diiwaan (ledger), isla
+// habka feePayments: waxaa la abuuraa KALIYA marka la bixiyo, marnaba lama
+// beddelo (append-only, fiiri firestore.rules) — xaaladda "Sugaya" ma aha
+// doc, waa la XISAABIYAA (fiiri utils/staffSalary.js: getMonthlySalaryStatus).
 export function subscribeToSalaries(schoolCode, onChange, onError) {
   return subscribeToCollection(SALARIES_COLLECTION, schoolCode, onChange, onError);
 }
 export async function createSalaryDoc(schoolCode, data) {
-  const docRef = await addDoc(collection(db, SALARIES_COLLECTION), { ...data, schoolCode, status: 'pending' });
+  const docRef = await addDoc(collection(db, SALARIES_COLLECTION), { ...data, schoolCode });
   return docRef.id;
-}
-export async function setSalaryStatus(id, status) {
-  await updateDoc(doc(db, SALARIES_COLLECTION, id), { status });
 }
 
 // ===== Dhimista/Deeqaha Waxbarasho (financeDiscounts) — diiwaan, append-only =====
