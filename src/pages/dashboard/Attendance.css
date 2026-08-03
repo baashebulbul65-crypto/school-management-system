@@ -55,7 +55,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  border-left: 4px solid var(--line);
+  border-inline-start: 4px solid var(--line);
 }
 .att-summary-value{
   font-family: 'Poppins', sans-serif;
@@ -68,12 +68,12 @@
   color: var(--grey-text);
   font-weight: 600;
 }
-.att-summary-card.present{ border-left-color: var(--mint); }
-.att-summary-card.absent{ border-left-color: #E5533F; }
-.att-summary-card.late{ border-left-color: #E8B93B; }
-.att-summary-card.leave{ border-left-color: #C99A1F; }
-.att-summary-card.sick{ border-left-color: #9333EA; }
-.att-summary-card.total{ border-left-color: var(--navy); }
+.att-summary-card.present{ border-inline-start-color: var(--mint); }
+.att-summary-card.absent{ border-inline-start-color: #E5533F; }
+.att-summary-card.late{ border-inline-start-color: #E8B93B; }
+.att-summary-card.leave{ border-inline-start-color: #C99A1F; }
+.att-summary-card.sick{ border-inline-start-color: #9333EA; }
+.att-summary-card.total{ border-inline-start-color: var(--navy); }
 
 /* Card head */
 .att-card-head{

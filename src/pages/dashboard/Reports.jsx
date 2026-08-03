@@ -138,7 +138,11 @@ function Reports() {
   }, [students, exams, examMarks, classes, t]);
 
   const teacherAttendanceSummary = useMemo(() => {
+    // status !== 'inactive' — isla shaandhaynta Teachers.jsx (activeTeachers)
+    // iyo Attendance.jsx, si macallin la saaray uusan ku sii muuqan
+    // warbixinta (Attendance audit, 2026-08-03).
     return teachers
+      .filter((teacher) => teacher.status !== 'inactive')
       .map((teacher) => {
         const records = allStaffAttendanceRecords.filter((r) => r.category === 'teachers' && r.personId === teacher.id);
         const total = records.length;

@@ -449,7 +449,12 @@
     "notMarkedYet": "Wali Lama Calaamadin",
     "table": { "name": "Magaca", "details": "Faahfaahin", "status": "Xaaladda" },
     "reportsTitle": "Warbixinnada",
-    "attendanceRate": "% Heerka Imaanshaha"
+    "attendanceRate": "% Heerka Imaanshaha",
+    "staff": {
+      "addNew": "Ku Dar Shaqaale",
+      "empty": "Wali shaqaale lama darin.",
+      "confirmDelete": "Ma hubtaa inaad ka saarayso \"{{name}}\" liiska shaqaalaha?"
+    }
   },
   "reports": {
     "pageTitle": "Warbixinno",

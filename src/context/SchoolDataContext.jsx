@@ -202,6 +202,22 @@ export function SchoolDataProvider({ children }) {
   const [allStudentAttendanceRecords, setAllStudentAttendanceRecords] = useState([]);
   const [allStaffAttendanceRecords, setAllStaffAttendanceRecords] = useState([]);
 
+  // "Maanta" (todayISODate()) — waxaa lagu xisaabiyaa hal mar marka
+  // subscription-yada "maanta" (hoos) la furo, marka haddii boggu furan
+  // yahay isaga oo aan la refresh-garayn saqda dhexe (midnight) ka dhaafta,
+  // subscription-yadaasi si joogto ah waxay sii wadi lahaayeen inay
+  // xaadhaan taariikhda BERI (Attendance audit, 2026-08-03). todayDate waa
+  // la hubiyaa mar kasta oo daqiiqad ah (setInterval); marka ay isbedesho,
+  // effect-yada hoose way dib-u-fureyaan (classTeacherId/date dependency).
+  const [todayDate, setTodayDate] = useState(todayISODate());
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const current = todayISODate();
+      setTodayDate((prev) => (prev !== current ? current : prev));
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   // ===== IMAANSHAHA ARDAYDA MAANTA (Firestore collection "attendanceRecords") =====
   // "classTeacherId" (Teacher Firestore Hardening, 2026-08-02): macallinku
   // query-giisu waa in uu si toos ah u xaddidan yahay fasalladiisa (firestore.
@@ -221,7 +237,7 @@ export function SchoolDataProvider({ children }) {
     const classTeacherId = profile?.role === 'teacher' ? profile.teacherDocId : null;
     const unsubscribe = subscribeToAttendanceByDate(
       profile.schoolCode,
-      todayISODate(),
+      todayDate,
       classTeacherId,
       (records) => {
         const map = {};
@@ -231,7 +247,7 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii imaanshaha maanta laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode, profile?.role, profile?.teacherDocId]);
+  }, [profile?.schoolCode, profile?.role, profile?.teacherDocId, todayDate]);
 
   // Xaaladda xaadiriska ardayga (Joog/Maqan/Fasax/Buka) waa in ay ka dhacdo
   // KALIYA gudaha ClassWorkspace.jsx tab-ka Xaadiris, maalinta HADDA ah oo
@@ -357,7 +373,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToStaffAttendanceByDate(
       profile.schoolCode,
       'teachers',
-      todayISODate(),
+      todayDate,
       (records) => {
         const map = {};
         records.forEach((r) => { map[r.personId] = r.status; });
@@ -366,7 +382,7 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii imaanshaha macallimiinta maanta laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode]);
+  }, [profile?.schoolCode, todayDate]);
 
   useEffect(() => {
     if (!profile?.schoolCode) {
@@ -376,7 +392,7 @@ export function SchoolDataProvider({ children }) {
     const unsubscribe = subscribeToStaffAttendanceByDate(
       profile.schoolCode,
       'staff',
-      todayISODate(),
+      todayDate,
       (records) => {
         const map = {};
         records.forEach((r) => { map[r.personId] = r.status; });
@@ -385,7 +401,7 @@ export function SchoolDataProvider({ children }) {
       (err) => reportError('Khalad ayaa dhacay markii imaanshaha shaqaalaha maanta laga soo akhriyay:', err)
     );
     return unsubscribe;
-  }, [profile?.schoolCode]);
+  }, [profile?.schoolCode, todayDate]);
 
   // ===== HORUMARKA QURAANKA MAANTA (Firestore collection "quranProgress") =====
   // Staff-only (schoolCode-wide) — waalidku wuxuu isticmaalaa
@@ -1357,7 +1373,7 @@ export function SchoolDataProvider({ children }) {
     discounts, addDiscount,
     financeDocuments, addFinanceDocument,
     staff, addStaffMember, updateStaffMember, removeStaffMember,
-    attendanceToday, cycleAttendanceStatus,
+    attendanceToday, cycleAttendanceStatus, todayDate,
     allStudentAttendanceRecords, allStaffAttendanceRecords,
     quranProgressToday, setQuranProgress,
     quranTargets, saveQuranTarget, recordQuranTargetOutcome,

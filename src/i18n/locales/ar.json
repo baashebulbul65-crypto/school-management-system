@@ -449,7 +449,12 @@
     "notMarkedYet": "لم يُسجَّل بعد",
     "table": { "name": "الاسم", "details": "التفاصيل", "status": "الحالة" },
     "reportsTitle": "التقارير",
-    "attendanceRate": "% معدل الحضور"
+    "attendanceRate": "% معدل الحضور",
+    "staff": {
+      "addNew": "إضافة موظف",
+      "empty": "لم تتم إضافة أي موظف بعد.",
+      "confirmDelete": "هل أنت متأكد أنك تريد إزالة \"{{name}}\" من قائمة الموظفين؟"
+    }
   },
   "reports": {
     "pageTitle": "التقارير",

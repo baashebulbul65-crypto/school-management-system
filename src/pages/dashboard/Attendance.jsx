@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
-import { todayISODate, isoDateDaysAgo } from '../../utils/somaliDate';
+import { isoDateDaysAgo } from '../../utils/somaliDate';
 import StaffMemberFormModal from './StaffMemberFormModal';
 import '../../styles/dashboard-shared.css';
 import './Attendance.css';
@@ -32,7 +32,7 @@ function Attendance() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const {
-    students, teachers, staff, attendanceToday, cycleAttendanceStatus,
+    students, teachers, staff, attendanceToday, cycleAttendanceStatus, todayDate,
     addStaffMember, updateStaffMember, removeStaffMember,
     allStudentAttendanceRecords, allStaffAttendanceRecords, myClassIds, myClassNames,
   } = useSchoolData();
@@ -53,7 +53,12 @@ function Attendance() {
   );
   const [category, setCategory] = useState('students');
   const [period, setPeriod] = useState('daily');
-  const [date] = useState(todayISODate());
+  // "date" waxaa laga soo qaataa SchoolDataContext-ka "todayDate" (isla mid
+  // ay isticmaalaan subscriptions-ka "maanta") — halkii la isticmaali lahaa
+  // useState(todayISODate()) oo hal mar la xisaabiyo (isaguna sii ahaan
+  // lahaa taariikhda hore haddii boggu furan yahay saqda dhexe ka dhaafta,
+  // Attendance audit, 2026-08-03).
+  const date = todayDate;
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [editingStaffMember, setEditingStaffMember] = useState(null);
 
@@ -161,7 +166,7 @@ function Attendance() {
   };
 
   const handleDeleteStaffMember = (memberId, name) => {
-    if (window.confirm(`Ma hubtaa inaad ka saarayso "${name}" liiska shaqaalaha?`)) {
+    if (window.confirm(t('attendance.staff.confirmDelete', { name }))) {
       removeStaffMember(memberId);
     }
   };
@@ -192,7 +197,7 @@ function Attendance() {
         {category === 'staff' && isOwner && (
           <button className="btn-primary" onClick={openAddStaffModal}>
             <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            Ku Dar Shaqaale
+            {t('attendance.staff.addNew')}
           </button>
         )}
       </div>
@@ -265,10 +270,10 @@ function Attendance() {
                   {category === 'staff' && isOwner && (
                     <td>
                       <div className="row-actions">
-                        <button className="row-action-btn" title="Wax Ka Beddel" onClick={() => openEditStaffModal(p)}>
+                        <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditStaffModal(p)}>
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
                         </button>
-                        <button className="row-action-btn danger" title="Ka Saar" onClick={() => handleDeleteStaffMember(p.id, p.name)}>
+                        <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteStaffMember(p.id, p.name)}>
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
                         </button>
                       </div>
@@ -277,7 +282,7 @@ function Attendance() {
                 </tr>
               ))}
               {category === 'staff' && list.length === 0 && (
-                <tr><td colSpan={isOwner ? 4 : 3} style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>Wali shaqaale lama darin.</td></tr>
+                <tr><td colSpan={isOwner ? 4 : 3} style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('attendance.staff.empty')}</td></tr>
               )}
             </tbody>
           </table>
