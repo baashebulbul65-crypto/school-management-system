@@ -1021,7 +1021,12 @@ export function SchoolDataProvider({ children }) {
       .forEach((e) => {
         const match = classes.find((c) => `${c.grade}${c.section}` === e.className);
         if (match) {
-          updateExamDoc(e.id, { classId: match.id }).catch((err) =>
+          // classTeacherId waa in la buuxiyaa isla mar (Exams audit,
+          // 2026-08-04) — haddii kale backfill-kani (oo macallinku sidoo
+          // kale socodsiin karo, ma aha owner-kaliya) wuxuu ku fashilmi
+          // lahaa firestore.rules (isMyClassData) marka classTeacherId uu
+          // sii ahaado null ka dib updateExamDoc-ka.
+          updateExamDoc(e.id, { classId: match.id, classTeacherId: match.classTeacherId || null }).catch((err) =>
             reportError('Khalad ayaa dhacay markii classId-ga imtixaanka la buuxinayay:', err)
           );
         }
@@ -1200,9 +1205,16 @@ export function SchoolDataProvider({ children }) {
       // Isla sida ardayda — imtixaannada classId-gan leh waa in "className"
       // (denormalized) la cusboonaysiiyaa, si Exams.jsx/ClassWorkspace/
       // Reports.jsx (kuwaas oo isticmaala qoraalkan) aysan u dhaqmin xog
-      // duugsan.
-      const affectedExams = exams.filter((e) => e.classId === id && e.className !== newClassroomName);
-      await Promise.all(affectedExams.map((e) => updateExamDoc(e.id, { className: newClassroomName })));
+      // duugsan. classTeacherId sidoo kale (Exams audit, 2026-08-04) — haddii
+      // kale imtixaannadii macallinkii HORE ayay sii xiran lahaayeen
+      // (firestore.rules: isMyClassData), macallinka CUSUB uusan awoodin
+      // inuu maamulo imtixaannada fasalkiisa cusub.
+      const affectedExams = exams.filter((e) => e.classId === id
+        && (e.className !== newClassroomName || (e.classTeacherId || null) !== newClassTeacherId));
+      await Promise.all(affectedExams.map((e) => updateExamDoc(e.id, {
+        className: newClassroomName,
+        classTeacherId: newClassTeacherId,
+      })));
       // Isla sida ardayda/imtixaannada — yoolasha Quraanka classId-gan leh
       // waa in "className" (denormalized) la cusboonaysiiyaa, si ClassWorkspace.jsx
       // (Yoolka Quraanka tab) aanu u dhaqmin xog duugsan (Reports MEDIUM #1).
@@ -1277,17 +1289,25 @@ export function SchoolDataProvider({ children }) {
   };
 
   // ===== IMTIXAANADA =====
+  // classTeacherId (denormalized, Exams audit 2026-08-04) — loo baahan si
+  // firestore.rules (isMyClassData) macallinku u abuuri/wax-ka-beddelo
+  // KALIYA imtixaannada fasalkiisa gaarka ah, isla habka attendanceRecords/
+  // examMarks/quranProgress. classId-ga foomka (ExamFormModal) waa waajib +
+  // la beddeli karaa update-ka, marka labada addExam/updateExam waa in ay
+  // dib u xisaabiyaan.
   const addExam = async (payload) => {
     if (!profile?.schoolCode) return;
     try {
-      await createExamDoc(profile.schoolCode, payload);
+      const examClass = classes.find((c) => c.id === payload.classId);
+      await createExamDoc(profile.schoolCode, { ...payload, classTeacherId: examClass?.classTeacherId || null });
     } catch (err) {
       reportError('Khalad ayaa dhacay markii imtixaanka la darayay:', err);
     }
   };
   const updateExam = async (id, payload) => {
     try {
-      await updateExamDoc(id, payload);
+      const examClass = classes.find((c) => c.id === payload.classId);
+      await updateExamDoc(id, { ...payload, classTeacherId: examClass?.classTeacherId || null });
     } catch (err) {
       reportError('Khalad ayaa dhacay markii imtixaanka wax laga beddelayay:', err);
     }

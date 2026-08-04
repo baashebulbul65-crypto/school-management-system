@@ -234,14 +234,23 @@ service cloud.firestore {
     }
 
     // ===== exams ===== (qeexidda imtixaanka — fiiri examMarks ee buundada
-    // ardaygu ku qaatay) — shaqaale kastaa wuu maamuli karaa.
+    // ardaygu ku qaatay).
     // Waalidku wuxuu akhrin karaa KELIYA imtixaannada fasalka ilmihiisa
     // (isla qaabka subscribeToClassExamsForParent, fiiri firebase/exams.js)
     // — ma aha dhammaan imtixaanada dugsiga.
+    // Qoris (Exams audit, 2026-08-04 — user-reported gap): hore create/update/
+    // delete waxay ahaayeen "isStaffOf" oo qura, taasoo u ogolaan jirtay
+    // macallin kasta inuu abuuro/wax-ka-beddelo/tirtiro imtixaan macallin
+    // KALE, xitaa haddii aanu ahayn fasalkiisa gaarka ah — ka duwan
+    // examMarks/attendanceRecords/quranProgress oo horeba isMyClassData ku
+    // xaddiday. Hadda isla mabda'a ayaa la isticmaalayaa: macallinku KALIYA
+    // wuu maamuli karaa imtixaannada fasalkiisa (classTeacherId, denormalized
+    // fiiri SchoolDataContext.jsx: addExam/updateExam/updateClass), owner-ku
+    // dhammaantiis.
     match /exams/{examId} {
       allow read: if isStaffOf(resource.data.schoolCode) || isParentOfClass(resource.data.schoolCode, resource.data.get('classId', null));
-      allow update, delete: if isStaffOf(resource.data.schoolCode);
-      allow create: if isStaffOf(request.resource.data.schoolCode);
+      allow create, update: if isMyClassData(request.resource.data.schoolCode, request.resource.data.get('classTeacherId', null));
+      allow delete: if isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null));
     }
 
     // ===== attendanceRecords ===== (doc id: "{date}_{studentId}")
