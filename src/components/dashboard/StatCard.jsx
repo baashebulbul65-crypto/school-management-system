@@ -1,11 +1,11 @@
 import './StatCard.css';
 
-function StatCard({ label, value, change, changeType = 'up', icon, accent = 'mint', onClick, actionLabel }) {
+function StatCard({ label, value, change, changeType = 'up', icon, accent = 'mint', onClick, actionLabel, size = 'sm' }) {
   const Wrapper = onClick ? 'button' : 'div';
 
   return (
     <Wrapper
-      className={`stat-card accent-${accent}${onClick ? ' stat-card-clickable' : ''}`}
+      className={`stat-card stat-card--${size} accent-${accent}${onClick ? ' stat-card-clickable' : ''}`}
       onClick={onClick}
       type={onClick ? 'button' : undefined}
     >

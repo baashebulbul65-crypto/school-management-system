@@ -211,25 +211,25 @@ function Reports() {
 
       {/* KEY METRICS */}
       <div className="rep-metrics-grid">
-        <div className="rep-metric-card">
+        <div className="rep-metric-card blue">
           <div className="rep-metric-icon blue">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
           </div>
           <div><span className="rep-metric-value">{totalStudents}</span><span className="rep-metric-label">{t('reports.metrics.totalStudents')}</span></div>
         </div>
-        <div className="rep-metric-card">
+        <div className="rep-metric-card green">
           <div className="rep-metric-icon green">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
           </div>
           <div><span className="rep-metric-value">{avgAttendance}%</span><span className="rep-metric-label">{t('reports.metrics.avgAttendance')}</span></div>
         </div>
-        <div className="rep-metric-card">
+        <div className="rep-metric-card teal">
           <div className="rep-metric-icon teal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
           </div>
           <div><span className={`rep-metric-value ${netProfit >= 0 ? 'success' : 'danger'}`}>${netProfit.toLocaleString()}</span><span className="rep-metric-label">{t('reports.metrics.netProfit')}</span></div>
         </div>
-        <div className="rep-metric-card">
+        <div className="rep-metric-card purple">
           <div className="rep-metric-icon purple">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
           </div>

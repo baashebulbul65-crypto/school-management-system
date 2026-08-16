@@ -19,8 +19,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #FDECEA;
-  color: #C0392B;
+  background: var(--danger-bg);
+  color: var(--danger-dark);
   border: none;
   padding: 9px 16px;
   border-radius: 10px;
@@ -106,8 +106,8 @@
 .cdm-stat:last-child{ border-right: none; }
 .cdm-stat svg{ width: 17px; height: 17px; stroke: var(--grey-text); flex-shrink: 0; }
 .cdm-stat.green svg{ stroke: var(--mint-dark); }
-.cdm-stat.red svg{ stroke: #C0392B; }
-.cdm-stat.blue svg{ fill: #2563EB; stroke: none; }
+.cdm-stat.red svg{ stroke: var(--danger-dark); }
+.cdm-stat.blue svg{ fill: var(--blue); stroke: none; }
 .cdm-stat div{ display: flex; flex-direction: column; }
 .cdm-stat strong{ font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 16px; color: var(--navy); }
 .cdm-stat span{ font-size: 10.5px; color: var(--grey-text); font-weight: 600; }
@@ -163,12 +163,12 @@
 }
 .cdm-fii-status svg{ width: 15px; height: 15px; }
 .cdm-fii-status.paid{ color: var(--mint-dark); }
-.cdm-fii-status.unpaid{ color: #C0392B; }
+.cdm-fii-status.unpaid{ color: var(--danger-dark); }
 .cdm-fii-status.free{
   display: inline-block;
   width: 11px; height: 11px;
   border-radius: 50%;
-  background: #2563EB;
+  background: var(--blue);
 }
 
 .cdm-unpaid-row{

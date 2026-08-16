@@ -4,15 +4,14 @@ import './AttendanceDonutChart.css';
 
 const SEGMENT_COLORS = [
   { key: 'present', color: '#16C784' },
-  { key: 'absent', color: '#E5533F' },
-  { key: 'leave', color: '#C99A1F' },
-  { key: 'sick', color: '#9333EA' },
+  { key: 'absent', color: 'var(--danger)' },
+  { key: 'leave', color: 'var(--warning)' },
 ];
 
-function AttendanceDonutChart({ present, absent, leave, sick }) {
+function AttendanceDonutChart({ present, absent, leave }) {
   const { t } = useTranslation();
-  const counts = { present, absent, leave, sick };
-  const total = present + absent + leave + sick;
+  const counts = { present, absent, leave };
+  const total = present + absent + leave;
   const data = SEGMENT_COLORS.map((s) => ({ ...s, label: t(`donutChart.${s.key}`), value: counts[s.key] }));
 
   return (

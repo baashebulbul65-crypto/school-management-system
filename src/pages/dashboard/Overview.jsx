@@ -7,10 +7,10 @@ import { useSchoolData } from '../../context/SchoolDataContext';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { currentMonthValue } from '../../utils/somaliDate';
-import { getMonthlyFeeStatus } from '../../utils/studentFee';
 import StatCard from '../../components/dashboard/StatCard';
 import AbsentStudentsModal from '../../components/dashboard/AbsentStudentsModal';
 import AttendanceDonutChart from '../../components/dashboard/AttendanceDonutChart';
+import DebugPanel from '../../components/dashboard/DebugPanel';
 import '../../styles/dashboard-shared.css';
 import './Overview.css';
 
@@ -99,11 +99,6 @@ function Overview() {
   // sii cusboonaysiin (fiiri Finance.jsx).
   const currentMonth = currentMonthValue();
 
-  const feeDueStudents = useMemo(
-    () => myStudents.filter((s) => getMonthlyFeeStatus(s, feePayments, currentMonth) === 'unpaid').length,
-    [myStudents, feePayments, currentMonth]
-  );
-
   const feesCollected = useMemo(
     () => feePayments
       .filter((p) => p.feeType === 'student' && p.month === currentMonth)
@@ -117,7 +112,6 @@ function Overview() {
       present: myStudents.filter((s) => statusOf(s) === 'present').length,
       absent: myStudents.filter((s) => statusOf(s) === 'absent').length,
       leave: myStudents.filter((s) => statusOf(s) === 'leave').length,
-      sick: myStudents.filter((s) => statusOf(s) === 'sick').length,
     };
   }, [myStudents, attendanceToday]);
 
@@ -142,6 +136,7 @@ function Overview() {
 
   return (
     <div>
+      <DebugPanel />
       <div className="dash-card overview-header">
         <div className="overview-header-left">
           {settings.school.logo ? (
@@ -179,11 +174,12 @@ function Overview() {
         </div>
       </div>
 
-      <div className="stats-grid">
+      <div className="overview-stats-grid">
         <StatCard
           label={t('overview.stats.totalStudents')}
           value={totalStudents}
           accent="mint"
+          size="lg"
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 14a4 4 0 100-8 4 4 0 000 8zM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>}
         />
         {!isTeacher && (
@@ -197,13 +193,13 @@ function Overview() {
         <StatCard
           label={t('overview.stats.totalClasses')}
           value={totalClasses}
-          accent="gold"
+          accent="blue"
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/></svg>}
         />
         <StatCard
           label={t('overview.stats.totalSubjects')}
           value={totalSubjects}
-          accent="coral"
+          accent="gold"
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/><path d="M8 7h8M8 11h8"/></svg>}
         />
         {!isTeacher && (
@@ -214,18 +210,11 @@ function Overview() {
             icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>}
           />
         )}
-        {!isTeacher && (
-          <StatCard
-            label={t('overview.stats.feeDueStudents')}
-            value={feeDueStudents}
-            accent="navy"
-            icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>}
-          />
-        )}
         <StatCard
           label={t('overview.stats.attendanceToday')}
           value={`${attendanceRate}%`}
-          accent="gold"
+          accent="coral"
+          size="lg"
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>}
         />
         <StatCard
@@ -255,7 +244,6 @@ function Overview() {
             present={attendanceCounts.present}
             absent={attendanceCounts.absent}
             leave={attendanceCounts.leave}
-            sick={attendanceCounts.sick}
           />
         </div>
 

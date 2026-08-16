@@ -259,7 +259,7 @@ function Finance() {
           {/* SUMMARY CARDS (6) */}
           <div className="acc-summary-row">
             <div className="acc-summary-cards">
-              <div className="acc-card">
+              <div className="acc-card acc-card--blue">
                 <div className="acc-card-icon blue">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
                 </div>
@@ -268,7 +268,7 @@ function Finance() {
                   <div className="acc-card-value">${accSummary.wadar.toLocaleString()}.00 <span>({totalStudents})</span></div>
                 </div>
               </div>
-              <div className="acc-card">
+              <div className="acc-card acc-card--green">
                 <div className="acc-card-icon green">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5"/></svg>
                 </div>
@@ -277,7 +277,7 @@ function Finance() {
                   <div className="acc-card-value success">${accSummary.laUururiyey.toLocaleString()}.00</div>
                 </div>
               </div>
-              <div className="acc-card">
+              <div className="acc-card acc-card--red">
                 <div className="acc-card-icon red">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </div>
@@ -286,7 +286,7 @@ function Finance() {
                   <div className="acc-card-value danger">${accSummary.baaqi.toLocaleString()}.00</div>
                 </div>
               </div>
-              <div className="acc-card">
+              <div className="acc-card acc-card--teal">
                 <div className="acc-card-icon teal">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.59 13.41L11 3.83A2 2 0 009.58 3H4a1 1 0 00-1 1v5.58a2 2 0 00.59 1.41l9.58 9.59a2 2 0 002.83 0l5.59-5.59a2 2 0 000-2.83z"/></svg>
                 </div>
@@ -295,7 +295,7 @@ function Finance() {
                   <div className="acc-card-value">${accSummary.dhimis.toLocaleString()}.00</div>
                 </div>
               </div>
-              <div className="acc-card">
+              <div className="acc-card acc-card--orange">
                 <div className="acc-card-icon orange">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                 </div>
@@ -304,7 +304,7 @@ function Finance() {
                   <div className="acc-card-value">{accSummary.remaining < 0 ? '-' : ''}${Math.abs(accSummary.remaining).toLocaleString()}.00</div>
                 </div>
               </div>
-              <div className="acc-card">
+              <div className="acc-card acc-card--purple">
                 <div className="acc-card-icon purple">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 </div>

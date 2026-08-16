@@ -202,10 +202,10 @@
 
 .attendance-cell.present{ background: var(--mint-pale); border-color: var(--mint); }
 .attendance-cell.present .attendance-status{ color: var(--mint-dark); }
-.attendance-cell.absent{ background:#FDECEA; border-color:#F5C2BE; }
-.attendance-cell.absent .attendance-status{ color:#C0392B; }
-.attendance-cell.late{ background:#FFF7E0; border-color:#F0D68A; }
-.attendance-cell.late .attendance-status{ color:#C99A1F; }
+.attendance-cell.absent{ background:var(--danger-bg); border-color:var(--danger-border); }
+.attendance-cell.absent .attendance-status{ color:var(--danger-dark); }
+.attendance-cell.late{ background:var(--warning-bg); border-color:var(--warning-border); }
+.attendance-cell.late .attendance-status{ color:var(--warning); }
 
 @media (max-width: 640px){
   .spm-grid{ grid-template-columns: 1fr; }

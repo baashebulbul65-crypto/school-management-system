@@ -221,8 +221,8 @@
   background: currentColor;
 }
 .badge-success{ background: var(--mint-pale); color: var(--mint-dark); }
-.badge-warning{ background:#FFF7E0; color:#C99A1F; }
-.badge-danger{ background:#FDECEA; color:#E5533F; }
+.badge-warning{ background:var(--warning-bg); color:var(--warning); }
+.badge-danger{ background:var(--danger-bg); color:var(--danger); }
 .badge-neutral{ background:#F1F4F6; color:#64748A; }
 
 /* ===== ROW ACTIONS ===== */

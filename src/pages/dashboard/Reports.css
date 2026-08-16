@@ -18,13 +18,17 @@
 }
 .rep-metric-card{
   background: #fff;
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
   border-radius: 14px;
   padding: 18px 20px;
   display: flex;
   align-items: center;
   gap: 14px;
 }
+.rep-metric-card.blue{ border-color: var(--blue-border); }
+.rep-metric-card.green{ border-color: var(--mint-border); }
+.rep-metric-card.teal{ border-color: var(--teal-border); }
+.rep-metric-card.purple{ border-color: var(--purple-border); }
 .rep-metric-icon{
   width: 44px; height: 44px;
   border-radius: 12px;
@@ -32,10 +36,10 @@
   flex-shrink: 0;
 }
 .rep-metric-icon svg{ width: 20px; height: 20px; }
-.rep-metric-icon.blue{ background: #E8F1FE; color: #2563EB; }
+.rep-metric-icon.blue{ background: var(--blue-bg); color: var(--blue); }
 .rep-metric-icon.green{ background: var(--mint-pale); color: var(--mint-dark); }
-.rep-metric-icon.teal{ background: #E6F7F6; color: #0D9488; }
-.rep-metric-icon.purple{ background: #F3E8FD; color: #9333EA; }
+.rep-metric-icon.teal{ background: var(--teal-bg); color: var(--teal); }
+.rep-metric-icon.purple{ background: var(--purple-bg); color: var(--purple); }
 .rep-metric-value{
   display: block;
   font-family: 'Poppins', sans-serif;
@@ -44,7 +48,7 @@
   color: var(--navy);
 }
 .rep-metric-value.success{ color: var(--mint-dark); }
-.rep-metric-value.danger{ color: #C0392B; }
+.rep-metric-value.danger{ color: var(--danger-dark); }
 .rep-metric-label{
   display: block;
   font-size: 12px;
@@ -75,10 +79,10 @@
 .rep-bar-label{ font-size: 12.5px; font-weight: 600; color: var(--navy); }
 .rep-bar-track{ height: 9px; background: #F1F4F6; border-radius: 999px; overflow: hidden; }
 .rep-bar-fill{ height: 100%; border-radius: 999px; transition: width 0.4s ease; }
-.rep-bar-fill.blue{ background: linear-gradient(90deg, #60A5FA, #2563EB); }
+.rep-bar-fill.blue{ background: linear-gradient(90deg, var(--blue-light), var(--blue)); }
 .rep-bar-fill.green{ background: linear-gradient(90deg, var(--mint), var(--mint-dark)); }
-.rep-bar-fill.orange{ background: linear-gradient(90deg, #FBBF24, #D97706); }
-.rep-bar-fill.red{ background: linear-gradient(90deg, #F87171, #C0392B); }
+.rep-bar-fill.orange{ background: linear-gradient(90deg, var(--orange-light), var(--orange)); }
+.rep-bar-fill.red{ background: linear-gradient(90deg, var(--danger-light), var(--danger-dark)); }
 .rep-bar-value{ font-size: 12px; font-weight: 700; color: var(--navy); text-align: right; }
 
 /* Attendance trend vertical bar chart */
@@ -140,8 +144,8 @@
 .rep-net-banner strong{ font-family: 'Poppins', sans-serif; font-size: 16px; }
 .rep-net-banner.positive{ background: var(--mint-pale); }
 .rep-net-banner.positive strong{ color: var(--mint-dark); }
-.rep-net-banner.negative{ background: #FDECEA; }
-.rep-net-banner.negative strong{ color: #C0392B; }
+.rep-net-banner.negative{ background: var(--danger-bg); }
+.rep-net-banner.negative strong{ color: var(--danger-dark); }
 
 /* Leaderboard */
 .rep-leaderboard{ display: flex; flex-direction: column; gap: 10px; }
@@ -191,4 +195,15 @@
   .rep-grid-2col{ grid-template-columns: 1fr; }
   .page-header{ flex-direction: column; align-items: flex-start; gap: 12px; }
   .rep-header-actions{ width: 100%; }
+}
+
+/* Mobile audit (2026-08-16): .rep-metrics-grid ma lahayn hal @media —
+   220px min waxay ka dhigaysay hal column shaashado <456px. */
+@media (max-width: 640px){
+  .rep-metrics-grid{ grid-template-columns: repeat(2, 1fr); gap:12px; }
+  .rep-metric-card{ padding:12px 14px; gap:10px; }
+  .rep-metric-icon{ width:32px; height:32px; border-radius:9px; }
+  .rep-metric-icon svg{ width:15px; height:15px; }
+  .rep-metric-value{ font-size:15px; }
+  .rep-metric-label{ font-size:10px; }
 }

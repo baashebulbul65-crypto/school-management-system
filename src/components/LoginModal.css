@@ -47,7 +47,7 @@
     cursor:pointer; flex-shrink:0; position:relative; z-index:1;
     transition: transform 0.2s ease, background 0.2s ease;
   }
-  .close-btn:hover{ transform: rotate(90deg) scale(1.05); background:#E5533F; }
+  .close-btn:hover{ transform: rotate(90deg) scale(1.05); background:var(--danger); }
   .close-btn svg{ width:15px; height:15px; stroke:#fff; stroke-width:2.6; }
   .modal-body{ padding:22px 26px 24px; }
   .segmented{
@@ -110,9 +110,9 @@
 
 
 .form-error{
-  background: #FDECEA;
-  border: 1px solid #F5C2BE;
-  color: #C0392B;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger-dark);
   font-size: 13px;
   font-weight: 500;
   padding: 12px 14px;

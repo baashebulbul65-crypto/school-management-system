@@ -28,7 +28,7 @@
   animation: toastIn 0.2s ease;
 }
 
-.toast-item.error { background: #C0392B; }
+.toast-item.error { background: var(--danger-dark); }
 .toast-item.success { background: #1E9E6B; }
 
 .toast-close {

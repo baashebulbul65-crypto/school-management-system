@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import './Navbar.css';
 
 function Navbar({ onOpenLogin }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <div className="navbar-outer">
       <nav className="navbar">
@@ -25,8 +29,28 @@ function Navbar({ onOpenLogin }) {
           <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
 
-        <button className="hamburger"><span></span><span></span><span></span></button>
+        <button
+          className={`hamburger${menuOpen ? ' open' : ''}`}
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label="Menu"
+          aria-expanded={menuOpen}
+        >
+          <span></span><span></span><span></span>
+        </button>
       </nav>
+
+      {menuOpen && (
+        <div className="mobile-menu">
+          <a href="#home" onClick={closeMenu}>Guriga</a>
+          <a href="#about" onClick={closeMenu}>Ku Saabsan</a>
+          <a href="#pricing" onClick={closeMenu}>Qiimaha</a>
+          <a href="#contact" onClick={closeMenu}>Nala Soo Xiriir</a>
+          <button className="cta-btn" onClick={() => { closeMenu(); onOpenLogin(); }}>
+            Gal Akoonkaaga
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

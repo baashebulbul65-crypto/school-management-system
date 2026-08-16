@@ -68,7 +68,7 @@
 .asm-avatar{
   width:38px; height:38px;
   border-radius:10px;
-  background: linear-gradient(135deg, #F5877F, #E5533F);
+  background: linear-gradient(135deg, var(--danger-soft), var(--danger));
   color:#fff;
   display:flex; align-items:center; justify-content:center;
   font-family:'Poppins', sans-serif;

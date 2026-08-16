@@ -7,7 +7,7 @@ import StaffMemberFormModal from './StaffMemberFormModal';
 import '../../styles/dashboard-shared.css';
 import './Attendance.css';
 
-const VALUE_CLS = { present: 'success', absent: 'danger', late: 'warning', leave: 'warning', sick: 'danger' };
+const VALUE_CLS = { present: 'success', absent: 'danger', late: 'warning', leave: 'warning' };
 
 const PERIOD_DAYS = { weekly: 7, monthly: 30, yearly: 365 };
 
@@ -75,14 +75,13 @@ function Attendance() {
     { id: 'yearly', label: t('attendance.periods.yearly') },
   ];
 
-  // Ardayda hadda waxay leeyihiin 4 xaalado (Joog/Maqan/Fasax/Buka), Macallimiinta iyo
+  // Ardayda hadda waxay leeyihiin 3 xaalado (Joog/Maqan/Fasax), Macallimiinta iyo
   // Shaqaalaha waxay wali isticmaalaan 3-da xaalado ee hore (Joog/Maqan/Daahid).
   const STATUS_DEFS = {
     students: [
       { key: 'present', label: t('common.present') },
       { key: 'absent', label: t('common.absent') },
       { key: 'leave', label: t('common.leave') },
-      { key: 'sick', label: t('common.sick') },
     ],
     teachers: [
       { key: 'present', label: t('common.present') },
@@ -148,7 +147,7 @@ function Attendance() {
     ? { ...todayCounts, rate: todayCounts.total ? Math.round((todayCounts.present / todayCounts.total) * 100) : 0 }
     : computePeriodStats(periodRecords, statusDefs.map((d) => d.key), PERIOD_DAYS[period]);
 
-  // Xaaladda xaadiriska ARDAYDA (Joog/Maqan/Fasax/Buka) waa in ay ka dhacdo
+  // Xaaladda xaadiriska ARDAYDA (Joog/Maqan/Fasax) waa in ay ka dhacdo
   // KALIYA ClassWorkspace.jsx tab-ka Xaadiris (fiiri README) — halkan
   // (bogga "Xaadiris" ee guud) waa akhris-kaliya ardayda, sidaas darteed
   // handleMark-ku kaliya wuxuu u shaqeeyaa macallimiinta/shaqaalaha.
@@ -308,12 +307,12 @@ function Attendance() {
 
         <div className="att-report-grid">
           {statusDefs.map((def) => (
-            <div className="att-report-stat" key={def.key}>
+            <div className={`att-report-stat ${def.key}`} key={def.key}>
               <span className={`att-report-value ${VALUE_CLS[def.key]}`}>{stats[def.key] ?? 0}</span>
               <span className="att-report-label">{def.label}</span>
             </div>
           ))}
-          <div className="att-report-stat">
+          <div className="att-report-stat total">
             <span className="att-report-value">{stats.total}</span>
             <span className="att-report-label">{t('attendance.total')}</span>
           </div>

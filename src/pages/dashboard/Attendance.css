@@ -49,13 +49,12 @@
 }
 .att-summary-card{
   background: #fff;
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
   border-radius: 14px;
   padding: 18px 20px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  border-inline-start: 4px solid var(--line);
 }
 .att-summary-value{
   font-family: 'Poppins', sans-serif;
@@ -68,12 +67,11 @@
   color: var(--grey-text);
   font-weight: 600;
 }
-.att-summary-card.present{ border-inline-start-color: var(--mint); }
-.att-summary-card.absent{ border-inline-start-color: #E5533F; }
-.att-summary-card.late{ border-inline-start-color: #E8B93B; }
-.att-summary-card.leave{ border-inline-start-color: #C99A1F; }
-.att-summary-card.sick{ border-inline-start-color: #9333EA; }
-.att-summary-card.total{ border-inline-start-color: var(--navy); }
+.att-summary-card.present{ border-color: var(--mint-border); }
+.att-summary-card.absent{ border-color: var(--danger-border); }
+.att-summary-card.late{ border-color: var(--amber-border); }
+.att-summary-card.leave{ border-color: var(--warning-border); }
+.att-summary-card.total{ border-color: var(--navy-border); }
 
 /* Card head */
 .att-card-head{
@@ -107,10 +105,9 @@
 }
 .att-status-btn:hover{ transform: translateY(-1px); }
 .att-status-btn.present{ background: var(--mint-pale); color: var(--mint-dark); }
-.att-status-btn.absent{ background: #FDECEA; color: #C0392B; }
-.att-status-btn.late{ background: #FFF7E0; color: #C99A1F; }
-.att-status-btn.leave{ background: #FFF7E0; color: #C99A1F; }
-.att-status-btn.sick{ background: #F3E8FD; color: #9333EA; }
+.att-status-btn.absent{ background: var(--danger-bg); color: var(--danger-dark); }
+.att-status-btn.late{ background: var(--warning-bg); color: var(--warning); }
+.att-status-btn.leave{ background: var(--warning-bg); color: var(--warning); }
 .att-status-btn.neutral{ background: #EEF1F4; color: #64748B; }
 
 /* Ardayda bogga "Xaadiris" ee guud (Attendance.jsx) waa akhris-kaliya —
@@ -119,7 +116,7 @@
 span.att-status-btn{ cursor: default; }
 span.att-status-btn:hover{ transform: none; }
 
-/* Group of quick-action buttons (Students: Joog/Maqan/Fasax/Buka) */
+/* Group of quick-action buttons (Students: Joog/Maqan/Fasax) */
 .att-status-btn-group{
   display: flex;
   flex-wrap: wrap;
@@ -157,13 +154,22 @@ span.att-status-btn:hover{ transform: none; }
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  align-items: end;
+  align-items: stretch;
 }
 .att-report-stat{
   display: flex;
   flex-direction: column;
   gap: 4px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
 }
+.att-report-stat.present{ border-color: var(--mint-border); }
+.att-report-stat.absent{ border-color: var(--danger-border); }
+.att-report-stat.late{ border-color: var(--amber-border); }
+.att-report-stat.leave{ border-color: var(--warning-border); }
+.att-report-stat.total{ border-color: var(--navy-border); }
 .att-report-value{
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
@@ -171,8 +177,8 @@ span.att-status-btn:hover{ transform: none; }
   color: var(--navy);
 }
 .att-report-value.success{ color: var(--mint-dark); }
-.att-report-value.danger{ color: #C0392B; }
-.att-report-value.warning{ color: #C99A1F; }
+.att-report-value.danger{ color: var(--danger-dark); }
+.att-report-value.warning{ color: var(--warning); }
 .att-report-label{
   font-size: 12px;
   color: var(--grey-text);

@@ -244,14 +244,14 @@
 .pp-att-status{ font-size: 9.5px; font-weight: 600; color: #64748A; }
 .pp-att-cell.present{ background: #E6FBF3; border-color: #16C784; }
 .pp-att-cell.present .pp-att-status{ color: #0FA86D; }
-.pp-att-cell.absent{ background: #FDECEA; border-color: #F5C2BE; }
-.pp-att-cell.absent .pp-att-status{ color: #C0392B; }
-.pp-att-cell.late{ background: #FFF7E0; border-color: #F0D68A; }
-.pp-att-cell.late .pp-att-status{ color: #C99A1F; }
-.pp-att-cell.leave{ background: #FFF7E0; border-color: #F0D68A; }
-.pp-att-cell.leave .pp-att-status{ color: #C99A1F; }
-.pp-att-cell.sick{ background: #F3E8FD; border-color: #E0C3FA; }
-.pp-att-cell.sick .pp-att-status{ color: #9333EA; }
+.pp-att-cell.absent{ background: var(--danger-bg); border-color: var(--danger-border); }
+.pp-att-cell.absent .pp-att-status{ color: var(--danger-dark); }
+.pp-att-cell.late{ background: var(--warning-bg); border-color: var(--warning-border); }
+.pp-att-cell.late .pp-att-status{ color: var(--warning); }
+.pp-att-cell.leave{ background: var(--warning-bg); border-color: var(--warning-border); }
+.pp-att-cell.leave .pp-att-status{ color: var(--warning); }
+.pp-att-cell.sick{ background: var(--purple-bg); border-color: var(--purple-border); }
+.pp-att-cell.sick .pp-att-status{ color: var(--purple); }
 
 .pp-empty-note{
   color: #94A3B8;

@@ -133,9 +133,9 @@
 }
 .ufm-header p{ font-size:12.5px; color: rgba(255,255,255,0.6); }
 .ufm-error{
-  background: #FDECEA;
-  border: 1px solid #F5C2BE;
-  color: #C0392B;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger-dark);
   font-size: 13px;
   font-weight: 500;
   padding: 12px 14px;

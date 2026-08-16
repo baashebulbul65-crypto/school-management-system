@@ -7,9 +7,9 @@
   border-radius: 999px;
 }
 .users-role-badge.navy{ background: #E9EDF0; color: var(--navy); }
-.users-role-badge.purple{ background: #F3E8FD; color: #9333EA; }
-.users-role-badge.teal{ background: #E6F7F6; color: #0D9488; }
-.users-role-badge.blue{ background: #E8F1FE; color: #2563EB; }
+.users-role-badge.purple{ background: var(--purple-bg); color: var(--purple); }
+.users-role-badge.teal{ background: var(--teal-bg); color: var(--teal); }
+.users-role-badge.blue{ background: var(--blue-bg); color: var(--blue); }
 .users-role-badge.green{ background: var(--mint-pale); color: var(--mint-dark); }
 
 .users-status-btn{
@@ -23,4 +23,4 @@
 }
 .users-status-btn:hover{ transform: translateY(-1px); }
 .users-status-btn.active{ background: var(--mint-pale); color: var(--mint-dark); }
-.users-status-btn.suspended{ background: #FDECEA; color: #C0392B; }
+.users-status-btn.suspended{ background: var(--danger-bg); color: var(--danger-dark); }

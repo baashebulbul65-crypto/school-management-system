@@ -45,7 +45,6 @@ function ClassWorkspace() {
     { key: 'present', label: t('common.present') },
     { key: 'absent', label: t('common.absent') },
     { key: 'leave', label: t('common.leave') },
-    { key: 'sick', label: t('common.sick') },
   ];
 
   const cls = classes.find((c) => String(c.id) === classId);

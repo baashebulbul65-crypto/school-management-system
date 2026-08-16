@@ -252,7 +252,7 @@ export function SchoolDataProvider({ children }) {
     return unsubscribe;
   }, [profile?.schoolCode, profile?.role, profile?.teacherDocId, todayDate]);
 
-  // Xaaladda xaadiriska ardayga (Joog/Maqan/Fasax/Buka) waa in ay ka dhacdo
+  // Xaaladda xaadiriska ardayga (Joog/Maqan/Fasax) waa in ay ka dhacdo
   // KALIYA gudaha ClassWorkspace.jsx tab-ka Xaadiris, maalinta HADDA ah oo
   // qura (Attendance-scoping audit, 2026-08-03) — Attendance.jsx tab-ka
   // "Ardayda" iyo StudentProfileModal (taariikhda hore) hadda waa akhris-

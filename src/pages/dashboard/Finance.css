@@ -26,20 +26,20 @@
   color: var(--navy);
 }
 .fin-summary-card.income{ border-left-color: var(--mint); }
-.fin-summary-card.expense{ border-left-color: #E5533F; }
-.fin-summary-card.pending{ border-left-color: #E8B93B; }
+.fin-summary-card.expense{ border-left-color: var(--danger); }
+.fin-summary-card.pending{ border-left-color: var(--amber); }
 .fin-summary-card.profit{ border-left-color: var(--mint-dark); }
 .fin-summary-card.profit .fin-summary-value{ color: var(--mint-dark); }
-.fin-summary-card.loss{ border-left-color: #E5533F; }
-.fin-summary-card.loss .fin-summary-value{ color: #C0392B; }
+.fin-summary-card.loss{ border-left-color: var(--danger); }
+.fin-summary-card.loss .fin-summary-value{ color: var(--danger-dark); }
 
 /* Due date alerts */
 .fin-alerts{
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  background: #FFF7E0;
-  border: 1px solid #F0D68A;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
   border-radius: 14px;
   padding: 16px 18px;
   margin-bottom: 20px;
@@ -51,7 +51,7 @@
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.fin-alerts-icon svg{ width: 18px; height: 18px; stroke: #C99A1F; }
+.fin-alerts-icon svg{ width: 18px; height: 18px; stroke: var(--warning); }
 .fin-alerts-text strong{ font-size: 13.5px; color: var(--navy); display: block; margin-bottom: 3px; }
 .fin-alerts-text p{ font-size: 12.5px; color: var(--grey-text); }
 
@@ -162,7 +162,7 @@
 }
 .acc-card{
   background: #fff;
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
   border-radius: 16px;
   padding: 18px 20px;
   display: flex;
@@ -184,16 +184,24 @@
 .acc-card-icon svg{ width: 20px; height: 20px; stroke: currentColor; }
 .acc-card-icon.blue{ background: #EAF0F4; color: var(--navy); }
 .acc-card-icon.green{ background: var(--mint-pale); color: var(--mint-dark); }
-.acc-card-icon.red{ background: #FDECEA; color: #E5533F; }
-.acc-card-icon.teal{ background: #FFF7E0; color: #C99A1F; }
-.acc-card-icon.orange{ background: #FFF1E0; color: #D97706; }
-.acc-card-icon.purple{ background: #F3E8FD; color: #9333EA; }
+.acc-card-icon.red{ background: var(--danger-bg); color: var(--danger); }
+.acc-card-icon.teal{ background: var(--warning-bg); color: var(--warning); }
+.acc-card-icon.orange{ background: var(--orange-bg); color: var(--orange); }
+.acc-card-icon.purple{ background: var(--purple-bg); color: var(--purple); }
+
+/* border midab u dhigma icon-ka gudaha kaadhka (Overview bento pattern-ka isku mid) */
+.acc-card--blue{ border-color: var(--navy-border); }
+.acc-card--green{ border-color: var(--mint-border); }
+.acc-card--red{ border-color: var(--danger-border); }
+.acc-card--teal{ border-color: var(--warning-border); }
+.acc-card--orange{ border-color: var(--orange-border); }
+.acc-card--purple{ border-color: var(--purple-border); }
 
 .acc-card-label{ font-size: 12px; color: var(--grey-text); font-weight: 600; margin-bottom: 5px; }
 .acc-card-value{ font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 21px; color: var(--navy); letter-spacing: -0.3px; }
 .acc-card-value span{ font-size: 12px; font-weight: 600; color: var(--grey-text); letter-spacing: 0; }
 .acc-card-value.success{ color: var(--mint-dark); }
-.acc-card-value.danger{ color: #E5533F; }
+.acc-card-value.danger{ color: var(--danger); }
 
 .acc-side-col{
   display: flex;
@@ -247,7 +255,18 @@
   .acc-summary-cards{ grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 560px){
-  .acc-summary-cards{ grid-template-columns: 1fr; }
+  /* Mobile audit (2026-08-16): hore halkan waxaa ku qornaa "1fr" (hal
+     column) — go'aankaas (2026-08-03) waxaa lagu beddelay: hadda 2 column
+     ayaa la sii wataa, kaadhka lafteeda (.acc-card) ayaa la yareeyay
+     halkii column-ka loo yareyn lahaa (fiiri .acc-card mobile compact). */
+  .acc-summary-cards{ grid-template-columns: repeat(2, 1fr); }
+  .acc-card{ padding:12px 14px; gap:10px; }
+  .acc-card-icon{ width:32px; height:32px; border-radius:9px; }
+  .acc-card-icon svg{ width:15px; height:15px; }
+  .acc-card-label{ font-size:10px; margin-bottom:3px; }
+  .acc-card-value{ font-size:15px; }
+  .acc-card-value span{ font-size:10px; }
+
   /* Mobile audit (2026-08-03, MEDIUM #2): hore halkan waxaa ku qornaa
      "repeat(3, 1fr)" oo isku mid ah qiimaha asalka ah (goobta 227 kore) —
      macnaheedu wuxuu ahaa in 5 shay (Fasalo/Arday/L.Bixisa/Q.Dhimis/Bilaash)
@@ -258,7 +277,7 @@
 /* Xisaabaadka table — clickable rows + total footer */
 .acc-row-clickable{ cursor: pointer; transition: background 0.15s ease; }
 .acc-row-clickable:hover{ background: #F7F9FA; }
-.acc-baaqi-owed{ color: #E5533F; font-weight: 700; }
+.acc-baaqi-owed{ color: var(--danger); font-weight: 700; }
 .acc-total-row{ background: #EAF1FB; font-weight: 700; }
 .acc-total-row td{ color: var(--navy); border-top: 2px solid var(--line); }
 

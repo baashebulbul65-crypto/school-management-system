@@ -7,7 +7,7 @@
 
 .class-card{
   background:#fff;
-  border:1px solid var(--line);
+  border:1.5px solid var(--mint-border);
   border-radius:16px;
   padding:22px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -79,4 +79,25 @@
 .class-open-btn{
   width:100%;
   justify-content:center;
+}
+
+/* Mobile audit (2026-08-16): .classes-grid ma lahayn hal @media — 260px min
+   waxay ka dhigaysay hal column shaashado <540px, kaadhku dherer buu ahaa,
+   sidaas darteed "hal fasal kaliya" ayaa la arki jiray meel bannaan la'aan
+   scroll. Halkan waxaa lagu qasbayaa 2 column + kaadh compact ah. */
+@media (max-width: 640px){
+  .classes-grid{ grid-template-columns: repeat(2, 1fr); gap:12px; }
+  .class-card{ padding:14px; border-radius:14px; }
+  .class-card-top{ margin-bottom:10px; }
+  .class-card-icon{ width:32px; height:32px; border-radius:9px; }
+  .class-card-icon svg{ width:15px; height:15px; }
+  .class-card h3{ font-size:13.5px; margin-bottom:2px; }
+  .class-room{ font-size:10.5px; margin-bottom:1px; }
+  .class-teacher{ font-size:11px; margin-bottom:10px; }
+  .class-subjects{ gap:4px; margin-bottom:10px; }
+  .class-subject-tag{ font-size:9.5px; padding:3px 8px; }
+  .class-progress{ gap:6px; margin-bottom:12px; }
+  .class-progress span{ font-size:10px; }
+  .class-open-btn{ padding:9px 10px; font-size:11.5px; gap:4px; }
+  .class-open-btn svg{ width:13px; height:13px; }
 }

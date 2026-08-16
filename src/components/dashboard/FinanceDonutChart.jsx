@@ -4,8 +4,8 @@ import './AttendanceDonutChart.css';
 
 const SEGMENT_COLORS = [
   { key: 'paid', color: '#16C784' },
-  { key: 'due', color: '#E5533F' },
-  { key: 'discount', color: '#C99A1F' },
+  { key: 'due', color: 'var(--danger)' },
+  { key: 'discount', color: 'var(--warning)' },
 ];
 
 function FinanceDonutChart({ paid, due, discount, centerValue, centerLabel }) {

@@ -1,14 +1,35 @@
 .stat-card{
   background:#fff;
-  border:1px solid var(--line);
+  border:1.5px solid var(--line);
   border-radius:16px;
   padding:22px 22px 20px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display:flex;
+  flex-direction:column;
+  height:100%;
 }
 .stat-card:hover{
   transform: translateY(-3px);
   box-shadow: 0 16px 32px -16px rgba(11,31,43,0.14);
 }
+
+/* ===== BENTO: featured/large variant (Overview page) ===== */
+.stat-card--lg{
+  padding:28px 28px 26px;
+  justify-content:center;
+  border-radius:20px;
+}
+.stat-card--lg .stat-card-top{ margin-bottom:24px; }
+.stat-card--lg .stat-icon{
+  width:60px; height:60px;
+  border-radius:16px;
+}
+.stat-card--lg .stat-icon svg{ width:28px; height:28px; }
+.stat-card--lg .stat-value{
+  font-size:44px;
+  margin-bottom:6px;
+}
+.stat-card--lg .stat-label{ font-size:14.5px; }
 
 .stat-card-top{
   display:flex;
@@ -26,15 +47,23 @@
 
 .accent-mint .stat-icon{ background: var(--mint-pale); }
 .accent-mint .stat-icon svg{ stroke: var(--mint-dark); }
+.accent-mint{ border-color: var(--mint-border); }
 
 .accent-navy .stat-icon{ background:#EAF0F4; }
 .accent-navy .stat-icon svg{ stroke: var(--navy); }
+.accent-navy{ border-color: var(--navy-border); }
 
-.accent-coral .stat-icon{ background:#FDECEA; }
-.accent-coral .stat-icon svg{ stroke:#E5533F; }
+.accent-coral .stat-icon{ background:var(--danger-bg); }
+.accent-coral .stat-icon svg{ stroke:var(--danger); }
+.accent-coral{ border-color: var(--danger-border); }
 
-.accent-gold .stat-icon{ background:#FFF7E0; }
-.accent-gold .stat-icon svg{ stroke:#C99A1F; }
+.accent-gold .stat-icon{ background:var(--warning-bg); }
+.accent-gold .stat-icon svg{ stroke:var(--warning); }
+.accent-gold{ border-color: var(--warning-border); }
+
+.accent-blue .stat-icon{ background: var(--blue-bg); }
+.accent-blue .stat-icon svg{ stroke: var(--blue); }
+.accent-blue{ border-color: var(--blue-border); }
 
 .stat-change{
   display:flex;
@@ -47,7 +76,7 @@
 }
 .stat-change svg{ width:12px; height:12px; }
 .stat-change.up{ background: var(--mint-pale); color: var(--mint-dark); }
-.stat-change.down{ background:#FDECEA; color:#E5533F; }
+.stat-change.down{ background:var(--danger-bg); color:var(--danger); }
 
 .stat-value{
   font-family:'Poppins', sans-serif;
@@ -79,4 +108,25 @@
   font-size:12.5px;
   font-weight:700;
   color: var(--mint-dark);
+}
+
+/* Mobile audit (2026-08-16): kaadhadhku desktop-ka ka dambeeyeen isla
+   padding/icon/font-size-ka mobile-ka, taasoo ka dhigaysay "list dherer ah"
+   xitaa 2-column grid-ka gudihiisa. Halkan waa compact-variant-ka mobile. */
+@media (max-width: 640px){
+  .stat-card{ padding:14px 14px 12px; border-radius:14px; }
+  .stat-card-top{ margin-bottom:10px; }
+  .stat-icon{ width:34px; height:34px; border-radius:10px; }
+  .stat-icon svg{ width:16px; height:16px; }
+  .stat-value{ font-size:19px; }
+  .stat-label{ font-size:11px; }
+  .stat-change{ font-size:10.5px; padding:3px 6px; }
+  .stat-card-action{ font-size:11px; margin-top:8px; }
+
+  .stat-card--lg{ padding:14px 16px; border-radius:14px; }
+  .stat-card--lg .stat-card-top{ margin-bottom:8px; }
+  .stat-card--lg .stat-icon{ width:40px; height:40px; border-radius:12px; }
+  .stat-card--lg .stat-icon svg{ width:19px; height:19px; }
+  .stat-card--lg .stat-value{ font-size:25px; margin-bottom:2px; }
+  .stat-card--lg .stat-label{ font-size:11.5px; }
 }
