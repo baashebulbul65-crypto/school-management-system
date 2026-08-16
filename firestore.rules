@@ -137,22 +137,6 @@ service cloud.firestore {
         || (isOwnerStaffOf(resource.data.schoolCode) && resource.data.accountType == 'staff'
             && request.resource.data.schoolCode == resource.data.schoolCode
             && request.resource.data.accountType == resource.data.accountType)
-        // KU MEEL GAADH AH (2026-08-16, role-backfill audit): doc-yo hore loo
-        // abuuray (ka hor "role" la darin handleSaveUser) waxay leeyihiin
-        // "title" kaliya, ma laha "role" — RequireRole.jsx wuxuu xannibaa
-        // owner-ka doc-kaas leh Finance/Reports/Users/Trash (bootstrap
-        // deadlock: isOwnerStaffOf-na waxay u baahan tahay ROLE-KIISA HADDA,
-        // sidaas darteed lama qori karo "role"-kiisa naftiisa via qaybta kore
-        // ee self-update, kaas oo kaliya u ogolaanaya childrenIds). Halkan
-        // waxaa loo ogolaanayaa isticmaale inuu naftiisa ku daro "role" KALIYA
-        // haddii uu weli maqan yahay — ma bedeli karo mid horeba jira (ma aha
-        // privilege-escalation), midna ma taaban karo field kale. TIRTIR
-        // qaybtan marka backfill-ka dhammaan schools-ka la dhammaystiro.
-        || (request.auth.uid == userId
-            && resource.data.accountType == 'staff'
-            && !('role' in resource.data)
-            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role'])
-            && request.resource.data.role in ['owner', 'teacher'])
       );
       // Ma tirtiro Firebase Auth account-ka (SDK-ga browser-ku uma oggola —
       // waa loo baahan yahay Admin SDK/backend), laakiin tirtiridda doc-kan

@@ -10,7 +10,6 @@ import { currentMonthValue } from '../../utils/somaliDate';
 import StatCard from '../../components/dashboard/StatCard';
 import AbsentStudentsModal from '../../components/dashboard/AbsentStudentsModal';
 import AttendanceDonutChart from '../../components/dashboard/AttendanceDonutChart';
-import DebugPanel from '../../components/dashboard/DebugPanel';
 import '../../styles/dashboard-shared.css';
 import './Overview.css';
 
@@ -136,7 +135,6 @@ function Overview() {
 
   return (
     <div>
-      <DebugPanel />
       <div className="dash-card overview-header">
         <div className="overview-header-left">
           {settings.school.logo ? (
