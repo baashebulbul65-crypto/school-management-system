@@ -84,6 +84,14 @@
   gap:14px;
 }
 
+.overview-header-text{
+  /* flex child, si magaca dugsiga (RTL/Carabi oo dheer) uu si sax ah ugu
+     jabo (wrap) halkii uu container-ka ka baxsan lahaa (overflow) — flex
+     items default-kooda "min-width:auto" ma oggola shrink-ka */
+  min-width:0;
+  flex:1;
+}
+
 .overview-header-logo{
   width:48px; height:48px;
   border-radius:14px;
@@ -109,6 +117,9 @@
 .overview-header-left p{
   font-size:13.5px;
   color: var(--grey-text);
+}
+.overview-header-schoolname{
+  overflow-wrap: anywhere;
 }
 
 .overview-header-actions{

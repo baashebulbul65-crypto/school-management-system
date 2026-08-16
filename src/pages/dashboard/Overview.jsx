@@ -144,9 +144,11 @@ function Overview() {
               {settings.school.name?.slice(0, 2).toUpperCase() || 'XX'}
             </div>
           )}
-          <div>
+          <div className="overview-header-text">
             <h2>{t(getGreetingKey(), { name: adminName })}</h2>
-            <p>{todayLabel} · {settings.school.name}</p>
+            <p>
+              <span>{todayLabel}</span> · <span className="overview-header-schoolname" dir="auto">{settings.school.name}</span>
+            </p>
           </div>
         </div>
 
