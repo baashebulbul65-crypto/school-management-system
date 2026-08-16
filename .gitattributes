@@ -1,0 +1,28 @@
+# Force consistent LF line endings in the repository regardless of OS/editor,
+# so files don't show as "modified" purely from CRLF/LF churn (Windows
+# editors/tools vs. the LF history already committed).
+* text=auto eol=lf
+
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.rules text eol=lf
+*.svg text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Binary files — never touch line endings.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
