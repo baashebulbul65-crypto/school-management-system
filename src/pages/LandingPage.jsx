@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
@@ -13,7 +13,20 @@ import LoginModal from '../components/LoginModal';
 
 function LandingPage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [prefillEmail, setPrefillEmail] = useState('');
   const navigate = useNavigate();
+
+  // Deep link WhatsApp-ka macallinka soo dhaweynta ah (Users.jsx) —
+  // ?email=... si toos ah u furta LoginModal-ka staff mode-ka isagoo
+  // email-ka soo buuxinaya, si macallinku uusan u qorin gacan ahaan.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const emailParam = params.get('email');
+    if (emailParam) {
+      setPrefillEmail(emailParam);
+      setIsLoginOpen(true);
+    }
+  }, []);
 
   const handleLoginSuccess = ({ profile } = {}) => {
     // Waalid/Arday -> Parent Portal, Admin/Macallin -> Dashboard-ka Maamulka
@@ -39,6 +52,7 @@ function LandingPage() {
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
         onLoginSuccess={handleLoginSuccess}
+        initialEmail={prefillEmail}
       />
     </>
   );

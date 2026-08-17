@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { loginStaff, loginStudentOrParent, registerStudentOrParent, getUserProfile } from '../firebase/auth';
 import ForgotPasswordModal from './ForgotPasswordModal';
@@ -15,7 +15,7 @@ const ERROR_KEYS = {
   ACCOUNT_LA_JOOJIYAY: 'accountSuspended',
 };
 
-function LoginModal({ isOpen, onClose, onLoginSuccess }) {
+function LoginModal({ isOpen, onClose, onLoginSuccess, initialEmail = '' }) {
   const { t } = useTranslation();
   const [mode, setMode] = useState('staff'); // 'staff' | 'student' | 'register'
   const [role, setRole] = useState('arday'); // 'arday' | 'waalid'
@@ -24,8 +24,20 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const [showForgotModal, setShowForgotModal] = useState(false);
 
   // Staff fields
-  const [staffEmail, setStaffEmail] = useState('');
+  const [staffEmail, setStaffEmail] = useState(initialEmail);
   const [staffPassword, setStaffPassword] = useState('');
+
+  // Deep link WhatsApp-ka (LandingPage.jsx: ?email=...) — useState(initialEmail)
+  // kaliya wuxuu qabtaa qiimaha markii FIICAN ee component-ku mount sameeyo
+  // (LoginModal had ma "unmount" garayo marka isOpen beddesho, "if (!isOpen)
+  // return null" ayaa la isticmaalaa — sidaas darteed useEffect ayaa loo
+  // baahan yahay si loo hubiyo email-ka marka initialEmail dib loo qabto).
+  useEffect(() => {
+    if (initialEmail) {
+      setStaffEmail(initialEmail);
+      setMode('staff');
+    }
+  }, [initialEmail]);
 
   // Student/Parent fields
   const [schoolCode, setSchoolCode] = useState('');

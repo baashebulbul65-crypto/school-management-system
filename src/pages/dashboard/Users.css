@@ -1,3 +1,47 @@
+.users-whatsapp-banner{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  background:#F0FDF4;
+  border:1.5px solid #86EFAC;
+  border-radius:14px;
+  padding:16px 20px;
+  margin-bottom:24px;
+  flex-wrap:wrap;
+}
+.users-whatsapp-banner-icon{
+  width:40px; height:40px;
+  border-radius:10px;
+  background:#25D366;
+  color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.users-whatsapp-banner-icon svg{ width:20px; height:20px; }
+.users-whatsapp-banner-text{ flex:1; min-width:200px; }
+.users-whatsapp-banner-text strong{
+  display:block;
+  font-size:14.5px;
+  color: var(--navy);
+  margin-bottom:2px;
+}
+.users-whatsapp-banner-text p{
+  font-size:13px;
+  color: var(--grey-text);
+}
+.users-whatsapp-banner-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0;
+}
+.users-whatsapp-banner-actions a.btn-primary{
+  background:#25D366;
+  text-decoration:none;
+}
+.users-whatsapp-banner-actions a.btn-primary:hover{ background:#1EBE5A; }
+.users-whatsapp-banner-actions a.btn-primary svg{ stroke:#fff; }
+
 .users-role-badge{
   display: inline-flex;
   align-items: center;

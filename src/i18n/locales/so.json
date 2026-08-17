@@ -125,6 +125,8 @@
         "parentName": "Magaca Waalidka", "relation": "Xiriirka", "parentPhone": "Telefoonka Waalidka",
         "className": "Fasalka", "section": "Qaybta (Section)", "rollNumber": "Roll Number", "subjectsSection": "Maadooyinka"
       },
+      "whatsappParent": "La Xiriir WhatsApp",
+      "whatsappParentMessage": "Salaan {{parentName}}, waxaan kula xiriirayaa ku saabsan ardaygaaga {{studentName}} ee dugsiga {{schoolName}}.",
       "attendanceNote": "Akhris-kaliya — diiwaanka imaanshaha maalinlaha ah. Waxaa laga calaamadiyaa bogga \"Fasalladayda\" tab-ka Xaadiris.",
       "noAttendance": "Weli imaansho ma jiro.",
       "table": { "subject": "Maadada", "marks": "Buundooyinka", "grade": "Darajada", "month": "Bisha", "amount": "Qadarka", "date": "Taariikhda" },
@@ -234,6 +236,14 @@
       "submitting": "...",
       "submitEdit": "Kaydi Isbeddelka",
       "submitAdd": "Ku Dar Shaqaalaha"
+    },
+    "whatsappWelcome": {
+      "title": "Macallinka waa la daray ✅",
+      "subtitle": "Fariin soo dhaweyn ah oo leh macluumaadka akoonka ayaa diyaar u ah in WhatsApp lagu diro {{name}}.",
+      "button": "Fur WhatsApp oo Dir Fariinta",
+      "noPhone": "Macallinkan lambar telefoon kuma jiro diiwaanka Macallimiinta (bogga \"Macallimiinta\") — fariinta WhatsApp lama diyaarin karo. Ku dar lambarka, kadibna dib u eeg shaqaalahan.",
+      "dismiss": "Xir",
+      "message": "Salaan {{name}},\n\nWaad ku soo dhawoow dugsiga {{schoolName}}!\n\nAkoonkaaga:\nEmail: {{email}}\nPassword-ka bilowga ah: {{password}}\n\n⚠️ FADLAN: isla markaad gasho, beddel password-kan (Settings > Akoonkayga).\n\nKu gal halkan: {{loginLink}}"
     }
   },
   "classes": {

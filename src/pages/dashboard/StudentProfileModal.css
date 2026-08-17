@@ -139,6 +139,25 @@
   font-weight:600;
   color: var(--navy);
 }
+.spm-info-value-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.spm-whatsapp-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:26px;
+  height:26px;
+  border-radius:8px;
+  background:#25D366;
+  color:#fff;
+  flex-shrink:0;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.spm-whatsapp-btn:hover{ background:#1EBE5A; transform: translateY(-1px); }
+.spm-whatsapp-btn svg{ width:15px; height:15px; }
 .spm-divider{
   grid-column: 1 / -1;
   font-size:12px;
