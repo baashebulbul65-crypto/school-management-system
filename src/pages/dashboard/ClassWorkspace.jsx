@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { todayISODate, formatDMY } from '../../utils/somaliDate';
 import QuranTargetFormModal from './QuranTargetFormModal';
+import StudentFormModal from './StudentFormModal';
 import '../../styles/dashboard-shared.css';
 import './Attendance.css';
 import './Exams.css';
@@ -24,7 +25,7 @@ function ClassWorkspace() {
   const {
     classes, students, teachers, exams, examMarks, attendanceToday, setStudentAttendanceStatus, updateExamMark,
     quranProgressToday, setQuranProgress,
-    quranTargets, saveQuranTarget, recordQuranTargetOutcome,
+    quranTargets, saveQuranTarget, recordQuranTargetOutcome, addStudent,
   } = useSchoolData();
   const [activeTab, setActiveTab] = useState('roster');
   const [selectedExamId, setSelectedExamId] = useState(null);
@@ -32,6 +33,12 @@ function ClassWorkspace() {
   const [surahInput, setSurahInput] = useState('');
   const [targetModalStudent, setTargetModalStudent] = useState(null);
   const [dismissedPromptIds, setDismissedPromptIds] = useState([]);
+  const [showAddStudentModal, setShowAddStudentModal] = useState(false);
+
+  // "Ku Dar Arday Cusub" gudaha ClassWorkspace waa owner-kaliya — isla
+  // xayiraadda Students.jsx ("Ku Dar Arday" isOwner) iyo firestore.rules
+  // (students create: isOwnerStaffOf kaliya, macallinku ma qori karo).
+  const isOwner = profile?.role !== 'teacher';
 
   const TABS = [
     { id: 'roster', label: t('classWorkspace.tabs.roster') },
@@ -134,10 +141,18 @@ function ClassWorkspace() {
           <h2>{t('classWorkspace.title', { grade: cls.grade, section: cls.section })}</h2>
           <p>{cls.room} · {t('classWorkspace.classTeacherLabel')}: {teachers.find((tc) => tc.id === cls.classTeacherId)?.fullName || cls.classTeacher || '—'}</p>
         </div>
-        <button className="btn-secondary" onClick={() => navigate('/dashboard/classes')}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          {t('classWorkspace.backToClasses')}
-        </button>
+        <div className="page-header-actions">
+          {isOwner && (
+            <button className="btn-primary" onClick={() => setShowAddStudentModal(true)}>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              {t('students.addNew')}
+            </button>
+          )}
+          <button className="btn-secondary" onClick={() => navigate('/dashboard/classes')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            {t('classWorkspace.backToClasses')}
+          </button>
+        </div>
       </div>
 
       <div className="fin-tabs">
@@ -456,6 +471,16 @@ function ClassWorkspace() {
           saveQuranTarget(targetModalStudent.id, targetModalStudent.fullName, targetModalStudent.className, cls.id, data)
         }
       />
+
+      {isOwner && (
+        <StudentFormModal
+          isOpen={showAddStudentModal}
+          onClose={() => setShowAddStudentModal(false)}
+          onSave={(payload) => addStudent(payload)}
+          student={null}
+          defaultClassId={cls.id}
+        />
+      )}
     </div>
   );
 }

@@ -31,7 +31,7 @@ function initials(name) {
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 }
 
-function StudentFormModal({ isOpen, onClose, onSave, student }) {
+function StudentFormModal({ isOpen, onClose, onSave, student, defaultClassId }) {
   const { t } = useTranslation();
   const { classes } = useSchoolData();
   const { settings } = useSettings();
@@ -78,10 +78,18 @@ function StudentFormModal({ isOpen, onClose, onSave, student }) {
         discountPercent: student.discountPercent ?? '',
         status: student.status || 'active',
       });
+    } else if (defaultClassId) {
+      // ClassWorkspace waxay ku furtaa form-kan hal fasal oo la joogo — halkaas
+      // fasalka waa la doortaa si otomaatig ah (auto-select), oo feeAmount-ka
+      // sidoo kale waa loo buuxiyaa qiimaha feesByGrade (isla mid ah
+      // handleClassChange), balse weli waa la beddeli karaa gacan ahaan.
+      const cls = classes.find((c) => c.id === defaultClassId);
+      const gradeFee = cls && settings.feesByGrade.find((g) => g.grade === cls.grade);
+      setForm({ ...EMPTY_FORM, classId: defaultClassId, feeAmount: gradeFee ? gradeFee.amount : '' });
     } else {
       setForm(EMPTY_FORM);
     }
-  }, [student, isOpen]);
+  }, [student, isOpen, defaultClassId, classes, settings.feesByGrade]);
 
   if (!isOpen) return null;
 
