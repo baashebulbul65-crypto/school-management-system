@@ -180,6 +180,8 @@ function Overview() {
           value={totalStudents}
           accent="mint"
           size="lg"
+          onClick={() => navigate('/dashboard/students')}
+          actionLabel={t('overview.viewDetails')}
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 14a4 4 0 100-8 4 4 0 000 8zM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>}
         />
         {!isTeacher && (
@@ -187,6 +189,8 @@ function Overview() {
             label={t('overview.stats.totalTeachers')}
             value={totalTeachers}
             accent="navy"
+            onClick={() => navigate('/dashboard/teachers')}
+            actionLabel={t('overview.viewDetails')}
             icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16v12H8l-4 4V4z"/></svg>}
           />
         )}
@@ -202,6 +206,8 @@ function Overview() {
           label={t('overview.stats.totalSubjects')}
           value={totalSubjects}
           accent="gold"
+          onClick={() => navigate('/dashboard/subjects')}
+          actionLabel={t('overview.viewDetails')}
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/><path d="M8 7h8M8 11h8"/></svg>}
         />
         {!isTeacher && (
@@ -209,6 +215,8 @@ function Overview() {
             label={t('overview.stats.feesCollected')}
             value={`$${feesCollected.toLocaleString()}`}
             accent="mint"
+            onClick={() => navigate('/dashboard/finance', { state: { activeTab: 'accounting' } })}
+            actionLabel={t('overview.viewDetails')}
             icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>}
           />
         )}
@@ -217,12 +225,16 @@ function Overview() {
           value={`${attendanceRate}%`}
           accent="coral"
           size="lg"
+          onClick={() => navigate('/dashboard/attendance')}
+          actionLabel={t('overview.viewDetails')}
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>}
         />
         <StatCard
           label={t('overview.stats.upcomingExams')}
           value={upcomingExamsCount}
           accent="coral"
+          onClick={() => navigate('/dashboard/exams')}
+          actionLabel={t('overview.viewDetails')}
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>}
         />
         <StatCard
