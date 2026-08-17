@@ -68,6 +68,29 @@ export async function restoreStudentDoc(studentId) {
   await updateDoc(doc(db, COLLECTION, studentId), { isDeleted: false, deletedAt: null });
 }
 
+// Qalin-jabin/Ka-bixid — GOONI ka ah tirtir dabacsan (isDeleted) ee kore.
+// MUHIIM: field-ka waa "enrollmentStatus", MA AHA "status" — "status" field
+// horeba wuu jiraa doc-ka ardayga wuxuuna matalayaa wax kale oo dhan (Xaaladda
+// Ardayga: 'active'/'inactive', fiiri StudentFormModal.jsx + Students.jsx
+// STATUS_CLS) — isticmaalka isla "status" wuxuu burin lahaa xogtaas.
+// className/classId-ka ardaygu KUMA taabmo — waa "snapshot"-kii fasalka uu
+// ka baxay markii la archive-geliyay.
+export async function archiveStudentDoc(studentId, enrollmentStatus, note) {
+  await updateDoc(doc(db, COLLECTION, studentId), {
+    enrollmentStatus, // 'graduated' | 'withdrawn'
+    archivedAt: new Date().toISOString(),
+    archivedNote: note || '',
+  });
+}
+
+export async function restoreArchivedStudentDoc(studentId) {
+  await updateDoc(doc(db, COLLECTION, studentId), {
+    enrollmentStatus: null,
+    archivedAt: null,
+    archivedNote: null,
+  });
+}
+
 export async function deleteStudentDoc(studentId) {
   const ref = doc(db, COLLECTION, studentId);
   const snap = await getDoc(ref);

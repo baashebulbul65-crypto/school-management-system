@@ -90,6 +90,28 @@
     "searchPlaceholder": "Raadi magaca ama ID-ga...",
     "allClasses": "Dhammaan Fasallada",
     "table": { "student": "Arday", "id": "ID", "class": "Fasalka", "gender": "Jinsiga", "status": "Xaaladda", "fee": "Lacagta" },
+    "archive": {
+      "action": "Qalin-jabi",
+      "restore": "Ka Soo Celi Kaydka",
+      "confirmRestore": "Ma hubtaa inaad \"{{name}}\" ka soo celinayso kaydka ardayda qalin-jabiyay? Wuxuu dib ugu noqon doonaa liiska ardayda firfircoon.",
+      "pageTitle": "Ardayda Qalin-jabiyay",
+      "pageSubtitle": "Ardayda dhammeeyay dugsiga (qalin-jabiyay) ama si kale uga baxay — kaydka joogtada ah, aan waligeed la tirtirin.",
+      "empty": "Weli arday qalin-jabiyay ma jiro.",
+      "table": {
+        "name": "Arday", "lastClass": "Fasalkii Ugu Dambeeyay", "status": "Xaaladda",
+        "archivedDate": "Taariikhda", "note": "Faallo"
+      },
+      "modal": {
+        "title": "Qalin-jabinta Ardayga",
+        "statusLabel": "Sababta",
+        "graduated": "Qalin-jabiyay",
+        "withdrawn": "Ka Baxay",
+        "noteLabel": "Faallo (ikhtiyaari)",
+        "notePlaceholder": "Tusaale: sanadka waxbarasho 2025-2026 wuu dhammeeyay",
+        "hint": "Ardaygan wuxuu ka baxayaa dhammaan meelaha firfircoon (fasalka, xaadiris, lacagta, ogeysiisyada, tirakoobka) — xogtiisa oo dhan (taariikhda, imtixaanada, Quran) way sii jirtaa, waana laga soo celin karaa mustaqbalka bogga \"Ardayda Qalin-jabiyay\".",
+        "confirm": "Xaqiiji Qalin-jabinta"
+      }
+    },
     "emptyNoStudents": "Wali arday lama diiwaan gelin.",
     "seedDemo": "Ku Dar Xogta Tijaabada (Demo)",
     "pagination": "Muujinaya {{shown}} ee {{total}} arday",

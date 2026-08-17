@@ -1,0 +1,117 @@
+.arcm-overlay{
+  position:fixed; inset:0;
+  background: rgba(11,31,43,0.55);
+  backdrop-filter: blur(4px);
+  display:flex; align-items:flex-start; justify-content:center;
+  z-index:1000;
+  padding: 40px 20px;
+  overflow-y:auto;
+}
+
+.arcm-modal{
+  width:100%;
+  max-width:440px;
+  background:#fff;
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow: 0 40px 80px -20px rgba(11,31,43,0.4);
+  animation: arcmIn 0.25s ease;
+}
+@keyframes arcmIn{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:translateY(0);} }
+
+.arcm-header{
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+  padding: 24px 26px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.arcm-header h2{
+  font-family:'Poppins', sans-serif;
+  font-weight:700;
+  font-size:17px;
+  color:#fff;
+  margin-bottom:2px;
+}
+.arcm-header p{ font-size:12.5px; color: rgba(255,255,255,0.6); }
+
+.arcm-close{
+  width:32px; height:32px;
+  border-radius:50%;
+  background: rgba(255,255,255,0.12);
+  border:none;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  flex-shrink:0;
+  transition: background 0.2s ease;
+}
+.arcm-close:hover{ background: rgba(255,255,255,0.22); }
+.arcm-close svg{ width:15px; height:15px; stroke:#fff; stroke-width:2.5; }
+
+.arcm-body{ padding: 26px; }
+
+.arcm-field{ display:flex; flex-direction:column; gap:8px; margin-bottom:18px; }
+.arcm-field label{
+  font-size:12.5px;
+  font-weight:600;
+  color: var(--navy);
+}
+.arcm-field textarea{
+  padding:11px 13px;
+  border:1.5px solid var(--line);
+  border-radius:10px;
+  font-size:13.5px;
+  font-family:'Inter', sans-serif;
+  color: var(--navy);
+  outline:none;
+  resize:vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.arcm-field textarea:focus{
+  border-color: var(--mint);
+  box-shadow: 0 0 0 4px var(--mint-pale);
+}
+
+.arcm-status-options{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+.arcm-status-btn{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  padding:14px 10px;
+  border:1.5px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  color: var(--grey-text);
+  font-size:12.5px;
+  font-weight:600;
+  cursor:pointer;
+  transition: all 0.15s ease;
+}
+.arcm-status-btn svg{ width:20px; height:20px; }
+.arcm-status-btn:hover{ border-color: var(--mint); }
+.arcm-status-btn.active{
+  border-color: var(--mint);
+  background: var(--mint-pale);
+  color: var(--mint-dark);
+}
+
+.arcm-hint{
+  font-size:12px;
+  color: var(--grey-text);
+  background:#F7F9FA;
+  border-radius:10px;
+  padding:10px 12px;
+}
+
+.arcm-footer{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  padding: 18px 26px;
+  border-top:1px solid var(--line);
+}

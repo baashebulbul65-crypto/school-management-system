@@ -8,7 +8,7 @@ import { createContext, useContext, useState, useEffect, useMemo, useRef } from 
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
 import { useSettings } from './SettingsContext';
-import { subscribeToStudents, createStudentDoc, updateStudentDoc, softDeleteStudentDoc, restoreStudentDoc, deleteStudentDoc, backfillStudentLookups, backfillStudentClassScoping } from '../firebase/students';
+import { subscribeToStudents, createStudentDoc, updateStudentDoc, softDeleteStudentDoc, restoreStudentDoc, deleteStudentDoc, archiveStudentDoc, restoreArchivedStudentDoc, backfillStudentLookups, backfillStudentClassScoping } from '../firebase/students';
 import { subscribeToTeachers, createTeacherDoc, updateTeacherDoc, deactivateTeacherDoc } from '../firebase/teachers';
 import { subscribeToClasses, createClassDoc, updateClassDoc, deleteClassDoc, unlinkTeacherFromClasses, unlinkSubjectFromClasses } from '../firebase/classes';
 import { subscribeToSubjects, createSubjectDoc, updateSubjectDoc, deleteSubjectDoc, unlinkTeacherFromSubjects } from '../firebase/subjects';
@@ -180,11 +180,25 @@ export function SchoolDataProvider({ children }) {
 
   const [allStudents, setAllStudents] = useState([]);
   const [studentsLoading, setStudentsLoading] = useState(true);
-  // "students" waa kaliya kuwa aan la tirtirin (isDeleted !== true) — bogagga
-  // caadiga ah (Students.jsx, iwm) waxay isticmaalaan tan. "deletedStudents"
-  // waxaa isticmaala kaliya bogga "Xogta La Tirtiray" (Trash).
-  const students = useMemo(() => allStudents.filter((s) => !s.isDeleted), [allStudents]);
+  // "students" waa kaliya kuwa aan la tirtirin (isDeleted !== true) OO AAN
+  // qalin-jabin (enrollmentStatus graduated/withdrawn) ahayn — bogagga caadiga ah
+  // (ClassWorkspace, Attendance, Finance, Overview stats, iwm) dhammaantood
+  // waxay isticmaalaan tan hal meel, sidaas darteed arday qalin-jabiyay wuu
+  // ka baxaa si otomaatig ah dhammaan meelaha firfircoon — koodh gaar ah
+  // looma baahna meelahaas (Qalin-jabinta audit, 2026-08-17). "deletedStudents"
+  // waxaa isticmaala kaliya bogga "Xogta La Tirtiray" (Trash, 45-day),
+  // "archivedStudents" waxaa isticmaala bogga "Ardayda Qalin-jabiyay"
+  // (kaydka joogtada ah, wax xad-waqti ah ma leh) — labadan nidaam waa
+  // kuwo GOONI ah oo isku mid ah (field kala duwan), si aan is-dhex u gelin.
+  const students = useMemo(
+    () => allStudents.filter((s) => !s.isDeleted && s.enrollmentStatus !== 'graduated' && s.enrollmentStatus !== 'withdrawn'),
+    [allStudents]
+  );
   const deletedStudents = useMemo(() => allStudents.filter((s) => s.isDeleted), [allStudents]);
+  const archivedStudents = useMemo(
+    () => allStudents.filter((s) => !s.isDeleted && (s.enrollmentStatus === 'graduated' || s.enrollmentStatus === 'withdrawn')),
+    [allStudents]
+  );
   const [teachers, setTeachers] = useState([]);
   const [classes, setClasses] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -1084,6 +1098,24 @@ export function SchoolDataProvider({ children }) {
     }
   };
 
+  // Qalin-jabin/Ka-bixid — GOONI ka ah deleteStudent/restoreStudent (Trash)
+  // ee kore, fiiri comment-ka "students"/"archivedStudents".
+  const archiveStudent = async (id, enrollmentStatus, note) => {
+    try {
+      await archiveStudentDoc(id, enrollmentStatus, note);
+    } catch (err) {
+      reportError('Khalad ayaa dhacay markii ardayga la qalin-jabinayay:', err);
+    }
+  };
+
+  const restoreArchivedStudent = async (id) => {
+    try {
+      await restoreArchivedStudentDoc(id);
+    } catch (err) {
+      reportError('Khalad ayaa dhacay markii ardayga qalin-jabiyay laga soo celinayay:', err);
+    }
+  };
+
   // Tirtirka otomaatiga ah 45 maalmood ka dib — Spark plan-ka ma leh Cloud
   // Functions, marka waxaa lagu hubiyaa gudaha app-ka mar kasta oo Shaqaale
   // furo (halkan) — kama baahna cron/server, waana idempotent (marka la
@@ -1405,6 +1437,7 @@ export function SchoolDataProvider({ children }) {
   const value = {
     students, studentsLoading, addStudent, updateStudent, deleteStudent, seedDemoStudents,
     deletedStudents, restoreStudent, permanentlyDeleteStudent,
+    archivedStudents, archiveStudent, restoreArchivedStudent,
     setStudentAttendanceStatus,
     myClasses, myClassIds, myClassNames,
     teachers, addTeacher, updateTeacher, cycleTeacherAttendanceRecord, cascadeUnlinkTeacher,

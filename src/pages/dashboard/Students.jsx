@@ -7,6 +7,7 @@ import { getMonthlyFeeStatus } from '../../utils/studentFee';
 import { currentMonthValue } from '../../utils/somaliDate';
 import StudentProfileModal from './StudentProfileModal';
 import StudentFormModal from './StudentFormModal';
+import ArchiveStudentModal from './ArchiveStudentModal';
 import '../../styles/dashboard-shared.css';
 
 const STATUS_CLS = { active: 'badge-success', inactive: 'badge-neutral' };
@@ -24,7 +25,7 @@ function Students() {
   const { profile } = useAuth();
   const {
     students, studentsLoading, addStudent, updateStudent, deleteStudent, seedDemoStudents,
-    allStudentAttendanceRecords, feePayments, myClassIds, myClassNames,
+    allStudentAttendanceRecords, feePayments, myClassIds, myClassNames, archiveStudent,
   } = useSchoolData();
   // Macallinku gebi ahaanba wuu ka mamnuucan yahay Finance-ka, xitaa xaaladda
   // lacagta ardayda fasalkiisa (Teacher Role Scoping audit, 2026-08-02) —
@@ -43,6 +44,7 @@ function Students() {
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
+  const [archivingStudent, setArchivingStudent] = useState(null);
 
   const selectedStudent = visibleStudents.find((s) => s.id === selectedStudentId) || null;
 
@@ -93,6 +95,13 @@ function Students() {
       deleteStudent(studentId);
       if (selectedStudentId === studentId) setSelectedStudentId(null);
     }
+  };
+
+  const handleConfirmArchive = (enrollmentStatus, note) => {
+    if (!archivingStudent) return;
+    archiveStudent(archivingStudent.id, enrollmentStatus, note);
+    if (selectedStudentId === archivingStudent.id) setSelectedStudentId(null);
+    setArchivingStudent(null);
   };
 
   return (
@@ -178,6 +187,9 @@ function Students() {
                           <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(s)}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
                           </button>
+                          <button className="row-action-btn" title={t('students.archive.action')} onClick={() => setArchivingStudent(s)}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>
+                          </button>
                           <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteStudent(s.id, s.fullName)}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
                           </button>
@@ -230,6 +242,13 @@ function Students() {
         onClose={() => setShowAddModal(false)}
         onSave={handleSaveStudent}
         student={editingStudent}
+      />
+
+      <ArchiveStudentModal
+        isOpen={!!archivingStudent}
+        onClose={() => setArchivingStudent(null)}
+        onConfirm={handleConfirmArchive}
+        student={archivingStudent}
       />
     </div>
   );

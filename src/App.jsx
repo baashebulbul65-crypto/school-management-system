@@ -27,6 +27,7 @@ const Notifications = lazy(() => import('./pages/dashboard/Notifications'));
 const Settings = lazy(() => import('./pages/dashboard/Settings'));
 const Users = lazy(() => import('./pages/dashboard/Users'));
 const Trash = lazy(() => import('./pages/dashboard/Trash'));
+const ArchivedStudents = lazy(() => import('./pages/dashboard/ArchivedStudents'));
 
 const PAGE_LOADING_STYLE = {
   height: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -68,6 +69,7 @@ function App() {
         <Route path="settings" element={<Settings />} />
         <Route path="users" element={<RequireRole allow={['owner']}><Users /></RequireRole>} />
         <Route path="trash" element={<RequireRole allow={['owner']}><Trash /></RequireRole>} />
+        <Route path="archived-students" element={<RequireRole allow={['owner']}><ArchivedStudents /></RequireRole>} />
       </Route>
 
       {/* Parent Portal — waalidka/ardayga (la ilaaliyaa) */}
