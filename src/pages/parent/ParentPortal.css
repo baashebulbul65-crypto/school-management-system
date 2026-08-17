@@ -1,6 +1,8 @@
 .pp-page{
   min-height: 100vh;
-  background: #F7F9FA;
+  /* Design polish (2026-08-17): isla beddelka DashboardLayout.css — --line
+     (#EDF1F4) halkii #F7F9FA (aad ugu dhow cadaanka). */
+  background: var(--line);
 }
 
 .pp-header{

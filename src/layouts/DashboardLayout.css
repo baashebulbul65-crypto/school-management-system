@@ -1,7 +1,10 @@
 .dashboard-shell{
   display:flex;
   min-height:100vh;
-  background:#F7F9FA;
+  /* Design polish (2026-08-17): #F7F9FA (hore) aad buu ugu dhowaa cadaanka
+     (~3% farqi), aan la garan karin cards-ka caddaanka ah. --line (#EDF1F4,
+     token horeba jira) ayaa loo isticmaalay, isla midabka borders/lines-ka. */
+  background: var(--line);
 }
 
 .dashboard-main{
