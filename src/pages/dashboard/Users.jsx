@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import UserFormModal from './UserFormModal';
 import { useAuth } from '../../context/AuthContext';
@@ -42,6 +43,7 @@ function initials(name) {
 
 function Users() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { profile } = useAuth();
   const { showError } = useToast();
   const { teachers, cascadeUnlinkTeacher } = useSchoolData();
@@ -171,10 +173,16 @@ function Users() {
           <h2>{t('users.pageTitle')}</h2>
           <p>{t('users.pageSubtitle')}</p>
         </div>
-        <button className="btn-primary" onClick={openAddModal}>
-          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          {t('users.addNew')}
-        </button>
+        <div className="page-header-actions">
+          <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            {t('common.backToDashboard')}
+          </button>
+          <button className="btn-primary" onClick={openAddModal}>
+            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            {t('users.addNew')}
+          </button>
+        </div>
       </div>
 
       <div className="dash-card">

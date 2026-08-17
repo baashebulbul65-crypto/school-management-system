@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../../context/SettingsContext';
 import { useAuth } from '../../context/AuthContext';
@@ -34,6 +35,7 @@ function SavedToast({ show, label }) {
 
 function Settings() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const {
     settings, updateSchool, updateLanguage, updateCurrency, updateAcademicYear, updateFee,
     addFeeGrade, removeFeeGrade, updateNotificationPref, uploadLogo, removeLogo, logoUploading, logoError,
@@ -166,6 +168,10 @@ function Settings() {
           <h2>{t('settings.pageTitle')}</h2>
           <p>{t('settings.pageSubtitle')}</p>
         </div>
+        <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          {t('common.backToDashboard')}
+        </button>
       </div>
 
       <div className="fin-tabs">

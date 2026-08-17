@@ -43,12 +43,18 @@ function Notifications() {
           <h2>{t('notifications.title')}</h2>
           <p>{t('notifications.subtitle')}</p>
         </div>
-        {unreadCount > 0 && (
-          <button className="btn-secondary" onClick={markAllAsRead}>
-            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-            {t('notifications.markAllRead')} ({unreadCount})
+        <div className="page-header-actions">
+          <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            {t('common.backToDashboard')}
           </button>
-        )}
+          {unreadCount > 0 && (
+            <button className="btn-secondary" onClick={markAllAsRead}>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              {t('notifications.markAllRead')} ({unreadCount})
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="notif-filter-tabs">

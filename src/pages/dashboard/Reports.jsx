@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -23,6 +24,7 @@ function gpaFromPercent(pct) {
 
 function Reports() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { students, teachers, classes, exams, examMarks, expenses, income, feePayments, allStudentAttendanceRecords, allStaffAttendanceRecords } = useSchoolData();
 
   // classId marka jira, className fallback ilaa ardayda/imtixaannada aan weli
@@ -202,6 +204,10 @@ function Reports() {
           <p>{t('reports.pageSubtitle')}</p>
         </div>
         <div className="rep-header-actions">
+          <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            {t('common.backToDashboard')}
+          </button>
           <button className="btn-primary" onClick={handleExportPDF}>
             <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             {t('reports.exportPdf')}

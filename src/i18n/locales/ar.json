@@ -1,6 +1,7 @@
 {
   "common": {
     "close": "إغلاق",
+    "backToDashboard": "العودة إلى لوحة التحكم",
     "cancel": "إلغاء",
     "save": "حفظ التغييرات",
     "select": "اختيار",

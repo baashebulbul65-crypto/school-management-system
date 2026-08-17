@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
@@ -11,6 +12,7 @@ function initials(name) {
 
 function Subjects() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { profile } = useAuth();
   const { subjects, teachers, addSubject, updateSubject, removeSubject } = useSchoolData();
   // Add/Edit/Delete waa owner-kaliya (Teacher Role Scoping audit, 2026-08-02)
@@ -56,12 +58,18 @@ function Subjects() {
           <h2>{t('subjects.pageTitle')}</h2>
           <p>{t('subjects.pageSubtitle')}</p>
         </div>
-        {isOwner && (
-          <button className="btn-primary" onClick={openAddModal}>
-            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            {t('subjects.addNew')}
+        <div className="page-header-actions">
+          <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            {t('common.backToDashboard')}
           </button>
-        )}
+          {isOwner && (
+            <button className="btn-primary" onClick={openAddModal}>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              {t('subjects.addNew')}
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="dash-card">

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
@@ -30,6 +31,7 @@ function initials(name) {
 
 function Attendance() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { profile } = useAuth();
   const {
     students, teachers, staff, attendanceToday, cycleAttendanceStatus, todayDate,
@@ -177,7 +179,13 @@ function Attendance() {
           <h2>{t('attendance.pageTitle')}</h2>
           <p>{t('attendance.pageSubtitle')}</p>
         </div>
-        <input type="date" className="attendance-date-picker" value={date} disabled />
+        <div className="page-header-actions">
+          <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            {t('common.backToDashboard')}
+          </button>
+          <input type="date" className="attendance-date-picker" value={date} disabled />
+        </div>
       </div>
 
       {/* CATEGORY TABS */}
