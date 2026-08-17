@@ -86,6 +86,22 @@ function Overview() {
   const totalStudents = myStudents.length;
   const totalTeachers = teachers.length;
   const totalClasses = myClasses ? myClasses.length : classes.length;
+
+  // "Fasallada" stat card (Overview) — sixitaan (2026-08-17): hore wuxuu u
+  // geynayay Finance (khalad, ka duwan macnaha card-ka). Halkan waxaa
+  // isticmaalay isla xisaabinta "Teacher Role Scoping" (myClasses, kore) ee
+  // Attendance.jsx/Sidebar.jsx horeba isticmaalaan: macallinku wuxuu leeyahay
+  // hal fasal (case-ka ugu badan) -> si toos ah loo geeyaa ClassWorkspace-
+  // kiisa; haddii 0 ama fasallo badan (dhif ah), loo daayaa liiska guud
+  // (Classes.jsx horeba u xaddiday macallinka fasalladiisa kaliya). Owner-ku
+  // had iyo jeer wuxuu helaa liiska guud.
+  const handleClassesCardClick = () => {
+    if (isTeacher && myClasses?.length === 1) {
+      navigate(`/dashboard/classes/${myClasses[0].id}`);
+    } else {
+      navigate('/dashboard/classes');
+    }
+  };
   const totalSubjects = useMemo(() => {
     if (!myClasses) return subjects.length;
     const subjectIds = new Set(myClasses.flatMap((c) => c.subjectIds || []));
@@ -198,8 +214,8 @@ function Overview() {
           label={t('overview.stats.totalClasses')}
           value={totalClasses}
           accent="blue"
-          onClick={!isTeacher ? () => navigate('/dashboard/finance', { state: { activeTab: 'accounting' } }) : undefined}
-          actionLabel={!isTeacher ? t('overview.viewDetails') : undefined}
+          onClick={handleClassesCardClick}
+          actionLabel={t('overview.viewDetails')}
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/></svg>}
         />
         <StatCard
