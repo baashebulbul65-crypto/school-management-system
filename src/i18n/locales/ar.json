@@ -56,6 +56,7 @@
       "absentToday": "الطلاب الغائبون اليوم"
     },
     "viewDetails": "عرض التفاصيل ←",
+    "verifiedTooltip": "مدرسة موثّقة",
     "attendanceCard": {
       "title": "حالة الحضور اليوم",
       "viewAll": "عرض الكل ←"

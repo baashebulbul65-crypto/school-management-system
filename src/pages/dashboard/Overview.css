@@ -90,6 +90,19 @@
   margin-bottom:24px;
 }
 
+/* Design polish (2026-08-17): kaadhka soo dhoweynta (Welcome Header) hore
+   wuxuu lahaa border-ka guud ee khafiifka ah oo qura (.dash-card, 1px
+   var(--line)) — halkan waxaa loo isticmaalay border DHAB AH oo cad
+   isticmaalaya midabka aasaasiga ah ee brand-ka (--mint, isla midabka
+   gradient-ka logo-fallback-ka kore) si kaadhkan "hero"-ga ah loogu
+   soo jiito indhaha marka bogga la furo. ".dash-card.overview-header"
+   (labo class) ayaa loo baahan yahay si loo ka adkaado specificity-ga
+   ".dash-card" guud (fiiri sixir isku mid ah: acc-chart-card/acc-table-card). */
+.dash-card.overview-header{
+  border: 2px solid var(--mint);
+  box-shadow: 0 4px 18px -6px rgba(22,199,132,0.28);
+}
+
 .overview-header-left{
   display:flex;
   align-items:center;
@@ -132,6 +145,28 @@
 }
 .overview-header-schoolname{
   overflow-wrap: anywhere;
+}
+
+/* Badge/label gaar ah oo ku duuban magaca dugsiga (2026-08-17) — pill mint
+   ah oo "ifaya" (glow soft, box-shadow) si magaca dugsiga uu uga soo
+   muuqdo qoraalka guud ee khafiifka ah (todayLabel/grey-text agtiisa). */
+.overview-header-schoolname-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  background: var(--mint-pale);
+  color: var(--mint-dark);
+  border: 1px solid var(--mint-border);
+  border-radius:999px;
+  padding:3px 10px;
+  font-weight:700;
+  box-shadow: 0 0 0 3px rgba(22,199,132,0.10);
+}
+.overview-header-schoolname-badge .overview-header-schoolname{
+  color: var(--mint-dark);
+}
+.overview-header-verified-icon{
+  flex-shrink:0;
 }
 
 .overview-header-actions{
