@@ -151,12 +151,20 @@
   flex-direction: column;
   gap: 16px;
 }
-.acc-chart-card{ display: flex; flex-direction: column; flex: 1; box-shadow: 0 2px 8px rgba(11,31,43,0.04); }
+/* Design polish (2026-08-17): border-style kala duwan si box-yadan labadan
+   loo kala saaro visually — dashed (donut chart) vs double (stats box) —
+   ".dash-card.acc-chart-card" (labo class) loo isticmaalay si uu ku
+   guuleysto ".dash-card"-ka guud (1px solid), specificity-gooni la'aan. */
+.dash-card.acc-chart-card{
+  display: flex; flex-direction: column; flex: 1;
+  border: 1.5px dashed var(--line);
+  box-shadow: 0 2px 8px rgba(11,31,43,0.04);
+}
 .acc-chart-card .dash-card-head{ margin-bottom: 14px; }
 
 .acc-stats-box{
   background: #fff;
-  border: 1px solid var(--line);
+  border: 3px double var(--line);
   border-radius: 16px;
   padding: 18px;
   display: grid;
