@@ -361,7 +361,7 @@ function Finance() {
 
           {/* TABLE */}
           <div className="dash-card">
-            <div className="data-table-wrap">
+            <div className="data-table-wrap acc-table-wrap">
               <table className="data-table acc-table">
                 <thead>
                   <tr>
@@ -374,7 +374,11 @@ function Finance() {
                 </thead>
                 <tbody>
                   {filteredRows.map((r, i) => (
-                    <tr key={r.id} className="acc-row-clickable" onClick={() => setSelectedRowId(r.id)}>
+                    <tr
+                      key={r.id}
+                      className={`acc-row-clickable ${r.unpaidCount ? 'acc-row-unpaid' : 'acc-row-paid'}`}
+                      onClick={() => setSelectedRowId(r.id)}
+                    >
                       <td className="cell-sub">{i + 1}</td>
                       <td>
                         <div className="cell-name">{r.name}</div>

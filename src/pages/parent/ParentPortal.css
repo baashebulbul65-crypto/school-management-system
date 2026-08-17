@@ -145,7 +145,7 @@
 /* Child card */
 .pp-child-card{
   background: linear-gradient(135deg, #0B1F2B 0%, #14303F 100%);
-  border-radius: 18px;
+  border-radius: 16px;
   padding: 24px 26px;
   display: flex;
   align-items: center;

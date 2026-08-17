@@ -26,7 +26,7 @@
 }
 .settings-preview-logo{
   width: 48px; height: 48px;
-  border-radius: 13px;
+  border-radius: 14px;
   background: linear-gradient(135deg, var(--mint), var(--mint-dark));
   display: flex; align-items: center; justify-content: center;
   color: #fff;

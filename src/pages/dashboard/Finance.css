@@ -275,8 +275,22 @@
 }
 
 /* Xisaabaadka table — clickable rows + total footer */
+/* Design polish (2026-08-17): shaxda "Fasalada" — radius/zebra/spacing +
+   colored row-accent (cagaaran = la bixiyay dhammaan, coral = baaqi leh),
+   si ay ula jaanqaadaan kaadhadhka .acc-card ee horeba loo qurxiyay. */
+.acc-table-wrap{
+  border-radius:12px;
+  overflow:hidden;
+}
+.acc-table tbody td{ padding:18px 16px; }
+.acc-table tbody tr:nth-child(even){ background:#FAFBFC; }
+.acc-table tbody tr.acc-row-paid td:first-child{ border-inline-start:3px solid var(--mint); }
+.acc-table tbody tr.acc-row-unpaid td:first-child{ border-inline-start:3px solid var(--danger); }
+.acc-table tbody tr.acc-row-paid:nth-child(even),
+.acc-table tbody tr.acc-row-unpaid:nth-child(even){ background:#FAFBFC; }
+
 .acc-row-clickable{ cursor: pointer; transition: background 0.15s ease; }
-.acc-row-clickable:hover{ background: #F7F9FA; }
+.acc-row-clickable:hover{ background: #F4F7F8 !important; }
 .acc-baaqi-owed{ color: var(--danger); font-weight: 700; }
 .acc-total-row{ background: #EAF1FB; font-weight: 700; }
 .acc-total-row td{ color: var(--navy); border-top: 2px solid var(--line); }

@@ -122,15 +122,17 @@ function Sidebar({ isOpen, onClose }) {
 
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-brand">
-          {settings.school.logo ? (
-            <img className="sidebar-brand-logo" src={settings.school.logo} alt={settings.school.name} />
-          ) : (
-            <svg viewBox="0 0 40 40" fill="none">
-              <path d="M8 30 C8 18, 16 8, 28 8" stroke="#16C784" strokeWidth="4" strokeLinecap="round" fill="none"/>
-              <circle cx="30" cy="8" r="3" fill="#0B1F2B"/>
-              <path d="M8 30 H24" stroke="#0B1F2B" strokeWidth="4" strokeLinecap="round"/>
-            </svg>
-          )}
+          <div className="sidebar-brand-icon">
+            {settings.school.logo ? (
+              <img className="sidebar-brand-logo" src={settings.school.logo} alt={settings.school.name} />
+            ) : (
+              <svg viewBox="0 0 40 40" fill="none">
+                <path d="M8 30 C8 18, 16 8, 28 8" stroke="#16C784" strokeWidth="4" strokeLinecap="round" fill="none"/>
+                <circle cx="30" cy="8" r="3" fill="#0B1F2B"/>
+                <path d="M8 30 H24" stroke="#0B1F2B" strokeWidth="4" strokeLinecap="round"/>
+              </svg>
+            )}
+          </div>
           <span>{settings.school.name}<span className="dot">.</span></span>
         </div>
 
