@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import jsPDF from 'jspdf';
 import { useSchoolData } from '../../context/SchoolDataContext';
@@ -18,6 +18,7 @@ import './Finance.css';
 
 function Finance() {
   const { t } = useTranslation();
+  const location = useLocation();
   const navigate = useNavigate();
   const { settings } = useSettings();
   const {
@@ -28,6 +29,21 @@ function Finance() {
     financeDocuments, addFinanceDocument,
   } = useSchoolData();
   const [activeTab, setActiveTab] = useState('accounting');
+
+  // Deep link (Overview.jsx "Fasallada" stat card) — isla habka
+  // Students.jsx (location.state.openAdd): navigate('/dashboard/finance',
+  // { state: { activeTab: 'accounting' } }) si toos ah loogu furo tab-ka
+  // sax ah, ma aha in la sugo default-ka (kaas oo hadda si kastaba u yahay
+  // 'accounting', laakiin si ula kac ah loo qoray si aanay ku xirnayn
+  // default-ka mustaqbalka haddii la beddelo). State-ka waa la nadiifiyaa
+  // (replace) si aanay dib-u-dhici (refresh/back) marka kale u qasbin tab-ka.
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state]);
 
   // ----- Xisaabaadka state -----
   const [monthValue, setMonthValue] = useState(currentMonthValue());

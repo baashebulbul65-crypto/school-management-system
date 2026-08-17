@@ -194,6 +194,8 @@ function Overview() {
           label={t('overview.stats.totalClasses')}
           value={totalClasses}
           accent="blue"
+          onClick={!isTeacher ? () => navigate('/dashboard/finance', { state: { activeTab: 'accounting' } }) : undefined}
+          actionLabel={!isTeacher ? t('overview.viewDetails') : undefined}
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/></svg>}
         />
         <StatCard
