@@ -1,60 +1,3 @@
-.fin-summary-grid{
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
-}
-.fin-summary-card{
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  border-left: 4px solid var(--line);
-}
-.fin-summary-label{
-  font-size: 12px;
-  color: var(--grey-text);
-  font-weight: 600;
-}
-.fin-summary-value{
-  font-family: 'Poppins', sans-serif;
-  font-weight: 800;
-  font-size: 24px;
-  color: var(--navy);
-}
-.fin-summary-card.income{ border-left-color: var(--mint); }
-.fin-summary-card.expense{ border-left-color: var(--danger); }
-.fin-summary-card.pending{ border-left-color: var(--amber); }
-.fin-summary-card.profit{ border-left-color: var(--mint-dark); }
-.fin-summary-card.profit .fin-summary-value{ color: var(--mint-dark); }
-.fin-summary-card.loss{ border-left-color: var(--danger); }
-.fin-summary-card.loss .fin-summary-value{ color: var(--danger-dark); }
-
-/* Due date alerts */
-.fin-alerts{
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  background: var(--warning-bg);
-  border: 1px solid var(--warning-border);
-  border-radius: 14px;
-  padding: 16px 18px;
-  margin-bottom: 20px;
-}
-.fin-alerts-icon{
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  background: #FDECC8;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.fin-alerts-icon svg{ width: 18px; height: 18px; stroke: var(--warning); }
-.fin-alerts-text strong{ font-size: 13.5px; color: var(--navy); display: block; margin-bottom: 3px; }
-.fin-alerts-text p{ font-size: 12.5px; color: var(--grey-text); }
-
 /* .fin-tabs/.fin-tab (2026-08-03, mobile audit CRITICAL #1) — u guuray
    dashboard-shared.css, maadaama ClassWorkspace.jsx isla className-yadan
    isticmaalo isaga oo aan marnaba soo dejin karin Finance.css (macallinku
@@ -279,6 +222,7 @@
    colored row-accent (cagaaran = la bixiyay dhammaan, coral = baaqi leh),
    si ay ula jaanqaadaan kaadhadhka .acc-card ee horeba loo qurxiyay. */
 .acc-table-wrap{
+  border:1px solid var(--line);
   border-radius:12px;
   overflow:hidden;
 }
