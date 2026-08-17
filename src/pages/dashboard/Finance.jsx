@@ -361,7 +361,7 @@ function Finance() {
 
           {/* TABLE */}
           <div className="dash-card">
-            <div className="data-table-wrap acc-table-wrap">
+            <div className="data-table-wrap fin-table-wrap">
               <table className="data-table acc-table">
                 <thead>
                   <tr>
@@ -427,7 +427,7 @@ function Finance() {
               </div>
             ))}
           </div>
-          <div className="data-table-wrap">
+          <div className="data-table-wrap fin-table-wrap">
             <table className="data-table">
               <thead><tr><th>{t('finance.expenses.table.category')}</th><th>{t('finance.expenses.table.description')}</th><th>{t('finance.expenses.table.amount')}</th><th>{t('finance.expenses.table.date')}</th></tr></thead>
               <tbody>
@@ -454,7 +454,7 @@ function Finance() {
               {t('finance.income.addNew')}
             </button>
           </div>
-          <div className="data-table-wrap">
+          <div className="data-table-wrap fin-table-wrap">
             <table className="data-table">
               <thead><tr><th>{t('finance.income.table.source')}</th><th>{t('finance.income.table.description')}</th><th>{t('finance.income.table.amount')}</th><th>{t('finance.income.table.date')}</th></tr></thead>
               <tbody>
@@ -478,7 +478,7 @@ function Finance() {
           <div className="fin-card-toolbar" style={{ justifyContent: 'flex-start' }}>
             <span className="cell-sub">{t('finance.salary.monthLabel', { month: salaryMonth })}</span>
           </div>
-          <div className="data-table-wrap">
+          <div className="data-table-wrap fin-table-wrap">
             <table className="data-table">
               <thead><tr><th>{t('finance.salary.table.staff')}</th><th>{t('finance.salary.table.role')}</th><th>{t('finance.salary.table.amount')}</th><th>{t('finance.salary.table.status')}</th><th></th></tr></thead>
               <tbody>
@@ -508,7 +508,7 @@ function Finance() {
           <div className="fin-card-toolbar" style={{ justifyContent: 'flex-start', marginTop: 22 }}>
             <span className="fin-category-name" style={{ fontSize: 15 }}>{t('finance.salary.historyTitle')}</span>
           </div>
-          <div className="data-table-wrap">
+          <div className="data-table-wrap fin-table-wrap">
             <table className="data-table">
               <thead><tr><th>{t('finance.salary.table.staff')}</th><th>{t('finance.salary.table.role')}</th><th>{t('finance.salary.table.amount')}</th><th>{t('finance.salary.table.month')}</th><th>{t('teachers.profile.table.payDate')}</th></tr></thead>
               <tbody>
@@ -539,7 +539,7 @@ function Finance() {
               {t('finance.discounts.addNew')}
             </button>
           </div>
-          <div className="data-table-wrap">
+          <div className="data-table-wrap fin-table-wrap">
             <table className="data-table">
               <thead><tr><th>{t('finance.discounts.table.student')}</th><th>{t('finance.discounts.table.type')}</th><th>{t('finance.discounts.table.amount')}</th><th>{t('finance.discounts.table.reason')}</th></tr></thead>
               <tbody>
@@ -573,7 +573,7 @@ function Finance() {
               {t('finance.documents.addNew')}
             </button>
           </div>
-          <div className="data-table-wrap">
+          <div className="data-table-wrap fin-table-wrap">
             <table className="data-table">
               <thead><tr><th>{t('finance.documents.table.no')}</th><th>{t('finance.documents.table.type')}</th><th>{t('finance.documents.table.party')}</th><th>{t('finance.documents.table.amount')}</th><th>{t('finance.documents.table.date')}</th><th></th></tr></thead>
               <tbody>

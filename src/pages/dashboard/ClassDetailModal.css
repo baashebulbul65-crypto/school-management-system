@@ -115,10 +115,16 @@
 .cdm-table-wrap{
   max-width: 780px;
   margin: 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   /* Mobile audit (2026-08-03, MEDIUM #3): isla .data-table-wrap guud
      (dashboard-shared.css) — haddii aan tan la darin, table-ku wuxuu ku
      jaraayaa (clip) body{overflow-x:hidden} (global.css) shaashad yar,
-     halkii uu scroll u bixi lahaa. */
+     halkii uu scroll u bixi lahaa. Design polish (2026-08-17): border/radius
+     la siiyay — cdm-page waa fullscreen (ma laha .dash-card fallback ah
+     sida Finance.jsx kale), sidaas darteed shaxdu bannaan bay ahayd
+     iyada oo aan border/box lahayn gebi ahaanba. */
+  overflow: hidden;
   overflow-x: auto;
 }
 .cdm-table{

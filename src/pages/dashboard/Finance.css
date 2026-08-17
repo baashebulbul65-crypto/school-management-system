@@ -220,8 +220,12 @@
 /* Xisaabaadka table — clickable rows + total footer */
 /* Design polish (2026-08-17): shaxda "Fasalada" — radius/zebra/spacing +
    colored row-accent (cagaaran = la bixiyay dhammaan, coral = baaqi leh),
-   si ay ula jaanqaadaan kaadhadhka .acc-card ee horeba loo qurxiyay. */
-.acc-table-wrap{
+   si ay ula jaanqaadaan kaadhadhka .acc-card ee horeba loo qurxiyay.
+   ".fin-table-wrap" (ka dib) waa border-ka guud — dhammaan 7-da shax ee
+   Finance (Fasalada, Kharashka, Dakhliga, Mushaharka x2, Dhimista,
+   Invoices/Receipts) ay wadaagaan, ka hor waxay ku tiirsanaayeen kaliya
+   border-ka ".dash-card" ku duuban (isla dhibaatadii "Fasalada" lahayd). */
+.fin-table-wrap{
   border:1px solid var(--line);
   border-radius:12px;
   overflow:hidden;
