@@ -376,7 +376,7 @@ function Finance() {
           </div>
 
           {/* TABLE */}
-          <div className="dash-card">
+          <div className="dash-card acc-table-card">
             <div className="data-table-wrap fin-table-wrap">
               <table className="data-table acc-table">
                 <thead>

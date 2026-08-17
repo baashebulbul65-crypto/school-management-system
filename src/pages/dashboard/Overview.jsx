@@ -264,7 +264,7 @@ function Overview() {
       </div>
 
       <div className="overview-grid">
-        <div className="dash-card">
+        <div className="dash-card overview-attendance-card">
           <div className="dash-card-head">
             <h3>{t('overview.attendanceCard.title')}</h3>
             <a href="/dashboard/attendance" className="see-all-link">{t('overview.attendanceCard.viewAll')}</a>

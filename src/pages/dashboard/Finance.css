@@ -165,6 +165,17 @@
 }
 .acc-chart-card .dash-card-head{ margin-bottom: 14px; }
 
+/* Design polish (2026-08-17): jadwalka "Fasallada" (baaqiga/unpaid per class)
+   ayaa sidoo kale u baahnaa border style gaar ah — dashed-ka waxaa horeba
+   leeyahay donut chart-ka, double-ka stats-box-ka, marka halkan waxaa loo
+   isticmaalay solid oo dhumuc leh + midab DHAB AH (var(--danger), ma aha
+   --danger-border oo khafiif ah) — jadwalkan wuxuu ka warramaa lacagta
+   maqan ee ugu muhiimsan, sidaas darteed accent-kiisu waa in la arki karo. */
+.dash-card.acc-table-card{
+  border: 2px solid var(--danger);
+  box-shadow: 0 2px 8px rgba(11,31,43,0.04);
+}
+
 .acc-stats-box{
   background: #fff;
   border: 4px double #C7D0D9;

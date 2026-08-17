@@ -31,6 +31,18 @@
   gap:20px;
   align-items:start;
 }
+
+/* Design polish (2026-08-17): kaadhka "Xaadiriska Maanta" (present/absent/
+   leave donut) wuxuu horeba lahaa border-ka guud ee khafiifka ah
+   (.dash-card, var(--line) #EDF1F4 — aad u khafiif si loo arko). Halkan
+   waxaa loo isticmaalay border DHAB AH (var(--danger), ma aha --danger-border
+   oo khafiif ah) — isla midabka segment-ka "Maqan" ee AttendanceDonutChart.jsx
+   (SEGMENT_COLORS), maadaama ardayda maqan ay tahay xogta ugu muhiimsan ee
+   kaadhkan ka warramo. */
+.dash-card.overview-attendance-card{
+  border: 2px solid var(--danger);
+  box-shadow: 0 2px 8px rgba(11,31,43,0.04);
+}
 @media (max-width: 900px){
   .overview-grid{ grid-template-columns: 1fr; }
 }
