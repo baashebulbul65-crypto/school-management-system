@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import BackButton from '../../components/dashboard/BackButton';
 import '../../styles/dashboard-shared.css';
 
 const RETENTION_DAYS = 45;
@@ -17,7 +17,6 @@ function daysLeft(deletedAt) {
 
 function Trash() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { deletedStudents, restoreStudent, permanentlyDeleteStudent } = useSchoolData();
 
   const handlePermanentDelete = (studentId, fullName) => {
@@ -32,10 +31,7 @@ function Trash() {
           <h2>{t('trash.title')}</h2>
           <p>{t('trash.subtitle')}</p>
         </div>
-        <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          {t('common.backToDashboard')}
-        </button>
+        <BackButton to="/dashboard" />
       </div>
 
       <div className="dash-card">

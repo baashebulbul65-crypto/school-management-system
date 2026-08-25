@@ -15,23 +15,6 @@
   flex-wrap: wrap;
 }
 
-.cdm-back{
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--danger-bg);
-  color: var(--danger-dark);
-  border: none;
-  padding: 9px 16px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-.cdm-back:hover{ background: #F9D8D3; }
-.cdm-back svg{ width: 15px; height: 15px; }
-
 .cdm-title{
   flex: 1;
   text-align: center;

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import BackButton from '../../components/dashboard/BackButton';
 import StudentProfileModal from './StudentProfileModal';
 import '../../styles/dashboard-shared.css';
 
@@ -13,7 +13,6 @@ function initials(name) {
 
 function ArchivedStudents() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { archivedStudents, restoreArchivedStudent, allStudentAttendanceRecords } = useSchoolData();
   const [selectedStudentId, setSelectedStudentId] = useState(null);
 
@@ -35,10 +34,7 @@ function ArchivedStudents() {
           <h2>{t('students.archive.pageTitle')}</h2>
           <p>{t('students.archive.pageSubtitle')}</p>
         </div>
-        <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          {t('common.backToDashboard')}
-        </button>
+        <BackButton to="/dashboard" />
       </div>
 
       <div className="dash-card">

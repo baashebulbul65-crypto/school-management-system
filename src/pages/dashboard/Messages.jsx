@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import BackButton from '../../components/dashboard/BackButton';
 import '../../styles/dashboard-shared.css';
 import './Messages.css';
 
@@ -16,7 +16,6 @@ function formatTime(iso) {
 
 function Messages() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { profile } = useAuth();
   const { students, classes, staffMessages, sendStaffMessage, markThreadReadByStaff } = useSchoolData();
   const [search, setSearch] = useState('');
@@ -89,10 +88,7 @@ function Messages() {
           <h2>{t('messages.pageTitle')}</h2>
           <p>{t('messages.pageSubtitle')}</p>
         </div>
-        <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          {t('common.backToDashboard')}
-        </button>
+        <BackButton to="/dashboard" />
       </div>
 
       <div className="msg-layout">

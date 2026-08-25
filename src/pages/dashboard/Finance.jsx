@@ -10,6 +10,7 @@ import { getFeeType, studentFeeOwed } from '../../utils/studentFee';
 import { getMonthlySalaryStatus } from '../../utils/staffSalary';
 import FinanceDonutChart from '../../components/dashboard/FinanceDonutChart';
 import MonthCalendarPicker from '../../components/dashboard/MonthCalendarPicker';
+import BackButton from '../../components/dashboard/BackButton';
 import FinanceEntryModal from './FinanceEntryModal';
 import ClassDetailModal from './ClassDetailModal';
 import FeeCategoryListModal from './FeeCategoryListModal';
@@ -253,10 +254,7 @@ function Finance() {
           <p>{t('finance.pageSubtitle')}</p>
         </div>
         <div className="page-header-actions">
-          <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            {t('common.backToDashboard')}
-          </button>
+          <BackButton to="/dashboard" />
           <button className="btn-secondary" onClick={handlePrint}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
             {t('finance.printExport')}

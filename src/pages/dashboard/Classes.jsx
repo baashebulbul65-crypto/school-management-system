@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import ClassFormModal from './ClassFormModal';
+import BackButton from '../../components/dashboard/BackButton';
 import '../../styles/dashboard-shared.css';
 import './Classes.css';
 
@@ -68,12 +69,15 @@ function Classes() {
           <h2>{t('classes.pageTitle')}</h2>
           <p>{t('classes.pageSubtitle')}</p>
         </div>
-        {isOwner && (
-          <button className="btn-primary" onClick={openAddModal}>
-            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            {t('classes.addNew')}
-          </button>
-        )}
+        <div className="page-header-actions">
+          <BackButton to="/dashboard" />
+          {isOwner && (
+            <button className="btn-primary" onClick={openAddModal}>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              {t('classes.addNew')}
+            </button>
+          )}
+        </div>
       </div>
 
       {notLinked && (

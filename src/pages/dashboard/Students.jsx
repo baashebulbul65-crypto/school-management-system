@@ -8,6 +8,7 @@ import { currentMonthValue } from '../../utils/somaliDate';
 import StudentProfileModal from './StudentProfileModal';
 import StudentFormModal from './StudentFormModal';
 import ArchiveStudentModal from './ArchiveStudentModal';
+import BackButton from '../../components/dashboard/BackButton';
 import '../../styles/dashboard-shared.css';
 
 const STATUS_CLS = { active: 'badge-success', inactive: 'badge-neutral' };
@@ -112,10 +113,7 @@ function Students() {
           <p>{t('students.pageSubtitle')}</p>
         </div>
         <div className="page-header-actions">
-          <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            {t('common.backToDashboard')}
-          </button>
+          <BackButton to="/dashboard" />
           {isOwner && (
             <button className="btn-primary" onClick={openAddModal}>
               <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>

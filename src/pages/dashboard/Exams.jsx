@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { classroomName } from '../../hooks/useClassOptions';
 import { gradeFromPercent } from '../../utils/grades';
+import BackButton from '../../components/dashboard/BackButton';
 import ExamFormModal from './ExamFormModal';
 import '../../styles/dashboard-shared.css';
 import './Exams.css';
@@ -18,7 +18,6 @@ function initials(name) {
 
 function Exams() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { students, classes, subjects, exams, examMarks, addExam, updateExam, removeExam, updateExamMark } = useSchoolData();
   const [activeTab, setActiveTab] = useState('exams');
   const [showFormModal, setShowFormModal] = useState(false);
@@ -193,10 +192,7 @@ function Exams() {
           <p>{t('exams.pageSubtitle')}</p>
         </div>
         <div className="page-header-actions">
-          <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            {t('common.backToDashboard')}
-          </button>
+          <BackButton to="/dashboard" />
           {activeTab === 'exams' && (
             <button className="btn-primary" onClick={openAddModal}>
               <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>

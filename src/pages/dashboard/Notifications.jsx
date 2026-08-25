@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
+import BackButton from '../../components/dashboard/BackButton';
 import '../../styles/dashboard-shared.css';
 import './Notifications.css';
 
@@ -44,10 +45,7 @@ function Notifications() {
           <p>{t('notifications.subtitle')}</p>
         </div>
         <div className="page-header-actions">
-          <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            {t('common.backToDashboard')}
-          </button>
+          <BackButton to="/dashboard" />
           {unreadCount > 0 && (
             <button className="btn-secondary" onClick={markAllAsRead}>
               <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>

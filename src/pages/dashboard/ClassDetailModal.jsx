@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { getFeeType, studentFeeOwed } from '../../utils/studentFee';
+import BackButton from '../../components/dashboard/BackButton';
 import './ClassDetailModal.css';
 
 // Finance audit (2026-08-03): qaybta M.Qoys (family) — labadaba roster-ka
@@ -90,10 +91,7 @@ function ClassDetailModal({ row, monthValue, onClose }) {
   return (
     <div className="cdm-page">
       <div className="cdm-topbar">
-        <button className="cdm-back" onClick={onClose}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          {t('finance.classDetail.back')}
-        </button>
+        <BackButton onClick={onClose} />
         <div className="cdm-title">{row.name}</div>
         <div className="cdm-toolbar-right">
           <button className="cdm-icon-btn" title={t('finance.classDetail.print')} onClick={handlePrint}>
