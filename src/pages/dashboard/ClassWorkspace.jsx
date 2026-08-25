@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { todayISODate, formatDMY } from '../../utils/somaliDate';
 import QuranTargetFormModal from './QuranTargetFormModal';
 import StudentFormModal from './StudentFormModal';
+import BackButton from '../../components/dashboard/BackButton';
 import '../../styles/dashboard-shared.css';
 import './Attendance.css';
 import './Exams.css';
@@ -21,7 +22,6 @@ function ClassWorkspace() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const { classId } = useParams();
-  const navigate = useNavigate();
   const {
     classes, students, teachers, exams, examMarks, attendanceToday, setStudentAttendanceStatus, updateExamMark,
     quranProgressToday, setQuranProgress,
@@ -44,7 +44,6 @@ function ClassWorkspace() {
     { id: 'roster', label: t('classWorkspace.tabs.roster') },
     { id: 'attendance', label: t('classWorkspace.tabs.attendance') },
     { id: 'grades', label: t('classWorkspace.tabs.grades') },
-    { id: 'quran', label: t('classWorkspace.tabs.quran') },
     { id: 'quranTargets', label: t('classWorkspace.tabs.quranTargets') },
   ];
 
@@ -129,7 +128,7 @@ function ClassWorkspace() {
     return (
       <div className="dash-card cw-not-found">
         <p>{t('classWorkspace.notFound')}</p>
-        <button className="btn-secondary" onClick={() => navigate('/dashboard/classes')}>{t('classWorkspace.backToClasses')}</button>
+        <BackButton to="/dashboard/classes" />
       </div>
     );
   }
@@ -148,10 +147,7 @@ function ClassWorkspace() {
               {t('students.addNew')}
             </button>
           )}
-          <button className="btn-secondary" onClick={() => navigate('/dashboard/classes')}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            {t('classWorkspace.backToClasses')}
-          </button>
+          <BackButton to="/dashboard/classes" />
         </div>
       </div>
 
@@ -199,19 +195,38 @@ function ClassWorkspace() {
         </div>
       )}
 
-      {/* ===== XAADIRIS ===== */}
+      {/* ===== XAADIRIS + QURAAN (hal view — macallinku meel kale uma baahna, fiiri ClassWorkspace.jsx faallada kore) ===== */}
       {activeTab === 'attendance' && (
         <div className="dash-card">
           <div className="dash-card-head">
             <h3>{t('classWorkspace.attendance.title')}</h3>
             <span className="cw-count-badge">{todayISODate()}</span>
           </div>
+
+          <div className="cw-quran-surah-row">
+            <label>{t('classWorkspace.quran.surahLabel')}</label>
+            <input
+              type="text"
+              placeholder={t('classWorkspace.quran.surahPlaceholder')}
+              value={surahInput}
+              onChange={(e) => setSurahInput(e.target.value)}
+            />
+          </div>
+
           <div className="data-table-wrap">
-            <table className="data-table">
-              <thead><tr><th>{t('classWorkspace.attendance.table.student')}</th><th>{t('classWorkspace.attendance.table.status')}</th></tr></thead>
+            <table className="data-table cw-att-quran-table">
+              <thead>
+                <tr>
+                  <th>{t('classWorkspace.attendance.table.student')}</th>
+                  <th>{t('classWorkspace.attendance.table.status')}</th>
+                  <th>{t('classWorkspace.attendance.table.quran')}</th>
+                </tr>
+              </thead>
               <tbody>
                 {classStudents.map((s) => {
                   const status = attendanceToday.students[s.id] || null;
+                  const isPresent = status === 'present';
+                  const progress = quranProgressToday[s.id];
                   return (
                     <tr key={s.id}>
                       <td>
@@ -233,11 +248,34 @@ function ClassWorkspace() {
                           ))}
                         </div>
                       </td>
+                      <td>
+                        <div
+                          className="att-status-btn-group"
+                          title={!isPresent ? t('classWorkspace.attendance.quranLockedTooltip') : undefined}
+                        >
+                          <button
+                            type="button"
+                            className={`att-status-btn present${progress?.result === 'gartay' ? ' active' : ''}`}
+                            disabled={!isPresent}
+                            onClick={() => setQuranProgress(s.id, s.className, 'gartay', surahInput)}
+                          >
+                            {t('classWorkspace.quran.knew')}
+                          </button>
+                          <button
+                            type="button"
+                            className={`att-status-btn absent${progress?.result === 'garanwaa' ? ' active' : ''}`}
+                            disabled={!isPresent}
+                            onClick={() => setQuranProgress(s.id, s.className, 'garanwaa', surahInput)}
+                          >
+                            {t('classWorkspace.quran.didNotKnow')}
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
                 {classStudents.length === 0 && (
-                  <tr><td colSpan="2" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('classWorkspace.attendance.empty')}</td></tr>
+                  <tr><td colSpan="3" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('classWorkspace.attendance.empty')}</td></tr>
                 )}
               </tbody>
             </table>
@@ -301,71 +339,6 @@ function ClassWorkspace() {
               </div>
             </>
           )}
-        </div>
-      )}
-
-      {/* ===== QURAANKA ===== */}
-      {activeTab === 'quran' && (
-        <div className="dash-card">
-          <div className="dash-card-head">
-            <h3>{t('classWorkspace.quran.title')}</h3>
-            <span className="cw-count-badge">{todayISODate()}</span>
-          </div>
-
-          <div className="cw-quran-surah-row">
-            <label>{t('classWorkspace.quran.surahLabel')}</label>
-            <input
-              type="text"
-              placeholder={t('classWorkspace.quran.surahPlaceholder')}
-              value={surahInput}
-              onChange={(e) => setSurahInput(e.target.value)}
-            />
-          </div>
-
-          <div className="data-table-wrap">
-            <table className="data-table">
-              <thead><tr><th>{t('classWorkspace.quran.table.student')}</th><th>{t('classWorkspace.quran.table.currentStatus')}</th><th>{t('classWorkspace.quran.table.mark')}</th></tr></thead>
-              <tbody>
-                {classStudents.map((s) => {
-                  const progress = quranProgressToday[s.id];
-                  return (
-                    <tr key={s.id}>
-                      <td>
-                        <div className="cell-person">
-                          <div className="cell-avatar">{initials(s.fullName)}</div>
-                          <span className="cell-name">{s.fullName}</span>
-                        </div>
-                      </td>
-                      <td>
-                        {progress?.result === 'gartay' && <span className="badge badge-success">{t('classWorkspace.quran.knew')}{progress.surah ? ` — ${progress.surah}` : ''}</span>}
-                        {progress?.result === 'garanwaa' && <span className="badge badge-danger">{t('classWorkspace.quran.didNotKnow')}{progress.surah ? ` — ${progress.surah}` : ''}</span>}
-                        {!progress && <span className="badge badge-neutral">{t('classWorkspace.quran.notMarkedYet')}</span>}
-                      </td>
-                      <td>
-                        <div className="att-status-btn-group">
-                          <button
-                            className={`att-status-btn present${progress?.result === 'gartay' ? ' active' : ''}`}
-                            onClick={() => setQuranProgress(s.id, s.className, 'gartay', surahInput)}
-                          >
-                            {t('classWorkspace.quran.knew')}
-                          </button>
-                          <button
-                            className={`att-status-btn absent${progress?.result === 'garanwaa' ? ' active' : ''}`}
-                            onClick={() => setQuranProgress(s.id, s.className, 'garanwaa', surahInput)}
-                          >
-                            {t('classWorkspace.quran.didNotKnow')}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {classStudents.length === 0 && (
-                  <tr><td colSpan="3" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('classWorkspace.quran.empty')}</td></tr>
-                )}
-              </tbody>
-            </table>
-          </div>
         </div>
       )}
 

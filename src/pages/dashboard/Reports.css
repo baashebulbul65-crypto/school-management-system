@@ -207,3 +207,30 @@
   .rep-metric-value{ font-size:15px; }
   .rep-metric-label{ font-size:10px; }
 }
+
+/* Tab-ka "Dhaqdhaqaaqa" (Activity Log, guuray Overview.jsx 2026-08-25) */
+.activity-list{ display:flex; flex-direction:column; }
+
+.activity-row{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:13px 0;
+  border-bottom:1px solid var(--line);
+}
+.activity-row:last-child{ border-bottom:none; padding-bottom:0; }
+
+.activity-dot{
+  width:9px; height:9px;
+  border-radius:50%;
+  margin-top:5px;
+  flex-shrink:0;
+  background:#94A3B8;
+}
+.activity-dot.success{ background: var(--mint); }
+.activity-dot.warning{ background:var(--warning); }
+.activity-dot.neutral{ background:#94A3B8; }
+
+.activity-text{ display:flex; flex-direction:column; gap:3px; }
+.activity-text > div:first-child{ font-size:13.5px; color: var(--navy); line-height:1.4; }
+.activity-time{ font-size:12px; color: var(--grey-text); }

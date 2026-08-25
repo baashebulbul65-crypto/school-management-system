@@ -322,7 +322,11 @@ service cloud.firestore {
       allow read: if isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null))
         || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
       allow create, update: if isMyClassData(request.resource.data.schoolCode, request.resource.data.get('classTeacherId', null));
-      allow delete: if false;
+      // delete (Xaadiris+Quraan UX merge, 2026-08-25): la ogolaaday isla
+      // mabda'a create/update — marka ardayga xaadiriskiisu maalintaas u
+      // beddelo Maqan/Fasax, calaamaddii Quraanka ee isla maalinta waa in
+      // la tirtiraa (fiiri SchoolDataContext.jsx: setStudentAttendanceStatus).
+      allow delete: if isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null));
     }
 
     // ===== quranTargets =====

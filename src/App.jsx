@@ -16,6 +16,8 @@ const Students = lazy(() => import('./pages/dashboard/Students'));
 const Teachers = lazy(() => import('./pages/dashboard/Teachers'));
 const Classes = lazy(() => import('./pages/dashboard/Classes'));
 const ClassWorkspace = lazy(() => import('./pages/dashboard/ClassWorkspace'));
+const QuranTracking = lazy(() => import('./pages/dashboard/QuranTracking'));
+const Leaderboard = lazy(() => import('./pages/dashboard/Leaderboard'));
 const Subjects = lazy(() => import('./pages/dashboard/Subjects'));
 const Attendance = lazy(() => import('./pages/dashboard/Attendance'));
 const Messages = lazy(() => import('./pages/dashboard/Messages'));
@@ -59,6 +61,9 @@ function App() {
         <Route path="teachers" element={<RequireRole allow={['owner']}><Teachers /></RequireRole>} />
         <Route path="classes" element={<Classes />} />
         <Route path="classes/:classId" element={<ClassWorkspace />} />
+        <Route path="quran-tracking" element={<QuranTracking />} />
+        <Route path="quran-tracking/:classId" element={<QuranTracking />} />
+        <Route path="leaderboard" element={<Leaderboard />} />
         <Route path="subjects" element={<Subjects />} />
         <Route path="attendance" element={<Attendance />} />
         <Route path="messages" element={<Messages />} />

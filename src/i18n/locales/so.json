@@ -1,7 +1,7 @@
 {
   "common": {
     "close": "Xir",
-    "backToDashboard": "Ku Noqo Dashboard-ka",
+    "back": "Noqo",
     "cancel": "Jooji",
     "save": "Kaydi Isbeddelka",
     "select": "Dooro",
@@ -53,23 +53,15 @@
       "feeDueStudents": "Ardayda Leh Baaqi Lacageed",
       "attendanceToday": "Imaanshaha Maanta",
       "upcomingExams": "Imtixaanada Soo Socda",
-      "absentToday": "Ardayda Maqan Maanta"
+      "absentToday": "Ardayda Maqan Maanta",
+      "quranMissedToday": "Ardayda Aan Maanta Garanin Quraanka",
+      "leaderboard": "Ardayda ugu Fiican"
     },
     "viewDetails": "Eeg Faahfaahin →",
     "verifiedTooltip": "Dugsi La Xaqiijiyay",
     "attendanceCard": {
       "title": "Xaaladda Imaanshaha Maanta",
       "viewAll": "Eeg Dhammaan →"
-    },
-    "recentActivity": {
-      "title": "Dhaqdhaqaaqa Dambe",
-      "items": [
-        { "text": "Arday cusub ayaa la diiwaan geliyay — Fasalka 3A", "time": "10 daqiiqo kahor" },
-        { "text": "Rasiid lacageed ayaa la sameeyay — $120", "time": "45 daqiiqo kahor" },
-        { "text": "Macallin cusub ayaa la diiwaan geliyay", "time": "2 saacadood kahor" },
-        { "text": "Imaanshaha maanta lama duubin — Fasalka 2B", "time": "3 saacadood kahor" },
-        { "text": "Waalid ayaa fariin ka soo diray dugsiga", "time": "Shalay" }
-      ]
     }
   },
   "absentModal": {
@@ -410,7 +402,6 @@
       "submitDocument": "Ku Dar Diiwaanka"
     },
     "classDetail": {
-      "back": "Noqo",
       "print": "Print",
       "filterAll": "Dhammaan",
       "sortDefault": "Kala saar...",
@@ -489,6 +480,11 @@
     "pageSubtitle": "Warbixin guud oo isku keenta xogta ardayda, macallimiinta, lacagta, iyo imtixaanada.",
     "exportPdf": "Export PDF",
     "unassigned": "Aan la qeexin",
+    "tabs": { "reports": "Warbixinno", "activity": "Dhaqdhaqaaqa" },
+    "activityLog": {
+      "title": "Dhaqdhaqaaqa Dambe",
+      "empty": "Weli dhaqdhaqaaq lama diiwaan gelin."
+    },
     "metrics": {
       "totalStudents": "Wadarta Ardayda",
       "avgAttendance": "Celceliska Imaanshaha",
@@ -544,10 +540,9 @@
   },
   "classWorkspace": {
     "notFound": "Fasalkan lama helin.",
-    "backToClasses": "Ku Noqo Fasallada",
     "title": "Galaaska — {{grade}} {{section}}",
     "classTeacherLabel": "Macallinka Fasalka",
-    "tabs": { "roster": "Ardayda", "attendance": "Xaadiris", "grades": "Dhibcaha", "quran": "Quraanka", "quranTargets": "Yoolka Quraanka" },
+    "tabs": { "roster": "Ardayda", "attendance": "Xaadiris", "grades": "Dhibcaha", "quranTargets": "Yoolka Quraanka" },
     "roster": {
       "title": "Ardayda Fasalka",
       "countBadge": "{{count}} Arday",
@@ -556,7 +551,8 @@
     },
     "attendance": {
       "title": "Xaadiriska Maanta",
-      "table": { "student": "Arday", "status": "Xaaladda" },
+      "table": { "student": "Arday", "status": "Xaaladda", "quran": "Quraanka" },
+      "quranLockedTooltip": "Quraanka waxaa la calaamadin karaa kaliya marka ardaygu 'Joog' yahay.",
       "empty": "Wali arday kuma jiraan fasalkan."
     },
     "grades": {
@@ -567,14 +563,10 @@
       "table": { "student": "Ardayga", "percent": "Boqolkiiba" }
     },
     "quran": {
-      "title": "Horumarka Quraanka Maanta",
       "surahLabel": "Suurada/Qeybta Maanta (ikhtiyaari):",
       "surahPlaceholder": "Tusaale: Suuratul Baqarah, aayad 1-20",
-      "table": { "student": "Arday", "currentStatus": "Xaaladda Hadda", "mark": "Calaamadi" },
       "knew": "Wuu Gartay",
-      "didNotKnow": "Garanwaa",
-      "notMarkedYet": "Wali Lama Calaamadin",
-      "empty": "Wali arday kuma jiraan fasalkan."
+      "didNotKnow": "Magaran"
     },
     "quranTargets": {
       "title": "Yoolka Quraanka",
@@ -604,6 +596,29 @@
         "cancel": "Jooji"
       }
     }
+  },
+  "quranTracking": {
+    "title": "Ardayda Aan Maanta Garanin Quraanka",
+    "subtitle": "Dooro fasal si aad u aragto ardayda aan maanta garanin Quraanka.",
+    "notFound": "Fasalkan lama helin.",
+    "table": { "class": "Fasalka", "count": "Tirada", "countBadge": "{{count}} Arday" },
+    "empty": "Wali fasallo kuma jiraan dugsigan.",
+    "classTitle": "{{grade}}{{section}} — Ardayda Aan Maanta Garanin",
+    "classSubtitle": "{{count}} arday ayaan maanta garanin Quraanka",
+    "classEmpty": "Fasalkan dhammaan ardayda ama way garteen ama weli lama calaamadin maanta.",
+    "legendNotMarked": "Lama Calaamadin"
+  },
+  "leaderboard": {
+    "title": "Ardayda ugu Fiican ee Xaadiriska",
+    "subtitle": "Top 10-ka ardayda, sida ay u kala horreeyaan xaadiriska iyo waqtiga ay dugsiga joogeen.",
+    "tabs": { "present": "Ugu Joogta Badan", "tenure": "Ugu Waqtiga Dheer" },
+    "classFilterLabel": "Fasalka:",
+    "allClasses": "Dhammaan Fasallada",
+    "tenureExcludedNote": "{{count}} arday ayaa laga saaray liiskan, xog kuma filna in la xisaabiyo waqtigooda.",
+    "table": { "rank": "Derejada", "student": "Arday", "value": "Tirada" },
+    "presentUnit": "Maalmood",
+    "tenureUnit": "Maalmood",
+    "empty": "Wali xog kuma filna in Top 10 la sameeyo."
   },
   "settings": {
     "pageTitle": "Dejinta",

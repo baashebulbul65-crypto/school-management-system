@@ -1,11 +1,13 @@
-import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { useNotifications } from '../../context/NotificationsContext';
 import { classroomName } from '../../hooks/useClassOptions';
 import { weekStartISODate } from '../../utils/somaliDate';
+import { formatRelativeTime } from '../../utils/formatRelativeTime';
+import BackButton from '../../components/dashboard/BackButton';
 import '../../styles/dashboard-shared.css';
 import './Reports.css';
 
@@ -24,8 +26,9 @@ function gpaFromPercent(pct) {
 
 function Reports() {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const { students, teachers, classes, exams, examMarks, expenses, income, feePayments, allStudentAttendanceRecords, allStaffAttendanceRecords } = useSchoolData();
+  const { notifications } = useNotifications();
+  const [activeTab, setActiveTab] = useState('reports');
 
   // classId marka jira, className fallback ilaa ardayda/imtixaannada aan weli
   // la dib-u-kaydin (fiiri backfill-ka SchoolDataContext.jsx) — isla habka
@@ -154,6 +157,36 @@ function Reports() {
       .sort((a, b) => b.rate - a.rate);
   }, [teachers, allStaffAttendanceRecords]);
 
+  // Diiwaanka "Dhaqdhaqaaqa" (Activity Log, guuray Overview.jsx 2026-08-25) —
+  // isku darsanaya dhacdooyinka dhabta ah ee ugu dambeeyay: lacagaha la
+  // ururiyay (feePayments) + ogeysiisyada (maqnaanshaha/lacagta baaqiga ah),
+  // labaduba waxay leeyihiin taariikh (createdAt) dhab ah — ma aha xog
+  // beebeen ah. 50kii ugu dambeeyay oo qura ayaa la tusayaa (diiwaan-
+  // joogto ah, ma aha kaliya preview-gii shanta ahaa ee Overview lahaan jiray).
+  const recentActivity = useMemo(() => {
+    const paymentEvents = feePayments
+      .filter((p) => p.createdAt)
+      .map((p) => ({
+        id: `payment_${p.id}`,
+        type: 'success',
+        text: `Lacag $${(p.amount || 0).toLocaleString()} ayaa la ururiyay${p.collectedByName ? ` — ${p.collectedByName}` : ''}`,
+        time: p.createdAt,
+      }));
+    // notifications waxay horeba u shaandhaysan tahay (NotificationsContext.jsx)
+    // fee-ga iyo fasallada kale ee macallinka — halkan lama baahna filter dheeraad ah.
+    const notifEvents = notifications
+      .filter((n) => n.time)
+      .map((n) => ({
+        id: `notif_${n.id}`,
+        type: n.type === 'fee' ? 'warning' : 'neutral',
+        text: `${n.title} — ${n.description}`,
+        time: n.time,
+      }));
+    return [...paymentEvents, ...notifEvents]
+      .sort((a, b) => b.time.localeCompare(a.time))
+      .slice(0, 50);
+  }, [feePayments, notifications]);
+
   const handleExportPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(16);
@@ -204,17 +237,49 @@ function Reports() {
           <p>{t('reports.pageSubtitle')}</p>
         </div>
         <div className="rep-header-actions">
-          <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            {t('common.backToDashboard')}
-          </button>
-          <button className="btn-primary" onClick={handleExportPDF}>
-            <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-            {t('reports.exportPdf')}
-          </button>
+          <BackButton to="/dashboard" />
+          {activeTab === 'reports' && (
+            <button className="btn-primary" onClick={handleExportPDF}>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              {t('reports.exportPdf')}
+            </button>
+          )}
         </div>
       </div>
 
+      <div className="fin-tabs">
+        <button className={`fin-tab ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => setActiveTab('reports')}>
+          {t('reports.tabs.reports')}
+        </button>
+        <button className={`fin-tab ${activeTab === 'activity' ? 'active' : ''}`} onClick={() => setActiveTab('activity')}>
+          {t('reports.tabs.activity')}
+        </button>
+      </div>
+
+      {activeTab === 'activity' && (
+        <div className="dash-card">
+          <div className="dash-card-head">
+            <h3>{t('reports.activityLog.title')}</h3>
+          </div>
+          <div className="activity-list">
+            {recentActivity.length === 0 && (
+              <p className="rep-empty">{t('reports.activityLog.empty')}</p>
+            )}
+            {recentActivity.map((a) => (
+              <div className="activity-row" key={a.id}>
+                <span className={`activity-dot ${a.type}`}></span>
+                <div className="activity-text">
+                  <div>{a.text}</div>
+                  <div className="activity-time">{formatRelativeTime(a.time)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'reports' && (
+      <>
       {/* KEY METRICS */}
       <div className="rep-metrics-grid">
         <div className="rep-metric-card blue">
@@ -381,6 +446,8 @@ function Reports() {
         </div>
 
       </div>
+      </>
+      )}
     </div>
   );
 }

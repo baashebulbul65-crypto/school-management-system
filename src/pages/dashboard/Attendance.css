@@ -129,6 +129,24 @@ span.att-status-btn:hover{ transform: none; }
   opacity: 1;
   box-shadow: 0 0 0 1.5px currentColor inset;
 }
+.att-status-btn-group .att-status-btn:disabled{
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+.att-status-btn-group .att-status-btn:disabled:hover{ transform: none; }
+
+/* Xaadiris + Quraan hal miis (ClassWorkspace) — compact mobile-first: laba
+   xog (xaadiris/Quraan) hal row si aan macalinku ugu baahnayn scroll/tab
+   dheeraad ah, fiiri ClassWorkspace.jsx. */
+.cw-att-quran-table .att-status-btn{ padding: 6px 12px; font-size: 12px; }
+.cw-att-quran-table .att-status-btn-group{ gap: 5px; }
+
+@media (max-width: 640px){
+  .cw-att-quran-table thead th,
+  .cw-att-quran-table tbody td{ padding: 10px 8px; }
+  .cw-att-quran-table .att-status-btn{ padding: 5px 9px; font-size: 11px; }
+  .cw-att-quran-table .att-status-btn-group{ gap: 4px; }
+}
 
 /* Period tabs (reports) */
 .att-period-tabs{ display: flex; gap: 6px; }

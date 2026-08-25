@@ -1,7 +1,7 @@
 {
   "common": {
     "close": "إغلاق",
-    "backToDashboard": "العودة إلى لوحة التحكم",
+    "back": "رجوع",
     "cancel": "إلغاء",
     "save": "حفظ التغييرات",
     "select": "اختيار",
@@ -53,23 +53,15 @@
       "feeDueStudents": "الطلاب ذوو الرصيد المتبقي",
       "attendanceToday": "الحضور اليوم",
       "upcomingExams": "الامتحانات القادمة",
-      "absentToday": "الطلاب الغائبون اليوم"
+      "absentToday": "الطلاب الغائبون اليوم",
+      "quranMissedToday": "الطلاب الذين لم يحفظوا القرآن اليوم",
+      "leaderboard": "أفضل الطلاب"
     },
     "viewDetails": "عرض التفاصيل ←",
     "verifiedTooltip": "مدرسة موثّقة",
     "attendanceCard": {
       "title": "حالة الحضور اليوم",
       "viewAll": "عرض الكل ←"
-    },
-    "recentActivity": {
-      "title": "النشاط الأخير",
-      "items": [
-        { "text": "تم تسجيل طالب جديد — الفصل 3A", "time": "قبل 10 دقائق" },
-        { "text": "تم إصدار إيصال دفع — $120", "time": "قبل 45 دقيقة" },
-        { "text": "تم تسجيل معلم جديد", "time": "قبل ساعتين" },
-        { "text": "لم يتم تسجيل الحضور اليوم — الفصل 2B", "time": "قبل 3 ساعات" },
-        { "text": "أرسل أحد أولياء الأمور رسالة إلى المدرسة", "time": "أمس" }
-      ]
     }
   },
   "absentModal": {
@@ -410,7 +402,6 @@
       "submitDocument": "إضافة السجل"
     },
     "classDetail": {
-      "back": "رجوع",
       "print": "طباعة",
       "filterAll": "الكل",
       "sortDefault": "ترتيب حسب...",
@@ -489,6 +480,11 @@
     "pageSubtitle": "تقرير عام يجمع بيانات الطلاب والمعلمين والمالية والامتحانات.",
     "exportPdf": "تصدير PDF",
     "unassigned": "غير محدد",
+    "tabs": { "reports": "التقارير", "activity": "النشاط" },
+    "activityLog": {
+      "title": "النشاط الأخير",
+      "empty": "لم يتم تسجيل أي نشاط بعد."
+    },
     "metrics": {
       "totalStudents": "إجمالي الطلاب",
       "avgAttendance": "متوسط الحضور",
@@ -544,10 +540,9 @@
   },
   "classWorkspace": {
     "notFound": "لم يتم العثور على هذا الفصل.",
-    "backToClasses": "العودة إلى الفصول",
     "title": "مساحة العمل — {{grade}} {{section}}",
     "classTeacherLabel": "معلم الفصل",
-    "tabs": { "roster": "الطلاب", "attendance": "الحضور", "grades": "الدرجات", "quran": "القرآن", "quranTargets": "هدف القرآن" },
+    "tabs": { "roster": "الطلاب", "attendance": "الحضور", "grades": "الدرجات", "quranTargets": "هدف القرآن" },
     "roster": {
       "title": "طلاب الفصل",
       "countBadge": "{{count}} طالب",
@@ -556,7 +551,8 @@
     },
     "attendance": {
       "title": "حضور اليوم",
-      "table": { "student": "الطالب", "status": "الحالة" },
+      "table": { "student": "الطالب", "status": "الحالة", "quran": "القرآن" },
+      "quranLockedTooltip": "لا يمكن تسجيل القرآن إلا عندما تكون حالة الطالب 'حاضر'.",
       "empty": "لا يوجد طلاب في هذا الفصل بعد."
     },
     "grades": {
@@ -567,14 +563,10 @@
       "table": { "student": "الطالب", "percent": "النسبة المئوية" }
     },
     "quran": {
-      "title": "متابعة حفظ القرآن اليوم",
       "surahLabel": "السورة/الجزء اليوم (اختياري):",
       "surahPlaceholder": "مثال: سورة البقرة، آية 1-20",
-      "table": { "student": "الطالب", "currentStatus": "الحالة الحالية", "mark": "التقييم" },
       "knew": "حفظ",
-      "didNotKnow": "لم يحفظ",
-      "notMarkedYet": "لم يُقيَّم بعد",
-      "empty": "لا يوجد طلاب في هذا الفصل بعد."
+      "didNotKnow": "لم يحفظ"
     },
     "quranTargets": {
       "title": "هدف القرآن",
@@ -604,6 +596,29 @@
         "cancel": "إلغاء"
       }
     }
+  },
+  "quranTracking": {
+    "title": "الطلاب الذين لم يحفظوا القرآن اليوم",
+    "subtitle": "اختر فصلاً لعرض الطلاب الذين لم يحفظوا القرآن اليوم.",
+    "notFound": "لم يتم العثور على هذا الفصل.",
+    "table": { "class": "الفصل", "count": "العدد", "countBadge": "{{count}} طالب" },
+    "empty": "لا يوجد فصول في هذه المدرسة بعد.",
+    "classTitle": "{{grade}}{{section}} — الطلاب الذين لم يحفظوا اليوم",
+    "classSubtitle": "{{count}} طالب لم يحفظوا القرآن اليوم",
+    "classEmpty": "جميع طلاب هذا الفصل إما حفظوا أو لم يتم تقييمهم بعد اليوم.",
+    "legendNotMarked": "لم يُقيَّم"
+  },
+  "leaderboard": {
+    "title": "أفضل الطلاب في الحضور",
+    "subtitle": "أفضل 10 طلاب، حسب الحضور ومدة بقائهم في المدرسة.",
+    "tabs": { "present": "الأكثر حضوراً", "tenure": "الأقدم في المدرسة" },
+    "classFilterLabel": "الفصل:",
+    "allClasses": "جميع الفصول",
+    "tenureExcludedNote": "تم استبعاد {{count}} طالب من هذه القائمة، لا تتوفر بيانات كافية لحساب مدتهم.",
+    "table": { "rank": "الترتيب", "student": "الطالب", "value": "العدد" },
+    "presentUnit": "يوم",
+    "tenureUnit": "يوم",
+    "empty": "لا تتوفر بيانات كافية بعد لإنشاء قائمة أفضل 10."
   },
   "settings": {
     "pageTitle": "الإعدادات",

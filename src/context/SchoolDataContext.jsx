@@ -31,7 +31,7 @@ import {
 } from '../firebase/attendance';
 import { subscribeToStaffRoster, createStaffRosterDoc, updateStaffRosterDoc, deleteStaffRosterDoc } from '../firebase/staffRoster';
 import { subscribeToExamMarks, setExamMarkRecord, backfillExamMarksClassScoping } from '../firebase/examMarks';
-import { subscribeToQuranProgressByDate, setQuranProgressRecord, backfillQuranProgressClassScoping } from '../firebase/quranProgress';
+import { subscribeToQuranProgressByDate, setQuranProgressRecord, deleteQuranProgressRecord, subscribeToAllQuranProgressRecords, backfillQuranProgressClassScoping } from '../firebase/quranProgress';
 import { subscribeToQuranTargets, createQuranTargetDoc, updateQuranTargetDoc, backfillQuranTargetsClassScoping } from '../firebase/quranTargets';
 import { subscribeToAllThreads, sendMessage as sendMessageDoc, markMessagesRead } from '../firebase/messages';
 import { createAbsentNotification, backfillNotificationClassScoping } from '../firebase/notifications';
@@ -286,6 +286,17 @@ export function SchoolDataProvider({ children }) {
     } catch (err) {
       reportError('Khalad ayaa dhacay markii imaanshaha ardayga la kaydinayay:', err);
     }
+    // Xaadiris + Quraan UX merge (2026-08-25): haddii ardayga xaadiriskiisu
+    // maanta noqdo Maqan/Fasax, calaamaddii Quraanka ee isla maalinta (haddii
+    // horeba loo calaamadiyay isagoo Joog ahaa) waa la tirtiraa — arday aan
+    // joogin ma lahan sabab Quraan loogu calaamadin karo maalintaas.
+    if (status !== 'present') {
+      try {
+        await deleteQuranProgressRecord(date, studentId);
+      } catch (err) {
+        reportError('Khalad ayaa dhacay markii calaamaddii Quraanka la tirtirayay:', err);
+      }
+    }
     if (status === 'absent' && settings.notificationPrefs.attendanceAlerts) {
       try {
         await createAbsentNotification({
@@ -446,6 +457,31 @@ export function SchoolDataProvider({ children }) {
         setQuranProgressToday(map);
       },
       (err) => reportError('Khalad ayaa dhacay markii horumarka Quraanka laga soo akhriyay:', err)
+    );
+    return unsubscribe;
+  }, [profile?.schoolCode, profile?.accountType, profile?.role, profile?.teacherDocId]);
+
+  // ===== HORUMARKA QURAANKA OO DHAN (taariikhda oo dhan, ma ahan hal maalin) —
+  // loo isticmaalo Overview.jsx card-ka "Ardayda Aan Maanta Garanin Quraanka"
+  // (drill-down: fasal kasta + taariikhda 10-kii maalmood ee arday kasta),
+  // isla mabda'a allStudentAttendanceRecords kore. =====
+  const [allQuranProgressRecords, setAllQuranProgressRecords] = useState([]);
+
+  useEffect(() => {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setAllQuranProgressRecords([]);
+      return undefined;
+    }
+    if (profile?.role === 'teacher' && !profile?.teacherDocId) {
+      setAllQuranProgressRecords([]);
+      return undefined;
+    }
+    const classTeacherId = profile?.role === 'teacher' ? profile.teacherDocId : null;
+    const unsubscribe = subscribeToAllQuranProgressRecords(
+      profile.schoolCode,
+      classTeacherId,
+      setAllQuranProgressRecords,
+      (err) => reportError('Khalad ayaa dhacay markii taariikhda horumarka Quraanka laga soo akhriyay:', err)
     );
     return unsubscribe;
   }, [profile?.schoolCode, profile?.accountType, profile?.role, profile?.teacherDocId]);
@@ -1452,7 +1488,7 @@ export function SchoolDataProvider({ children }) {
     staff, addStaffMember, updateStaffMember, removeStaffMember,
     attendanceToday, cycleAttendanceStatus, todayDate,
     allStudentAttendanceRecords, allStaffAttendanceRecords,
-    quranProgressToday, setQuranProgress,
+    quranProgressToday, setQuranProgress, allQuranProgressRecords,
     quranTargets, saveQuranTarget, recordQuranTargetOutcome,
     staffMessages, sendStaffMessage, markThreadReadByStaff,
   };

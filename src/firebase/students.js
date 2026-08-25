@@ -16,6 +16,7 @@ import {
   query,
   where,
   documentId,
+  serverTimestamp,
 } from 'firebase/firestore';
 import { db } from './config';
 
@@ -41,8 +42,13 @@ export function subscribeToStudents(schoolCode, onChange, onError) {
   );
 }
 
+// "createdAt" (Attendance Leaderboard, 2026-08-25): loo isticmaalo TAB-ka
+// "Waqtiga" (seniority/tenure) — taariikhda arday-gu ku biiray dugsiga.
+// Ardayda HORE ee ka jiray Firestore ka hor field-kan (ma laha createdAt)
+// waxaa loo isticmaalaa proxy (taariikhda ugu horreysay ee attendanceRecords,
+// fiiri utils/leaderboard.js: resolveEnrollmentDate).
 export async function createStudentDoc(schoolCode, data) {
-  const docRef = await addDoc(collection(db, COLLECTION), { ...data, schoolCode });
+  const docRef = await addDoc(collection(db, COLLECTION), { ...data, schoolCode, createdAt: serverTimestamp() });
   if (data.studentId) {
     await setDoc(doc(db, LOOKUP_COLLECTION, lookupDocId(schoolCode, data.studentId)), {
       schoolCode,

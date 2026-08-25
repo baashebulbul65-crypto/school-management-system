@@ -4,9 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
-import { useNotifications } from '../../context/NotificationsContext';
-import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { currentMonthValue } from '../../utils/somaliDate';
+import { summarizeAttendanceRecords, buildTopList } from '../../utils/leaderboard';
 import StatCard from '../../components/dashboard/StatCard';
 import AbsentStudentsModal from '../../components/dashboard/AbsentStudentsModal';
 import AttendanceDonutChart from '../../components/dashboard/AttendanceDonutChart';
@@ -25,15 +24,9 @@ function Overview() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const { settings } = useSettings();
-  const { students, teachers, classes, subjects, exams, attendanceToday, feePayments, myClasses, myClassIds, myClassNames } = useSchoolData();
-  const { notifications } = useNotifications();
+  const { students, teachers, classes, subjects, exams, attendanceToday, feePayments, myClasses, myClassIds, myClassNames, quranProgressToday, allStudentAttendanceRecords } = useSchoolData();
   const [showAbsentModal, setShowAbsentModal] = useState(false);
 
-  // Macallinku gebi ahaanba wuu ka mamnuucan yahay xogta lacagta, xitaa
-  // dashboard-ka guud (Teacher Role Scoping audit, 2026-08-02) — feePayments
-  // waa madhan macallinka horeba (fiiri SchoolDataContext.jsx), laakiin
-  // ogeysiisyada type=='fee' waxay kasoo baxaan collection "notifications"
-  // (kaas oo aan xaddidnayn), sidaas darteed waa in halkanna la shaandhaystaa.
   const isTeacher = profile?.role === 'teacher';
 
   // PRINCIPLE-KA GUUD (Teacher Role Scoping, 2026-08-02): macallinku
@@ -48,33 +41,6 @@ function Overview() {
     () => (myClassIds ? exams.filter((e) => (e.classId ? myClassIds.has(e.classId) : myClassNames.has(e.className))) : exams),
     [exams, myClassIds, myClassNames]
   );
-
-  // Waxaa isku darsanaya dhacdooyinka dhabta ah ee ugu dambeeyay: lacagaha la
-  // ururiyay (feePayments) + ogeysiisyada (maqnaanshaha/lacagta baaqiga ah),
-  // labaduba waxay leeyihiin taariikh (createdAt) dhab ah — ma aha xog beebeen ah.
-  const recentActivity = useMemo(() => {
-    const paymentEvents = feePayments
-      .filter((p) => p.createdAt)
-      .map((p) => ({
-        id: `payment_${p.id}`,
-        type: 'success',
-        text: `Lacag $${(p.amount || 0).toLocaleString()} ayaa la ururiyay${p.collectedByName ? ` — ${p.collectedByName}` : ''}`,
-        time: p.createdAt,
-      }));
-    // notifications waxay horeba u shaandhaysan tahay (NotificationsContext.jsx)
-    // fee-ga iyo fasallada kale ee macallinka — halkan lama baahna filter dheeraad ah.
-    const notifEvents = notifications
-      .filter((n) => n.time)
-      .map((n) => ({
-        id: `notif_${n.id}`,
-        type: n.type === 'fee' ? 'warning' : 'neutral',
-        text: `${n.title} — ${n.description}`,
-        time: n.time,
-      }));
-    return [...paymentEvents, ...notifEvents]
-      .sort((a, b) => b.time.localeCompare(a.time))
-      .slice(0, 5);
-  }, [feePayments, notifications]);
 
   const dayNames = t('common.dayNames', { returnObjects: true });
   const monthNames = t('common.monthNames', { returnObjects: true });
@@ -146,6 +112,36 @@ function Overview() {
     return myExams.filter((e) => new Date(e.date) >= today).length;
   }, [myExams]);
 
+  // Ardayda maanta la calaamadiyay "Magaran" (result: garanwaa) — quranProgressToday
+  // horeba waa class-scoped (macallinku KALIYA wuu arkaa fasalladiisa, fiiri
+  // SchoolDataContext.jsx), sidaas darteed halkan waxaa lagu isticmaalaa
+  // myStudents (isla mabda'a attendanceCounts kore).
+  const quranMissedTodayCount = useMemo(
+    () => myStudents.filter((s) => quranProgressToday[s.id]?.result === 'garanwaa').length,
+    [myStudents, quranProgressToday]
+  );
+
+  // Fasal kasta oo macallinku leeyahay -> si toos ah loo geeyaa liiska ardayda
+  // fasalkaas (isla mabda'a handleClassesCardClick kore); owner-ku had iyo
+  // jeer wuxuu helaa kala-soocidda fasallada oo dhan.
+  const handleQuranMissedCardClick = () => {
+    if (isTeacher && myClasses?.length === 1) {
+      navigate(`/dashboard/quran-tracking/${myClasses[0].id}`);
+    } else {
+      navigate('/dashboard/quran-tracking');
+    }
+  };
+
+  // Card-ka "Top 10" (Attendance Leaderboard) — value-ga card-ku wuxuu tusayaa
+  // arday-ka #1 ee ugu badan maalmaha "Joog" (tab-ka default-ka ah ee
+  // Leaderboard.jsx), taabashadu waxay geeysaa bogga oo dhan (labada tab).
+  // Xisaabinta waa la wadaagaa Leaderboard.jsx (utils/leaderboard.js), si aan
+  // laba jeer loo qorin.
+  const topPresentStudent = useMemo(() => {
+    const { presentCounts } = summarizeAttendanceRecords(allStudentAttendanceRecords);
+    return buildTopList(myStudents, (s) => presentCounts[s.id] || 0, 1)[0]?.student || null;
+  }, [myStudents, allStudentAttendanceRecords]);
+
   const todayLabel = formatTodayLocalized();
   const adminName = profile?.fullName || t('overview.defaultAdminName');
 
@@ -203,7 +199,6 @@ function Overview() {
           label={t('overview.stats.totalStudents')}
           value={totalStudents}
           accent="mint"
-          size="lg"
           onClick={() => navigate('/dashboard/students')}
           actionLabel={t('overview.viewDetails')}
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 14a4 4 0 100-8 4 4 0 000 8zM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>}
@@ -248,7 +243,6 @@ function Overview() {
           label={t('overview.stats.attendanceToday')}
           value={`${attendanceRate}%`}
           accent="coral"
-          size="lg"
           onClick={() => navigate('/dashboard/attendance')}
           actionLabel={t('overview.viewDetails')}
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>}
@@ -269,42 +263,35 @@ function Overview() {
           actionLabel={t('overview.viewDetails')}
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M12.5 7a4 4 0 11-8 0 4 4 0 018 0zM17 8l4 4m0-4l-4 4"/></svg>}
         />
+        <StatCard
+          label={t('overview.stats.quranMissedToday')}
+          value={quranMissedTodayCount}
+          accent="coral"
+          onClick={handleQuranMissedCardClick}
+          actionLabel={t('overview.viewDetails')}
+          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/><path d="M9 8.5l3 3-3 3M15 14.5h-3"/></svg>}
+        />
+        <StatCard
+          label={t('overview.stats.leaderboard')}
+          value={topPresentStudent?.fullName?.split(' ')[0] || '—'}
+          accent="gold"
+          onClick={() => navigate('/dashboard/leaderboard')}
+          actionLabel={t('overview.viewDetails')}
+          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 01-10 0V4zM7 6H4a3 3 0 003 3M17 6h3a3 3 0 01-3 3"/></svg>}
+        />
       </div>
 
-      <div className="overview-grid">
-        <div className="dash-card overview-attendance-card">
-          <div className="dash-card-head">
-            <h3>{t('overview.attendanceCard.title')}</h3>
-            <a href="/dashboard/attendance" className="see-all-link">{t('overview.attendanceCard.viewAll')}</a>
-          </div>
-
-          <AttendanceDonutChart
-            present={attendanceCounts.present}
-            absent={attendanceCounts.absent}
-            leave={attendanceCounts.leave}
-          />
+      <div className="dash-card overview-attendance-card">
+        <div className="dash-card-head">
+          <h3>{t('overview.attendanceCard.title')}</h3>
+          <a href="/dashboard/attendance" className="see-all-link">{t('overview.attendanceCard.viewAll')}</a>
         </div>
 
-        <div className="dash-card">
-          <div className="dash-card-head">
-            <h3>{t('overview.recentActivity.title')}</h3>
-          </div>
-
-          <div className="activity-list">
-            {recentActivity.length === 0 && (
-              <p style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>Weli dhaqdhaqaaq lama diiwaan gelin.</p>
-            )}
-            {recentActivity.map((a) => (
-              <div className="activity-row" key={a.id}>
-                <span className={`activity-dot ${a.type}`}></span>
-                <div className="activity-text">
-                  <div>{a.text}</div>
-                  <div className="activity-time">{formatRelativeTime(a.time)}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <AttendanceDonutChart
+          present={attendanceCounts.present}
+          absent={attendanceCounts.absent}
+          leave={attendanceCounts.leave}
+        />
       </div>
 
       <AbsentStudentsModal

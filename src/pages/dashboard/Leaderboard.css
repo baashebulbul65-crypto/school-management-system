@@ -1,0 +1,25 @@
+.lb-class-filter{ margin: 18px 0 4px; }
+
+.lb-note{
+  font-size: 12px;
+  color: var(--grey-text);
+  margin: 4px 0 14px;
+}
+
+.lb-rank{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 12.5px;
+  background: #EEF1F4;
+  color: var(--grey-text);
+}
+.lb-rank.gold{ background: #FFF3D6; color: #A9750F; }
+.lb-rank.silver{ background: #ECEFF2; color: #52606B; }
+.lb-rank.bronze{ background: #FBE6D8; color: #A85A2A; }

@@ -1,0 +1,70 @@
+/* Liiska fasallada (QuranTracking view 1) — safka la taaban karo */
+.qh-class-row{ cursor: pointer; transition: background 0.15s ease; }
+.qh-class-row:hover{ background: #FAFBFC; }
+
+/* Furaha midabyada (legend) ee taariikhda 10-kii maalmood */
+.qh-legend{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1.5px solid var(--line);
+}
+.qh-legend-item{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--grey-text);
+}
+.qh-legend-dot{ width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+.qh-legend-dot.knew{ background: var(--mint); }
+.qh-legend-dot.missed{ background: var(--danger); }
+.qh-legend-dot.neutral{ background: #C7D0D6; }
+
+/* Liiska ardayda "Magaran" ee fasalka, midkasta oo leh taariikhda 10-kii
+   maalmood ee ugu dambeeyay (compact, mobile-first) */
+.qh-student-list{ display: flex; flex-direction: column; gap: 14px; }
+.qh-student-card{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+}
+.qh-student-person{ flex-shrink: 0; }
+
+.qh-history-grid{
+  display: grid;
+  grid-template-columns: repeat(10, minmax(26px, 1fr));
+  gap: 5px;
+  flex: 1;
+  min-width: 220px;
+  max-width: 420px;
+}
+.qh-history-cell{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border-radius: 7px;
+  font-size: 10.5px;
+  font-weight: 700;
+  border: 1.5px solid var(--line);
+  color: var(--grey-text);
+  background: #F7F9FA;
+}
+.qh-history-cell.knew{ background: var(--mint-pale); border-color: var(--mint); color: var(--mint-dark); }
+.qh-history-cell.missed{ background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger-dark); }
+.qh-history-cell.neutral{ background: #F1F4F6; border-color: var(--line); color: #94A3B8; }
+
+@media (max-width: 640px){
+  .qh-student-card{ flex-direction: column; align-items: flex-start; }
+  .qh-history-grid{ grid-template-columns: repeat(10, minmax(20px, 1fr)); gap: 4px; max-width: 100%; }
+  .qh-history-cell{ height: 24px; font-size: 9.5px; border-radius: 6px; }
+}
