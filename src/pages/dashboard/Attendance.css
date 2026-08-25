@@ -143,9 +143,10 @@ span.att-status-btn:hover{ transform: none; }
 
 @media (max-width: 640px){
   .cw-att-quran-table thead th,
-  .cw-att-quran-table tbody td{ padding: 10px 8px; }
-  .cw-att-quran-table .att-status-btn{ padding: 5px 9px; font-size: 11px; }
-  .cw-att-quran-table .att-status-btn-group{ gap: 4px; }
+  .cw-att-quran-table tbody td{ padding: 10px 6px; white-space: normal; }
+  .cw-att-quran-table .att-status-btn{ padding: 5px 8px; font-size: 10.5px; }
+  .cw-att-quran-table .att-status-btn-group{ gap: 4px; max-width: 100px; }
+  .cw-att-quran-table .cell-name{ font-size: 12px; }
 }
 
 /* Period tabs (reports) */
