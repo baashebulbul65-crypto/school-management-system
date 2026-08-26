@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
-import { summarizeAttendanceRecords, resolveEnrollmentDate, tenureDays, buildTopList } from '../../utils/leaderboard';
+import { summarizeAttendanceRecords, resolveEnrollmentDate, tenureDays, buildTopList, summarizeQuranMemorization } from '../../utils/leaderboard';
+import { currentMonthValue } from '../../utils/somaliDate';
 import BackButton from '../../components/dashboard/BackButton';
 import '../../styles/dashboard-shared.css';
 import './Exams.css';
@@ -23,7 +24,7 @@ function Leaderboard() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const {
-    students, classes, myClasses, allStudentAttendanceRecords,
+    students, classes, myClasses, allStudentAttendanceRecords, allQuranProgressRecords,
   } = useSchoolData();
 
   const isTeacher = profile?.role === 'teacher';
@@ -65,8 +66,24 @@ function Leaderboard() {
     [scopedStudents, earliestDates]
   );
 
-  const rows = activeTab === 'present' ? presentTop : tenureTop;
-  const valueUnit = activeTab === 'present' ? t('leaderboard.presentUnit') : t('leaderboard.tenureUnit');
+  // "Top 10 Gartay Quraanka" — bil-bil ah (monthly reset), ma aha cumulative
+  // sida labada tab kore (fiiri summarizeQuranMemorization). currentMonthValue()
+  // waxay isticmashaa waqtiga maxalliga ah (ma aha UTC), sidaas darteed
+  // bishu si otomaatig ah u beddeshaa marka bil cusub bilaabato.
+  const quranCounts = useMemo(
+    () => summarizeQuranMemorization(allQuranProgressRecords, currentMonthValue()),
+    [allQuranProgressRecords]
+  );
+
+  const quranTop = useMemo(
+    () => buildTopList(scopedStudents, (s) => quranCounts[s.id] || 0),
+    [scopedStudents, quranCounts]
+  );
+
+  const rows = activeTab === 'present' ? presentTop : activeTab === 'tenure' ? tenureTop : quranTop;
+  const valueUnit = activeTab === 'present' ? t('leaderboard.presentUnit')
+    : activeTab === 'tenure' ? t('leaderboard.tenureUnit')
+    : t('leaderboard.quranUnit');
 
   return (
     <div>
@@ -88,6 +105,9 @@ function Leaderboard() {
           <button className={`fin-tab ${activeTab === 'tenure' ? 'active' : ''}`} onClick={() => setActiveTab('tenure')}>
             {t('leaderboard.tabs.tenure')}
           </button>
+          <button className={`fin-tab ${activeTab === 'quran' ? 'active' : ''}`} onClick={() => setActiveTab('quran')}>
+            {t('leaderboard.tabs.quran')}
+          </button>
         </div>
 
         {visibleClasses.length > 0 && (
@@ -104,6 +124,10 @@ function Leaderboard() {
 
         {activeTab === 'tenure' && excludedFromTenure > 0 && (
           <p className="lb-note">{t('leaderboard.tenureExcludedNote', { count: excludedFromTenure })}</p>
+        )}
+
+        {activeTab === 'quran' && (
+          <p className="lb-note">{t('leaderboard.quranMonthNote', { month: t('common.monthNames', { returnObjects: true })[new Date().getMonth()] })}</p>
         )}
 
         <div className="data-table-wrap">

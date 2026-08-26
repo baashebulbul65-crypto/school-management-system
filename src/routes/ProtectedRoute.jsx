@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, requireAccountType }) {
   const { isAuthenticated, profile, loading, logout } = useAuth();
 
   // Shaqaale laga saaray Users.jsx ("Ka Saar") waxaa laga tirtiray doc-ga
@@ -47,6 +47,19 @@ function ProtectedRoute({ children }) {
 
   if (!isAuthenticated || !profile || profile.status === 'suspended') {
     return <Navigate to="/" replace />;
+  }
+
+  // "requireAccountType" (Students audit HIGH, 2026-08-26): '/dashboard/*'
+  // iyo '/parent' waxay isticmaalaan labaduba isla ProtectedRoute-kan, laakiin
+  // wax kama xannibayn isbeddel waalid (accountType:'student-parent') uu
+  // si toos ah URL-ka ugu galo '/dashboard/students' iwm — Firestore Rules
+  // way xannibi lahaayeen xogta dhabta ah, laakiin UI-gu wuxuu tusi lahaa
+  // badhamada Edit/Delete + error-toast celceliya (fiiri Students.jsx:
+  // isOwner = profile?.role !== 'teacher', kaas oo 'true' u soo baxa waalid
+  // maadaama uusan lahayn field-ka 'role' ee staff-ka). Hadda App.jsx wuxuu
+  // ku daraa requireAccountType="staff"/"student-parent" labada route-tree.
+  if (requireAccountType && profile.accountType !== requireAccountType) {
+    return <Navigate to={profile.accountType === 'staff' ? '/dashboard' : '/parent'} replace />;
   }
 
   return children;

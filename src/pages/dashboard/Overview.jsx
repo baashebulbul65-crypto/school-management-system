@@ -50,7 +50,13 @@ function Overview() {
   };
 
   const totalStudents = myStudents.length;
-  const totalTeachers = teachers.length;
+  // "teachers" (SchoolDataContext) waa raw subscription — macallimiinta la
+  // joojiyay (status:'inactive', deactivateTeacherDoc) marnaba lama tirtiro
+  // Firestore-ka (diiwaan taariikheed, fiiri firebase/teachers.js), sidaas
+  // darteed waa in la reebaa halkan sida Teachers.jsx/Attendance.jsx/Classes.jsx
+  // (activeTeachers) — haddii kale kaadhka "Macallimiinta" wuxuu tirin lahaa
+  // tiro been ah oo ka badan macallimiinta dhab ahaan firfircoon.
+  const totalTeachers = teachers.filter((tc) => tc.status !== 'inactive').length;
   const totalClasses = myClasses ? myClasses.length : classes.length;
 
   // "Fasallada" stat card (Overview) — sixitaan (2026-08-17): hore wuxuu u

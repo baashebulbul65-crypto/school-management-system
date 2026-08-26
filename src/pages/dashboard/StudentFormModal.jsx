@@ -31,9 +31,20 @@ function initials(name) {
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 }
 
+// Roll Number-ku waa lambar ku cusub fasal kasta (1, 2, 3... gudaha
+// fasalkaas oo keliya), ma aha mid school-wide sida studentId (STU-1045).
+// Waxaa si otomaatig ah loo xisaabiyaa max(rollNumber-ka fasalkaas) + 1 —
+// Owner/Admin ma gacan-geliyo si aan labo arday isku fasal ah loo siin
+// isla lambarka. Marka arday la tirtiro booskiisu wuu banaanaanayaa
+// (max-based, ma aha count-based), lama dib-u-isticmaalayo.
+function nextRollNumberForClass(students, classId) {
+  const rollNumbers = students.filter((s) => s.classId === classId).map((s) => s.rollNumber || 0);
+  return rollNumbers.length ? Math.max(...rollNumbers) + 1 : 1;
+}
+
 function StudentFormModal({ isOpen, onClose, onSave, student, defaultClassId }) {
   const { t } = useTranslation();
-  const { classes } = useSchoolData();
+  const { classes, students } = useSchoolData();
   const { settings } = useSettings();
   const [form, setForm] = useState(EMPTY_FORM);
   const isEditing = !!student;
@@ -47,7 +58,7 @@ function StudentFormModal({ isOpen, onClose, onSave, student, defaultClassId }) 
   const handleClassChange = (e) => {
     const classId = e.target.value;
     setForm((f) => {
-      const next = { ...f, classId };
+      const next = { ...f, classId, rollNumber: nextRollNumberForClass(students, classId) };
       if (!isEditing) {
         const cls = classes.find((c) => c.id === classId);
         const gradeFee = cls && settings.feesByGrade.find((g) => g.grade === cls.grade);
@@ -85,11 +96,16 @@ function StudentFormModal({ isOpen, onClose, onSave, student, defaultClassId }) 
       // handleClassChange), balse weli waa la beddeli karaa gacan ahaan.
       const cls = classes.find((c) => c.id === defaultClassId);
       const gradeFee = cls && settings.feesByGrade.find((g) => g.grade === cls.grade);
-      setForm({ ...EMPTY_FORM, classId: defaultClassId, feeAmount: gradeFee ? gradeFee.amount : '' });
+      setForm({
+        ...EMPTY_FORM,
+        classId: defaultClassId,
+        feeAmount: gradeFee ? gradeFee.amount : '',
+        rollNumber: nextRollNumberForClass(students, defaultClassId),
+      });
     } else {
       setForm(EMPTY_FORM);
     }
-  }, [student, isOpen, defaultClassId, classes, settings.feesByGrade]);
+  }, [student, isOpen, defaultClassId, classes, settings.feesByGrade, students]);
 
   if (!isOpen) return null;
 
@@ -221,7 +237,13 @@ function StudentFormModal({ isOpen, onClose, onSave, student, defaultClassId }) 
               </div>
               <div className="sfm-field">
                 <label>{t('students.form.fields.rollNumber')}</label>
-                <input type="number" value={form.rollNumber} onChange={update('rollNumber')} />
+                <input
+                  type="number"
+                  value={form.rollNumber}
+                  readOnly
+                  disabled
+                  placeholder={t('students.form.placeholders.rollNumberAuto')}
+                />
               </div>
               <div className="sfm-field full">
                 <label>{t('students.form.fields.subjects')}</label>

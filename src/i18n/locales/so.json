@@ -128,7 +128,7 @@
         "fullName": "Tusaale: Ismaaciil Cabdi Xasan", "phone": "+252 61 ...", "address": "Xaafadda, Magaalada",
         "subjects": "Xisaab, Ingiriisi, Sayniska", "parentEmail": "tusaale@gmail.com",
         "selectClass": "Dooro Fasal", "noClasses": "Wali fasal lama abuurin — marka hore ku dar bogga Fasallada",
-        "feeAmount": "Tusaale: 50", "discountPercent": "Tusaale: 20"
+        "feeAmount": "Tusaale: 50", "discountPercent": "Tusaale: 20", "rollNumberAuto": "Dooro fasal marka hore"
       },
       "submitAdd": "Ku Dar Ardayga"
     },
@@ -217,7 +217,8 @@
     "errors": {
       "fetchFailed": "Khalad ayaa dhacay markii shaqaalaha laga soo akhriyay:",
       "statusUpdateFailed": "Khalad ayaa dhacay markii xaaladda shaqaalaha la beddelayay:",
-      "removeFailed": "Khalad ayaa dhacay markii shaqaalaha la saarayay:"
+      "removeFailed": "Khalad ayaa dhacay markii shaqaalaha la saarayay:",
+      "welcomeEmailFailed": "Account-ka waa la abuuray, laakiin email-ka password-ka lama dirin karin — macallinku wuxuu isticmaali karaa \"Forgot Password\" bogga gelitaanka:"
     },
     "pagination": "Muujinaya {{shown}} ee {{total}} shaqaale",
     "form": {
@@ -258,7 +259,7 @@
       "button": "Fur WhatsApp oo Dir Fariinta",
       "noPhone": "Macallinkan lambar telefoon kuma jiro diiwaanka Macallimiinta (bogga \"Macallimiinta\") — fariinta WhatsApp lama diyaarin karo. Ku dar lambarka, kadibna dib u eeg shaqaalahan.",
       "dismiss": "Xir",
-      "message": "Salaan {{name}},\n\nWaad ku soo dhawoow dugsiga {{schoolName}}!\n\nAkoonkaaga:\nEmail: {{email}}\nPassword-ka bilowga ah: {{password}}\n\n⚠️ FADLAN: isla markaad gasho, beddel password-kan (Settings > Akoonkayga).\n\nKu gal halkan: {{loginLink}}"
+      "message": "Salaan {{name}},\n\nWaad ku soo dhawoow dugsiga {{schoolName}}!\n\nAkoonkaaga:\nEmail: {{email}}\n\n📩 Waxaan email kuugu dirnay (fiiri inbox-kaaga, ama spam-ka) oo ku qoran sida aad u dejin karto password-kaaga — riix link-ga ku jira si aad password cusub u samayso.\n\nKu gal halkan: {{loginLink}}"
     }
   },
   "classes": {
@@ -276,7 +277,7 @@
       "fields": {
         "grade": "Fasalka (Grade) *", "section": "Qaybta (Section)", "room": "Qolka (Room)",
         "capacity": "Awoodda (Capacity) *", "classTeacher": "Macallin Fasal (Class Teacher) *",
-        "subjects": "Maadooyinka (kala sooc comma ,)"
+        "subjects": "Maadooyinka (kala sooc comma ,)", "session": "Galinka (Session) *"
       },
       "placeholders": {
         "grade": "Tusaale: Form 1", "room": "Tusaale: Qolka 101", "capacity": "Tusaale: 45",
@@ -285,7 +286,8 @@
         "noSubjects": "Wali maadooyin lama abuurin — marka hore ku dar bogga Maadooyinka"
       },
       "submitAdd": "Abuur Fasalka"
-    }
+    },
+    "session": { "subax": "Subax", "galab": "Galab" }
   },
   "subjects": {
     "pageTitle": "Maadooyinka",
@@ -609,15 +611,17 @@
     "legendNotMarked": "Lama Calaamadin"
   },
   "leaderboard": {
-    "title": "Ardayda ugu Fiican ee Xaadiriska",
-    "subtitle": "Top 10-ka ardayda, sida ay u kala horreeyaan xaadiriska iyo waqtiga ay dugsiga joogeen.",
-    "tabs": { "present": "Ugu Joogta Badan", "tenure": "Ugu Waqtiga Dheer" },
+    "title": "Ardayda ugu Fiican",
+    "subtitle": "Top 10-ka ardayda, sida ay u kala horreeyaan xaadiriska, waqtiga ay dugsiga joogeen, iyo garashada Quraanka bishan.",
+    "tabs": { "present": "Ugu Joogta Badan", "tenure": "Ugu Waqtiga Dheer", "quran": "Top 10 Gartay Quraanka" },
     "classFilterLabel": "Fasalka:",
     "allClasses": "Dhammaan Fasallada",
     "tenureExcludedNote": "{{count}} arday ayaa laga saaray liiskan, xog kuma filna in la xisaabiyo waqtigooda.",
+    "quranMonthNote": "Xisaabintan waxay ku koobantahay bisha {{month}} kaliya — bil kasta way dib-u-bilaabataa.",
     "table": { "rank": "Derejada", "student": "Arday", "value": "Tirada" },
     "presentUnit": "Maalmood",
     "tenureUnit": "Maalmood",
+    "quranUnit": "Jeer",
     "empty": "Wali xog kuma filna in Top 10 la sameeyo."
   },
   "settings": {

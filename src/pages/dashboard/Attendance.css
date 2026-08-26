@@ -144,7 +144,14 @@ span.att-status-btn:hover{ transform: none; }
 @media (max-width: 640px){
   .cw-att-quran-table thead th,
   .cw-att-quran-table tbody td{ padding: 10px 6px; white-space: normal; }
-  .cw-att-quran-table .att-status-btn{ padding: 5px 8px; font-size: 10.5px; }
+  /* Touch-target audit (Quran Tracking audit LOW/MEDIUM, 2026-08-26): 5px 8px
+     (~22px dherer) waa ka yar tilmaanta ugu yar ee taabashada (~40-44px).
+     min-height la keenay halkii la'aan padding kaliya la kordhin lahaa —
+     labada button-group (xaadiris 3-button, Quraan 2-button) horeba waxay
+     ku kala safan yihiin saf gaar ah (flex-wrap + max-width:100px, koodhkii
+     445cb23), sidaas darteed dhererka kordhintiisu ma saameynayo dhinaca
+     (width) ee horeba la xannibay overflow-ka. */
+  .cw-att-quran-table .att-status-btn{ padding: 9px 8px; font-size: 10.5px; min-height: 36px; }
   .cw-att-quran-table .att-status-btn-group{ gap: 4px; max-width: 100px; }
   .cw-att-quran-table .cell-name{ font-size: 12px; }
 }

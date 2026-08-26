@@ -109,8 +109,13 @@ function Classes() {
           // SchoolDataContext.jsx: addClass).
           const studentCount = students.filter((s) => (s.classId ? s.classId === c.id : s.className === `${c.grade}${c.section}`)).length;
           const percent = Math.round((studentCount / c.capacity) * 100);
+          // Fasallada hore ee la abuuray ka hor field-kan (Classes audit,
+          // 2026-08-26) ma laha "session" — waxay noqonayaan "subax" default
+          // ahaan ilaa Owner-ku dib u eego oo kaydiyo (fiiri ClassFormModal.jsx:
+          // isla fallback-ka), si aan xogta jirta u jajabin.
+          const session = c.session || 'subax';
           return (
-            <div className="class-card" key={c.id}>
+            <div className={`class-card session-${session}`} key={c.id}>
               <div className="class-card-top">
                 <div className="class-card-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/></svg>
@@ -127,7 +132,10 @@ function Classes() {
                 )}
               </div>
 
-              <h3>{c.grade} - {c.section}</h3>
+              <div className="class-card-title-row">
+                <h3>{c.grade} - {c.section}</h3>
+                <span className={`class-session-badge ${session}`}>{t(`classes.session.${session}`)}</span>
+              </div>
               <p className="class-room">{c.room}</p>
               <p className="class-teacher">
                 {teachers.find((t) => t.id === c.classTeacherId)?.fullName || c.classTeacher || '—'}

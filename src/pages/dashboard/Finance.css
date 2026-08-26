@@ -128,7 +128,7 @@
 .acc-card-icon.blue{ background: #EAF0F4; color: var(--navy); }
 .acc-card-icon.green{ background: var(--mint-pale); color: var(--mint-dark); }
 .acc-card-icon.red{ background: var(--danger-bg); color: var(--danger); }
-.acc-card-icon.teal{ background: var(--warning-bg); color: var(--warning); }
+.acc-card-icon.teal{ background: var(--teal-bg); color: var(--teal); }
 .acc-card-icon.orange{ background: var(--orange-bg); color: var(--orange); }
 .acc-card-icon.purple{ background: var(--purple-bg); color: var(--purple); }
 
@@ -136,7 +136,7 @@
 .acc-card--blue{ border-color: var(--navy-border); }
 .acc-card--green{ border-color: var(--mint-border); }
 .acc-card--red{ border-color: var(--danger-border); }
-.acc-card--teal{ border-color: var(--warning-border); }
+.acc-card--teal{ border-color: var(--teal-border); }
 .acc-card--orange{ border-color: var(--orange-border); }
 .acc-card--purple{ border-color: var(--purple-border); }
 
@@ -251,6 +251,7 @@
   border:1px solid var(--line);
   border-radius:12px;
   overflow:hidden;
+  overflow-x:auto;
 }
 .acc-table tbody td{ padding:18px 16px; }
 .acc-table tbody tr:nth-child(even){ background:#FAFBFC; }

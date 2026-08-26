@@ -56,11 +56,24 @@ function Students() {
     [allStudentAttendanceRecords, selectedStudentId]
   );
 
-  const classes = useMemo(() => ['all', ...new Set(visibleStudents.map((s) => s.className))], [visibleStudents]);
+  // Fasallada dropdown-ka filter-ka — waxaa lagu kala saaraa classId (ma aha
+  // className oo free-text ah), si labo fasal oo isku magac ah (className)
+  // balse classId kala duwan aanay isku darsamin hal khayaad filter ah
+  // (Students audit MEDIUM, 2026-08-26). Ardayda hore ee aan lahayn classId
+  // waxay isticmaalaan className sida "key" fallback ah (isla mabda'a
+  // myClassIds/myClassNames kore).
+  const classFilterOptions = useMemo(() => {
+    const seen = new Map();
+    visibleStudents.forEach((s) => {
+      const key = s.classId || s.className;
+      if (key && !seen.has(key)) seen.set(key, s.className);
+    });
+    return [...seen.entries()];
+  }, [visibleStudents]);
 
   const filtered = visibleStudents.filter((s) => {
     const matchesSearch = s.fullName.toLowerCase().includes(search.toLowerCase()) || s.studentId.toLowerCase().includes(search.toLowerCase());
-    const matchesClass = classFilter === 'all' || s.className === classFilter;
+    const matchesClass = classFilter === 'all' || (s.classId || s.className) === classFilter;
     return matchesSearch && matchesClass;
   });
 
@@ -135,8 +148,9 @@ function Students() {
             />
           </div>
           <select className="filter-select" value={classFilter} onChange={(e) => setClassFilter(e.target.value)}>
-            {classes.map((c) => (
-              <option key={c} value={c}>{c === 'all' ? t('students.allClasses') : c}</option>
+            <option value="all">{t('students.allClasses')}</option>
+            {classFilterOptions.map(([key, label]) => (
+              <option key={key} value={key}>{label}</option>
             ))}
           </select>
         </div>

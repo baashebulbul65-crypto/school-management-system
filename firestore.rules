@@ -96,6 +96,37 @@ service cloud.firestore {
       );
     }
 
+    // Xaqiijinta "Ku Dar Ilmo Kale" (addChildToParent, firebase/auth.js) —
+    // server-side ayaa lagu hubinayaa in ilmaha CUSUB ee lagu darayo
+    // childrenIds uu ka tirsan yahay isla dugsiga (schoolCode) waalidka,
+    // ma aha kaliya isku dayga UI-ga (Students audit CRITICAL, 2026-08-26:
+    // hore xaqiijintaas oo dhan waxay ku tiil client-ka kaliya —
+    // .affectedKeys().hasOnly(['childrenIds']) ayaa u ogolaan jiray waalid
+    // inuu si toos ah Firestore SDK-ka ugu daro DOC-ID kasta oo arday ah,
+    // xitaa mid dugsi kale ka tirsan, kadibna isParentOfStudent siin lahaa
+    // akhris joogto ah oo xogtiisa ku saabsan, feeAmount/feeType oo ay
+    // ku jiraan). validChildId waxay isticmaashaa hab la mid ah childInClass
+    // kore. Array-ku waa in uu kordhaa hal-hal (size+1) oo aan wax laga
+    // tirin (hasAll) si loo xannibo isbeddel isku-mar ah oo "swap" gareeya
+    // ilmo la'aan wax la ogolaan. Xad = 5 ilmo (isla xadka isParentOfClass).
+    function validChildId(schoolCode, id) {
+      return exists(/databases/$(database)/documents/students/$(id))
+        && get(/databases/$(database)/documents/students/$(id)).data.schoolCode == schoolCode;
+    }
+
+    function isValidChildrenIdsUpdate(schoolCode) {
+      let before = resource.data.get('childrenIds', []);
+      let after = request.resource.data.childrenIds;
+      return after.size() == before.size() + 1
+        && after.size() <= 5
+        && after.hasAll(before)
+        && (after.size() < 1 || validChildId(schoolCode, after[0]))
+        && (after.size() < 2 || validChildId(schoolCode, after[1]))
+        && (after.size() < 3 || validChildId(schoolCode, after[2]))
+        && (after.size() < 4 || validChildId(schoolCode, after[3]))
+        && (after.size() < 5 || validChildId(schoolCode, after[4]));
+    }
+
     // ===== users =====
     // Isticmaale kastaa wuxuu akhriyi/beddeli karaa profile-kiisa. Waxaa sidoo
     // kale u ogolaaday 'owner' inuu maamulo (abuur/akhri/beddel/saar) shaqaalaha
@@ -129,7 +160,8 @@ service cloud.firestore {
       // (owner-nimo dugsi kasta) isaga oo aan la joogin xaqiijin kale.
       allow update: if isSignedIn() && (
         (request.auth.uid == userId
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['childrenIds']))
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['childrenIds'])
+          && isValidChildrenIdsUpdate(resource.data.schoolCode))
         // "request.resource.data.accountType == resource.data.accountType" (Audit
         // hardening, 2026-08-02, gap #6) — hore update-ku ma xaqiijin lahayn in
         // 'accountType' weli 'staff' ahaado ka dib update-ka (kaliya doc-gii HORE

@@ -9,6 +9,7 @@ const EMPTY_FORM = {
   capacity: '',
   classTeacherId: '',
   subjectIds: [],
+  session: 'subax',
 };
 
 function ClassFormModal({ isOpen, onClose, onSave, cls, teachers = [], subjects = [] }) {
@@ -26,6 +27,11 @@ function ClassFormModal({ isOpen, onClose, onSave, cls, teachers = [], subjects 
         capacity: cls.capacity || '',
         classTeacherId: cls.classTeacherId || '',
         subjectIds: cls.subjectIds || [],
+        // Fasallada hore ee la abuuray ka hor field-kan (Classes audit,
+        // 2026-08-26) ma laha "session" — waxay noqonayaan "subax" default
+        // ahaan ilaa Owner-ku dib u eego oo kaydiyo (fiiri Classes.jsx: isla
+        // fallback-ka ayaa lagu muujiyaa kaadhka, si aan xogta jirta u jajabin).
+        session: cls.session || 'subax',
       });
     } else {
       setForm(EMPTY_FORM);
@@ -57,6 +63,7 @@ function ClassFormModal({ isOpen, onClose, onSave, cls, teachers = [], subjects 
       capacity: Number(form.capacity) || 0,
       classTeacherId: form.classTeacherId,
       subjectIds: form.subjectIds,
+      session: form.session,
     };
 
     onSave(payload, cls?.id);
@@ -93,6 +100,13 @@ function ClassFormModal({ isOpen, onClose, onSave, cls, teachers = [], subjects 
                   <option>B</option>
                   <option>C</option>
                   <option>D</option>
+                </select>
+              </div>
+              <div className="cfm-field">
+                <label>{t('classes.form.fields.session')}</label>
+                <select value={form.session} onChange={update('session')} required>
+                  <option value="subax">{t('classes.session.subax')}</option>
+                  <option value="galab">{t('classes.session.galab')}</option>
                 </select>
               </div>
               <div className="cfm-field">

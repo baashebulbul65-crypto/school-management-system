@@ -31,13 +31,47 @@
 }
 .class-card-icon svg{ width:20px; height:20px; stroke: var(--mint-dark); }
 
+.class-card-title-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:4px;
+  min-width:0;
+}
 .class-card h3{
   font-family:'Poppins', sans-serif;
   font-weight:700;
   font-size:17px;
   color: var(--navy);
-  margin-bottom:4px;
+  margin-bottom:0;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
+
+/* Galinka (Session) — Subax/Galab, midab gooni ah (blue/purple) oo ka
+   duwan midabaha kale ee kaadhka (mint = maadooyinka, Classes audit,
+   2026-08-26). Icon-matched card border, isla convention-ka StatCard.css
+   (2026-08-16) — modifier class root-ka kaadhka ku taal. */
+.class-session-badge{
+  font-size:11px;
+  font-weight:700;
+  padding:3px 10px;
+  border-radius:999px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.class-session-badge.subax{ background: var(--blue-bg); color: var(--blue); }
+.class-session-badge.galab{ background: var(--purple-bg); color: var(--purple); }
+
+.class-card.session-subax{ border-color: var(--blue-border); }
+.class-card.session-subax .class-card-icon{ background: var(--blue-bg); }
+.class-card.session-subax .class-card-icon svg{ stroke: var(--blue); }
+
+.class-card.session-galab{ border-color: var(--purple-border); }
+.class-card.session-galab .class-card-icon{ background: var(--purple-bg); }
+.class-card.session-galab .class-card-icon svg{ stroke: var(--purple); }
 
 .class-room{
   font-size:12.5px;
@@ -86,18 +120,23 @@
    sidaas darteed "hal fasal kaliya" ayaa la arki jiray meel bannaan la'aan
    scroll. Halkan waxaa lagu qasbayaa 2 column + kaadh compact ah. */
 @media (max-width: 640px){
-  .classes-grid{ grid-template-columns: repeat(2, 1fr); gap:12px; }
-  .class-card{ padding:14px; border-radius:14px; }
-  .class-card-top{ margin-bottom:10px; }
-  .class-card-icon{ width:32px; height:32px; border-radius:9px; }
-  .class-card-icon svg{ width:15px; height:15px; }
-  .class-card h3{ font-size:13.5px; margin-bottom:2px; }
-  .class-room{ font-size:10.5px; margin-bottom:1px; }
-  .class-teacher{ font-size:11px; margin-bottom:10px; }
-  .class-subjects{ gap:4px; margin-bottom:10px; }
-  .class-subject-tag{ font-size:9.5px; padding:3px 8px; }
-  .class-progress{ gap:6px; margin-bottom:12px; }
-  .class-progress span{ font-size:10px; }
-  .class-open-btn{ padding:9px 10px; font-size:11.5px; gap:4px; }
-  .class-open-btn svg{ width:13px; height:13px; }
+  .classes-grid{ grid-template-columns: repeat(2, 1fr); gap:10px; }
+  .class-card{ padding:12px; border-radius:14px; }
+  .class-card-top{ margin-bottom:8px; }
+  .class-card-icon{ width:30px; height:30px; border-radius:9px; }
+  .class-card-icon svg{ width:14px; height:14px; }
+  .class-card-title-row{ gap:5px; margin-bottom:2px; }
+  .class-card h3{ font-size:13px; }
+  .class-session-badge{ font-size:9px; padding:2px 7px; }
+  .class-room{ font-size:10px; margin-bottom:1px; }
+  .class-teacher{ font-size:10.5px; margin-bottom:8px; }
+  .class-subjects{ gap:4px; margin-bottom:8px; }
+  .class-subject-tag{ font-size:9px; padding:2px 7px; }
+  /* Kaadhku wuxuu ahaa mid aad u dheer mobile-ka — .class-progress default
+     margin-bottom (18px) marnaba lama yarayn mobile-block-ka (Classes audit
+     mobile fix, 2026-08-26), waana kii ugu badnaa dhererka kaadhka. */
+  .class-progress{ gap:6px; margin-bottom:10px; }
+  .class-progress span{ font-size:9.5px; }
+  .class-open-btn{ padding:8px 10px; font-size:11px; gap:4px; }
+  .class-open-btn svg{ width:12px; height:12px; }
 }

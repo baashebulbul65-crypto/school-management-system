@@ -26,26 +26,14 @@
   align-items:center;
   justify-content:space-between;
 }
-.fem-header-left{ display:flex; align-items:center; gap:14px; }
-.fem-avatar{
-  width:48px; height:48px;
-  border-radius:14px;
-  background: linear-gradient(135deg, var(--mint), var(--mint-dark));
-  display:flex; align-items:center; justify-content:center;
-  color:#fff;
-  font-family:'Poppins', sans-serif;
-  font-weight:700;
-  font-size:16px;
-  flex-shrink:0;
-}
-.fem-header-left h2{
+.fem-header h2{
   font-family:'Poppins', sans-serif;
   font-weight:700;
   font-size:17px;
   color:#fff;
   margin-bottom:2px;
 }
-.fem-header-left p{ font-size:12.5px; color: rgba(255,255,255,0.6); }
+.fem-header p{ font-size:12.5px; color: rgba(255,255,255,0.6); }
 
 .fem-close{
   width:32px; height:32px;
@@ -116,20 +104,17 @@
 
 @media (max-width: 640px){
   .fem-grid{ grid-template-columns: 1fr; }
-}
 
-.fem-header{
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
-  padding: 24px 26px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  /* Mobile compact-card convention (StatCard.css, 2026-08-16) — modal-kani
+     wuxuu predate-gareeyay convention-kaas, marnaba lama migrate-gareyn
+     (Finance audit MEDIUM, 2026-08-26). */
+  .fem-overlay{ padding: 16px 10px; }
+  .fem-modal{ border-radius:16px; }
+  .fem-header{ padding: 18px 16px; }
+  .fem-header h2{ font-size:15px; }
+  .fem-header p{ font-size:11px; }
+  .fem-close{ width:40px; height:40px; }
+  .fem-body{ padding: 18px 16px; max-height: 62vh; }
+  .fem-section-label:not(:first-child){ margin-top:20px; }
+  .fem-footer{ padding: 14px 16px; }
 }
-.fem-header h2{
-  font-family:'Poppins', sans-serif;
-  font-weight:700;
-  font-size:17px;
-  color:#fff;
-  margin-bottom:2px;
-}
-.fem-header p{ font-size:12.5px; color: rgba(255,255,255,0.6); }

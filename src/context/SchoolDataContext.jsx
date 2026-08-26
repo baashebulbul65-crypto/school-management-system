@@ -532,12 +532,22 @@ export function SchoolDataProvider({ children }) {
   const saveQuranTarget = async (studentId, studentName, className, classId, data) => {
     if (!profile?.schoolCode) return;
     try {
+      const targetClass = classes.find((c) => c.id === classId);
+      const classTeacherId = targetClass?.classTeacherId || null;
       const existing = quranTargets.find((qt) => qt.studentId === studentId && qt.status === 'pending');
       if (existing) {
-        await updateQuranTargetDoc(existing.id, data);
+        // Quran Tracking audit MEDIUM, 2026-08-26: hore halkan waxaa la
+        // update-gareyn jiray "data" oo kaliya (currentPosition/targetPosition/
+        // startDate/deadline) — classId/className/classTeacherId (ee doc-ka
+        // jira) marnaba lama cusboonaysiin. Haddii arday leh yool pending ah
+        // la wareejiyo fasal kale, yoolku wuxuu ku hadhi jiray classId-kii
+        // hore ("orphan" — kama muuqan fasalka cusub, mana ku jiro kii hore).
+        // classId/className/classTeacherId (parameter-yada saveQuranTarget,
+        // oo had iyo jeer ka soo jeeda fasalka HADDA la eegayo ee ClassWorkspace)
+        // hadda waa la cusboonaysiiyaa mar kasta oo macallinku "Deji Yoolka"
+        // taabto — self-heal marka xigta uu isla arday la falgalo.
+        await updateQuranTargetDoc(existing.id, { ...data, className, classId, classTeacherId });
       } else {
-        const targetClass = classes.find((c) => c.id === classId);
-        const classTeacherId = targetClass?.classTeacherId || null;
         await createQuranTargetDoc(profile.schoolCode, {
           studentId, studentName, className, classId, classTeacherId,
           status: 'pending',
@@ -1190,9 +1200,6 @@ export function SchoolDataProvider({ children }) {
       await createTeacherDoc(profile.schoolCode, {
         ...payload,
         teacherId: `TCH-${200 + teachers.length + 1}`,
-        salary: [],
-        timetable: [],
-        documents: [],
       });
     } catch (err) {
       reportError('Khalad ayaa dhacay markii macallinka la darayay:', err);
@@ -1393,7 +1400,22 @@ export function SchoolDataProvider({ children }) {
       const exam = exams.find((e) => e.id === examId);
       const examClass = classes.find((c) => c.id === exam?.classId);
       const classTeacherId = examClass?.classTeacherId || null;
-      await setExamMarkRecord(profile.schoolCode, examId, studentId, value === '' ? '' : Number(value), classTeacherId);
+      // Clamp dhab ah (ClassWorkspace audit MEDIUM, 2026-08-26) — HTML
+      // min/max ee input-ka (ClassWorkspace.jsx/Exams.jsx) kuma xannibaan
+      // qoraalka gacanta lagu geliyo (spinner-ka kaliya), sidaas darteed
+      // halkan (server-side-ka dhabta ah ee app-kan) ayaa lagu xoojinayaa:
+      // mark ka weyn maxMarks ama taban (-5) waa la clamp-gareeyaa, qiime
+      // aan tiro ahayn (paste/autofill, NaN) waa la nadiifiyaa (''), ma
+      // aha in "NaN%" si aamusan loo kaydiyo.
+      let mark = '';
+      if (value !== '') {
+        const num = Number(value);
+        if (Number.isFinite(num)) {
+          const max = exam?.maxMarks;
+          mark = typeof max === 'number' ? Math.min(Math.max(num, 0), max) : Math.max(num, 0);
+        }
+      }
+      await setExamMarkRecord(profile.schoolCode, examId, studentId, mark, classTeacherId);
     } catch (err) {
       reportError('Khalad ayaa dhacay markii buundada la kaydinayay:', err);
     }

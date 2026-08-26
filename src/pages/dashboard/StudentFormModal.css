@@ -115,4 +115,18 @@
 
 @media (max-width: 640px){
   .sfm-grid{ grid-template-columns: 1fr; }
+
+  /* Mobile compact-card convention (StatCard.css, 2026-08-16) — modal-kani
+     wuxuu predate-gareeyay convention-kaas, marnaba lama migrate-gareyn
+     (Students audit MEDIUM, 2026-08-26). */
+  .sfm-overlay{ padding: 16px 10px; }
+  .sfm-modal{ border-radius:16px; }
+  .sfm-header{ padding: 18px 16px; }
+  .sfm-avatar{ width:40px; height:40px; font-size:14px; border-radius:12px; }
+  .sfm-close{ width:40px; height:40px; }
+  .sfm-header-left h2{ font-size:15px; }
+  .sfm-header-left p{ font-size:11px; }
+  .sfm-body{ padding: 18px 16px; max-height: 62vh; }
+  .sfm-section-label:not(:first-child){ margin-top:20px; }
+  .sfm-footer{ padding: 14px 16px; }
 }

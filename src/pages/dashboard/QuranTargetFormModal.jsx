@@ -71,7 +71,7 @@ function QuranTargetFormModal({ isOpen, onClose, onSave, student }) {
               </div>
               <div className="qtm-field">
                 <label>{t('classWorkspace.quranTargets.modal.deadlineLabel')}</label>
-                <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} required />
+                <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} min={startDate} required />
               </div>
             </div>
           </div>

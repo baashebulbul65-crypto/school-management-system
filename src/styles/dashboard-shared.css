@@ -276,4 +276,13 @@
 
 @media (max-width: 640px){
   .data-table thead th, .data-table tbody td{ padding:12px 10px; }
+
+  /* Touch-target audit (Students audit LOW, 2026-08-26): .row-action-btn
+     (30px) waa ka yar tilmaanta ugu yar ee saabsan taabashada (~40-44px) —
+     boggagga leh tiro row-action ah oo isku xiga (Students.jsx View/Edit/
+     Archive/Delete) way ku adkaan kartaa in farta lagu taabto midka sax ah
+     mobile-ka. Desktop-ka (mouse) waa ku filan tahay, sidaas darteed
+     kordhinta waxaa lagu xaddiday mobile-ka kaliya. */
+  .row-action-btn{ width:40px; height:40px; }
+  .row-action-btn svg{ width:17px; height:17px; }
 }

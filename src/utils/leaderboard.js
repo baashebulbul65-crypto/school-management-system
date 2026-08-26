@@ -42,6 +42,22 @@ export function tenureDays(enrollmentDate) {
   return Math.max(0, Math.floor((Date.now() - enrollmentDate.getTime()) / DAY_MS));
 }
 
+// Xisaabinta "Top 10 Gartay Quraanka" — bil-bil ah (monthly reset, ma aha
+// cumulative sida presentCounts/tenure kore), ku salaysan tirada record-yada
+// quranProgress ee result === 'gartay' (fiiri ClassWorkspace.jsx) ee dhacay
+// BISHAAS KALIYA (monthValue, tusaale "2026-08" — fiiri currentMonthValue,
+// utils/somaliDate.js). Hal-mar-pass ah, xogta HOREBA la soo dejiyay
+// (allQuranProgressRecords), ma sameeyo query Firestore cusub.
+export function summarizeQuranMemorization(records, monthValue) {
+  const counts = {};
+  records.forEach((r) => {
+    if (r.result === 'gartay' && r.date && r.date.slice(0, 7) === monthValue) {
+      counts[r.studentId] = (counts[r.studentId] || 0) + 1;
+    }
+  });
+  return counts;
+}
+
 // Liiska Top-N, midkasta { student, value }, kala-soocan hoos-u-dhac ah
 // (value ugu badan marka hore); tie-break waa magaca (localeCompare). Ardayda
 // aan lahayn qiime (null/undefined, tusaale enrollment date la'aan) waa laga

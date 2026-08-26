@@ -249,7 +249,7 @@ function Exams() {
         <div className="dash-card">
           <div className="exam-select-row">
             <label>{t('exams.selectExam')}</label>
-            <select value={selectedExamId} onChange={(e) => setSelectedExamId(Number(e.target.value))}>
+            <select value={selectedExamId} onChange={(e) => setSelectedExamId(e.target.value)}>
               {exams.map((e) => (
                 <option key={e.id} value={e.id}>{e.type} — {e.subject} ({e.className})</option>
               ))}
@@ -340,7 +340,7 @@ function Exams() {
         <div className="dash-card">
           <div className="exam-select-row">
             <label>{t('exams.selectStudent')}</label>
-            <select value={reportStudentId} onChange={(e) => setReportStudentId(Number(e.target.value))}>
+            <select value={reportStudentId} onChange={(e) => setReportStudentId(e.target.value)}>
               {students.map((s) => <option key={s.id} value={s.id}>{s.fullName} ({s.className})</option>)}
             </select>
             <button className="btn-primary report-export-btn" onClick={handleExportReportCard}>

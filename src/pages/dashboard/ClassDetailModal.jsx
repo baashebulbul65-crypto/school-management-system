@@ -78,12 +78,30 @@ function ClassDetailModal({ row, monthValue, onClose }) {
     return copy;
   }, [filteredRoster, sortBy]);
 
-  const handleCollect = (rosterId) => {
+  // Guard duplicate feePayment (Finance audit MEDIUM, 2026-08-26): badhanka
+  // "Bixi" ma lahayn disabled/pending-state intii collectStudentFee (async)
+  // socoto — network latency ka dhexeysa, marka la riixo laba jeer degdeg ah
+  // (ka hor intii onSnapshot uu soo cusboonaysiin karo status-ka) waxaa
+  // dhici karta laba diiwaan (feePayment) oo isku arday+bil ah. collectingIds
+  // waxay xannibaysaa row-kan kaliya, ma xannibayso rosterka intiisa kale.
+  const [collectingIds, setCollectingIds] = useState(new Set());
+
+  const handleCollect = async (rosterId) => {
+    if (collectingIds.has(rosterId)) return;
     const person = roster.find((r) => r.id === rosterId);
     if (!person) return;
     const confirmed = window.confirm(t('finance.classDetail.confirmCollect', { name: person.name }));
     if (!confirmed) return;
-    collectStudentFee(rosterId, monthValue);
+    setCollectingIds((prev) => new Set(prev).add(rosterId));
+    try {
+      await collectStudentFee(rosterId, monthValue);
+    } finally {
+      setCollectingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(rosterId);
+        return next;
+      });
+    }
   };
 
   const handlePrint = () => window.print();
@@ -171,7 +189,13 @@ function ClassDetailModal({ row, monthValue, onClose }) {
                         {t('finance.classDetail.stats.unpaid')} (${s.amount.toFixed(2)})
                         {s.isDiscount ? ` · ${t('finance.classDetail.discountLabel')} ${s.discountPercent}%` : ''}
                       </span>
-                      <button className="cdm-collect-btn" onClick={() => handleCollect(s.id)}>{t('finance.classDetail.collect')}</button>
+                      <button
+                        className="cdm-collect-btn"
+                        disabled={collectingIds.has(s.id)}
+                        onClick={() => handleCollect(s.id)}
+                      >
+                        {t('finance.classDetail.collect')}
+                      </button>
                     </div>
                   )}
                 </td>

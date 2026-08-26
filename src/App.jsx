@@ -51,7 +51,7 @@ function App() {
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requireAccountType="staff">
             <DashboardLayout />
           </ProtectedRoute>
         }
@@ -81,7 +81,7 @@ function App() {
       <Route
         path="/parent"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requireAccountType="student-parent">
             <ParentPortal />
           </ProtectedRoute>
         }

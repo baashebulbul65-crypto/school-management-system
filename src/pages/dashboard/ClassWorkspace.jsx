@@ -295,7 +295,7 @@ function ClassWorkspace() {
             <>
               <div className="exam-select-row">
                 <label>{t('classWorkspace.grades.selectExam')}</label>
-                <select value={currentExamId} onChange={(e) => setSelectedExamId(Number(e.target.value))}>
+                <select value={currentExamId} onChange={(e) => setSelectedExamId(e.target.value)}>
                   {classExams.map((e) => (
                     <option key={e.id} value={e.id}>{e.type} — {e.subject} ({e.date})</option>
                   ))}

@@ -72,18 +72,6 @@
   margin-bottom:10px;
 }
 
-.tpm-qr{
-  background:#fff;
-  border-radius:12px;
-  padding:8px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:4px;
-  flex-shrink:0;
-}
-.tpm-qr span{ font-size:9px; font-weight:700; color: var(--grey-text); letter-spacing:0.4px; }
-
 .tpm-tabs{
   display:flex;
   gap:4px;
@@ -198,17 +186,21 @@
 .attendance-cell.late{ background:var(--warning-bg); border-color:var(--warning-border); }
 .attendance-cell.late .attendance-status{ color:var(--warning); }
 
-/* Behaviour */
-.behaviour-list{ display:flex; flex-direction:column; gap:16px; }
-.behaviour-item{ display:flex; gap:12px; align-items:flex-start; }
-.behaviour-item p{ font-size:14px; color: var(--navy); margin-bottom:3px; }
-.behaviour-date{ font-size:12px; color: var(--grey-text); }
-.behaviour-dot{ width:9px; height:9px; border-radius:50%; margin-top:5px; flex-shrink:0; }
-.behaviour-item.positive .behaviour-dot{ background: var(--mint); }
-.behaviour-item.negative .behaviour-dot{ background:var(--danger); }
-
 @media (max-width: 640px){
   .tpm-grid{ grid-template-columns: 1fr; }
   .tpm-header-top{ flex-wrap:wrap; }
-  .tpm-qr{ order:3; margin-inline-start:auto; }
+
+  /* Mobile compact-card convention (StatCard.css, 2026-08-16) — modal-kani
+     wuxuu predate-gareeyay convention-kaas, marnaba lama migrate-gareyn
+     (Teachers audit MEDIUM, 2026-08-26). */
+  .tpm-overlay{ padding: 16px 10px; }
+  .tpm-modal{ border-radius:16px; }
+  .tpm-header{ padding: 20px 20px 0; }
+  .tpm-close{ width:40px; height:40px; top:14px; right:14px; }
+  .tpm-header-top{ gap:12px; padding-bottom:16px; }
+  .tpm-avatar{ width:48px; height:48px; font-size:16px; border-radius:12px; }
+  .tpm-header-info h2{ font-size:16px; }
+  .tpm-header-info p{ font-size:11.5px; margin-bottom:6px; }
+  .tpm-tab{ padding:10px 12px; font-size:12px; }
+  .tpm-body{ padding: 18px; max-height: 66vh; }
 }

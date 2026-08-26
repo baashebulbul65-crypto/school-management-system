@@ -7,6 +7,7 @@ import { useToast } from '../../context/ToastContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { useSettings } from '../../context/SettingsContext';
 import { subscribeToStaff, createStaffAccount, updateStaffDoc, setStaffStatus, removeStaffDoc } from '../../firebase/staff';
+import { resetStaffPassword } from '../../firebase/auth';
 import { buildWhatsAppLink } from '../../utils/whatsapp';
 import '../../styles/dashboard-shared.css';
 import './Users.css';
@@ -139,10 +140,21 @@ function Users() {
         salaryAmount: payload.salaryAmount,
       });
 
-      // WhatsApp welcome (macallin cusub kaliya) — password-ka plain-text
-      // ah waxaa la heli karaa HALKAN OO KELIYA (payload.password), Firebase
-      // Auth marnaba dib uma soo celiyo — sidaas darteed fariinta waa in
-      // halkan la diyaariyaa, ma aha marka dib loo eego user-ka kadib.
+      // Password reset email (security fix, 2026-08-26): hore fariinta
+      // WhatsApp waxay ku qori jirtay password-ka bilowga ah (payload.password)
+      // qoraal cad (plaintext) — taasi waxay ku hadhaysay taariikhda WhatsApp
+      // labada dhinac (owner + macallin) si aan la beddeli karin. Halkan
+      // waxaa lagu diraa email dhab ah (Firebase sendPasswordResetEmail,
+      // isla mid ay isticmaasho ForgotPasswordModal.jsx) si macallinku isaga
+      // u dejiyo password-kiisa — fariinta WhatsApp mar dambe ma qorin
+      // password. Best-effort: haddii email-ku ku guuldareysto, account-ku
+      // horeba waa la abuuray — macallinku wuxuu weli isticmaali karaa
+      // "Forgot Password" ee bogga gelitaanka mar kasta.
+      resetStaffPassword(payload.email).catch((err) =>
+        reportError(t('users.errors.welcomeEmailFailed'), err)
+      );
+
+      // WhatsApp welcome (macallin cusub kaliya).
       if (payload.title === 'Teacher') {
         const linkedTeacher = teachers.find((tc) => tc.id === payload.teacherDocId);
         const loginLink = `${window.location.origin}/?email=${encodeURIComponent(payload.email)}`;
@@ -150,7 +162,6 @@ function Users() {
           name: payload.fullName,
           schoolName: settings.school.name || '',
           email: payload.email,
-          password: payload.password,
           loginLink,
         });
         const link = buildWhatsAppLink(linkedTeacher?.phone, message);

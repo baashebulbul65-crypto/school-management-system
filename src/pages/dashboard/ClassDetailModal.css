@@ -177,9 +177,15 @@
   transition: background 0.2s ease;
 }
 .cdm-collect-btn:hover{ background: var(--navy-soft); }
+.cdm-collect-btn:disabled{ opacity: 0.6; cursor: not-allowed; }
 
 @media (max-width: 720px){
   .cdm-stats-row{ padding: 14px 6px; }
   .cdm-stat{ padding: 6px 10px; border-right: none; }
   .cdm-title{ order: 3; width: 100%; text-align: start; margin-top: 8px; }
+
+  /* Touch-target audit (Finance audit LOW, 2026-08-26): ~28px (7px 16px
+     padding) waa ka yar tilmaanta ugu yar ee taabashada (~40-44px) — kordhin
+     ku xaddan mobile-ka, si aan wax uga beddelin desktop-ka (mouse). */
+  .cdm-collect-btn{ padding: 11px 16px; font-size: 12.5px; min-height: 40px; }
 }
