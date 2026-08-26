@@ -4,7 +4,7 @@ import './UserFormModal.css';
 
 const EMPTY_FORM = { fullName: '', email: '', role: 'Teacher', password: '', teacherDocId: '', salaryAmount: '' };
 
-function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOptions = [] }) {
+function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOptions = [], isSelf = false }) {
   const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
@@ -123,9 +123,10 @@ function UserFormModal({ isOpen, onClose, onSave, user, roleOptions, teacherOpti
               </div>
               <div className="ufm-field full">
                 <label>{t('users.form.fields.role')}</label>
-                <select value={form.role} onChange={update('role')}>
+                <select value={form.role} onChange={update('role')} disabled={isSelf}>
                   {roleOptions.map((r) => <option key={r} value={r}>{t(`users.roles.${r}`)}</option>)}
                 </select>
+                {isSelf && <span className="ufm-hint">{t('users.form.hints.roleLocked')}</span>}
               </div>
 
               {form.role === 'Teacher' && (

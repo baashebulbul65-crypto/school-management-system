@@ -30,29 +30,44 @@ export function subscribeToStaff(schoolCode, onChange, onError) {
 export async function createStaffAccount({ schoolCode, fullName, email, password, role, title, teacherDocId, salaryAmount }) {
   const secondaryAuth = getSecondaryAuth();
   const result = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+
+  try {
+    // Qorista doc-ka waxaa lagu sameeyaa 'db' (app-ka koowaad) — waxaa loo
+    // fasiraa (authorize) sida owner-ka session-kiisa hadda socda, ma aha
+    // sida account-ka cusub (fiiri firestore.rules: users/{userId} create).
+    await setDoc(doc(db, COLLECTION, result.user.uid), {
+      uid: result.user.uid,
+      fullName,
+      email,
+      schoolCode,
+      role, // 'owner' | 'teacher' — fiiri auth.js registerStaff
+      title, // magaca la muujiyo (School Owner, Principal, iwm) — cosmetic
+      // Xiriirinta diiwaanka macallinka (collection "teachers") — ikhtiyaari,
+      // waxaa loo isticmaalaa Sidebar.jsx/Messages.jsx si loo ogaado fasallada
+      // macallinkan (fiiri classes.classTeacherId), iyada oo aan lala xiriirin
+      // isbarbardhig magac (fiiri commit-kii hore ee ka saaray isbarbardhigga).
+      teacherDocId: teacherDocId || null,
+      salaryAmount: Number(salaryAmount) || 0,
+      accountType: 'staff',
+      status: 'active',
+      createdAt: serverTimestamp(),
+    });
+  } catch (err) {
+    // Rollback (Users audit MEDIUM, 2026-08-26): haddii setDoc-ku fashilmo
+    // (network, iwm) ka dib markii Auth account-ku horeba la abuuray, waxaa
+    // ku hadhi lahaa "ghost" account — email-ku wuu qabsan doonaa Firebase
+    // Auth si aan la beddeli karin (owner-ku mar dambe isku dayi maayo isla
+    // email-kaas, "auth/email-already-in-use", isaga oo aan Users list-ka
+    // wax ka arkin). result.user weli waa isaga qofka la login gareeyay ee
+    // secondaryAuth (delete() ma baahna Admin SDK marka qofku isaga
+    // tirtirayo naftiisa), sidaas darteed halkan waa la tirtiraa ka hor
+    // signOut-ka, kadibna khaladkii asalka ahaa ayaa dib loo tuuraa.
+    await result.user.delete().catch(() => {});
+    await signOut(secondaryAuth);
+    throw err;
+  }
+
   await signOut(secondaryAuth);
-
-  // Qorista doc-ka waxaa lagu sameeyaa 'db' (app-ka koowaad) — waxaa loo
-  // fasiraa (authorize) sida owner-ka session-kiisa hadda socda, ma aha
-  // sida account-ka cusub (fiiri firestore.rules: users/{userId} create).
-  await setDoc(doc(db, COLLECTION, result.user.uid), {
-    uid: result.user.uid,
-    fullName,
-    email,
-    schoolCode,
-    role, // 'owner' | 'teacher' — fiiri auth.js registerStaff
-    title, // magaca la muujiyo (School Owner, Principal, iwm) — cosmetic
-    // Xiriirinta diiwaanka macallinka (collection "teachers") — ikhtiyaari,
-    // waxaa loo isticmaalaa Sidebar.jsx/Messages.jsx si loo ogaado fasallada
-    // macallinkan (fiiri classes.classTeacherId), iyada oo aan lala xiriirin
-    // isbarbardhig magac (fiiri commit-kii hore ee ka saaray isbarbardhigga).
-    teacherDocId: teacherDocId || null,
-    salaryAmount: Number(salaryAmount) || 0,
-    accountType: 'staff',
-    status: 'active',
-    createdAt: serverTimestamp(),
-  });
-
   return result.user.uid;
 }
 

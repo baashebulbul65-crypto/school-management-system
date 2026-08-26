@@ -238,6 +238,7 @@
       },
       "hints": {
         "emailLocked": "Email-ka ma bedeli karto akoon hore.",
+        "roleLocked": "Ma bedeli kartid doorkaaga (role) naftaada — haddii aad tahay owner-ka kaliya, tan lama soo celin karo. Waxaad ka codsan kartaa owner kale inuu kuu beddelo.",
         "teacherLink": "Waajib — macallinku wuxuu ku xiran yahay xiriirintan si uu u arko oo u furo fasalkiisa gaarka ah (bogga \"Fasallada\"). Haddii macallinku aan weli ku jirin bogga \"Macallimiinta\", ku dar isaga halkaas marka hore.",
         "password": "Shaqaaluhu wuu bedeli kari doonaa marka uu markiiba galo.",
         "salaryAmount": "Qiimaha mushaharka shaqaalahan qaadanayo bil kasta — bil kasta oo cusub bilaabata wuxuu dib ugu noqdaa \"Sugaya\" ilaa Finance-ka lagu diiwaan-geliyo bixinta (fiiri bogga Finance, tab-ka Mushaharka)."

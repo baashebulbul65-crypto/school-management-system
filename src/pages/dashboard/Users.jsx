@@ -328,6 +328,15 @@ function Users() {
         </div>
       </div>
 
+      {/* "isSelf" (Users audit HIGH, 2026-08-26): status-toggle-ka iyo delete-ka
+          naftaada horeba waa la xannibay (disabled={u.id === profile?.uid}
+          kore), laakiin Edit-ku wuxuu u ogolaan jiray inaad Role-kaaga naftaada
+          uga beddesho "Teacher" — taasoo si toos ah kuu wareejin lahayd
+          role:'teacher' (firestore.rules), oo kaa xannibi lahayd Users/Finance/
+          Reports/Teachers/Trash/ArchivedStudents. Haddii aad tahay owner-ka
+          kaliya ee dugsiga, tan lama soo celin karo (self-update rules-ku
+          kaliya wuu ogol yahay 'childrenIds', ma aha 'role') — waa in Edit-kaaga
+          naftaada uu xannibo Role field-ka. */}
       <UserFormModal
         isOpen={showFormModal}
         onClose={() => setShowFormModal(false)}
@@ -335,6 +344,7 @@ function Users() {
         user={editingUser}
         roleOptions={ROLE_OPTIONS}
         teacherOptions={availableTeacherOptions}
+        isSelf={!!editingUser && editingUser.id === profile?.uid}
       />
     </div>
   );
