@@ -29,8 +29,21 @@ function lookupDocId(schoolCode, studentId) {
   return `${encodeURIComponent(schoolCode)}_${encodeURIComponent(studentId)}`;
 }
 
-export function subscribeToStudents(schoolCode, onChange, onError) {
-  const q = query(collection(db, COLLECTION), where('schoolCode', '==', schoolCode));
+// "classTeacherId" (Exams audit CRITICAL, 2026-08-26): hore query-gan wuxuu
+// isticmaali jiray "schoolCode" kaliya, in kasta oo firestore.rules
+// (students/{studentDocId} allow read) uu yahay isMyClassData — per-document
+// check oo ku xiran classTeacherId. Firestore Rules-ku ma sameeyaan filter
+// kadib (per-doc silent filtering) marka la query gareynayo (list) — haddii
+// rule-ku ku xiran yahay resource.data field aan query-gu xaddidin, Firestore
+// wuxuu diidaa QUERY-GA OO DHAN ("Missing or insufficient permissions"), ma
+// aha qayb kaliya — taasoo macnaheedu ahaan lahayd macallin kastaa uu la
+// kulmi lahaa khalad marka uu isku dayo inuu arday kasta akhriyo (isla
+// mabda'a attendanceRecords/examMarks/notifications/quranProgress oo
+// dhammaantood horeba leh isla constraint-kan gaarka ah).
+export function subscribeToStudents(schoolCode, classTeacherId, onChange, onError) {
+  const constraints = [where('schoolCode', '==', schoolCode)];
+  if (classTeacherId) constraints.push(where('classTeacherId', '==', classTeacherId));
+  const q = query(collection(db, COLLECTION), ...constraints);
   return onSnapshot(
     q,
     (snap) => {

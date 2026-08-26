@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useClassOptions, classroomName } from '../../hooks/useClassOptions';
+import { classroomName } from '../../hooks/useClassOptions';
 import './ExamFormModal.css';
 
 const EMPTY_FORM = { type: 'Midterm', subjectId: '', classId: '', date: '', maxMarks: '' };
@@ -9,7 +9,19 @@ function ExamFormModal({ isOpen, onClose, onSave, exam, examTypes, subjects = []
   const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const isEditing = !!exam;
-  const classOptions = useClassOptions(form.classId, { byId: true });
+  // "classes" waxaa laga soo doortaa PROP-ka (Exams audit HIGH, 2026-08-26)
+  // — hore halkan waxaa lagu isticmaali jiray useClassOptions(), taasoo si
+  // toos ah uga soo qaadaysay context-ka DHAMMAAN fasallada dugsiga (ma aha
+  // prop-ka la gudbiyay), sidaas darteed Exams.jsx sidii ay u xaddidi lahayd
+  // dropdown-kan macallinka fasalladiisa (myPickClasses) marnaba lama
+  // gaarin — macallinku wuxuu weli dooran karay fasal aan isaga ahayn.
+  // Orphan fallback (fasalka la doortay ee editing-ka aan ku jirin liiska
+  // hadda) waa la sii daayaa haddii loo baahdo.
+  const classOptions = classes.map((c) => ({ value: c.id, label: `${c.grade} - ${c.section}` }));
+  if (form.classId && !classOptions.some((o) => o.value === form.classId)) {
+    const orphanCls = classes.find((c) => c.id === form.classId);
+    classOptions.unshift({ value: form.classId, label: orphanCls ? classroomName(orphanCls) : form.classId });
+  }
 
   useEffect(() => {
     if (exam) {

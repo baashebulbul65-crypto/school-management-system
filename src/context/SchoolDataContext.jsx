@@ -677,9 +677,21 @@ export function SchoolDataProvider({ children }) {
   // hadda ku tiirsan yahay field-kan si loo xaddidiyo akhrinta macallinka).
   // Isla mabda'a backfillStudentLookups kore. Wuxuu sugayaa 'classes' inay
   // soo gaadhaan si loo dhiso xiriirka className -> classTeacherId.
+  //
+  // "profile.role === 'teacher'" ka reeb (Exams audit CRITICAL, 2026-08-26):
+  // backfill-yadan oo dhan waxay raadinayaan record-yada MAQAN classTeacherId
+  // (field la'aan, ma ahan null) — query-gu waa schoolCode-kaliya (ULA KAC AH,
+  // maadaama ficil ahaan lama xisaabin karo where('classTeacherId','==',...)
+  // oo helaya doc aan lahayn field-kaas). Macallin session wuu la kulmi lahaa
+  // "Missing or insufficient permissions" mar kasta oo uu galo (query-gu isaga
+  // qudhiisu wuu diidmayaa firestore.rules-ka isMyClassData), isaga oo aan
+  // xitaa awoodin inuu wax hagaajiyo (docs-ka field-la'aanta ah ee fasallo
+  // KALE lama gaari karo query classTeacherId ah). Owner-ku (isOwnerStaffOf,
+  // ma ku xirna resource.data) ayaa kaliya awoodda leh inuu backfill-kan
+  // sameeyo — sidaas darteed hadda kaliya isaga ayaa ku shaqeynaya.
   const backfilledClassScopingRef = useRef(null);
   useEffect(() => {
-    if (!profile?.schoolCode || profile.accountType !== 'staff') return;
+    if (!profile?.schoolCode || profile.accountType !== 'staff' || profile.role === 'teacher') return;
     if (classes.length === 0) return;
     if (backfilledClassScopingRef.current === profile.schoolCode) return;
     backfilledClassScopingRef.current = profile.schoolCode;
@@ -708,9 +720,13 @@ export function SchoolDataProvider({ children }) {
   // 'exams' weli madhan yahay maadaama uu si isku mid ah u soo shubmayo, in
   // la sugo ayaa ka fiican in si khalad ah loogu qoro classTeacherId:null
   // buundooyin dhab ah oo aan weli la eegin).
+  // "profile.role === 'teacher'" ka reeb — isla sababta backfill-ka kore
+  // (Exams audit CRITICAL, 2026-08-26): query-gu waa examMarks schoolCode-
+  // kaliya, macallin wuu la kulmi lahaa permission-denied isaga oo aan wax
+  // hagaajin karin.
   const backfilledExamMarksRef = useRef(null);
   useEffect(() => {
-    if (!profile?.schoolCode || profile.accountType !== 'staff') return;
+    if (!profile?.schoolCode || profile.accountType !== 'staff' || profile.role === 'teacher') return;
     if (classes.length === 0 || exams.length === 0) return;
     if (backfilledExamMarksRef.current === profile.schoolCode) return;
     backfilledExamMarksRef.current = profile.schoolCode;
@@ -1011,15 +1027,31 @@ export function SchoolDataProvider({ children }) {
   }, [profile?.schoolCode, profile?.accountType, profile?.role, profile?.teacherDocId]);
 
   // ===== ARDAYDA (Firestore collection "students") =====
+  // Exams audit CRITICAL, 2026-08-26: query-gan hore wuxuu isticmaali jiray
+  // schoolCode-kaliya — isaga oo aan lahayn "profile?.accountType !== 'staff'"
+  // xannibaad (isla mid meelaha kale ee context-kan oo dhan leh), effect-kan
+  // wuxuu sidoo kale u shaqayn jiray akoonada WAALIDKA (ParentPortal.jsx ma
+  // isticmaalo qiimahan, laakiin effect-ku wuu socon jiray isaga oo aan loo
+  // baahnayn), oo aan lahayn "classTeacherId" (isla mabda'a attendanceRecords/
+  // examMarks/notifications/quranProgress) — labaduba waxay keeni jireen
+  // "Missing or insufficient permissions" (firestore.rules: students
+  // isMyClassData/isParentOfStudent, per-document, query-gu ma xaddidnayn).
   useEffect(() => {
-    if (!profile?.schoolCode) {
+    if (!profile?.schoolCode || profile?.accountType !== 'staff') {
+      setAllStudents([]);
+      setStudentsLoading(false);
+      return undefined;
+    }
+    if (profile?.role === 'teacher' && !profile?.teacherDocId) {
       setAllStudents([]);
       setStudentsLoading(false);
       return undefined;
     }
     setStudentsLoading(true);
+    const classTeacherId = profile?.role === 'teacher' ? profile.teacherDocId : null;
     const unsubscribe = subscribeToStudents(
       profile.schoolCode,
+      classTeacherId,
       (list) => {
         setAllStudents(list);
         setStudentsLoading(false);
@@ -1030,13 +1062,16 @@ export function SchoolDataProvider({ children }) {
       }
     );
     return unsubscribe;
-  }, [profile?.schoolCode]);
+  }, [profile?.schoolCode, profile?.accountType, profile?.role, profile?.teacherDocId]);
 
   // Hal mar per school — u abuurta 'studentLookup' doc-yada ardayda hore loo
   // abuuray ka hor intaan collection-kaas la darin (fiiri students.js).
+  // "profile.role === 'teacher'" ka reeb — isla sababta backfill-yada kore
+  // (Exams audit CRITICAL, 2026-08-26): wuxuu akhriyaa 'students' schoolCode-
+  // kaliya (isMyClassData rule-ku uma oggola macallin).
   const backfilledSchoolRef = useRef(null);
   useEffect(() => {
-    if (!profile?.schoolCode || profile.accountType !== 'staff') return;
+    if (!profile?.schoolCode || profile.accountType !== 'staff' || profile.role === 'teacher') return;
     if (backfilledSchoolRef.current === profile.schoolCode) return;
     backfilledSchoolRef.current = profile.schoolCode;
     backfillStudentLookups(profile.schoolCode).catch((err) =>
@@ -1049,9 +1084,13 @@ export function SchoolDataProvider({ children }) {
   // darin). Waxay isbarbardhigtaa className-ka ardayga iyo grade+section
   // fasallada dhabta ah — khatar-yartahay maadaama className-kii hore laga
   // soo doortay dropdown dhab ah (ma ahayn qoraal laba meelood oo gooni ah).
+  // "profile.role === 'teacher'" ka reeb (Exams audit CRITICAL, 2026-08-26):
+  // updateStudentDoc waa owner-kaliya (firestore.rules: students allow
+  // create/update: isOwnerStaffOf) — macallin wuu la kulmi lahaa permission-
+  // denied haddii uu isku dayo inuu buuxiyo classId ardaydiisa.
   const classIdBackfillRef = useRef(null);
   useEffect(() => {
-    if (!profile?.schoolCode || profile.accountType !== 'staff') return;
+    if (!profile?.schoolCode || profile.accountType !== 'staff' || profile.role === 'teacher') return;
     if (classIdBackfillRef.current === profile.schoolCode) return;
     if (classes.length === 0 || allStudents.length === 0) return;
     classIdBackfillRef.current = profile.schoolCode;
@@ -1070,9 +1109,13 @@ export function SchoolDataProvider({ children }) {
   // Hal mar per school — u buuxisa "classId" imtixaannada hore u haystay
   // "className" kaliya (isla fikradda backfill-ka classId ee ardayda kore —
   // className-kii hore waxaa laga soo doortay dropdown dhab ah, khatar-yar).
+  // "profile.role === 'teacher'" ka reeb — si loo ilaaliyo isku-mid (owner
+  // ayaa kaliya socodsiiyay backfill-yada oo dhan, Exams audit CRITICAL,
+  // 2026-08-26) halkii macallinku uu si qayb ah u fashilmi lahaa (imtixaanada
+  // fasallada KALE) isaga oo aan la ogeysiin sababta.
   const examClassIdBackfillRef = useRef(null);
   useEffect(() => {
-    if (!profile?.schoolCode || profile.accountType !== 'staff') return;
+    if (!profile?.schoolCode || profile.accountType !== 'staff' || profile.role === 'teacher') return;
     if (examClassIdBackfillRef.current === profile.schoolCode) return;
     if (classes.length === 0 || exams.length === 0) return;
     examClassIdBackfillRef.current = profile.schoolCode;

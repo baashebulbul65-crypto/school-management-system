@@ -18,16 +18,38 @@ function initials(name) {
 
 function Exams() {
   const { t } = useTranslation();
-  const { students, classes, subjects, exams, examMarks, addExam, updateExam, removeExam, updateExamMark } = useSchoolData();
+  const {
+    students, classes, subjects, exams, examMarks, addExam, updateExam, removeExam, updateExamMark,
+    myClasses, myClassIds, myClassNames,
+  } = useSchoolData();
+
+  // Teacher Role Scoping (Exams audit HIGH, 2026-08-26): dropdown-yada
+  // (Marks exam-selector, Results class-selector, Report Card student-
+  // selector, Add/Edit Exam class-selector) hore ma xaddidnayn macallinka
+  // fasalladiisa gaarka ah (isla mabda'a Attendance.jsx myStudents) —
+  // macallinku wuxuu dooran karay fasal/arday/imtixaan aan isaga ahayn,
+  // kadibna Firestore wuu diidi jiray qorista (isMyClassData), toast khalad
+  // ah oo aan la fahmi karin — ama (Results/Report Card) wuxuu arki jiray
+  // "0 imtixaan/— grade" oo khaldan (fasax la'aan, ma ahan xog maqan dhab
+  // ah). Liiska "Imtixaanada" (tab-ka 'exams') keligiis waa ula kac ah in
+  // uu sii ahaado dugsi-guud (fiiri firestore.rules: exams allow read —
+  // isla mabda'a staffRoster). myClassIds null = xaddidaad ma jiro (owner).
+  const isMyExam = (e) => (e.classId ? myClassIds.has(e.classId) : myClassNames.has(e.className));
+  const myExams = myClassIds ? exams.filter(isMyExam) : exams;
+  const myPickClasses = myClasses || classes;
+  const myPickStudents = myClassIds
+    ? students.filter((s) => (s.classId ? myClassIds.has(s.classId) : myClassNames.has(s.className)))
+    : students;
+
   const [activeTab, setActiveTab] = useState('exams');
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingExam, setEditingExam] = useState(null);
-  const [selectedExamId, setSelectedExamId] = useState(exams[0]?.id);
+  const [selectedExamId, setSelectedExamId] = useState(myExams[0]?.id);
   // resultsClass hadda waa classId dhab ah (Firestore doc id), ma aha magac
   // qoraal ah — fiiri effect-ka hoose ee dooranaya fasalka ugu horreeya
   // marka classes-ku horay uga soo shubmo Firestore.
   const [resultsClass, setResultsClass] = useState('');
-  const [reportStudentId, setReportStudentId] = useState(students[0]?.id);
+  const [reportStudentId, setReportStudentId] = useState(myPickStudents[0]?.id);
   // Buundooyinka la qorayo hadda (kama bixin Firestore ilaa "onBlur") — si aan u
   // yareyno qorista Firestore keystroke kasta, isla markaana looga fogaado in
   // xogta soo socota (onSnapshot) ay kala jabiso wax qorista socota.
@@ -44,20 +66,29 @@ function Exams() {
   // haddii aan la doorbidin arday weli, ama midkii la doortay uu tirtiran yahay,
   // dib u dooro kan ugu horreeya ee liiska.
   useEffect(() => {
-    if (students.length && !students.some((s) => s.id === reportStudentId)) {
-      setReportStudentId(students[0].id);
+    if (myPickStudents.length && !myPickStudents.some((s) => s.id === reportStudentId)) {
+      setReportStudentId(myPickStudents[0].id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [students]);
+  }, [myPickStudents]);
 
   // Isla qaabkaas — dooro fasalka ugu horreeya ee "classes" (dhab ah) marka
   // uu la doorto weli maqan yahay ama uu tirtiran yahay.
   useEffect(() => {
-    if (classes.length && !classes.some((c) => c.id === resultsClass)) {
-      setResultsClass(classes[0].id);
+    if (myPickClasses.length && !myPickClasses.some((c) => c.id === resultsClass)) {
+      setResultsClass(myPickClasses[0].id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classes]);
+  }, [myPickClasses]);
+
+  // Isla qaabkaas — "Marks" tab-ka, marka selectedExamId aanu ku jirin
+  // myExams (fasal la beddelay, ama macallin cusub oo hadda soo galay).
+  useEffect(() => {
+    if (myExams.length && !myExams.some((e) => e.id === selectedExamId)) {
+      setSelectedExamId(myExams[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myExams]);
 
   const openAddModal = () => { setEditingExam(null); setShowFormModal(true); };
   const openEditModal = (exam) => { setEditingExam(exam); setShowFormModal(true); };
@@ -227,14 +258,22 @@ function Exams() {
                     <td className="cell-sub">{e.date}</td>
                     <td>{e.maxMarks}</td>
                     <td>
-                      <div className="row-actions">
-                        <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(e)}>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
-                        </button>
-                        <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteExam(e.id, `${e.type} - ${e.subject}`)}>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
-                        </button>
-                      </div>
+                      {/* isMyExam (Exams audit HIGH, 2026-08-26): liiska
+                          imtixaanada waa dugsi-guud (ula kac ah, fiiri kore),
+                          laakiin edit/delete-ku waa isMyClassData (macallinku
+                          KALIYA fasalladiisa) — badhamahan waa la qariyaa
+                          imtixaan aan macallinku lahayn, halkii uu u riixi
+                          lahaa oo Firestore uu diido (permission-denied). */}
+                      {(!myClassIds || isMyExam(e)) && (
+                        <div className="row-actions">
+                          <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(e)}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
+                          </button>
+                          <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteExam(e.id, `${e.type} - ${e.subject}`)}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -250,7 +289,7 @@ function Exams() {
           <div className="exam-select-row">
             <label>{t('exams.selectExam')}</label>
             <select value={selectedExamId} onChange={(e) => setSelectedExamId(e.target.value)}>
-              {exams.map((e) => (
+              {myExams.map((e) => (
                 <option key={e.id} value={e.id}>{e.type} — {e.subject} ({e.className})</option>
               ))}
             </select>
@@ -301,7 +340,7 @@ function Exams() {
           <div className="exam-select-row">
             <label>{t('exams.selectClass')}</label>
             <select value={resultsClass} onChange={(e) => setResultsClass(e.target.value)}>
-              {classes.map((c) => <option key={c.id} value={c.id}>{classroomName(c)}</option>)}
+              {myPickClasses.map((c) => <option key={c.id} value={c.id}>{classroomName(c)}</option>)}
             </select>
           </div>
 
@@ -341,7 +380,7 @@ function Exams() {
           <div className="exam-select-row">
             <label>{t('exams.selectStudent')}</label>
             <select value={reportStudentId} onChange={(e) => setReportStudentId(e.target.value)}>
-              {students.map((s) => <option key={s.id} value={s.id}>{s.fullName} ({s.className})</option>)}
+              {myPickStudents.map((s) => <option key={s.id} value={s.id}>{s.fullName} ({s.className})</option>)}
             </select>
             <button className="btn-primary report-export-btn" onClick={handleExportReportCard}>
               <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
@@ -394,7 +433,7 @@ function Exams() {
         exam={editingExam}
         examTypes={EXAM_TYPES}
         subjects={subjects}
-        classes={classes}
+        classes={myPickClasses}
       />
     </div>
   );
