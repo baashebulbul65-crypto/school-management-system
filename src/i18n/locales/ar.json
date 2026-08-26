@@ -475,7 +475,18 @@
     "staff": {
       "addNew": "إضافة موظف",
       "empty": "لم تتم إضافة أي موظف بعد.",
-      "confirmDelete": "هل أنت متأكد أنك تريد إزالة \"{{name}}\" من قائمة الموظفين؟"
+      "confirmDelete": "هل أنت متأكد أنك تريد إزالة \"{{name}}\" من قائمة الموظفين؟",
+      "form": {
+        "editTitle": "تعديل بيانات الموظف",
+        "addTitle": "إضافة موظف",
+        "subtitle": "موظف غير معلم (مدير، محاسب، حارس، إلخ).",
+        "fields": { "name": "الاسم", "role": "الدور" },
+        "placeholders": { "name": "مثال: حسن عبدالله نور", "role": "مثال: محاسب (Accountant)" },
+        "errors": { "nameRequired": "يرجى إدخال اسم الموظف." },
+        "cancel": "إلغاء",
+        "submitEdit": "حفظ",
+        "submitAdd": "إضافة"
+      }
     }
   },
   "reports": {

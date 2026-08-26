@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './SubjectFormModal.css';
 
 const EMPTY_FORM = { name: '', sub: '' };
 
 function StaffMemberFormModal({ isOpen, onClose, onSave, member }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
   const isEditing = !!member;
@@ -20,7 +22,7 @@ function StaffMemberFormModal({ isOpen, onClose, onSave, member }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.name.trim()) {
-      setError('Fadlan geli magaca shaqaalaha.');
+      setError(t('attendance.staff.form.errors.nameRequired'));
       return;
     }
     onSave({ name: form.name.trim(), sub: form.sub.trim() }, member?.id);
@@ -32,8 +34,8 @@ function StaffMemberFormModal({ isOpen, onClose, onSave, member }) {
       <div className="sjfm-modal">
         <div className="sjfm-header">
           <div>
-            <h2>{isEditing ? 'Wax Ka Beddel Shaqaalaha' : 'Ku Dar Shaqaale'}</h2>
-            <p>Shaqaale aan macallin ahayn (Maamule, Xisaabiye, Ilaaliye, iwm).</p>
+            <h2>{isEditing ? t('attendance.staff.form.editTitle') : t('attendance.staff.form.addTitle')}</h2>
+            <p>{t('attendance.staff.form.subtitle')}</p>
           </div>
           <button className="sjfm-close" onClick={onClose} type="button">
             <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -46,19 +48,19 @@ function StaffMemberFormModal({ isOpen, onClose, onSave, member }) {
 
             <div className="sjfm-grid">
               <div className="sjfm-field full">
-                <label>Magaca</label>
-                <input type="text" value={form.name} onChange={update('name')} placeholder="Tusaale: Xasan Cabdulle Nuur" required />
+                <label>{t('attendance.staff.form.fields.name')}</label>
+                <input type="text" value={form.name} onChange={update('name')} placeholder={t('attendance.staff.form.placeholders.name')} required />
               </div>
               <div className="sjfm-field full">
-                <label>Doorka</label>
-                <input type="text" value={form.sub} onChange={update('sub')} placeholder="Tusaale: Xisaabiye (Accountant)" />
+                <label>{t('attendance.staff.form.fields.role')}</label>
+                <input type="text" value={form.sub} onChange={update('sub')} placeholder={t('attendance.staff.form.placeholders.role')} />
               </div>
             </div>
           </div>
 
           <div className="sjfm-footer">
-            <button type="button" className="btn-secondary" onClick={onClose}>Jooji</button>
-            <button type="submit" className="btn-primary">{isEditing ? 'Kaydi' : 'Ku Dar'}</button>
+            <button type="button" className="btn-secondary" onClick={onClose}>{t('attendance.staff.form.cancel')}</button>
+            <button type="submit" className="btn-primary">{isEditing ? t('attendance.staff.form.submitEdit') : t('attendance.staff.form.submitAdd')}</button>
           </div>
         </form>
       </div>

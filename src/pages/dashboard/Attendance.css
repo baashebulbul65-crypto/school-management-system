@@ -154,10 +154,17 @@ span.att-status-btn:hover{ transform: none; }
   .cw-att-quran-table .att-status-btn{ padding: 9px 8px; font-size: 10.5px; min-height: 36px; }
   .cw-att-quran-table .att-status-btn-group{ gap: 4px; max-width: 100px; }
   .cw-att-quran-table .cell-name{ font-size: 12px; }
+
+  /* Touch-target audit (Attendance audit MEDIUM, 2026-08-26): jadwalka
+     guud ee Attendance.jsx (tabyada Macallimiinta/Shaqaalaha) — button-ka
+     ".att-status-btn" (7px 16px, ~29px dherer) waa ka yar 40-44px, isla
+     mabda'a ".cw-att-quran-table .att-status-btn" kore. span (Ardayda,
+     akhris-kaliya) ma leh cursor, sidaas darteed uma baahna kordhin. */
+  button.att-status-btn{ padding: 10px 16px; min-height: 40px; }
 }
 
 /* Period tabs (reports) */
-.att-period-tabs{ display: flex; gap: 6px; }
+.att-period-tabs{ display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .att-period-tab{
   border: 1.5px solid var(--line);
   background: #fff;
@@ -168,6 +175,8 @@ span.att-status-btn:hover{ transform: none; }
   color: var(--grey-text);
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .att-period-tab.active{
   background: var(--navy);

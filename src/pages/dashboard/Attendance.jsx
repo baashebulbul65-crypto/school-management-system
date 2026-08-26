@@ -48,10 +48,19 @@ function Attendance() {
     () => (myClassIds ? students.filter((s) => (s.classId ? myClassIds.has(s.classId) : myClassNames.has(s.className))) : students),
     [students, myClassIds, myClassNames]
   );
-  const myStudentAttendanceRecords = useMemo(
-    () => (myClassIds ? allStudentAttendanceRecords.filter((r) => myClassNames.has(r.className)) : allStudentAttendanceRecords),
-    [allStudentAttendanceRecords, myClassIds, myClassNames]
-  );
+  // Attendance audit HIGH, 2026-08-26: hore halkan waxaa lagu dib-u-shaandhayn
+  // jiray allStudentAttendanceRecords iyada oo la isticmaalayo
+  // myClassNames.has(r.className) — laakiin allStudentAttendanceRecords
+  // (SchoolDataContext.jsx) horeba si sax ah SERVER-KA looga soo xaddiday
+  // (Firestore query, classTeacherId — stable, ma isbedelo). Dib-u-shaandhaynta
+  // client-ku waxay ahayd ku celin la'aan marka wax aan is-beddelin, laakiin
+  // khalad bay noqonaysay haddii fasal la magac-beddelo (className waa
+  // denormalized wakhtigii record-ka la qorayay — myClassNames waa magaca
+  // HADDA jira): diiwaannadii hore ee fasalka HORE ahaa way ka lumi lahaayeen
+  // xisaabinta warbixinnada toddobaadka/bisha/sanadka, macallinku isaga oo
+  // aan la ogeysiin. allStudentAttendanceRecords ayaa hadda si toos ah loo
+  // isticmaalayaa — server-ku horeba si sax ah ayuu u xaddiday.
+  const myStudentAttendanceRecords = allStudentAttendanceRecords;
   const [category, setCategory] = useState('students');
   const [period, setPeriod] = useState('daily');
   // "date" waxaa laga soo qaataa SchoolDataContext-ka "todayDate" (isla mid

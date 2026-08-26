@@ -475,7 +475,18 @@
     "staff": {
       "addNew": "Ku Dar Shaqaale",
       "empty": "Wali shaqaale lama darin.",
-      "confirmDelete": "Ma hubtaa inaad ka saarayso \"{{name}}\" liiska shaqaalaha?"
+      "confirmDelete": "Ma hubtaa inaad ka saarayso \"{{name}}\" liiska shaqaalaha?",
+      "form": {
+        "editTitle": "Wax Ka Beddel Shaqaalaha",
+        "addTitle": "Ku Dar Shaqaale",
+        "subtitle": "Shaqaale aan macallin ahayn (Maamule, Xisaabiye, Ilaaliye, iwm).",
+        "fields": { "name": "Magaca", "role": "Doorka" },
+        "placeholders": { "name": "Tusaale: Xasan Cabdulle Nuur", "role": "Tusaale: Xisaabiye (Accountant)" },
+        "errors": { "nameRequired": "Fadlan geli magaca shaqaalaha." },
+        "cancel": "Jooji",
+        "submitEdit": "Kaydi",
+        "submitAdd": "Ku Dar"
+      }
     }
   },
   "reports": {
