@@ -305,6 +305,7 @@
       "addTitle": "Ku Dar Maadada Cusub",
       "fillInfo": "Buuxi macluumaadka maadada cusub",
       "errorNoTeacher": "Maadadu waa in ay leedahay Macallin (Teacher) loo xilsaaray.",
+      "inactiveTeacherFallback": "Macallin la saaray",
       "fields": { "name": "Magaca Maadada (Subject Name) *", "code": "Code *", "teacher": "Macallinka (Teacher) *", "credit": "Credit", "weeklyHours": "Saacadaha Toddobaadka (Weekly Hours)" },
       "placeholders": {
         "name": "Tusaale: Xisaabta", "code": "Tusaale: MATH-101", "teacher": "Tusaale: Cali Xasan Warsame", "credit": "Tusaale: 4", "weeklyHours": "Tusaale: 5",

@@ -115,6 +115,21 @@
 
 @media (max-width: 640px){
   .sjfm-grid{ grid-template-columns: 1fr; }
+
+  /* Mobile compact-card convention (StatCard.css, 2026-08-16) — modal-kani
+     wuxuu predate-gareeyay convention-kaas, marnaba lama migrate-gareyn
+     (Subjects audit MEDIUM, 2026-08-26 — isla khaladkii UserFormModal.css,
+     Users audit). Faylkan waxaa wadaaga StaffMemberFormModal.jsx
+     (Attendance > Shaqaalaha) — sixitaankan labaduba wuu hagaajinayaa. */
+  .sjfm-overlay{ padding: 16px 10px; }
+  .sjfm-modal{ border-radius:16px; }
+  .sjfm-header{ padding: 18px 16px; }
+  .sjfm-close{ width:40px; height:40px; }
+  .sjfm-header h2{ font-size:15px; }
+  .sjfm-header p{ font-size:11px; }
+  .sjfm-body{ padding: 18px 16px; max-height: 62vh; }
+  .sjfm-section-label:not(:first-child){ margin-top:20px; }
+  .sjfm-footer{ padding: 14px 16px; }
 }
 
 .sjfm-error{

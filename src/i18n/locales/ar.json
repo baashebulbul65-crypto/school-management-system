@@ -305,6 +305,7 @@
       "addTitle": "إضافة مادة جديدة",
       "fillInfo": "يرجى تعبئة معلومات المادة الجديدة",
       "errorNoTeacher": "يجب أن يكون للمادة معلم مسند إليها.",
+      "inactiveTeacherFallback": "معلم تمت إزالته",
       "fields": { "name": "اسم المادة *", "code": "الرمز *", "teacher": "المعلم *", "credit": "الساعات المعتمدة", "weeklyHours": "الساعات الأسبوعية" },
       "placeholders": {
         "name": "مثال: الرياضيات", "code": "مثال: MATH-101", "teacher": "مثال: علي حسن ورسمي", "credit": "مثال: 4", "weeklyHours": "مثال: 5",

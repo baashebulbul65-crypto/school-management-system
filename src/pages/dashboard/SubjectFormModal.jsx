@@ -35,6 +35,18 @@ function SubjectFormModal({ isOpen, onClose, onSave, subject, teachers = [] }) {
 
   const update = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
+  // Orphan fallback (Subjects audit MEDIUM, 2026-08-26 — isla mabda'a
+  // ExamFormModal.jsx): "teachers" waxaa laga saaray macallimiinta
+  // 'inactive' ah (Subjects.jsx) — haddii maadadan hore loo qoondeeyay
+  // macallin hadda 'inactive' ah, magaciisu marnaba kuma jiro liiska.
+  // Iyada oo aan tan la darin, <select> wuxuu si aamusan ah u muujin lahaa
+  // macallinka UGU HORREEYA ee liiska (mid kale, khaldan), isaga oo aan
+  // owner-ka loo sheegin in maadadu aanay hadda xiranayn cid la arki karo.
+  const teacherOptions = [...teachers];
+  if (form.teacherId && !teacherOptions.some((tc) => tc.id === form.teacherId)) {
+    teacherOptions.unshift({ id: form.teacherId, fullName: subject?.teacher || t('subjects.form.inactiveTeacherFallback') });
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -84,11 +96,11 @@ function SubjectFormModal({ isOpen, onClose, onSave, subject, teachers = [] }) {
               </div>
               <div className="sjfm-field">
                 <label>{t('subjects.form.fields.teacher')}</label>
-                <select value={form.teacherId} onChange={update('teacherId')} required disabled={teachers.length === 0}>
+                <select value={form.teacherId} onChange={update('teacherId')} required disabled={teacherOptions.length === 0}>
                   <option value="" disabled>
-                    {teachers.length === 0 ? t('subjects.form.placeholders.noTeachers') : t('subjects.form.placeholders.selectTeacher')}
+                    {teacherOptions.length === 0 ? t('subjects.form.placeholders.noTeachers') : t('subjects.form.placeholders.selectTeacher')}
                   </option>
-                  {teachers.map((tc) => (
+                  {teacherOptions.map((tc) => (
                     <option key={tc.id} value={tc.id}>{tc.fullName}</option>
                   ))}
                 </select>
