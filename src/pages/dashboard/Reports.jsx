@@ -4,9 +4,11 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { useNotifications } from '../../context/NotificationsContext';
+import { useSettings } from '../../context/SettingsContext';
 import { classroomName } from '../../hooks/useClassOptions';
 import { weekStartISODate } from '../../utils/somaliDate';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
+import { currencySymbol } from '../../utils/currency';
 import BackButton from '../../components/dashboard/BackButton';
 import '../../styles/dashboard-shared.css';
 import './Reports.css';
@@ -28,6 +30,8 @@ function Reports() {
   const { t, i18n } = useTranslation();
   const { students, teachers, classes, exams, examMarks, expenses, income, feePayments, allStudentAttendanceRecords, allStaffAttendanceRecords } = useSchoolData();
   const { notifications } = useNotifications();
+  const { settings } = useSettings();
+  const cur = currencySymbol(settings.currency);
   const [activeTab, setActiveTab] = useState('reports');
 
   // classId marka jira, className fallback ilaa ardayda/imtixaannada aan weli
@@ -169,7 +173,7 @@ function Reports() {
       .map((p) => ({
         id: `payment_${p.id}`,
         type: 'success',
-        text: `Lacag $${(p.amount || 0).toLocaleString()} ayaa la ururiyay${p.collectedByName ? ` — ${p.collectedByName}` : ''}`,
+        text: `Lacag ${cur}${(p.amount || 0).toLocaleString()} ayaa la ururiyay${p.collectedByName ? ` — ${p.collectedByName}` : ''}`,
         time: p.createdAt,
       }));
     // notifications waxay horeba u shaandhaysan tahay (NotificationsContext.jsx)
@@ -298,7 +302,7 @@ function Reports() {
           <div className="rep-metric-icon teal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
           </div>
-          <div><span className={`rep-metric-value ${netProfit >= 0 ? 'success' : 'danger'}`}>${netProfit.toLocaleString()}</span><span className="rep-metric-label">{t('reports.metrics.netProfit')}</span></div>
+          <div><span className={`rep-metric-value ${netProfit >= 0 ? 'success' : 'danger'}`}>{cur}{netProfit.toLocaleString()}</span><span className="rep-metric-label">{t('reports.metrics.netProfit')}</span></div>
         </div>
         <div className="rep-metric-card purple">
           <div className="rep-metric-icon purple">
@@ -384,18 +388,18 @@ function Reports() {
               <div className="rep-bar-track">
                 <div className="rep-bar-fill green" style={{ width: `${(totalIncome / maxFinanceBar) * 100}%` }}></div>
               </div>
-              <span className="rep-bar-value">${totalIncome.toLocaleString()}</span>
+              <span className="rep-bar-value">{cur}{totalIncome.toLocaleString()}</span>
             </div>
             <div className="rep-finance-row">
               <span className="rep-finance-label">{t('reports.finance.expenses')}</span>
               <div className="rep-bar-track">
                 <div className="rep-bar-fill red" style={{ width: `${(totalExpenses / maxFinanceBar) * 100}%` }}></div>
               </div>
-              <span className="rep-bar-value">${totalExpenses.toLocaleString()}</span>
+              <span className="rep-bar-value">{cur}{totalExpenses.toLocaleString()}</span>
             </div>
           </div>
           <div className={`rep-net-banner ${netProfit >= 0 ? 'positive' : 'negative'}`}>
-            {t('reports.metrics.netProfit')}: <strong>${netProfit.toLocaleString()}</strong>
+            {t('reports.metrics.netProfit')}: <strong>{cur}{netProfit.toLocaleString()}</strong>
           </div>
         </div>
 

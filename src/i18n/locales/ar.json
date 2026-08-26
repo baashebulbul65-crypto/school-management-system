@@ -649,7 +649,7 @@
     "fees": {
       "sectionTitle": "رسوم كل صف",
       "sectionDesc": "غيّر الرسوم الافتراضية لكل صف — هذا التغيير سيؤثر على حسابات الرسوم الجديدة.",
-      "table": { "class": "الصف", "price": "الرسوم ($)" },
+      "table": { "class": "الصف", "price": "الرسوم" },
       "newGradeNamePlaceholder": "اسم الصف الجديد (مثال: Form 5)",
       "newGradeAmountPlaceholder": "الرسوم ($)",
       "add": "إضافة"

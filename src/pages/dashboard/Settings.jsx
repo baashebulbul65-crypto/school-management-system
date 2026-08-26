@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../../context/SettingsContext';
 import { useAuth } from '../../context/AuthContext';
 import { changeStaffPassword } from '../../firebase/auth';
+import { currencySymbol } from '../../utils/currency';
 import BackButton from '../../components/dashboard/BackButton';
 import '../../styles/dashboard-shared.css';
 import './Settings.css';
@@ -45,9 +46,30 @@ function Settings() {
   // ogeysiisyada) waa owner-kaliya, la mid ah bogga "Dejinta" ee UI-gu
   // owner-only ahaan jiray (Teacher Role Scoping audit, 2026-08-02).
   const isOwner = profile?.role !== 'teacher';
+  const cur = currencySymbol(settings.currency);
 
   const [activeTab, setActiveTab] = useState(isOwner ? 'school' : 'account');
   const [schoolForm, setSchoolForm] = useState(settings.school);
+  const [schoolFormDirty, setSchoolFormDirty] = useState(false);
+
+  // Settings audit HIGH, 2026-08-26: "schoolForm" waxaa lagu bilaabay hal mar
+  // oo kaliya (useState initial value) — marka boggan la furo/refresh gareeyo,
+  // SettingsContext-ku wuxuu wali haystaa DEFAULT_SETTINGS.school (magaca
+  // "Kayd", Hargeysa, iwm) ilaa Firestore-ka (subscribeToSchool, async) uu
+  // soo celiyo xogta dhabta ah — schoolForm ma dib u sync-gareyn jirin marka
+  // taasi timaaddo (preview-ga kore wuu sax ahaa maadaama uu si toos ah
+  // settings.school ka akhriyo, laakiin FIELD-yada form-ku waxay sii hayn
+  // jireen "Kayd"/"Hargeysa, Somaliland" ilaa la taabto). Haddii owner-ku
+  // riixo "Kaydi Isbeddelka" isaga oo aan field-yada taaban (isagoo u
+  // maleynaya preview-gu sax buu yahay), xaqiiqda dhabta ah ee dugsiga ayaa
+  // lagu dul-qori lahaa xogta placeholder-ka ah. Halkan waxaa lagu sync-
+  // gareynayaa mar kasta oo settings.school isbedesho (server echo, logo
+  // upload, iwm), laakiin KALIYA marka aan schoolForm haysan wax aan la
+  // kaydin (dirty=false) — si aan loo tuurin isbeddel gacan ah oo socda
+  // (tusaale: haddii ay magaca ku qorayaan markay logo-ga soo gelinayaan).
+  useEffect(() => {
+    if (!schoolFormDirty) setSchoolForm(settings.school);
+  }, [settings.school, schoolFormDirty]);
   const [newGradeName, setNewGradeName] = useState('');
   const [newGradeAmount, setNewGradeAmount] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
@@ -81,12 +103,16 @@ function Settings() {
     setTimeout(() => setToastVisible(false), 2200);
   };
 
-  const handleSchoolChange = (field) => (e) => setSchoolForm((f) => ({ ...f, [field]: e.target.value }));
+  const handleSchoolChange = (field) => (e) => {
+    setSchoolFormDirty(true);
+    setSchoolForm((f) => ({ ...f, [field]: e.target.value }));
+  };
 
   const handleSaveSchool = (e) => {
     e.preventDefault();
     const { name, phone, address, email } = schoolForm;
     updateSchool({ name, phone, address, email });
+    setSchoolFormDirty(false);
     flashSaved();
   };
 
@@ -284,7 +310,7 @@ function Settings() {
 
           <div className="data-table-wrap">
             <table className="data-table">
-              <thead><tr><th>{t('settings.fees.table.class')}</th><th>{t('settings.fees.table.price')}</th><th></th></tr></thead>
+              <thead><tr><th>{t('settings.fees.table.class')}</th><th>{t('settings.fees.table.price')} ({cur})</th><th></th></tr></thead>
               <tbody>
                 {settings.feesByGrade.map((f) => (
                   <tr key={f.id}>

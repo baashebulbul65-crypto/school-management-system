@@ -649,7 +649,7 @@
     "fees": {
       "sectionTitle": "Qiimaha Fasal Kasta",
       "sectionDesc": "Beddel qiimaha caadiga ah ee fasal kasta — isbeddelkani wuxuu saameyn ku yeelan doonaa xisaabaadka lacagta ee cusub.",
-      "table": { "class": "Fasalka", "price": "Qiimaha ($)" },
+      "table": { "class": "Fasalka", "price": "Qiimaha" },
       "newGradeNamePlaceholder": "Magaca Fasalka Cusub (tusaale: Form 5)",
       "newGradeAmountPlaceholder": "Qiimaha ($)",
       "add": "Ku Dar"

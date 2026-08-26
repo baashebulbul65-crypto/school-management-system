@@ -6,6 +6,7 @@ import { useSchoolData } from '../../context/SchoolDataContext';
 import { useSettings } from '../../context/SettingsContext';
 import { currentMonthValue } from '../../utils/somaliDate';
 import { getMonthlyFeeStatus, studentFeeOwed } from '../../utils/studentFee';
+import { currencySymbol } from '../../utils/currency';
 import { gradeFromPercent } from '../../utils/grades';
 import { buildWhatsAppLink } from '../../utils/whatsapp';
 import './StudentProfileModal.css';
@@ -27,6 +28,7 @@ function StudentProfileModal({ student, attendanceRecords, onClose }) {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const { settings } = useSettings();
+  const cur = currencySymbol(settings.currency);
   const [activeTab, setActiveTab] = useState('guud');
   const { feePayments, exams, examMarks } = useSchoolData();
   // Macallinku gebi ahaanba wuu ka mamnuucan yahay Finance-ka — xitaa
@@ -212,7 +214,7 @@ function StudentProfileModal({ student, attendanceRecords, onClose }) {
                 <span className={`badge ${feeStatus === 'paid' ? 'badge-success' : feeStatus === 'free' ? 'badge-neutral' : 'badge-danger'}`}>
                   {t(`finance.classDetail.stats.${feeStatus}`)}
                 </span>
-                {feeStatus !== 'free' && <span className="spm-fee-amount">${feeOwed.toFixed(2)}</span>}
+                {feeStatus !== 'free' && <span className="spm-fee-amount">{cur}{feeOwed.toFixed(2)}</span>}
               </p>
 
               <div className="spm-divider" style={{ marginTop: 20 }}>{t('students.profile.feeHistoryTitle')}</div>
@@ -228,7 +230,7 @@ function StudentProfileModal({ student, attendanceRecords, onClose }) {
                       {studentPayments.map((p) => (
                         <tr key={p.id}>
                           <td>{p.month}</td>
-                          <td>${(p.amount || 0).toFixed(2)}</td>
+                          <td>{cur}{(p.amount || 0).toFixed(2)}</td>
                           <td className="cell-sub">{p.date}</td>
                         </tr>
                       ))}

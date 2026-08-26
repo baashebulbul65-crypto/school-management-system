@@ -6,6 +6,16 @@ import { useSettings } from '../../context/SettingsContext';
 import { getFeeType } from '../../utils/studentFee';
 import './StudentFormModal.css';
 
+// Settings audit MEDIUM, 2026-08-26: "grade" ee fasalka (ClassFormModal) iyo
+// "grade" ee Settings > Qiimaha (feesByGrade) labaduba waa <input type="text">
+// oo aan la xiriirin (ma jiro dropdown/isha xog wadaag ah) — isbarbardhig
+// xarfo-isku-mid ah (===) wuxuu si aamusan ah u fashilmi karaa haddii mid ka
+// mid ah leeyahay booska dambe ("Form 1 ") ama xaraf weyn/yar oo kala duwan
+// ("form 1" vs "Form 1"). normalizeGrade waxay ka saartaa saameynta booska
+// iyo xarafka weyn/yar marka la isbarbardhigayo, si feeAmount-ku aan si
+// aamusan ah u ahaan lahayn madhan sabab la aan ogeyn.
+const normalizeGrade = (g) => (g || '').trim().toLowerCase();
+
 const EMPTY_FORM = {
   fullName: '',
   gender: 'Wiil',
@@ -61,7 +71,7 @@ function StudentFormModal({ isOpen, onClose, onSave, student, defaultClassId }) 
       const next = { ...f, classId, rollNumber: nextRollNumberForClass(students, classId) };
       if (!isEditing) {
         const cls = classes.find((c) => c.id === classId);
-        const gradeFee = cls && settings.feesByGrade.find((g) => g.grade === cls.grade);
+        const gradeFee = cls && settings.feesByGrade.find((g) => normalizeGrade(g.grade) === normalizeGrade(cls.grade));
         if (gradeFee) next.feeAmount = gradeFee.amount;
       }
       return next;
@@ -95,7 +105,7 @@ function StudentFormModal({ isOpen, onClose, onSave, student, defaultClassId }) 
       // sidoo kale waa loo buuxiyaa qiimaha feesByGrade (isla mid ah
       // handleClassChange), balse weli waa la beddeli karaa gacan ahaan.
       const cls = classes.find((c) => c.id === defaultClassId);
-      const gradeFee = cls && settings.feesByGrade.find((g) => g.grade === cls.grade);
+      const gradeFee = cls && settings.feesByGrade.find((g) => normalizeGrade(g.grade) === normalizeGrade(cls.grade));
       setForm({
         ...EMPTY_FORM,
         classId: defaultClassId,

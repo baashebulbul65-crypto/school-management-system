@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { useSettings } from '../../context/SettingsContext';
 import { getFeeType, studentFeeOwed } from '../../utils/studentFee';
+import { currencySymbol } from '../../utils/currency';
 import BackButton from '../../components/dashboard/BackButton';
 import './ClassDetailModal.css';
 
@@ -13,6 +15,8 @@ import './ClassDetailModal.css';
 function ClassDetailModal({ row, monthValue, onClose }) {
   const { t } = useTranslation();
   const { students, feePayments, collectStudentFee } = useSchoolData();
+  const { settings } = useSettings();
+  const cur = currencySymbol(settings.currency);
   const [sortBy, setSortBy] = useState('default');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -149,11 +153,11 @@ function ClassDetailModal({ row, monthValue, onClose }) {
         </div>
         <div className="cdm-stat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg>
-          <div><strong>${stats.qiimoDhimista}</strong><span>{t('finance.classDetail.stats.discountValue')}</span></div>
+          <div><strong>{cur}{stats.qiimoDhimista}</strong><span>{t('finance.classDetail.stats.discountValue')}</span></div>
         </div>
         <div className="cdm-stat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>
-          <div><strong>${stats.aBaska}</strong><span>{t('finance.classDetail.stats.unpaidCount')}</span></div>
+          <div><strong>{cur}{stats.aBaska}</strong><span>{t('finance.classDetail.stats.unpaidCount')}</span></div>
         </div>
       </div>
 

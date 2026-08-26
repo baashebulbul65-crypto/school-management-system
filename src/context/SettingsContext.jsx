@@ -165,33 +165,62 @@ export function SettingsProvider({ children }) {
     persistSchoolDoc({ timezone });
   };
 
+  // Settings audit MEDIUM, 2026-08-26 — shantan function ee hoose waxay hore
+  // u qaadan jireen qiimaha bilowga ah (academicYear/feesByGrade/
+  // notificationPrefs) `settings` (closure-ka render-ka HADDA jira), ma ahayn
+  // `prev` (functional-update-ka setSettings). Haddii laba wicitaan oo isku-
+  // mid ah (tusaale: laba "tirtir fee-grade" oo degdeg ah) ay dhacaan ka hor
+  // intii React-ku dib u render sameeyo (rare, laakiin macquul ah), mid-ka
+  // labaad wuxuu isticmaali lahaa xog duugoobay — mid-ka hore wuu lumi lahaa
+  // (Firestore-ka lagama badbaadin). Hadda qiimaha cusub waxaa lagu xisaabiyaa
+  // GUDAHA updater-ka (`prev`, had iyo jeer qiimaha ugu dambeeya, xitaa
+  // wicitaano isku-xiga oo isku-mar ah), balse `persistSchoolDoc` (Firestore
+  // write-ga) waa la wadaa DIBADDA updater-ka — updater-yada setState waa
+  // in ay "pure" ahaadaan (React StrictMode wuxuu laba jeer wici karaa si
+  // uu u hubiyo), haddii network-call-ku gudaha updater-ka ku jiro, si
+  // fudud ayuu Firestore-ka mar labaad ugu qori lahaa isla isbeddelka.
   const updateAcademicYear = (fields) => {
-    const academicYear = { ...settings.academicYear, ...fields };
-    setSettings((prev) => ({ ...prev, academicYear }));
+    let academicYear;
+    setSettings((prev) => {
+      academicYear = { ...prev.academicYear, ...fields };
+      return { ...prev, academicYear };
+    });
     persistSchoolDoc({ academicYear });
   };
 
   const updateFee = (id, amount) => {
-    const feesByGrade = settings.feesByGrade.map((f) => (f.id === id ? { ...f, amount } : f));
-    setSettings((prev) => ({ ...prev, feesByGrade }));
+    let feesByGrade;
+    setSettings((prev) => {
+      feesByGrade = prev.feesByGrade.map((f) => (f.id === id ? { ...f, amount } : f));
+      return { ...prev, feesByGrade };
+    });
     persistSchoolDoc({ feesByGrade });
   };
 
   const addFeeGrade = (grade, amount) => {
-    const feesByGrade = [...settings.feesByGrade, { id: Date.now(), grade, amount }];
-    setSettings((prev) => ({ ...prev, feesByGrade }));
+    let feesByGrade;
+    setSettings((prev) => {
+      feesByGrade = [...prev.feesByGrade, { id: Date.now(), grade, amount }];
+      return { ...prev, feesByGrade };
+    });
     persistSchoolDoc({ feesByGrade });
   };
 
   const removeFeeGrade = (id) => {
-    const feesByGrade = settings.feesByGrade.filter((f) => f.id !== id);
-    setSettings((prev) => ({ ...prev, feesByGrade }));
+    let feesByGrade;
+    setSettings((prev) => {
+      feesByGrade = prev.feesByGrade.filter((f) => f.id !== id);
+      return { ...prev, feesByGrade };
+    });
     persistSchoolDoc({ feesByGrade });
   };
 
   const updateNotificationPref = (key, value) => {
-    const notificationPrefs = { ...settings.notificationPrefs, [key]: value };
-    setSettings((prev) => ({ ...prev, notificationPrefs }));
+    let notificationPrefs;
+    setSettings((prev) => {
+      notificationPrefs = { ...prev.notificationPrefs, [key]: value };
+      return { ...prev, notificationPrefs };
+    });
     persistSchoolDoc({ notificationPrefs });
   };
 

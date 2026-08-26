@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { useSettings } from '../../context/SettingsContext';
 import { classroomName } from '../../hooks/useClassOptions';
+import { currencySymbol } from '../../utils/currency';
 import './TeacherProfileModal.css';
 
 // Isla habka Teachers.jsx (liiska) — hubi 'inactive' (macallin la saaray,
@@ -28,6 +30,8 @@ function InfoRow({ label, value }) {
 function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAttendance }) {
   const { t } = useTranslation();
   const { classes, salaries } = useSchoolData();
+  const { settings } = useSettings();
+  const cur = currencySymbol(settings.currency);
   const [activeTab, setActiveTab] = useState('guud');
 
   if (!teacher) return null;
@@ -145,7 +149,7 @@ function TeacherProfileModal({ teacher, attendanceRecords, onClose, onToggleAtte
                     {salary.map((s) => (
                       <tr key={s.id}>
                         <td>{s.month}</td>
-                        <td>${s.amount}</td>
+                        <td>{cur}{s.amount}</td>
                         <td className="cell-sub">{s.date || '—'}</td>
                         <td>
                           <span className={`badge ${s.status === 'paid' ? 'badge-success' : s.status === 'pending' ? 'badge-warning' : 'badge-danger'}`}>

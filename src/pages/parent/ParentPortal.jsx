@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { useSettings } from '../../context/SettingsContext';
 import { subscribeToStudentsByIds } from '../../firebase/students';
 import { subscribeToStudentAttendanceHistory } from '../../firebase/attendance';
 import { subscribeToStudentQuranProgressHistory } from '../../firebase/quranProgress';
@@ -16,6 +17,7 @@ import { subscribeToNotificationsForChildren, markNotificationsRead } from '../.
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { formatDMY, currentMonthValue } from '../../utils/somaliDate';
 import { getMonthlyFeeStatus, studentFeeOwed } from '../../utils/studentFee';
+import { currencySymbol } from '../../utils/currency';
 import '../../styles/dashboard-shared.css';
 import './ParentPortal.css';
 
@@ -62,6 +64,8 @@ function ParentPortal() {
   const [activeTab, setActiveTab] = useState('attendance');
   const { profile, logout } = useAuth();
   const { showError } = useToast();
+  const { settings } = useSettings();
+  const cur = currencySymbol(settings.currency);
   const navigate = useNavigate();
 
   const reportError = (message, err) => {
@@ -580,7 +584,7 @@ function ParentPortal() {
                     <span className={`badge ${feeStatus === 'paid' ? 'badge-success' : feeStatus === 'free' ? 'badge-neutral' : 'badge-danger'}`}>
                       {t(`finance.classDetail.stats.${feeStatus}`)}
                     </span>
-                    {feeStatus !== 'free' && <span className="pp-fee-amount">${feeOwed.toFixed(2)}</span>}
+                    {feeStatus !== 'free' && <span className="pp-fee-amount">{cur}{feeOwed.toFixed(2)}</span>}
                   </p>
 
                   <h3 className="pp-card-title" style={{ marginTop: 24 }}>{t('parentPortal.fees.historyTitle')}</h3>
@@ -594,7 +598,7 @@ function ParentPortal() {
                           {feePaymentsHistory.map((p) => (
                             <tr key={p.id}>
                               <td>{p.month}</td>
-                              <td>${(p.amount || 0).toFixed(2)}</td>
+                              <td>{cur}{(p.amount || 0).toFixed(2)}</td>
                               <td className="cell-sub">{p.date}</td>
                             </tr>
                           ))}

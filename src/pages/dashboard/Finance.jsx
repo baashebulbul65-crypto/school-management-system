@@ -8,6 +8,7 @@ import { classroomName } from '../../hooks/useClassOptions';
 import { currentMonthValue } from '../../utils/somaliDate';
 import { getFeeType, studentFeeOwed } from '../../utils/studentFee';
 import { getMonthlySalaryStatus } from '../../utils/staffSalary';
+import { currencySymbol } from '../../utils/currency';
 import FinanceDonutChart from '../../components/dashboard/FinanceDonutChart';
 import MonthCalendarPicker from '../../components/dashboard/MonthCalendarPicker';
 import BackButton from '../../components/dashboard/BackButton';
@@ -30,6 +31,10 @@ function Finance() {
     financeDocuments, addFinanceDocument,
   } = useSchoolData();
   const [activeTab, setActiveTab] = useState('accounting');
+  // Currency setting was dead (Settings audit HIGH, 2026-08-26) — dhammaan
+  // qiimayaasha lacagta ee boggan waxay ahaayeen "$" adag, iyada oo aan la
+  // eegin Settings > Xogta Dugsiga > Lacagta La Isticmaalo.
+  const cur = currencySymbol(settings.currency);
 
   // Deep link (Overview.jsx "Fasallada" stat card) — isla habka
   // Students.jsx (location.state.openAdd): navigate('/dashboard/finance',
@@ -226,7 +231,7 @@ function Finance() {
     doc.setFontSize(11);
     doc.text(`${t('finance.documents.table.no')}: ${d.no}`, 14, 32);
     doc.text(`${t('finance.documents.table.party')}: ${d.party}`, 14, 40);
-    doc.text(`${t('finance.documents.table.amount')}: $${d.amount}`, 14, 48);
+    doc.text(`${t('finance.documents.table.amount')}: ${cur}${d.amount}`, 14, 48);
     doc.text(`${t('finance.documents.table.date')}: ${d.date || ''}`, 14, 56);
     doc.save(`${d.no}.pdf`);
   };
@@ -287,7 +292,7 @@ function Finance() {
                 </div>
                 <div>
                   <div className="acc-card-label">{t('finance.summaryCards.total')}</div>
-                  <div className="acc-card-value">${accSummary.wadar.toLocaleString()}.00 <span>({totalStudents})</span></div>
+                  <div className="acc-card-value">{cur}{accSummary.wadar.toLocaleString()}.00 <span>({totalStudents})</span></div>
                 </div>
               </div>
               <div className="acc-card acc-card--green">
@@ -296,7 +301,7 @@ function Finance() {
                 </div>
                 <div>
                   <div className="acc-card-label">{t('finance.summaryCards.collected')}</div>
-                  <div className="acc-card-value success">${accSummary.laUururiyey.toLocaleString()}.00</div>
+                  <div className="acc-card-value success">{cur}{accSummary.laUururiyey.toLocaleString()}.00</div>
                 </div>
               </div>
               <div className="acc-card acc-card--red">
@@ -305,7 +310,7 @@ function Finance() {
                 </div>
                 <div>
                   <div className="acc-card-label">{t('finance.summaryCards.uncollected')}</div>
-                  <div className="acc-card-value danger">${accSummary.baaqi.toLocaleString()}.00</div>
+                  <div className="acc-card-value danger">{cur}{accSummary.baaqi.toLocaleString()}.00</div>
                 </div>
               </div>
               <div className="acc-card acc-card--teal">
@@ -314,7 +319,7 @@ function Finance() {
                 </div>
                 <div>
                   <div className="acc-card-label">{t('finance.summaryCards.discountValue')}</div>
-                  <div className="acc-card-value">${accSummary.dhimis.toLocaleString()}.00</div>
+                  <div className="acc-card-value">{cur}{accSummary.dhimis.toLocaleString()}.00</div>
                 </div>
               </div>
               <div className="acc-card acc-card--orange">
@@ -323,7 +328,7 @@ function Finance() {
                 </div>
                 <div>
                   <div className="acc-card-label">{t('finance.summaryCards.remaining')}</div>
-                  <div className="acc-card-value">{accSummary.remaining < 0 ? '-' : ''}${Math.abs(accSummary.remaining).toLocaleString()}.00</div>
+                  <div className="acc-card-value">{accSummary.remaining < 0 ? '-' : ''}{cur}{Math.abs(accSummary.remaining).toLocaleString()}.00</div>
                 </div>
               </div>
               <div className="acc-card acc-card--purple">
@@ -332,7 +337,7 @@ function Finance() {
                 </div>
                 <div>
                   <div className="acc-card-label">{t('finance.summaryCards.expenses')}</div>
-                  <div className="acc-card-value">${accSummary.totalExpenses.toLocaleString()}.00</div>
+                  <div className="acc-card-value">{cur}{accSummary.totalExpenses.toLocaleString()}.00</div>
                 </div>
               </div>
             </div>
@@ -347,7 +352,7 @@ function Finance() {
                   paid={accSummary.laUururiyey}
                   due={accSummary.baaqi}
                   discount={accSummary.dhimis}
-                  centerValue={`$${accSummary.wadar.toLocaleString()}`}
+                  centerValue={`${cur}${accSummary.wadar.toLocaleString()}`}
                   centerLabel={t('finance.donutChart.centerLabel')}
                 />
               </div>
@@ -398,8 +403,8 @@ function Finance() {
                         <div className="cell-name">{r.name}</div>
                       </td>
                       <td>{r.students}</td>
-                      <td className="cell-amount">{r.paidCount} (${r.paidTotal.toFixed(2)})</td>
-                      <td className={`cell-amount ${r.unpaidCount ? 'acc-baaqi-owed' : ''}`}>{r.unpaidCount} (${r.unpaidTotal.toFixed(2)})</td>
+                      <td className="cell-amount">{r.paidCount} ({cur}{r.paidTotal.toFixed(2)})</td>
+                      <td className={`cell-amount ${r.unpaidCount ? 'acc-baaqi-owed' : ''}`}>{r.unpaidCount} ({cur}{r.unpaidTotal.toFixed(2)})</td>
                     </tr>
                   ))}
                   {filteredRows.length === 0 && (
@@ -412,8 +417,8 @@ function Finance() {
                       <td></td>
                       <td>{t('finance.table.totalRow')} ({filteredRows.length}) {t('finance.table.class')}</td>
                       <td>{filteredRows.reduce((s, r) => s + r.students, 0)}</td>
-                      <td className="cell-amount">{filteredRows.reduce((s, r) => s + r.paidCount, 0)} (${filteredRows.reduce((s, r) => s + r.paidTotal, 0).toFixed(2)})</td>
-                      <td className="cell-amount">{filteredRows.reduce((s, r) => s + r.unpaidCount, 0)} (${filteredRows.reduce((s, r) => s + r.unpaidTotal, 0).toFixed(2)})</td>
+                      <td className="cell-amount">{filteredRows.reduce((s, r) => s + r.paidCount, 0)} ({cur}{filteredRows.reduce((s, r) => s + r.paidTotal, 0).toFixed(2)})</td>
+                      <td className="cell-amount">{filteredRows.reduce((s, r) => s + r.unpaidCount, 0)} ({cur}{filteredRows.reduce((s, r) => s + r.unpaidTotal, 0).toFixed(2)})</td>
                     </tr>
                   </tfoot>
                 )}
@@ -437,7 +442,7 @@ function Finance() {
               <div className="fin-category-row" key={c.category}>
                 <span className="fin-category-name">{c.category}</span>
                 <div className="fin-category-bar"><div className="fin-category-fill" style={{ width: `${c.percent}%` }}></div></div>
-                <span className="fin-category-amount">${c.amount.toLocaleString()}</span>
+                <span className="fin-category-amount">{cur}{c.amount.toLocaleString()}</span>
               </div>
             ))}
           </div>
@@ -449,7 +454,7 @@ function Finance() {
                   <tr key={e.id}>
                     <td><span className="badge badge-neutral">{e.category}</span></td>
                     <td>{e.description}</td>
-                    <td className="cell-amount">${e.amount}</td>
+                    <td className="cell-amount">{cur}{e.amount}</td>
                     <td className="cell-sub">{e.date}</td>
                   </tr>
                 ))}
@@ -476,7 +481,7 @@ function Finance() {
                   <tr key={i.id}>
                     <td><span className="badge badge-success">{i.source}</span></td>
                     <td>{i.description}</td>
-                    <td className="cell-amount">${i.amount}</td>
+                    <td className="cell-amount">{cur}{i.amount}</td>
                     <td className="cell-sub">{i.date}</td>
                   </tr>
                 ))}
@@ -502,7 +507,7 @@ function Finance() {
                     <tr key={p.personId}>
                       <td>{p.staffName}</td>
                       <td className="cell-sub">{p.role}</td>
-                      <td className="cell-amount">${p.amount}</td>
+                      <td className="cell-amount">{cur}{p.amount}</td>
                       <td><span className={`badge ${b.cls}`}>{b.label}</span></td>
                       <td>
                         {p.status === 'pending' && (
@@ -530,7 +535,7 @@ function Finance() {
                   <tr key={s.id}>
                     <td>{s.staffName}</td>
                     <td className="cell-sub">{s.role}</td>
-                    <td className="cell-amount">${s.amount}</td>
+                    <td className="cell-amount">{cur}{s.amount}</td>
                     <td>{s.month}</td>
                     <td className="cell-sub">{s.date || '—'}</td>
                   </tr>
@@ -565,7 +570,7 @@ function Finance() {
                         {d.type === 'scholarship' ? t('finance.discounts.scholarship') : t('finance.discounts.discount')}
                       </span>
                     </td>
-                    <td className="cell-amount">${d.amount}</td>
+                    <td className="cell-amount">{cur}{d.amount}</td>
                     <td className="cell-sub">{d.reason}</td>
                   </tr>
                 ))}
@@ -600,7 +605,7 @@ function Finance() {
                       </span>
                     </td>
                     <td>{d.party}</td>
-                    <td className="cell-amount">${d.amount}</td>
+                    <td className="cell-amount">{cur}{d.amount}</td>
                     <td className="cell-sub">{d.date}</td>
                     <td>
                       <button className="row-action-btn" title={t('finance.printPdf')} onClick={() => handlePrintDocument(d)}>

@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { currentMonthValue } from '../../utils/somaliDate';
+import { currencySymbol } from '../../utils/currency';
 import { summarizeAttendanceRecords, buildTopList } from '../../utils/leaderboard';
 import StatCard from '../../components/dashboard/StatCard';
 import AbsentStudentsModal from '../../components/dashboard/AbsentStudentsModal';
@@ -24,6 +25,7 @@ function Overview() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const { settings } = useSettings();
+  const cur = currencySymbol(settings.currency);
   const { students, teachers, classes, subjects, exams, attendanceToday, feePayments, myClasses, myClassIds, myClassNames, quranProgressToday, allStudentAttendanceRecords } = useSchoolData();
   const [showAbsentModal, setShowAbsentModal] = useState(false);
 
@@ -238,7 +240,7 @@ function Overview() {
         {!isTeacher && (
           <StatCard
             label={t('overview.stats.feesCollected')}
-            value={`$${feesCollected.toLocaleString()}`}
+            value={`${cur}${feesCollected.toLocaleString()}`}
             accent="mint"
             onClick={() => navigate('/dashboard/finance', { state: { activeTab: 'accounting' } })}
             actionLabel={t('overview.viewDetails')}
