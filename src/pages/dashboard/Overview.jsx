@@ -292,7 +292,7 @@ function Overview() {
       <div className="dash-card overview-attendance-card">
         <div className="dash-card-head">
           <h3>{t('overview.attendanceCard.title')}</h3>
-          <a href="/dashboard/attendance" className="see-all-link">{t('overview.attendanceCard.viewAll')}</a>
+          <button type="button" className="see-all-link" onClick={() => navigate('/dashboard/attendance')}>{t('overview.attendanceCard.viewAll')}</button>
         </div>
 
         <AttendanceDonutChart
