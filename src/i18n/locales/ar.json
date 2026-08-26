@@ -538,7 +538,7 @@
       "generatedOn": "تاريخ الإصدار: {{date}}",
       "totalStudents": "إجمالي الطلاب: {{count}}",
       "avgAttendance": "متوسط الحضور: {{rate}}%",
-      "financeLine": "الدخل: ${{income}}  |  المصروفات: ${{expenses}}  |  الربح: ${{profit}}",
+      "financeLine": "الدخل: {{symbol}}{{income}}  |  المصروفات: {{symbol}}{{expenses}}  |  الربح: {{symbol}}{{profit}}",
       "examAvg": "متوسط الامتحانات: {{rate}}%",
       "headers": {
         "class": "الصف",

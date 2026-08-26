@@ -538,7 +538,7 @@
       "generatedOn": "La soo saaray: {{date}}",
       "totalStudents": "Wadarta Ardayda: {{count}}",
       "avgAttendance": "Celceliska Imaanshaha: {{rate}}%",
-      "financeLine": "Dakhliga: ${{income}}  |  Kharashka: ${{expenses}}  |  Faa'iidada: ${{profit}}",
+      "financeLine": "Dakhliga: {{symbol}}{{income}}  |  Kharashka: {{symbol}}{{expenses}}  |  Faa'iidada: {{symbol}}{{profit}}",
       "examAvg": "Celceliska Imtixaanada: {{rate}}%",
       "headers": {
         "class": "Fasalka",

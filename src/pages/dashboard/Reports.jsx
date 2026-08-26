@@ -106,6 +106,15 @@ function Reports() {
     ? Math.round(attendanceTrend.reduce((s, w) => s + w.rate, 0) / attendanceTrend.length)
     : 0;
 
+  // Jaantuska bar-ka ee shaashadda (Reports audit MEDIUM, 2026-08-26) — waxaa
+  // lagu xaddidayaa 12kii toddobaad ee ugu dambeeyay (~saddex bilood), halkii
+  // sannad dugsiyeed dhan (~30-40 toddobaad) uu ka dhigi lahaa column kasta
+  // mid aad u cidhiidhsan (barta/qoraalka gudaha isku dul saarma, si gaar ah
+  // mobile-ka). avgAttendance iyo PDF-ka export-ka ah waxay wali isticmaalaan
+  // attendanceTrend OO DHAN (taariikhda oo dhan waa muhiim xisaabin/export
+  // ahaan, ma aha jaantus muuqaal ah).
+  const chartTrend = attendanceTrend.slice(-12);
+
   // "Dakhliga" waa in ay ku jiraan labada isha ee dakhliga dugsiga: lacagaha
   // ardayda ee dhab ahaan la ururiyay (feePayments — isha ugu weyn) IYO
   // dakhliga kale ee gacanta lagu galiyo (financeIncome). Hore waxaa loo
@@ -201,7 +210,7 @@ function Reports() {
     doc.setFontSize(11);
     doc.text(t('reports.pdf.totalStudents', { count: totalStudents }), 14, 36);
     doc.text(t('reports.pdf.avgAttendance', { rate: avgAttendance }), 14, 43);
-    doc.text(t('reports.pdf.financeLine', { income: totalIncome, expenses: totalExpenses, profit: netProfit }), 14, 50);
+    doc.text(t('reports.pdf.financeLine', { symbol: cur, income: totalIncome, expenses: totalExpenses, profit: netProfit }), 14, 50);
     doc.text(t('reports.pdf.examAvg', { rate: overallExamAvg }), 14, 57);
 
     autoTable(doc, {
@@ -365,7 +374,7 @@ function Reports() {
             <p className="rep-empty">{t('reports.attendanceTrend.empty')}</p>
           ) : (
             <div className="rep-trend-chart">
-              {attendanceTrend.map((w) => (
+              {chartTrend.map((w) => (
                 <div className="rep-trend-col" key={w.weekNumber}>
                   <div className="rep-trend-bar-wrap">
                     <div className="rep-trend-bar" style={{ height: `${w.rate}%` }}>

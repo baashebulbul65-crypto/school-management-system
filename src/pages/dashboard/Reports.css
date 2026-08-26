@@ -93,9 +93,14 @@
   gap: 10px;
   height: 180px;
   padding-top: 10px;
+  /* Reports audit MEDIUM, 2026-08-26 — chartTrend-ku (Reports.jsx) wuu
+     xaddidan yahay 12 toddobaad, laakiin overflow-x waa la sii daayaa sida
+     defense-in-depth mobile-ka aad u cidhiidhsan (<340px). */
+  overflow-x: auto;
 }
 .rep-trend-col{
   flex: 1;
+  min-width: 26px;
   display: flex;
   flex-direction: column;
   align-items: center;
