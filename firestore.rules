@@ -501,7 +501,16 @@ service cloud.firestore {
         (isParentOfStudent(resource.data.schoolCode, resource.data.studentId)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readByParent']));
 
-      allow delete: if isStaffOf(resource.data.schoolCode);
+      // Notifications audit CRITICAL, 2026-08-26: hore "isStaffOf" ayaa loo
+      // isticmaali jiray — taasoo u ogolaan jirtay macallin kastaa inuu
+      // tirtiro ogeysiis KASTA oo dugsiga (fee-type owner-kaliya loo talagalay,
+      // ama absent-type fasal KALE) xitaa mid uusan marnaba akhrin karin
+      // (doc ID-yadu waa la saadaalin karo: fee_{studentId}_{month},
+      // absent_{date}_{studentId}, ma aha random) — isla xaddidaadda
+      // read/create/update kore ayaa hadda loo isticmaalayaa.
+      allow delete: if resource.data.type == 'fee'
+        ? isOwnerStaffOf(resource.data.schoolCode)
+        : isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null));
     }
 
     // Wax kasta oo aan kor lagu qorin — xayiran si toos ah.

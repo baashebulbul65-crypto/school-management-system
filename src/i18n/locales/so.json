@@ -757,6 +757,8 @@
     "markAllRead": "Calaamadee Dhammaan",
     "viewAll": "Fiiri Dhammaan Ogeysiisyada",
     "delete": "Tirtir",
+    "confirmDelete": "Ma hubtaa inaad tirtirto ogeysiiskan?",
+    "comingSoon": "Dhawaan",
     "filters": {
       "all": "Dhammaan",
       "unread": "Aan La Akhrin",

@@ -8,6 +8,10 @@ import '../../styles/dashboard-shared.css';
 import './Notifications.css';
 
 const FILTER_IDS = ['all', 'unread', 'fee', 'absent', 'exam', 'message', 'system'];
+// exam/message/system: ma jiro nooc ogeysiis ah oo weli la abuurayo (fiiri
+// NotificationsContext.jsx/firebase/notifications.js — hadda kaliya fee/absent
+// ayaa dhab ahaan la abuuraa) — Notifications audit LOW, 2026-08-26.
+const COMING_SOON_FILTERS = new Set(['exam', 'message', 'system']);
 
 const TYPE_META = {
   fee: { color: 'orange', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>) },
@@ -37,6 +41,12 @@ function Notifications() {
     if (notif.link) navigate(notif.link);
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm(t('notifications.confirmDelete'))) {
+      deleteNotification(id);
+    }
+  };
+
   return (
     <div>
       <div className="page-header">
@@ -57,8 +67,15 @@ function Notifications() {
 
       <div className="notif-filter-tabs">
         {FILTERS.map((f) => (
-          <button key={f.id} className={`notif-filter-tab ${filter === f.id ? 'active' : ''}`} onClick={() => setFilter(f.id)}>
+          <button
+            key={f.id}
+            className={`notif-filter-tab ${filter === f.id ? 'active' : ''}`}
+            onClick={() => setFilter(f.id)}
+            disabled={COMING_SOON_FILTERS.has(f.id)}
+            title={COMING_SOON_FILTERS.has(f.id) ? t('notifications.comingSoon') : undefined}
+          >
             {f.label}
+            {COMING_SOON_FILTERS.has(f.id) && <span className="notif-filter-soon">{t('notifications.comingSoon')}</span>}
           </button>
         ))}
       </div>
@@ -88,7 +105,7 @@ function Notifications() {
                   </div>
                   {!n.read && <span className="notif-full-unread-dot"></span>}
                 </button>
-                <button className="notif-delete-btn" title={t('notifications.delete')} onClick={() => deleteNotification(n.id)}>
+                <button className="notif-delete-btn" title={t('notifications.delete')} onClick={() => handleDelete(n.id)}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
                 </button>
               </div>

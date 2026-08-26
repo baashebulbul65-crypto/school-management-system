@@ -93,6 +93,17 @@ export async function deleteNotificationDoc(id) {
   await deleteDoc(doc(db, COLLECTION, id));
 }
 
+// "Tirtir" ogeysiiska nooca 'fee' (Notifications audit MEDIUM, 2026-08-26) —
+// SOFT-dismiss, ma aha hard-delete: doc-ku wuu sii jiraa (dismissedByStaff:
+// true) si effect-ka xasuusinta lacagta (NotificationsContext.jsx) uusan
+// dib u abuurin isla ogeysiiska maadaama ardaygu weli yahay 'unpaid' —
+// hard-delete wuu u dhaqmi lahaa sida mid aan waxba samaynayn (dib buu u
+// soo noqon lahaa isla mar). Bishii xigta, doc ID cusub (fee_{id}_{month})
+// ayaa la abuuraa, sidaas darteed dismiss-kan bishaas hore kuma xannibayo.
+export async function dismissFeeNotification(id) {
+  await updateDoc(doc(db, COLLECTION, id), { dismissedByStaff: true });
+}
+
 // Hal mar loo isticmaalo (Teacher Firestore Hardening, 2026-08-02) — u
 // buuxisa 'classTeacherId' ogeysiisyada 'absent' ee hore loo abuuray ka hor
 // intaan field-kaas cusub la darin (fiiri backfillAttendanceClassScoping,

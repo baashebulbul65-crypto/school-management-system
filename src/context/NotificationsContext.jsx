@@ -4,7 +4,7 @@ import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
 import { useSchoolData } from './SchoolDataContext';
 import { useSettings } from './SettingsContext';
-import { subscribeToAllNotifications, markNotificationsRead, deleteNotificationDoc, createFeeNotification } from '../firebase/notifications';
+import { subscribeToAllNotifications, markNotificationsRead, deleteNotificationDoc, dismissFeeNotification, createFeeNotification } from '../firebase/notifications';
 import { currentMonthValue } from '../utils/somaliDate';
 import { getMonthlyFeeStatus } from '../utils/studentFee';
 
@@ -17,7 +17,7 @@ export function NotificationsProvider({ children }) {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const { showError } = useToast();
-  const { students, feePayments, myClassNames } = useSchoolData();
+  const { students, feePayments } = useSchoolData();
   const { settings } = useSettings();
   const [rawNotifications, setRawNotifications] = useState([]);
 
@@ -79,20 +79,29 @@ export function NotificationsProvider({ children }) {
   // PRINCIPLE-KA GUUD (Teacher Role Scoping, 2026-08-02): macallinku waa in
   // uu arkaa KALIYA ogeysiisyada la xiriira fasalladiisa gaarka ah — Finance
   // ('fee') gebi ahaanba waa mamnuuc isaga (fiiri Overview.jsx/finance
-  // rules), 'absent' waxaa lagu xaddidaa fasalladiisa (className, myClassNames
-  // null = owner, ma jiro xaddidaad). Noocyo mustaqbal ah oo aan lahayn
-  // className (fiiri firebase/notifications.js — hadda kaliya fee/absent ayaa
-  // dhab ahaan la abuuraa) waxay sii muuqan doonaan, maadaama aanay xog
-  // gaar-fasal ah lahayn oo la xaddidi karo.
+  // rules). 'absent' horeba si sax ah SERVER-KA (Firestore query,
+  // classTeacherId — stable) looga soo xaddiday rawNotifications (fiiri
+  // firebase/notifications.js: subscribeToAllNotifications), sidaas darteed
+  // halkan uma baahna dib-u-shaandhayn client ah.
+  //
+  // Notifications audit HIGH, 2026-08-26: hore halkan waxaa lagu dib-u-
+  // shaandhayn jiray "n.className" oo la barbardhigayo myClassNames (magaca
+  // HADDA jira fasalka) — laakiin className waa denormalized (wakhtigii
+  // ogeysiiska la abuuray). Fasal la magac-beddelo (grade/section edit) →
+  // ogeysiisyadii "Maqan" ee fasalkaas hore ayaa si aamusan ah uga bixi
+  // jiray liiska macallinka, in kasta oo server-ku si sax ah u soo celiyay
+  // (isla khaladkii Attendance.jsx la saxay). className check-ga waa la saaray.
+  // "dismissedByStaff" (Notifications audit MEDIUM, 2026-08-26): ogeysiisyada
+  // 'fee' waxaa dib-u-abuuri jira effect-ka kore mar kasta oo ardaygu weli
+  // yahay 'unpaid' — hore "Tirtir" wuxuu tirtiri jiray doc-ka gebi ahaanba
+  // (deleteNotificationDoc), taasoo effect-ka sababi jirtay inuu isla markiiba
+  // dib u abuuro (aan la akhrin ahaan), badhanka "Tirtir" u muuqday mid aan
+  // waxba samaynayn. Hadda 'fee' waa "soft-dismiss" (dismissFeeNotification,
+  // doc-ku wuu sii jiraa Firestore si effect-ku uusan dib u abuurin), waxaana
+  // halkan lagaga saarayaa liiska la muujiyo.
   const visibleRawNotifications = useMemo(
-    () =>
-      rawNotifications.filter((n) => {
-        if (profile?.role !== 'teacher') return true;
-        if (n.type === 'fee') return false;
-        if (n.className) return myClassNames?.has(n.className) ?? false;
-        return true;
-      }),
-    [rawNotifications, profile?.role, myClassNames]
+    () => rawNotifications.filter((n) => (profile?.role !== 'teacher' || n.type !== 'fee') && !n.dismissedByStaff),
+    [rawNotifications, profile?.role]
   );
 
   const notifications = useMemo(
@@ -133,7 +142,14 @@ export function NotificationsProvider({ children }) {
 
   const deleteNotification = async (id) => {
     try {
-      await deleteNotificationDoc(id);
+      const notif = rawNotifications.find((n) => n.id === id);
+      if (notif?.type === 'fee') {
+        // fiiri faallada dismissedByStaff kore — hard-delete-ku wuu dib u
+        // soo noqon lahaa isla mar (effect-ka xasuusinta lacagta).
+        await dismissFeeNotification(id);
+      } else {
+        await deleteNotificationDoc(id);
+      }
     } catch (err) {
       reportError('Khalad ayaa dhacay markii ogeysiiska la tirtirayay:', err);
     }

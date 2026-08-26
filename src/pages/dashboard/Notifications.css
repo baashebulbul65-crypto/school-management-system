@@ -24,6 +24,18 @@
   border-color: var(--navy);
   color: #fff;
 }
+.notif-filter-tab:disabled{ opacity: 0.55; cursor: not-allowed; }
+.notif-filter-tab:disabled:hover{ border-color: var(--line); }
+.notif-filter-soon{
+  display: inline-block;
+  margin-inline-start: 6px;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #B7791F;
+  background: #FFF3CD;
+  padding: 2px 6px;
+  border-radius: 999px;
+}
 
 .notif-full-list{ display: flex; flex-direction: column; }
 
