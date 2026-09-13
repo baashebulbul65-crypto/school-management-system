@@ -50,11 +50,11 @@ const PLANS = [
   },
 ];
 
-function Pricing() {
+function Pricing({ onOpenLogin }) {
   const [billing, setBilling] = useState('monthly');
 
   return (
-    <section className="pricing">
+    <section className="pricing" id="pricing">
       <div className="pricing-head">
         <div className="eyebrow">Qiimaha</div>
         <h2>Dooro Qorshaha Ku <span className="highlight">Habboon</span> Dugsigaaga</h2>
@@ -94,7 +94,7 @@ function Pricing() {
               <p className="billed-note">La xisaabiyo sanadkii oo dhan</p>
             )}
 
-            <button className="price-cta">
+            <button className="price-cta" onClick={onOpenLogin}>
               Bilow Hadda
               <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M13 6l6 6-6 6" />

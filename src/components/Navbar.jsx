@@ -10,9 +10,9 @@ function Navbar({ onOpenLogin }) {
       <nav className="navbar">
         <div className="brand">
           <svg className="brand-mark" viewBox="0 0 40 40" fill="none">
-            <path d="M8 30 C8 18, 16 8, 28 8" stroke="#16C784" strokeWidth="4" strokeLinecap="round" fill="none"/>
-            <circle cx="30" cy="8" r="3" fill="#0B1F2B"/>
-            <path d="M8 30 H24" stroke="#0B1F2B" strokeWidth="4" strokeLinecap="round"/>
+            <path d="M8 30 C8 18, 16 8, 28 8" style={{ stroke: 'var(--mint)' }} strokeWidth="4" strokeLinecap="round" fill="none"/>
+            <circle cx="30" cy="8" r="3" style={{ fill: 'var(--navy)' }}/>
+            <path d="M8 30 H24" style={{ stroke: 'var(--navy)' }} strokeWidth="4" strokeLinecap="round"/>
           </svg>
           <span className="brand-name">Kayd<span className="dot">.</span></span>
         </div>

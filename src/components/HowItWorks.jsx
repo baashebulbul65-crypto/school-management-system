@@ -58,7 +58,7 @@ function HowItWorks() {
   const lineFillPercent = (visibleCount / STEPS.length) * 100;
 
   return (
-    <section className="how-it-works">
+    <section className="how-it-works" id="how-it-works">
       <div className="hiw-head">
         <div className="eyebrow">Sida Uu U Shaqeeyo</div>
         <h2>Afar Tallaabo Oo Fudud Ah Ayaad Ku <span className="highlight">Bilaabaysaa</span></h2>

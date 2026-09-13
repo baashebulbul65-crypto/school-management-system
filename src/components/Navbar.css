@@ -66,6 +66,8 @@
   }
 
   @media (max-width: 900px){
+    .navbar-outer{ padding: 16px 16px 0; }
+    .navbar{ padding: 0 18px; }
     .nav-links{ display:none; }
     .navbar > .cta-btn{ display:none; }
     .hamburger{ display:flex; }

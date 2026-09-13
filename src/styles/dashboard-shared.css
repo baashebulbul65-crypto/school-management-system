@@ -11,12 +11,12 @@
   font-family:'Poppins', sans-serif;
   font-weight:700;
   font-size:20px;
-  color: var(--navy);
+  color: var(--text-on-dark);
   margin-bottom:4px;
 }
 .page-header-text p{
   font-size:13.5px;
-  color: var(--grey-text);
+  color: var(--text-on-dark);
 }
 .page-header-actions{
   display:flex;
@@ -247,6 +247,9 @@
 }
 .row-action-btn:hover{ background:#E7ECEF; }
 .row-action-btn svg{ width:14px; height:14px; stroke: var(--navy); }
+.row-action-btn.danger{ background: var(--danger-bg); }
+.row-action-btn.danger svg{ stroke: var(--danger); }
+.row-action-btn.danger:hover{ background: var(--danger-border); }
 
 /* ===== PAGINATION ===== */
 .table-pagination{

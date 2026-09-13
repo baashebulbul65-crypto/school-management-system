@@ -9,6 +9,8 @@
     --grey-text:   #64748A;
     --line:        #EDF1F4;
     --bg:          #E9EDF0;
+    --bg-main:     #3B4A5A;
+    --text-on-dark: #F5F7F9;
 
     /* status/accent tokens */
     --danger:         #E5533F;
@@ -47,7 +49,7 @@
   *{ margin:0; padding:0; box-sizing:border-box; }
   body{
     font-family:'Inter', sans-serif;
-    background: var(--bg);
+    background: var(--bg-main);
     min-height:100vh;
     overflow-x:hidden;
   }
@@ -57,7 +59,7 @@
     display:inline-flex;
     align-items:center;
     gap:8px;
-    color: var(--grey-text);
+    color: var(--text-on-dark);
     font-size:13.5px;
     font-weight:600;
     letter-spacing:0.4px;

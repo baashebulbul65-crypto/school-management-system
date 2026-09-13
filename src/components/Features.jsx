@@ -37,7 +37,7 @@ const FEATURES = [
 
 function Features() {
   return (
-    <section className="features">
+    <section className="features" id="about">
       <div className="features-head">
         <div className="eyebrow">Waxa Kayd Ku Sarreeyo</div>
         <h2>Dhammaan Waxa Aad U Baahan Tahay Hal <span className="highlight">Nidaam</span></h2>

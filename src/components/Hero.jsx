@@ -2,7 +2,7 @@ import './Hero.css';
 
 function Hero({ onOpenLogin }) {
   return (
-    <section className="hero">
+    <section className="hero" id="home">
       <div className="glow-blob left"></div>
       <div className="glow-blob right"></div>
 

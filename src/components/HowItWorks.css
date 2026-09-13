@@ -1,17 +1,3 @@
-:root{
-  --navy:        #0B1F2B;
-  --navy-soft:   #14303F;
-  --mint:        #16C784;
-  --mint-dark:   #0FA86D;
-  --mint-pale:   #E6FBF3;
-  --grey-text:   #64748A;
-  --line:        #EDF1F4;
-  --bg:          #E9EDF0;
-}
-
-*{ margin:0; padding:0; box-sizing:border-box; }
-body{ font-family:'Inter', sans-serif; background: var(--bg); }
-
 .how-it-works{
   padding: 100px 40px 30px;
   max-width:1180px;
@@ -25,7 +11,7 @@ body{ font-family:'Inter', sans-serif; background: var(--bg); }
 }
 .eyebrow{
   display:inline-flex; align-items:center; gap:8px;
-  color: var(--grey-text); font-size:13.5px; font-weight:600;
+  color: var(--text-on-dark); font-size:13.5px; font-weight:600;
   letter-spacing:0.4px; text-transform:uppercase; margin-bottom:16px;
 }
 .eyebrow::before{ content:''; width:6px; height:6px; border-radius:50%; background: var(--mint); }
@@ -33,7 +19,7 @@ body{ font-family:'Inter', sans-serif; background: var(--bg); }
   font-family:'Poppins', sans-serif;
   font-weight:800;
   font-size:38px;
-  color: var(--navy);
+  color: var(--text-on-dark);
   line-height:1.25;
   letter-spacing:-0.5px;
   margin-bottom:16px;
@@ -41,7 +27,7 @@ body{ font-family:'Inter', sans-serif; background: var(--bg); }
 .hiw-head h2 .highlight{ color: var(--mint); }
 .hiw-head p{
   font-size:16px;
-  color: var(--grey-text);
+  color: var(--text-on-dark);
   line-height:1.65;
 }
 
@@ -116,13 +102,13 @@ body{ font-family:'Inter', sans-serif; background: var(--bg); }
   font-family:'Poppins', sans-serif;
   font-weight:700;
   font-size:17px;
-  color: var(--navy);
+  color: var(--text-on-dark);
   margin-bottom:10px;
 }
 
 .hiw-step p{
   font-size:14px;
-  color: var(--grey-text);
+  color: var(--text-on-dark);
   line-height:1.65;
 }
 

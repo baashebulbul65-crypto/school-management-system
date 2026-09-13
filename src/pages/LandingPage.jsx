@@ -44,7 +44,7 @@ function LandingPage() {
       <SectionDivider />
       <Features />
       <HowItWorks />
-      <Pricing />
+      <Pricing onOpenLogin={() => setIsLoginOpen(true)} />
       <Testimonials />
       <FAQ />
       <Footer />

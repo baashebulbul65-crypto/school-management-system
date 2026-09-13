@@ -48,7 +48,7 @@ function FAQ() {
   };
 
   return (
-    <section className="faq">
+    <section className="faq" id="faq">
       <div className="faq-head">
         <div className="eyebrow">Su&apos;aalaha Badanaa La Is Weydiiyo</div>
         <h2>Wax Kasta Oo Aad U Baahan Tahay In Aad <span className="highlight">Ogaato</span></h2>
