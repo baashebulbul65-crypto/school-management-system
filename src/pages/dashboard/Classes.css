@@ -31,20 +31,53 @@
 }
 .class-card-icon svg{ width:20px; height:20px; stroke: var(--mint-dark); }
 
-.class-card-actions{ display:flex; gap:4px; }
-/* Card-actions audit (2026-09-13): row-action-btn (dashboard-shared.css) waa
-   class la wadaago jaantusyada (tables) — halkaas 30px/#F4F7F8 way ku
-   habboon tahay. Kaadhka fasalka gudihiisa, edit/delete waxay ku yaalliin
-   geeska sare, sidaas darteed halkan kaliya waan ka yaraynaynaa muuqaalkooda
-   (transparent + 24px) si aysan buuq badan ugu darsan kaadhka. */
+.class-card-actions{ position:relative; display:flex; }
+/* Card-actions audit (2026-09-13 → 09-14, Diiwaan reference comparison):
+   edit/delete ma aha row-action-btn gaaraya oo mar walba geeska sare ka
+   muuqda — waxay hadda ku jiraan hal kebab-menu button (transparent, 24px)
+   oo furaya dropdown yar marka la riixo, si kaadhku uga yaraado buuqa
+   ("Diiwaan" reference-ka, edit/delete gabi ahaanba kama muuqdaan kaadhka). */
 .class-card-actions .row-action-btn{
   width:24px; height:24px;
   background:transparent;
 }
-.class-card-actions .row-action-btn svg{ width:12px; height:12px; }
+.class-card-actions .row-action-btn svg{ width:14px; height:14px; }
 .class-card-actions .row-action-btn:hover{ background:#F4F7F8; }
-.class-card-actions .row-action-btn.danger svg{ stroke: var(--danger); }
-.class-card-actions .row-action-btn.danger:hover{ background: var(--danger-bg); }
+
+.class-card-menu-overlay{ position:fixed; inset:0; z-index:5; }
+.class-card-menu{
+  position:absolute;
+  top:calc(100% + 4px);
+  inset-inline-end:0;
+  z-index:6;
+  min-width:150px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow: 0 16px 32px -12px rgba(11,31,43,0.22);
+  padding:6px;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.class-card-menu button{
+  display:flex; align-items:center; gap:9px;
+  width:100%;
+  border:none; background:none;
+  padding:9px 10px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:500;
+  color: var(--navy);
+  text-align:start;
+  cursor:pointer;
+  transition: background 0.15s ease;
+}
+.class-card-menu button svg{ width:15px; height:15px; stroke: var(--navy); flex-shrink:0; }
+.class-card-menu button:hover{ background:#F4F7F8; }
+.class-card-menu button.danger{ color: var(--danger); }
+.class-card-menu button.danger svg{ stroke: var(--danger); }
+.class-card-menu button.danger:hover{ background: var(--danger-bg); }
 
 .class-card-title-row{
   display:flex;

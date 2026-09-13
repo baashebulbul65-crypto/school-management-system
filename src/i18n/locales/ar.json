@@ -17,7 +17,8 @@
       "view": "عرض",
       "edit": "تعديل",
       "delete": "حذف",
-      "download": "تحميل"
+      "download": "تحميل",
+      "more": "خيارات إضافية"
     },
     "status": {
       "active": "نشط",

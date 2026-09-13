@@ -16,6 +16,10 @@ function Classes() {
   const [search, setSearch] = useState('');
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
+
+  const toggleMenu = (id) => setOpenMenuId((prev) => (prev === id ? null : id));
+  const closeMenu = () => setOpenMenuId(null);
 
   // Macallinku gebi ahaanba wuu ka mamnuucan yahay class-management (add/
   // edit/delete), xitaa fasalkiisa gaarka ah — wuxuu isticmaalaa ClassWorkspace
@@ -122,12 +126,24 @@ function Classes() {
                 </div>
                 {isOwner && (
                   <div className="class-card-actions">
-                    <button className="row-action-btn" title={t('common.actions.edit')} onClick={() => openEditModal(c)}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
+                    <button className="row-action-btn" title={t('common.actions.more')} onClick={(e) => { e.stopPropagation(); toggleMenu(c.id); }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
                     </button>
-                    <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => handleDeleteClass(c.id, `${c.grade} ${c.section}`)}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
-                    </button>
+                    {openMenuId === c.id && (
+                      <>
+                        <div className="class-card-menu-overlay" onClick={closeMenu}></div>
+                        <div className="class-card-menu">
+                          <button onClick={() => { closeMenu(); openEditModal(c); }}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
+                            {t('common.actions.edit')}
+                          </button>
+                          <button className="danger" onClick={() => { closeMenu(); handleDeleteClass(c.id, `${c.grade} ${c.section}`); }}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
+                            {t('common.actions.delete')}
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
