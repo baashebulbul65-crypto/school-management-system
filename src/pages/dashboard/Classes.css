@@ -87,6 +87,12 @@
   margin-bottom:4px;
   min-width:0;
 }
+/* Full-name-on-mobile (2026-09-14): hover-tooltip (title attr) kuma
+   shaqeeyo touch/mobile — sidaas darteed halkii hal-xarig+ellipsis,
+   magaca waxaa loo ogolaanayaa 2 xarig (line-clamp) si loo arko
+   qoraalka intiisa badan mobile-ka isaga oo aan la taaban dib
+   min-width:0 fix-ka (kaadhku hadda si ammaan ah ayuu u jajabi karaa
+   qoraalka, mana qasbi doono column-ka inuu ballaadhaado). */
 .class-card h3{
   font-family:'Poppins', sans-serif;
   font-weight:700;
@@ -94,9 +100,10 @@
   color: var(--navy);
   margin-bottom:0;
   min-width:0;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
   overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
 }
 
 /* Galinka (Session) — Subax/Galab, midab gooni ah (blue/purple) oo ka
