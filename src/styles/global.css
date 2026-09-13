@@ -54,6 +54,21 @@
     overflow-x:hidden;
   }
 
+  /* Mobile auto-zoom fix (2026-09-14): meelo badan oo input/select/textarea
+     ah (marks-input, table-search, form fields, iwm — dhammaan app-ka) waxay
+     leeyihiin font-size <16px. Browser-yada mobile-ka (Chrome/Samsung
+     Internet/Safari) si otomaatig ah ayey u zoom-gareeyaan bogga marka la
+     taabto (focus) input aan gaarayn 16px, oo zoom-kaasi (browser-level, ma
+     aha CSS) marnaba dib uma noqdo marka SPA-ku route-ka bedelo (tusaale:
+     ClassWorkspace -> back -> Fasallada) — sidaas darteed zoom-ku "isku
+     kordhaa" tap kasta, oo grid-ka (classes-grid iwm) si khaldan ugu jajabo
+     breakpoint-yadiisa. !important halkan waa loo isticmaalay si loo
+     override-gareeyo boqolaal class oo gaar ah (.marks-input,
+     .table-search input, iwm) iyada oo aan la taaban 23-da fayl. */
+  @media (max-width: 640px){
+    input, select, textarea{ font-size:16px !important; }
+  }
+
 
   .eyebrow{
     display:inline-flex;
