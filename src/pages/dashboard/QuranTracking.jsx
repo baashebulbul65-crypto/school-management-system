@@ -157,7 +157,7 @@ function QuranTracking() {
               <div key={s.id} className="qh-student-card">
                 <div className="cell-person qh-student-person">
                   <div className="cell-avatar">{s.classRollNumber ?? initials(s.fullName)}</div>
-                  <span className="cell-name">{s.fullName}</span>
+                  <span className="cell-name" dir="auto">{s.fullName}</span>
                 </div>
                 <div className="qh-history-grid">
                   {last10Dates.map((date) => {

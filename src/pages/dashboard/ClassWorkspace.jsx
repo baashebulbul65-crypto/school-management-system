@@ -226,7 +226,7 @@ function ClassWorkspace() {
                     <td>
                       <div className="cell-person">
                         <div className="cell-avatar">{s.classRollNumber ?? initials(s.fullName)}</div>
-                        <span className="cell-name">{s.fullName}</span>
+                        <span className="cell-name" dir="auto">{s.fullName}</span>
                       </div>
                     </td>
                     <td className="cell-sub">{s.studentId}</td>
@@ -273,7 +273,7 @@ function ClassWorkspace() {
                       <td>
                         <div className="cell-person">
                           <div className="cell-avatar">{s.classRollNumber ?? '—'}</div>
-                          <span className="cell-name">{s.fullName}</span>
+                          <span className="cell-name" dir="auto">{s.fullName}</span>
                         </div>
                       </td>
                       <td>
@@ -350,7 +350,7 @@ function ClassWorkspace() {
                       <td>
                         <div className="cell-person">
                           <div className="cell-avatar">{s.classRollNumber ?? '—'}</div>
-                          <span className="cell-name">{s.fullName}</span>
+                          <span className="cell-name" dir="auto">{s.fullName}</span>
                         </div>
                       </td>
                       <td>
@@ -425,7 +425,7 @@ function ClassWorkspace() {
                           <td>
                             <div className="cell-person">
                               <div className="cell-avatar">{s.classRollNumber ?? initials(s.fullName)}</div>
-                              <span className="cell-name">{s.fullName}</span>
+                              <span className="cell-name" dir="auto">{s.fullName}</span>
                             </div>
                           </td>
                           <td>
@@ -484,7 +484,7 @@ function ClassWorkspace() {
                       <td>
                         <div className="cell-person">
                           <div className="cell-avatar">{s.classRollNumber ?? initials(s.fullName)}</div>
-                          <span className="cell-name">{s.fullName}</span>
+                          <span className="cell-name" dir="auto">{s.fullName}</span>
                         </div>
                       </td>
                       <td className="cell-sub" dir="auto">{target?.currentPosition || '—'}</td>

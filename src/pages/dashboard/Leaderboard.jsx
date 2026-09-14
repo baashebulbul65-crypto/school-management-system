@@ -146,7 +146,7 @@ function Leaderboard() {
                   <td>
                     <div className="cell-person">
                       <div className="cell-avatar">{initials(row.student.fullName)}</div>
-                      <span className="cell-name">{row.student.fullName}</span>
+                      <span className="cell-name" dir="auto">{row.student.fullName}</span>
                     </div>
                   </td>
                   <td className="cell-sub">{row.value} {valueUnit}</td>

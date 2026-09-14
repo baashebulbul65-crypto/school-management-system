@@ -309,7 +309,7 @@ function Exams() {
                       <td>
                         <div className="cell-person">
                           <div className="cell-avatar">{s.classRollNumber ?? initials(s.fullName)}</div>
-                          <span className="cell-name">{s.fullName}</span>
+                          <span className="cell-name" dir="auto">{s.fullName}</span>
                         </div>
                       </td>
                       <td>
@@ -357,7 +357,7 @@ function Exams() {
                         #{r.position}
                       </span>
                     </td>
-                    <td className="cell-name">{r.student.fullName}</td>
+                    <td className="cell-name" dir="auto">{r.student.fullName}</td>
                     <td className="cell-sub">{r.examCount}</td>
                     <td>{r.avgPct ? r.avgPct.toFixed(1) : '0.0'}%</td>
                     <td><span className="badge badge-neutral">{r.avgGpa.toFixed(2)}</span></td>
