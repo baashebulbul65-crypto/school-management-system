@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
@@ -25,7 +25,7 @@ function ClassWorkspace() {
   const {
     classes, students, teachers, exams, examMarks, attendanceToday, setStudentAttendanceStatus, updateExamMark,
     quranProgressToday, setQuranProgress,
-    quranTargets, saveQuranTarget, recordQuranTargetOutcome, addStudent,
+    quranTargets, saveQuranTarget, recordQuranTargetOutcome, addStudent, updateStudent,
   } = useSchoolData();
   const [activeTab, setActiveTab] = useState('roster');
   const [selectedExamId, setSelectedExamId] = useState(null);
@@ -43,14 +43,9 @@ function ClassWorkspace() {
   const TABS = [
     { id: 'roster', label: t('classWorkspace.tabs.roster') },
     { id: 'attendance', label: t('classWorkspace.tabs.attendance') },
+    { id: 'quranDaily', label: t('classWorkspace.tabs.quranDaily') },
     { id: 'grades', label: t('classWorkspace.tabs.grades') },
     { id: 'quranTargets', label: t('classWorkspace.tabs.quranTargets') },
-  ];
-
-  const ATTENDANCE_STATUSES = [
-    { key: 'present', label: t('common.present') },
-    { key: 'absent', label: t('common.absent') },
-    { key: 'leave', label: t('common.leave') },
   ];
 
   const cls = classes.find((c) => String(c.id) === classId);
@@ -74,6 +69,36 @@ function ClassWorkspace() {
     () => students.filter((s) => (cls ? s.classId === cls.id : false) || (!s.classId && s.className === classroomName)),
     [students, classroomName, cls]
   );
+
+  // Xaadiris+Quraan numbering (2026-09-14): lambar joogto ah, ma aha tiris
+  // dynamic ah (Diiwaan comparison — number-yadu kama shaqeeyaan tirtirid
+  // dib-u-tiris ah, arday la saaray booskiisu wuu banaanaadaa). Miiska
+  // Xaadiris+Quraan kaliya ayaa loo kala saaraa lambarkan; tabyada kale
+  // (Roster/Dhibcaha/Yoolka) waxay sii haystaan habkoodii hore.
+  const attendanceRosterStudents = useMemo(
+    () => [...classStudents].sort((a, b) => (a.classRollNumber || 0) - (b.classRollNumber || 0)),
+    [classStudents]
+  );
+
+  // classRollNumber backfill — ardayda hore ee aan lahayn field-kan cusub
+  // waxaa loo qeexaa mar kaliya, iyadoo la isticmaalayo taariikhda ku
+  // biirista (createdAt). Owner-kaliya (firestore.rules: students update
+  // waa isOwnerStaffOf oo qura — macallinku si toos ah uma qori karo doc-ka
+  // ardayga), sidaas darteed fasal aan owner-ku weli furin, lambarradu waxay
+  // sii ahaan doonaan "—" ilaa owner-ku markii ugu horreysa u furo.
+  useEffect(() => {
+    if (!isOwner) return;
+    const missing = classStudents.filter((s) => !s.classRollNumber);
+    if (missing.length === 0) return;
+    const taken = classStudents.map((s) => s.classRollNumber || 0);
+    let next = taken.length ? Math.max(...taken) + 1 : 1;
+    [...missing]
+      .sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0))
+      .forEach((s) => {
+        updateStudent(s.id, { classRollNumber: next });
+        next += 1;
+      });
+  }, [classStudents, isOwner]);
 
   const classExams = useMemo(
     () => exams.filter((e) => (cls ? e.classId === cls.id : false) || (!e.classId && e.className === classroomName)),
@@ -106,6 +131,32 @@ function ClassWorkspace() {
     classStudents
       .map((s) => latestTargetByStudent[s.id])
       .find((qt) => qt && qt.status === 'pending' && !dismissedPromptIds.includes(qt.id) && new Date(qt.deadline).getTime() <= Date.now()) || null;
+
+  // Auto-Joog marka Quraanka la calaamadiyo (2026-09-14) — macalinku Joog
+  // si toos ah uma dhigi karo (batoonka "Joog" ee UI-ga hoose waa indicator
+  // read-only), waxaa loo gaaraa kaliya haddii Quraan la taabto. Fasax weli
+  // waa override joogto ah oo mar kasta la gali karo — setStudentAttendanceStatus
+  // horeba wuxuu tirtiraa Quraan-kii hore haddii xaaladdu isu beddesho mid
+  // aan Joog ahayn (fiiri SchoolDataContext.jsx), sidaas darteed halkan
+  // dib looma celin xeerkaas.
+  const handleQuranTap = async (student, result) => {
+    const status = attendanceToday.students[student.id] || null;
+    if (status !== 'present') {
+      await setStudentAttendanceStatus(student.id, student.className, 'present');
+    }
+    await setQuranProgress(student.id, student.className, result, surahInput);
+  };
+
+  // Batoonka "Dhamee" — hal mar oo qura macalinku taabto: ardayda aan
+  // weli lahayn wax xaalad ah (Joog/Maqan/Fasax midna) waxaa si otomaatig
+  // ah loo calaamadiyaa Maqan. Ardayda horeba xaalad leh (Fasax gudaha ah)
+  // marnaba lama taaban — check-ga "!status" si ammaan ah ayuu uga baxaa.
+  const handleFinishAttendance = () => {
+    classStudents.forEach((s) => {
+      const status = attendanceToday.students[s.id] || null;
+      if (!status) setStudentAttendanceStatus(s.id, s.className, 'absent');
+    });
+  };
 
   const markKey = (examId, studentId) => `${examId}_${studentId}`;
 
@@ -195,11 +246,81 @@ function ClassWorkspace() {
         </div>
       )}
 
-      {/* ===== XAADIRIS + QURAAN (hal view — macallinku meel kale uma baahna, fiiri ClassWorkspace.jsx faallada kore) ===== */}
+      {/* ===== XAADIRIS (Diiwaan comparison, 2026-09-14: laga kala saaray Quraanka
+           — labadu waxay ahaayeen hal view, laakiin waxay ka dhigayeen row-ka
+           mid bulky ah, sidaas darteed hadda waa 2 tab oo isku xiga) ===== */}
       {activeTab === 'attendance' && (
         <div className="dash-card">
           <div className="dash-card-head">
             <h3>{t('classWorkspace.attendance.title')}</h3>
+            <span className="cw-count-badge">{todayISODate()}</span>
+          </div>
+
+          <div className="data-table-wrap">
+            <table className="data-table cw-compact-table">
+              <thead>
+                <tr>
+                  <th>{t('classWorkspace.attendance.table.student')}</th>
+                  <th>{t('classWorkspace.attendance.table.status')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {attendanceRosterStudents.map((s) => {
+                  const status = attendanceToday.students[s.id] || null;
+                  const isPresent = status === 'present';
+                  return (
+                    <tr key={s.id}>
+                      <td>
+                        <div className="cell-person">
+                          <div className="cell-avatar">{s.classRollNumber ?? '—'}</div>
+                          <span className="cell-name">{s.fullName}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="cw-status-cluster">
+                          <span className={`cw-mini-dot${isPresent ? ' active' : ''}`} title={t('common.present')}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                          </span>
+                          <button
+                            type="button"
+                            className={`cw-mini-btn absent${status === 'absent' ? ' active' : ''}`}
+                            title={t('common.absent')}
+                            onClick={() => setStudentAttendanceStatus(s.id, s.className, 'absent')}
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                          </button>
+                          <button
+                            type="button"
+                            className={`cw-mini-btn leave${status === 'leave' ? ' active' : ''}`}
+                            title={t('common.leave')}
+                            onClick={() => setStudentAttendanceStatus(s.id, s.className, 'leave')}
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 22V3"/><path d="M5 4h14l-3 4 3 4H5"/></svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {classStudents.length === 0 && (
+                  <tr><td colSpan="2" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('classWorkspace.attendance.empty')}</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ===== QURAANKA MAANTA (tab la kala saaray Xaadiriska, fiiri faallada
+           kore) — handleQuranTap wali si otomaatig ah ayuu Joog uga dhigayaa
+           arday-ka Xaadiris-ka (tab kale), fiiri ClassWorkspace.jsx kore.
+           Batoonka "Dhamee" wuxuu ku yaal halkan (Quraanka), ma aha
+           Xaadiris — Quraanka waa tallaabada ugu dambeysa ee habka
+           macalinku u shaqeeyo (2026-09-14). ===== */}
+      {activeTab === 'quranDaily' && (
+        <div className="dash-card">
+          <div className="dash-card-head">
+            <h3>{t('classWorkspace.tabs.quranDaily')}</h3>
             <span className="cw-count-badge">{todayISODate()}</span>
           </div>
 
@@ -214,60 +335,41 @@ function ClassWorkspace() {
           </div>
 
           <div className="data-table-wrap">
-            <table className="data-table cw-att-quran-table">
+            <table className="data-table cw-compact-table">
               <thead>
                 <tr>
                   <th>{t('classWorkspace.attendance.table.student')}</th>
-                  <th>{t('classWorkspace.attendance.table.status')}</th>
                   <th>{t('classWorkspace.attendance.table.quran')}</th>
                 </tr>
               </thead>
               <tbody>
-                {classStudents.map((s) => {
-                  const status = attendanceToday.students[s.id] || null;
-                  const isPresent = status === 'present';
+                {attendanceRosterStudents.map((s) => {
                   const progress = quranProgressToday[s.id];
                   return (
                     <tr key={s.id}>
                       <td>
                         <div className="cell-person">
-                          <div className="cell-avatar">{initials(s.fullName)}</div>
+                          <div className="cell-avatar">{s.classRollNumber ?? '—'}</div>
                           <span className="cell-name">{s.fullName}</span>
                         </div>
                       </td>
                       <td>
-                        <div className="att-status-btn-group">
-                          {ATTENDANCE_STATUSES.map((def) => (
-                            <button
-                              key={def.key}
-                              className={`att-status-btn ${def.key}${status === def.key ? ' active' : ''}`}
-                              onClick={() => setStudentAttendanceStatus(s.id, s.className, def.key)}
-                            >
-                              {def.label}
-                            </button>
-                          ))}
-                        </div>
-                      </td>
-                      <td>
-                        <div
-                          className="att-status-btn-group"
-                          title={!isPresent ? t('classWorkspace.attendance.quranLockedTooltip') : undefined}
-                        >
+                        <div className="cw-status-cluster">
                           <button
                             type="button"
-                            className={`att-status-btn present${progress?.result === 'gartay' ? ' active' : ''}`}
-                            disabled={!isPresent}
-                            onClick={() => setQuranProgress(s.id, s.className, 'gartay', surahInput)}
+                            className={`cw-mini-btn knew${progress?.result === 'gartay' ? ' active' : ''}`}
+                            title={t('classWorkspace.quran.knew')}
+                            onClick={() => handleQuranTap(s, 'gartay')}
                           >
-                            {t('classWorkspace.quran.knew')}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
                           </button>
                           <button
                             type="button"
-                            className={`att-status-btn absent${progress?.result === 'garanwaa' ? ' active' : ''}`}
-                            disabled={!isPresent}
-                            onClick={() => setQuranProgress(s.id, s.className, 'garanwaa', surahInput)}
+                            className={`cw-mini-btn didnt${progress?.result === 'garanwaa' ? ' active' : ''}`}
+                            title={t('classWorkspace.quran.didNotKnow')}
+                            onClick={() => handleQuranTap(s, 'garanwaa')}
                           >
-                            {t('classWorkspace.quran.didNotKnow')}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                           </button>
                         </div>
                       </td>
@@ -275,11 +377,19 @@ function ClassWorkspace() {
                   );
                 })}
                 {classStudents.length === 0 && (
-                  <tr><td colSpan="3" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('classWorkspace.attendance.empty')}</td></tr>
+                  <tr><td colSpan="2" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('classWorkspace.attendance.empty')}</td></tr>
                 )}
               </tbody>
             </table>
           </div>
+
+          {classStudents.length > 0 && (
+            <div className="cw-finish-row">
+              <button type="button" className="btn-primary" onClick={handleFinishAttendance}>
+                {t('classWorkspace.attendance.finishButton')}
+              </button>
+            </div>
+          )}
         </div>
       )}
 

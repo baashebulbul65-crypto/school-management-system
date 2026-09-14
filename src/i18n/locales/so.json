@@ -558,7 +558,7 @@
     "notFound": "Fasalkan lama helin.",
     "title": "Galaaska — {{grade}} {{section}}",
     "classTeacherLabel": "Macallinka Fasalka",
-    "tabs": { "roster": "Ardayda", "attendance": "Xaadiris", "grades": "Dhibcaha", "quranTargets": "Yoolka Quraanka" },
+    "tabs": { "roster": "Ardayda", "attendance": "Xaadiris", "quranDaily": "Quraanka Maanta", "grades": "Dhibcaha", "quranTargets": "Yoolka Quraanka" },
     "roster": {
       "title": "Ardayda Fasalka",
       "countBadge": "{{count}} Arday",
@@ -568,7 +568,7 @@
     "attendance": {
       "title": "Xaadiriska Maanta",
       "table": { "student": "Arday", "status": "Xaaladda", "quran": "Quraanka" },
-      "quranLockedTooltip": "Quraanka waxaa la calaamadin karaa kaliya marka ardaygu 'Joog' yahay.",
+      "finishButton": "Dhamee",
       "empty": "Wali arday kuma jiraan fasalkan."
     },
     "grades": {

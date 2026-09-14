@@ -1144,9 +1144,18 @@ export function SchoolDataProvider({ children }) {
   const addStudent = async (payload) => {
     if (!profile?.schoolCode) return;
     try {
+      // classRollNumber (Xaadiris+Quraan numbering, 2026-09-14) — lambar
+      // joogto ah oo gaar u ah fasalka, hal mar la siiyo, mar dambena aan
+      // la bedelin xitaa haddii arday kale laga saaro fasalka (Diiwaan
+      // comparison — number-yadu kama shaqeeyaan tirtirid dib-u-tiris ah).
+      const classmateRollNumbers = payload.classId
+        ? students.filter((s) => s.classId === payload.classId).map((s) => s.classRollNumber || 0)
+        : [];
+      const classRollNumber = classmateRollNumbers.length ? Math.max(...classmateRollNumbers) + 1 : 1;
       await createStudentDoc(profile.schoolCode, {
         ...payload,
         studentId: `STU-${1040 + allStudents.length + 1}`,
+        classRollNumber,
       });
     } catch (err) {
       reportError('Khalad ayaa dhacay markii ardayga la darayay:', err);

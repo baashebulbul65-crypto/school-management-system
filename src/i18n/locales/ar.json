@@ -558,7 +558,7 @@
     "notFound": "لم يتم العثور على هذا الفصل.",
     "title": "مساحة العمل — {{grade}} {{section}}",
     "classTeacherLabel": "معلم الفصل",
-    "tabs": { "roster": "الطلاب", "attendance": "الحضور", "grades": "الدرجات", "quranTargets": "هدف القرآن" },
+    "tabs": { "roster": "الطلاب", "attendance": "الحضور", "quranDaily": "قرآن اليوم", "grades": "الدرجات", "quranTargets": "هدف القرآن" },
     "roster": {
       "title": "طلاب الفصل",
       "countBadge": "{{count}} طالب",
@@ -568,7 +568,7 @@
     "attendance": {
       "title": "حضور اليوم",
       "table": { "student": "الطالب", "status": "الحالة", "quran": "القرآن" },
-      "quranLockedTooltip": "لا يمكن تسجيل القرآن إلا عندما تكون حالة الطالب 'حاضر'.",
+      "finishButton": "إنهاء",
       "empty": "لا يوجد طلاب في هذا الفصل بعد."
     },
     "grades": {

@@ -50,6 +50,67 @@
   padding: 32px;
 }
 
+/* Xaadiris+Quraan compact status controls (2026-09-14 redesign) — halkii
+   pill-buttons qoraal buuxa leh (bulky, is-dul saaran mobile-ka), hadda waa
+   icon-buttons yar-yar oo hal xariiq ku jira (Diiwaan comparison). "Joog"
+   (.cw-mini-dot) waa indicator akhris-kaliya, ma aha button — macalinku
+   Joog si toos ah uma dhigi karo, waxaa loo gaaraa kaliya Quraanka
+   (handleQuranTap, ClassWorkspace.jsx). */
+.cw-status-cluster{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cw-mini-dot,
+.cw-mini-btn{
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cw-mini-dot svg,
+.cw-mini-btn svg{ width: 13px; height: 13px; }
+
+.cw-mini-dot{
+  background: #F1F4F6;
+  color: #C3CBD1;
+}
+.cw-mini-dot.active{
+  background: var(--mint-pale);
+  color: var(--mint-dark);
+}
+
+.cw-mini-btn{
+  border: none;
+  background: #F1F4F6;
+  color: #94A3B8;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.cw-mini-btn:hover{ transform: translateY(-1px); }
+.cw-mini-btn.absent.active{ background: var(--danger-bg); color: var(--danger-dark); }
+.cw-mini-btn.leave.active{ background: var(--warning-bg); color: var(--warning); }
+.cw-mini-btn.knew.active{ background: var(--mint-pale); color: var(--mint-dark); }
+.cw-mini-btn.didnt.active{ background: var(--danger-bg); color: var(--danger-dark); }
+
+.cw-finish-row{
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+@media (max-width: 640px){
+  .cw-mini-dot,
+  .cw-mini-btn{ width: 30px; height: 30px; }
+  .cw-mini-dot svg,
+  .cw-mini-btn svg{ width: 14px; height: 14px; }
+  .cw-status-cluster{ gap: 3px; }
+  .cw-finish-row .btn-primary{ width: 100%; justify-content: center; }
+}
+
 
 /* Prompt-ka "Ma gaadhay yoolkiisii?" — reuses .qtm-overlay/.qtm-modal/.qtm-header/.qtm-footer */
 .cw-qtp-modal{ max-width: 420px; }
