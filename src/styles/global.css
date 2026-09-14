@@ -9,8 +9,7 @@
     --grey-text:   #64748A;
     --line:        #EDF1F4;
     --bg:          #E9EDF0;
-    --bg-main:     #3B4A5A;
-    --text-on-dark: #F5F7F9;
+    --bg-main:     #E9EDF0;
 
     /* status/accent tokens */
     --danger:         #E5533F;
@@ -69,12 +68,19 @@
     input, select, textarea{ font-size:16px !important; }
   }
 
+  /* Double-tap-zoom fix (2026-09-14): buttons/links oo la taabto degdeg ah
+     (tusaale "ka noqo" navigate-ka, marka bogu tartiib u jawaabo) waxay
+     ku qasban karaan mobile browser-yada double-tap-to-zoom gesture-ka
+     caadiga ah — manipulation waxay ka hortagtaa taas iyada oo aan
+     saamayn ku yeelan pinch-zoom-ka guud ee boggga (accessibility). */
+  button, a{ touch-action: manipulation; }
+
 
   .eyebrow{
     display:inline-flex;
     align-items:center;
     gap:8px;
-    color: var(--text-on-dark);
+    color: var(--grey-text);
     font-size:13.5px;
     font-weight:600;
     letter-spacing:0.4px;
