@@ -5,6 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kayd</title>
+    <!-- Font loading audit (2026-09-14): 'Inter'/'Poppins' waxaa lagu qoray
+         CSS-ka meelo badan (global.css, dhammaan landing/dashboard CSS-ka)
+         tan iyo bilowgii mashruuca, laakiin marnaba lama soo dejin (link
+         Google Fonts ah ma jirin index.html gudaheeda) — sidaas darteed
+         browser-ku had iyo jeer wuxuu isticmaali jiray fallback-ka nidaamka
+         (system sans-serif), oo font-weight (bold) ka dhalan karo mid aan
+         la garan karin, gaar ahaan qoraalka Carabiga ah (magacyada ardayda)
+         oo isticmaala fallback font kale oo aan la mid ahayn Latin-ka.
+         Noto Sans Arabic waxaa loo daray si qoraalka Carabiga ah uu u helo
+         glyph/bold sax ah (Inter kuma jiraan xarfaha Carabiga, sidaas
+         darteed browser-ku si otomaatig ah ugu dhaqaaqaa Noto Sans Arabic
+         xarfaha Carabiga, isagoo Latin-ka kaga tagaya Inter). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>

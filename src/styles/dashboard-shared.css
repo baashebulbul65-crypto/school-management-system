@@ -184,7 +184,7 @@
   padding:16px;
   font-size:13.5px;
   color: var(--navy);
-  border-bottom:1px solid #DEE3E8;
+  border-bottom:1px solid #CBD2D9;
   white-space:nowrap;
 }
 .data-table tbody tr:last-child td{ border-bottom:none; }
@@ -207,7 +207,12 @@
   font-size:12.5px;
   flex-shrink:0;
 }
-.cell-name{ font-weight:700; color: var(--navy); }
+/* RTL fix (2026-09-14): .cell-name waa flex item shrink-to-fit ahaa (isku
+   xajis qoraalka intiisa), sidaas darteed dir="auto" (Arabic -> right-align)
+   effect ma lahayn — booskiisu horeba wuxuu la simmi jiray qoraalka, meel
+   bannaan lama arki karin in la-jiiro. flex:1 ayaa siinaya booska hadhay
+   ee .cell-person si loo jiiro dhinaca (Carabi = midig, Latin = bidix). */
+.cell-name{ font-weight:700; color: var(--navy); flex:1; min-width:0; }
 .cell-sub{ font-size:12px; color:#94A3B8; }
 
 /* ===== BADGES ===== */
