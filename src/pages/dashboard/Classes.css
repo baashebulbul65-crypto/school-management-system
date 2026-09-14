@@ -5,6 +5,55 @@
   margin-top:20px;
 }
 
+/* Subax/Galab column split (2026-09-14, Diiwaan comparison) — dhinac-dhinac
+   desktop-ka (screen ballaadhan), kor-hoos mobile-ka (<=900px) — responsive
+   CSS oo qura, ma jirto tab/JS state loo baahan yahay. */
+.classes-session-columns{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:32px;
+  align-items:start;
+}
+.classes-session-col{ min-width:0; }
+.classes-session-heading{
+  font-family:'Poppins', sans-serif;
+  font-weight:700;
+  font-size:16px;
+  color: var(--navy);
+  margin-bottom:16px;
+  padding-bottom:10px;
+  border-bottom:2px solid var(--line);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.classes-session-heading::before{
+  content:'';
+  width:8px; height:8px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+.classes-session-heading.subax::before{ background: var(--blue); }
+.classes-session-heading.subax{ border-bottom-color: var(--blue-border); }
+.classes-session-heading.galab::before{ background: var(--purple); }
+.classes-session-heading.galab{ border-bottom-color: var(--purple-border); }
+.classes-session-empty{
+  color:#94A3B8;
+  text-align:center;
+  padding:32px;
+  background:#fff;
+  border:1.5px dashed var(--line);
+  border-radius:16px;
+  margin-top:20px;
+}
+
+@media (max-width: 900px){
+  .classes-session-columns{
+    grid-template-columns: 1fr;
+    gap:36px;
+  }
+}
+
 .class-card{
   background:#fff;
   border:1.5px dashed var(--line);

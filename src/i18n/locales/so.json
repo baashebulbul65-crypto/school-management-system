@@ -289,7 +289,8 @@
       },
       "submitAdd": "Abuur Fasalka"
     },
-    "session": { "subax": "Subax", "galab": "Galab" }
+    "session": { "subax": "Subax", "galab": "Galab" },
+    "noneInSession": "Fasal kuma jiro qaybtan."
   },
   "subjects": {
     "pageTitle": "Maadooyinka",

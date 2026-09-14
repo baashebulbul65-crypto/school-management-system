@@ -41,6 +41,15 @@ function Classes() {
     `${c.grade} ${c.section}`.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Subax/Galab kala soocid (2026-09-14, Diiwaan comparison) — hore ayay
+  // isugu jireen hal grid random ah (2 column, session ma xisaabinayn column-
+  // ka), taasoo dhanka mobile-ka aad muhiim ugu ahayd, marka la eego. Hadda
+  // waa 2 qaybood oo gooni ah (.filter() ma bedelin dariiqooyinka, sidaas
+  // darteed fasal cusub wuxuu ku dhamaadaa hoosta liiskiisa qaybta — ma aha
+  // meel random ah).
+  const subaxClasses = filtered.filter((c) => (c.session || 'subax') === 'subax');
+  const galabClasses = filtered.filter((c) => (c.session || 'subax') === 'galab');
+
   const openAddModal = () => {
     setEditingClass(null);
     setShowFormModal(true);
@@ -64,6 +73,93 @@ function Classes() {
     if (confirmed) {
       removeClass(classId);
     }
+  };
+
+  // Card-ka fasalka — la soo saaray hal function (Subax/Galab columns audit,
+  // 2026-09-14) si aan loo laba-qorin isla JSX-ka gudaha labada qaybood.
+  const renderClassCard = (c) => {
+    // Tirada ardayda waa in la xisaabiyaa (derived) xogta DHABTA AH ee
+    // "students" — ma aha counter kaydsan (c.students), kaas oo mar
+    // walba ahaan lahaa 0 (weligiis lama cusboonaysiin, fiiri
+    // SchoolDataContext.jsx: addClass).
+    const studentCount = students.filter((s) => (s.classId ? s.classId === c.id : s.className === `${c.grade}${c.section}`)).length;
+    const percent = Math.round((studentCount / c.capacity) * 100);
+    // Fasallada hore ee la abuuray ka hor field-kan (Classes audit,
+    // 2026-08-26) ma laha "session" — waxay noqonayaan "subax" default
+    // ahaan ilaa Owner-ku dib u eego oo kaydiyo (fiiri ClassFormModal.jsx:
+    // isla fallback-ka), si aan xogta jirta u jajabin.
+    const session = c.session || 'subax';
+    return (
+      <div className={`class-card session-${session}`} key={c.id}>
+        <div className="class-card-top">
+          <div className="class-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/></svg>
+          </div>
+          {isOwner && (
+            <div className="class-card-actions">
+              <button className="row-action-btn" title={t('common.actions.more')} onClick={(e) => { e.stopPropagation(); toggleMenu(c.id); }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+              </button>
+              {openMenuId === c.id && (
+                <>
+                  <div className="class-card-menu-overlay" onClick={closeMenu}></div>
+                  <div className="class-card-menu">
+                    <button onClick={() => { closeMenu(); openEditModal(c); }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
+                      {t('common.actions.edit')}
+                    </button>
+                    <button className="danger" onClick={() => { closeMenu(); handleDeleteClass(c.id, `${c.grade} ${c.section}`); }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
+                      {t('common.actions.delete')}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="class-card-title-row">
+          <h3>{c.grade} - {c.section}</h3>
+          <span className={`class-session-badge ${session}`}>{t(`classes.session.${session}`)}</span>
+        </div>
+        <p className="class-room">{c.room}</p>
+        <p className="class-teacher">
+          {teachers.find((tc) => tc.id === c.classTeacherId)?.fullName || c.classTeacher || '—'}
+        </p>
+
+        {(() => {
+          // subjectIds (xiriir dhab ah) haddii jiro, haddii kalese
+          // fallback-ka qoraalka hore (cls.subjects) ilaa fasalku dib
+          // loo kaydiyo dropdown-ka cusub.
+          const subjectNames = c.subjectIds
+            ? c.subjectIds.map((id) => subjects.find((sub) => sub.id === id)?.name).filter(Boolean)
+            : (c.subjects || []);
+          return (
+            <div className="class-subjects">
+              {subjectNames.slice(0, 3).map((s) => (
+                <span key={s} className="class-subject-tag">{s}</span>
+              ))}
+              {subjectNames.length > 3 && (
+                <span className="class-subject-tag more">+{subjectNames.length - 3}</span>
+              )}
+            </div>
+          );
+        })()}
+
+        <div className="class-progress">
+          <div className="class-progress-bar">
+            <div className="class-progress-fill" style={{ width: `${percent}%` }}></div>
+          </div>
+          <span>{studentCount}/{c.capacity}</span>
+        </div>
+
+        <button className="btn-secondary class-open-btn" onClick={() => navigate(`/dashboard/classes/${c.id}`)}>
+          {t('classes.openWorkspace')}
+          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -105,95 +201,28 @@ function Classes() {
       )}
 
       {!notLinked && (
-      <div className="classes-grid">
-        {filtered.map((c) => {
-          // Tirada ardayda waa in la xisaabiyaa (derived) xogta DHABTA AH ee
-          // "students" — ma aha counter kaydsan (c.students), kaas oo mar
-          // walba ahaan lahaa 0 (weligiis lama cusboonaysiin, fiiri
-          // SchoolDataContext.jsx: addClass).
-          const studentCount = students.filter((s) => (s.classId ? s.classId === c.id : s.className === `${c.grade}${c.section}`)).length;
-          const percent = Math.round((studentCount / c.capacity) * 100);
-          // Fasallada hore ee la abuuray ka hor field-kan (Classes audit,
-          // 2026-08-26) ma laha "session" — waxay noqonayaan "subax" default
-          // ahaan ilaa Owner-ku dib u eego oo kaydiyo (fiiri ClassFormModal.jsx:
-          // isla fallback-ka), si aan xogta jirta u jajabin.
-          const session = c.session || 'subax';
-          return (
-            <div className={`class-card session-${session}`} key={c.id}>
-              <div className="class-card-top">
-                <div className="class-card-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/></svg>
-                </div>
-                {isOwner && (
-                  <div className="class-card-actions">
-                    <button className="row-action-btn" title={t('common.actions.more')} onClick={(e) => { e.stopPropagation(); toggleMenu(c.id); }}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                    </button>
-                    {openMenuId === c.id && (
-                      <>
-                        <div className="class-card-menu-overlay" onClick={closeMenu}></div>
-                        <div className="class-card-menu">
-                          <button onClick={() => { closeMenu(); openEditModal(c); }}>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
-                            {t('common.actions.edit')}
-                          </button>
-                          <button className="danger" onClick={() => { closeMenu(); handleDeleteClass(c.id, `${c.grade} ${c.section}`); }}>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
-                            {t('common.actions.delete')}
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div className="class-card-title-row">
-                <h3>{c.grade} - {c.section}</h3>
-                <span className={`class-session-badge ${session}`}>{t(`classes.session.${session}`)}</span>
-              </div>
-              <p className="class-room">{c.room}</p>
-              <p className="class-teacher">
-                {teachers.find((t) => t.id === c.classTeacherId)?.fullName || c.classTeacher || '—'}
-              </p>
-
-              {(() => {
-                // subjectIds (xiriir dhab ah) haddii jiro, haddii kalese
-                // fallback-ka qoraalka hore (cls.subjects) ilaa fasalku dib
-                // loo kaydiyo dropdown-ka cusub.
-                const subjectNames = c.subjectIds
-                  ? c.subjectIds.map((id) => subjects.find((sub) => sub.id === id)?.name).filter(Boolean)
-                  : (c.subjects || []);
-                return (
-                  <div className="class-subjects">
-                    {subjectNames.slice(0, 3).map((s) => (
-                      <span key={s} className="class-subject-tag">{s}</span>
-                    ))}
-                    {subjectNames.length > 3 && (
-                      <span className="class-subject-tag more">+{subjectNames.length - 3}</span>
-                    )}
-                  </div>
-                );
-              })()}
-
-              <div className="class-progress">
-                <div className="class-progress-bar">
-                  <div className="class-progress-fill" style={{ width: `${percent}%` }}></div>
-                </div>
-                <span>{studentCount}/{c.capacity}</span>
-              </div>
-
-              <button className="btn-secondary class-open-btn" onClick={() => navigate(`/dashboard/classes/${c.id}`)}>
-                {t('classes.openWorkspace')}
-                <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </button>
+        filtered.length === 0 ? (
+          <p style={{ color: '#94A3B8', textAlign: 'center', padding: '32px' }}>{t('common.noResults')}</p>
+        ) : (
+          <div className="classes-session-columns">
+            <div className="classes-session-col">
+              <h3 className="classes-session-heading subax">{t('classes.session.subax')}</h3>
+              {subaxClasses.length > 0 ? (
+                <div className="classes-grid">{subaxClasses.map(renderClassCard)}</div>
+              ) : (
+                <p className="classes-session-empty">{t('classes.noneInSession')}</p>
+              )}
             </div>
-          );
-        })}
-        {filtered.length === 0 && (
-          <p style={{ color: '#94A3B8', gridColumn: '1 / -1', textAlign: 'center', padding: '32px' }}>{t('common.noResults')}</p>
-        )}
-      </div>
+            <div className="classes-session-col">
+              <h3 className="classes-session-heading galab">{t('classes.session.galab')}</h3>
+              {galabClasses.length > 0 ? (
+                <div className="classes-grid">{galabClasses.map(renderClassCard)}</div>
+              ) : (
+                <p className="classes-session-empty">{t('classes.noneInSession')}</p>
+              )}
+            </div>
+          </div>
+        )
       )}
 
       <ClassFormModal
