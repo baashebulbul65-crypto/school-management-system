@@ -222,7 +222,7 @@ function ClassWorkspace() {
             <span className="cw-count-badge">{t('classWorkspace.roster.countBadge', { count: classStudents.length })}</span>
           </div>
           <div className="data-table-wrap">
-            <table className="data-table">
+            <table className="data-table" dir="rtl">
               <thead><tr><th>{t('classWorkspace.roster.table.student')}</th><th>{t('classWorkspace.roster.table.id')}</th><th>{t('classWorkspace.roster.table.status')}</th></tr></thead>
               <tbody>
                 {attendanceRosterStudents.map((s) => (
@@ -261,7 +261,7 @@ function ClassWorkspace() {
           </div>
 
           <div className="data-table-wrap">
-            <table className="data-table cw-compact-table">
+            <table className="data-table cw-compact-table" dir="rtl">
               <thead>
                 <tr>
                   <th>{t('classWorkspace.attendance.table.student')}</th>
@@ -339,7 +339,7 @@ function ClassWorkspace() {
           </div>
 
           <div className="data-table-wrap">
-            <table className="data-table cw-compact-table">
+            <table className="data-table cw-compact-table" dir="rtl">
               <thead>
                 <tr>
                   <th>{t('classWorkspace.attendance.table.student')}</th>
@@ -416,7 +416,7 @@ function ClassWorkspace() {
                 </select>
               </div>
               <div className="data-table-wrap">
-                <table className="data-table">
+                <table className="data-table" dir="rtl">
                   <thead><tr><th>{t('classWorkspace.grades.table.student')}</th><th>{t('classWorkspace.grades.marksNotMoreThan', { max: selectedExam?.maxMarks })}</th><th>{t('classWorkspace.grades.table.percent')}</th></tr></thead>
                   <tbody>
                     {attendanceRosterStudents.map((s) => {
@@ -464,7 +464,7 @@ function ClassWorkspace() {
           </div>
 
           <div className="data-table-wrap">
-            <table className="data-table">
+            <table className="data-table" dir="rtl">
               <thead>
                 <tr>
                   <th>{t('classWorkspace.quranTargets.table.student')}</th>
