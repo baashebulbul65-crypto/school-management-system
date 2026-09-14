@@ -202,7 +202,11 @@ function ClassWorkspace() {
         </div>
       </div>
 
-      <div className="fin-tabs">
+      {/* dir="rtl" (2026-09-14): kaliya jihada tabs-ka (order-ka visual-ka
+          ah) ayaa la beddelay — qoraalka labels-ka (tb.label) sidiisii ayuu
+          u haray (dir ma bedesho xarfaha qoraal Latin ah), mana saameynayo
+          content-ka hoose ee tab kasta (dir-gu waa scoped-ka div-kan qura). */}
+      <div className="fin-tabs" dir="rtl">
         {TABS.map((tb) => (
           <button key={tb.id} className={`fin-tab ${activeTab === tb.id ? 'active' : ''}`} onClick={() => setActiveTab(tb.id)}>
             {tb.label}
