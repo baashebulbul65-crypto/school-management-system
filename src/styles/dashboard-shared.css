@@ -184,7 +184,7 @@
   padding:16px;
   font-size:13.5px;
   color: var(--navy);
-  border-bottom:1px solid #CBD2D9;
+  border-bottom:1px solid #9AA5B1;
   white-space:nowrap;
 }
 .data-table tbody tr:last-child td{ border-bottom:none; }
