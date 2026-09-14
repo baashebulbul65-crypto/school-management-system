@@ -221,11 +221,11 @@ function ClassWorkspace() {
             <table className="data-table">
               <thead><tr><th>{t('classWorkspace.roster.table.student')}</th><th>{t('classWorkspace.roster.table.id')}</th><th>{t('classWorkspace.roster.table.status')}</th></tr></thead>
               <tbody>
-                {classStudents.map((s) => (
+                {attendanceRosterStudents.map((s) => (
                   <tr key={s.id}>
                     <td>
                       <div className="cell-person">
-                        <div className="cell-avatar">{initials(s.fullName)}</div>
+                        <div className="cell-avatar">{s.classRollNumber ?? initials(s.fullName)}</div>
                         <span className="cell-name">{s.fullName}</span>
                       </div>
                     </td>
@@ -415,7 +415,7 @@ function ClassWorkspace() {
                 <table className="data-table">
                   <thead><tr><th>{t('classWorkspace.grades.table.student')}</th><th>{t('classWorkspace.grades.marksNotMoreThan', { max: selectedExam?.maxMarks })}</th><th>{t('classWorkspace.grades.table.percent')}</th></tr></thead>
                   <tbody>
-                    {classStudents.map((s) => {
+                    {attendanceRosterStudents.map((s) => {
                       const key = markKey(currentExamId, s.id);
                       const savedMark = examMarks[currentExamId]?.[s.id];
                       const mark = pendingMarks[key] !== undefined ? pendingMarks[key] : savedMark;
@@ -424,7 +424,7 @@ function ClassWorkspace() {
                         <tr key={s.id}>
                           <td>
                             <div className="cell-person">
-                              <div className="cell-avatar">{initials(s.fullName)}</div>
+                              <div className="cell-avatar">{s.classRollNumber ?? initials(s.fullName)}</div>
                               <span className="cell-name">{s.fullName}</span>
                             </div>
                           </td>
@@ -472,7 +472,7 @@ function ClassWorkspace() {
                 </tr>
               </thead>
               <tbody>
-                {classStudents.map((s) => {
+                {attendanceRosterStudents.map((s) => {
                   const target = latestTargetByStudent[s.id];
                   const daysLeft = target ? Math.max(0, Math.ceil((new Date(target.deadline).getTime() - Date.now()) / DAY_MS)) : 0;
                   // Xannibaad: haddii arday leeyahay yool "pending" ah oo taariikhdiisu
@@ -483,7 +483,7 @@ function ClassWorkspace() {
                     <tr key={s.id}>
                       <td>
                         <div className="cell-person">
-                          <div className="cell-avatar">{initials(s.fullName)}</div>
+                          <div className="cell-avatar">{s.classRollNumber ?? initials(s.fullName)}</div>
                           <span className="cell-name">{s.fullName}</span>
                         </div>
                       </td>

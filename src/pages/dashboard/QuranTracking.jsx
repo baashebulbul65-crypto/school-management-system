@@ -156,7 +156,7 @@ function QuranTracking() {
             return (
               <div key={s.id} className="qh-student-card">
                 <div className="cell-person qh-student-person">
-                  <div className="cell-avatar">{initials(s.fullName)}</div>
+                  <div className="cell-avatar">{s.classRollNumber ?? initials(s.fullName)}</div>
                   <span className="cell-name">{s.fullName}</span>
                 </div>
                 <div className="qh-history-grid">

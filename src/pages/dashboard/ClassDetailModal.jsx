@@ -51,6 +51,7 @@ function ClassDetailModal({ row, monthValue, onClose }) {
           id: s.id, name: s.fullName, status, amount,
           isDiscount: feeType === 'discount',
           discountPercent: Number(s.discountPercent) || 0,
+          classRollNumber: s.classRollNumber,
         };
       });
   }, [students, feePayments, row, monthValue]);
@@ -169,7 +170,7 @@ function ClassDetailModal({ row, monthValue, onClose }) {
               <tr key={s.id}>
                 <td className="cdm-student-cell">
                   <span className="cdm-avatar-dot"></span>
-                  <span className="cdm-idx">{i + 1}</span>
+                  <span className="cdm-idx">{s.classRollNumber ?? (i + 1)}</span>
                   {s.name}
                 </td>
                 <td>

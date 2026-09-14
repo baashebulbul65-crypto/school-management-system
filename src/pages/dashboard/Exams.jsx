@@ -308,7 +308,7 @@ function Exams() {
                     <tr key={s.id}>
                       <td>
                         <div className="cell-person">
-                          <div className="cell-avatar">{initials(s.fullName)}</div>
+                          <div className="cell-avatar">{s.classRollNumber ?? initials(s.fullName)}</div>
                           <span className="cell-name">{s.fullName}</span>
                         </div>
                       </td>
