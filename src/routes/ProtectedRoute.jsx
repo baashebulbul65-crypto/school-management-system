@@ -42,10 +42,8 @@ function ProtectedRoute({ children, requireAccountType }) {
 
   if (!done) {
     return (
-      <div style={{
-        height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <Spinner percent={percent} size={72} />
+      <div className="spinner-overlay">
+        <Spinner percent={percent} size={140} />
       </div>
     );
   }

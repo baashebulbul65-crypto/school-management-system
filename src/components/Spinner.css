@@ -9,18 +9,17 @@
 /* conic-gradient + mask (2026-09-15): "ring" gradient-ah oo wareega — mask-ku
    wuxuu ka dhigayaa disk-ka buuxa "ring" (donut), halkii loo isticmaali lahaa
    SVG stroke-gradient (SVG lafteedu ma taageerto gradient sax ah oo stroke
-   ku socda dhinaca circle-ka gudihiisa). Midabada waa design-tokens-ka
-   guud (--mint/--mint-dark/--navy, fiiri global.css) si spinner-ku ula mid
-   noqdo midabaha kale ee app-ka. */
+   ku socda dhinaca circle-ka gudihiisa).
+   Midab-hagaajin (round 2, 2026-09-15, user-request): hore waxaa ku jiray
+   4 midab (mint-pale/mint/mint-dark/navy) — hadda spinner-ku wuxuu ku
+   fadhiyaa overlay navy ah (fiiri .spinner-overlay hoos), sidaas darteed
+   qaybtii navy ee gradient-ka waxay ku milmi lahayd background-ka (booskaas
+   ring-ka wuxuu u ekaan lahaa mid maqan). Hadda waa fade transparent ->
+   --mint oo qura (comet-tail effect, mint kaliya, sida user-ku codsaday). */
 .spinner-ring{
   width:100%; height:100%;
   border-radius:50%;
-  background: conic-gradient(from 0deg,
-    var(--mint-pale) 0deg,
-    var(--mint) 110deg,
-    var(--mint-dark) 220deg,
-    var(--navy) 300deg,
-    var(--mint-pale) 360deg);
+  background: conic-gradient(from 0deg, transparent 0deg, var(--mint) 340deg, var(--mint) 360deg);
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--spinner-stroke, 6px)), #000 calc(100% - var(--spinner-stroke, 6px)));
           mask: radial-gradient(farthest-side, transparent calc(100% - var(--spinner-stroke, 6px)), #000 calc(100% - var(--spinner-stroke, 6px)));
   animation: spinner-spin 1.1s linear infinite;
@@ -30,11 +29,14 @@
   to{ transform: rotate(360deg); }
 }
 
+/* percent-text-ku had iyo jeer wuxuu ku fadhiyaa .spinner-overlay (navy) —
+   sidaas darteed cad (#fff) ayaa la isticmaalaa, ma aha --navy (aan la
+   akhrin karin navy-on-navy). */
 .spinner-percent{
   position:absolute;
   font-family:'Poppins', sans-serif;
   font-weight:700;
-  color: var(--navy);
+  color:#fff;
   font-variant-numeric: tabular-nums;
 }
 
@@ -42,6 +44,19 @@
   display:flex;
   align-items:center;
   justify-content:center;
+}
+
+/* Full-page loading overlay (2026-09-15, user-request): navy khafiif ah
+   (semi-transparent) oo daboolaya screen-ka oo dhan — Diiwaan-comparison,
+   halkii background-ku ahaan lahaa cad/khafiif oo aan lahayn elevation. */
+.spinner-overlay{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(11,31,43,0.9);
+  z-index:9999;
 }
 
 @media (prefers-reduced-motion: reduce){

@@ -82,11 +82,12 @@ export default function Spinner({ percent = 0, size = 56, showPercent = true, cl
 
 // Isticmaalka bogagga oo dhan (App.jsx Suspense fallback, ProtectedRoute
 // auth-gate) — Spinner + percent-state isku daray, si meel kasta aan
-// looga baahnayn in la keydiyo useSimulatedProgress gaar ah.
-export function FullPageSpinner({ active = true, size = 72 }) {
+// looga baahnayn in la keydiyo useSimulatedProgress gaar ah. size=140 +
+// .spinner-overlay (navy khafiif ah, full-screen) — user-request 2026-09-15.
+export function FullPageSpinner({ active = true, size = 140 }) {
   const { percent } = useSimulatedProgress(active);
   return (
-    <div className="spinner-block">
+    <div className="spinner-overlay">
       <Spinner percent={percent} size={size} />
     </div>
   );

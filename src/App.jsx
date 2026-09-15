@@ -32,13 +32,8 @@ const Users = lazy(() => import('./pages/dashboard/Users'));
 const Trash = lazy(() => import('./pages/dashboard/Trash'));
 const ArchivedStudents = lazy(() => import('./pages/dashboard/ArchivedStudents'));
 
-const PAGE_LOADING_STYLE = {
-  height: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-  fontFamily: 'Inter, sans-serif', color: '#64748A',
-};
-
 function PageFallback() {
-  return <div style={PAGE_LOADING_STYLE}><FullPageSpinner /></div>;
+  return <FullPageSpinner />;
 }
 
 function App() {
