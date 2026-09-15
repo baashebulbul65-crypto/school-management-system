@@ -80,15 +80,24 @@ export default function Spinner({ percent = 0, size = 56, showPercent = true, cl
   );
 }
 
-// Isticmaalka bogagga oo dhan (App.jsx Suspense fallback, ProtectedRoute
-// auth-gate) — Spinner + percent-state isku daray, si meel kasta aan
-// looga baahnayn in la keydiyo useSimulatedProgress gaar ah. size=140 +
-// .spinner-overlay (navy khafiif ah, full-screen) — user-request 2026-09-15.
-export function FullPageSpinner({ active = true, size = 140 }) {
-  const { percent } = useSimulatedProgress(active);
+// .spinner-overlay waa kaliya layout (fixed + centered, transparent) —
+// bogga hoosta ka socda 100% ayuu u muuqan doonaa. .spinner-badge (navy
+// khafiif ah) waxay ku koobán tahay kaliya spinner-ka lafteeda (round 3,
+// 2026-09-15, user-request: "backroonka spinner kaliya, ha taaban
+// backroonka guud"). Isticmaalka saddexda bog ee full-page loading leh
+// (App.jsx Suspense fallback, ProtectedRoute, RequireRole) — hal component
+// oo la wadaago si aan loo laba-qorin markup-ka overlay+badge.
+export function SpinnerOverlay({ percent = 0, size = 140 }) {
   return (
     <div className="spinner-overlay">
-      <Spinner percent={percent} size={size} />
+      <div className="spinner-badge">
+        <Spinner percent={percent} size={size} />
+      </div>
     </div>
   );
+}
+
+export function FullPageSpinner({ active = true, size = 140 }) {
+  const { percent } = useSimulatedProgress(active);
+  return <SpinnerOverlay percent={percent} size={size} />;
 }

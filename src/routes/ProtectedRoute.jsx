@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Spinner, { useSimulatedProgress } from '../components/Spinner';
+import { SpinnerOverlay, useSimulatedProgress } from '../components/Spinner';
 
 function ProtectedRoute({ children, requireAccountType }) {
   const { isAuthenticated, profile, loading, logout } = useAuth();
@@ -41,11 +41,7 @@ function ProtectedRoute({ children, requireAccountType }) {
   }, [loading, isAuthenticated, profile, logout]);
 
   if (!done) {
-    return (
-      <div className="spinner-overlay">
-        <Spinner percent={percent} size={140} />
-      </div>
-    );
+    return <SpinnerOverlay percent={percent} size={140} />;
   }
 
   if (!isAuthenticated || !profile || profile.status === 'suspended') {

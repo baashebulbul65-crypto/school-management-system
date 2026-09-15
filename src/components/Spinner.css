@@ -47,24 +47,38 @@
   justify-content:center;
 }
 
-/* Full-page loading overlay (2026-09-15, user-request): navy khafiif ah
-   (semi-transparent) oo daboolaya screen-ka oo dhan — Diiwaan-comparison,
-   halkii background-ku ahaan lahaa cad/khafiif oo aan lahayn elevation. */
+/* Scope correction (round 3, 2026-09-15, user-request): rounds 1-2 waxay
+   navy background/blur ku dareen .spinner-overlay (daboolaysa screen-ka
+   OO DHAN) — user-ku wuxuu sheegay "backroonka aan rabo in aan hagaajiyo
+   waa backroonka spinner kaliya, ha taaban backroonka guud" (kaliya
+   background-ka spinner-ka lafteeda, ma aha bogga oo dhan). Sidaas
+   darteed .spinner-overlay hadda waa kaliya layout-container transparent
+   ah (fixed + flex-center, si spinner-ku dhexda screen-ka ugu jiro),
+   bogga hoosta ka socdaa 100% ayuu u muuqan doonaa (wax overlay ah kuma
+   jiro). Navy background-ku wuxuu hadda ku koobán yahay .spinner-badge
+   (hoos), oo kaliya ku xeeran spinner-ka lafteeda. */
 .spinner-overlay{
   position:fixed;
   inset:0;
   display:flex;
   align-items:center;
   justify-content:center;
-  /* 0.45 dib loogu celiyay 0.9 (round 2, user-request 2026-09-15): 0.45
-     midab grey/khafiif ah oo aan khaas ahayn ayuu u muuqday, ma ahayn navy
-     cad oo la aqoonsan karo — 0.9 (qiimihii ugu horreeyay) ayaa dib loo
-     celiyay si background-ku noqdo navy khafiif ah oo muuqata, ma aha
-     mid grey ah. backdrop-filter/text-shadow-ku wax kama beddelin. */
-  background: rgba(11,31,43,0.9);
-  -webkit-backdrop-filter: blur(3px);
-          backdrop-filter: blur(3px);
   z-index:9999;
+  pointer-events:none;
+}
+
+/* "Badge"-ka navy ah ee ku xeeran spinner-ka kaliya (ma aha screen-ka oo
+   dhan) — disk goobaabin ah (border-radius:50%), cushion (padding) ku
+   filan si ring-ku uusan geesaha ku taaban. */
+.spinner-badge{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:32px;
+  border-radius:50%;
+  background: rgba(11,31,43,0.9);
+  box-shadow: 0 20px 50px -12px rgba(11,31,43,0.4);
+  pointer-events:auto;
 }
 
 @media (prefers-reduced-motion: reduce){

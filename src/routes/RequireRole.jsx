@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Spinner, { useSimulatedProgress } from '../components/Spinner';
+import { SpinnerOverlay, useSimulatedProgress } from '../components/Spinner';
 
 function RequireRole({ allow = [], children }) {
   const { profile, loading } = useAuth();
@@ -8,11 +8,7 @@ function RequireRole({ allow = [], children }) {
 
   // 1. Sug inta xogtu ka soo load gareynayso
   if (!done) {
-    return (
-      <div className="spinner-overlay">
-        <Spinner percent={percent} size={140} />
-      </div>
-    );
+    return <SpinnerOverlay percent={percent} size={140} />;
   }
 
   // 2. Qaado doorka dhabta ah ee isticmaalaha (e.g. 'owner', 'teacher', 'arday', 'waalid')
