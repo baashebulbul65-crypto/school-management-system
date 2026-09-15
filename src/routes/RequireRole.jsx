@@ -1,12 +1,18 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Spinner, { useSimulatedProgress } from '../components/Spinner';
 
 function RequireRole({ allow = [], children }) {
   const { profile, loading } = useAuth();
+  const { percent, done } = useSimulatedProgress(loading);
 
   // 1. Sug inta xogtu ka soo load gareynayso
-  if (loading) {
-    return null;
+  if (!done) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Spinner percent={percent} size={72} />
+      </div>
+    );
   }
 
   // 2. Qaado doorka dhabta ah ee isticmaalaha (e.g. 'owner', 'teacher', 'arday', 'waalid')
