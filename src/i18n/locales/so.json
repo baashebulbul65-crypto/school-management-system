@@ -580,8 +580,6 @@
       "table": { "student": "Ardayga", "percent": "Boqolkiiba" }
     },
     "quran": {
-      "surahLabel": "Suurada/Qeybta Maanta (ikhtiyaari):",
-      "surahPlaceholder": "Tusaale: Suuratul Baqarah, aayad 1-20",
       "knew": "Wuu Gartay",
       "didNotKnow": "Magaran"
     },

@@ -30,7 +30,6 @@ function ClassWorkspace() {
   const [activeTab, setActiveTab] = useState('roster');
   const [selectedExamId, setSelectedExamId] = useState(null);
   const [pendingMarks, setPendingMarks] = useState({});
-  const [surahInput, setSurahInput] = useState('');
   const [targetModalStudent, setTargetModalStudent] = useState(null);
   const [dismissedPromptIds, setDismissedPromptIds] = useState([]);
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
@@ -144,7 +143,7 @@ function ClassWorkspace() {
     if (status !== 'present') {
       await setStudentAttendanceStatus(student.id, student.className, 'present');
     }
-    await setQuranProgress(student.id, student.className, result, surahInput);
+    await setQuranProgress(student.id, student.className, result);
   };
 
   // Batoonka "Dhamee" — hal mar oo qura macalinku taabto: ardayda aan
@@ -328,16 +327,6 @@ function ClassWorkspace() {
           <div className="dash-card-head">
             <h3>{t('classWorkspace.tabs.quranDaily')}</h3>
             <span className="cw-count-badge">{todayISODate()}</span>
-          </div>
-
-          <div className="cw-quran-surah-row">
-            <label>{t('classWorkspace.quran.surahLabel')}</label>
-            <input
-              type="text"
-              placeholder={t('classWorkspace.quran.surahPlaceholder')}
-              value={surahInput}
-              onChange={(e) => setSurahInput(e.target.value)}
-            />
           </div>
 
           <div className="data-table-wrap">

@@ -17,33 +17,6 @@
   border-radius: 999px;
 }
 
-.cw-quran-surah-row{
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-.cw-quran-surah-row label{
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--navy);
-  white-space: nowrap;
-}
-.cw-quran-surah-row input{
-  flex: 1;
-  min-width: 220px;
-  padding: 10px 14px;
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  font-size: 13.5px;
-  font-family: 'Inter', sans-serif;
-  color: var(--navy);
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.cw-quran-surah-row input:focus{ border-color: var(--mint); box-shadow: 0 0 0 4px var(--mint-pale); }
-
 .cw-empty-note{
   color: #94A3B8;
   text-align: center;

@@ -580,8 +580,6 @@
       "table": { "student": "الطالب", "percent": "النسبة المئوية" }
     },
     "quran": {
-      "surahLabel": "السورة/الجزء اليوم (اختياري):",
-      "surahPlaceholder": "مثال: سورة البقرة، آية 1-20",
       "knew": "حفظ",
       "didNotKnow": "لم يحفظ"
     },
