@@ -4,6 +4,7 @@ import LandingPage from './pages/LandingPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import ProtectedRoute from './routes/ProtectedRoute';
 import RequireRole from './routes/RequireRole';
+import { FullPageSpinner } from './components/Spinner';
 import './styles/global.css';
 
 // Bogagga dashboard-ka + Parent Portal waxaa lagu soo dejiyaa kaliya marka la
@@ -37,7 +38,7 @@ const PAGE_LOADING_STYLE = {
 };
 
 function PageFallback() {
-  return <div style={PAGE_LOADING_STYLE}>Sugaya...</div>;
+  return <div style={PAGE_LOADING_STYLE}><FullPageSpinner /></div>;
 }
 
 function App() {

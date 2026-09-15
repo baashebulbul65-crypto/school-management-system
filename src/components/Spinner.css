@@ -1,0 +1,49 @@
+.spinner-wrap{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+
+/* conic-gradient + mask (2026-09-15): "ring" gradient-ah oo wareega — mask-ku
+   wuxuu ka dhigayaa disk-ka buuxa "ring" (donut), halkii loo isticmaali lahaa
+   SVG stroke-gradient (SVG lafteedu ma taageerto gradient sax ah oo stroke
+   ku socda dhinaca circle-ka gudihiisa). Midabada waa design-tokens-ka
+   guud (--mint/--mint-dark/--navy, fiiri global.css) si spinner-ku ula mid
+   noqdo midabaha kale ee app-ka. */
+.spinner-ring{
+  width:100%; height:100%;
+  border-radius:50%;
+  background: conic-gradient(from 0deg,
+    var(--mint-pale) 0deg,
+    var(--mint) 110deg,
+    var(--mint-dark) 220deg,
+    var(--navy) 300deg,
+    var(--mint-pale) 360deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--spinner-stroke, 6px)), #000 calc(100% - var(--spinner-stroke, 6px)));
+          mask: radial-gradient(farthest-side, transparent calc(100% - var(--spinner-stroke, 6px)), #000 calc(100% - var(--spinner-stroke, 6px)));
+  animation: spinner-spin 1.1s linear infinite;
+}
+
+@keyframes spinner-spin{
+  to{ transform: rotate(360deg); }
+}
+
+.spinner-percent{
+  position:absolute;
+  font-family:'Poppins', sans-serif;
+  font-weight:700;
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.spinner-block{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .spinner-ring{ animation-duration: 2.4s; }
+}

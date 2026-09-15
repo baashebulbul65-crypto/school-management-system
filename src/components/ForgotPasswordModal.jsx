@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { resetStaffPassword } from '../firebase/auth';
+import Spinner from './Spinner';
 import './LoginModal.css';
 
 const ERROR_KEYS = {
@@ -86,7 +87,7 @@ function ForgotPasswordModal({ isOpen, onClose }) {
                 />
               </div>
               <button className="submit-btn" type="submit" disabled={loading}>
-                {loading ? t('forgotPassword.submitLoading') : t('forgotPassword.submit')}
+                {loading ? <Spinner size={18} showPercent={false} /> : t('forgotPassword.submit')}
                 {!loading && (
                   <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 )}

@@ -716,7 +716,6 @@
     "noChildDesc": "Geli Diiwaan ID-ga ilmahaaga (tusaale: STU-1042) si loo xiro akoonkan.",
     "addChildPlaceholder": "Diiwaan ID-ga ilmaha (tusaale: STU-1043)",
     "addChildSubmit": "Ku Dar",
-    "addChildSubmitting": "Sugaya...",
     "addChildCancel": "Jooji",
     "addChildLink": "+ Ku Dar Ilmo Kale",
     "addChildNotFound": "Diiwaan ID-gan lama helin dugsigan — fadlan hubi qoraalka.",
@@ -819,7 +818,6 @@
       "passwordPlaceholder": "••••••••••••",
       "forgotLink": "Ma illowday Password-ka?",
       "submit": "GAL",
-      "submitLoading": "SUGAYA...",
       "or": "AMA",
       "switchToStudent": "Waxaan Ahay Arday / Waalid"
     },
@@ -835,7 +833,6 @@
       "passwordLabel": "Furaha Sirta",
       "passwordPlaceholder": "••••",
       "submit": "GAL",
-      "submitLoading": "SUGAYA...",
       "noAccountLink": "Ma lihi akoon? Diiwaan Geli",
       "or": "AMA",
       "switchToStaff": "Waxaan Ahay Shaqaale"
@@ -853,7 +850,6 @@
       "passwordPlaceholder": "••••••••",
       "confirmPasswordLabel": "Xaqiiji Furaha Sirta",
       "submit": "Diiwaan Geli",
-      "submitLoading": "SUGAYA...",
       "alreadyHaveAccount": "Horeba akoon ma leedahay? Gal"
     }
   },
@@ -863,7 +859,6 @@
     "emailLabel": "Iimaylka (G-Mail)",
     "emailPlaceholder": "tusaale@gmail.com",
     "submit": "Dir Link-ga Beddelka",
-    "submitLoading": "SUGAYA...",
     "successPrefix": "Waxaan email ku dirnay",
     "successSuffix": "link aad ku beddeli karto password-kaaga. Fadlan hubi inbox-kaaga (iyo folder-ka Spam).",
     "errors": {

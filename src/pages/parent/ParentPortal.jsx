@@ -18,6 +18,7 @@ import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { formatDMY, currentMonthValue } from '../../utils/somaliDate';
 import { getMonthlyFeeStatus, studentFeeOwed } from '../../utils/studentFee';
 import { currencySymbol } from '../../utils/currency';
+import Spinner from '../../components/Spinner';
 import '../../styles/dashboard-shared.css';
 import './ParentPortal.css';
 
@@ -53,7 +54,7 @@ function AddChildForm({ onAdd, onCancel, loading, error }) {
         onChange={(e) => setDiiwaanId(e.target.value)}
         required
       />
-      <button type="submit" className="btn-primary" disabled={loading}>{loading ? t('parentPortal.addChildSubmitting') : t('parentPortal.addChildSubmit')}</button>
+      <button type="submit" className="btn-primary" disabled={loading}>{loading ? <Spinner size={18} showPercent={false} /> : t('parentPortal.addChildSubmit')}</button>
       {onCancel && <button type="button" className="btn-secondary" onClick={onCancel}>{t('parentPortal.addChildCancel')}</button>}
     </form>
   );

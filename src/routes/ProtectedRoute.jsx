@@ -1,9 +1,15 @@
 import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Spinner, { useSimulatedProgress } from '../components/Spinner';
 
 function ProtectedRoute({ children, requireAccountType }) {
   const { isAuthenticated, profile, loading, logout } = useAuth();
+  // "done" waa false intii loading uu socdo IYO muddadii gaabanayd ee
+  // "finish flourish"-ka (percent -> 100%) ka dib markuu loading-gu dhab
+  // ahaan dhammaaday — halkii percent-ku uga go'i lahaa xaaladdiisii hore
+  // (tusaale 47%) marka xogtu diyaar noqoto.
+  const { percent, done } = useSimulatedProgress(loading);
 
   // Shaqaale laga saaray Users.jsx ("Ka Saar") waxaa laga tirtiray doc-ga
   // "users/{uid}" (fiiri firebase/staff.js: removeStaffDoc), laakiin Firebase
@@ -34,13 +40,12 @@ function ProtectedRoute({ children, requireAccountType }) {
     }
   }, [loading, isAuthenticated, profile, logout]);
 
-  if (loading) {
+  if (!done) {
     return (
       <div style={{
         height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: 'Inter, sans-serif', color: '#64748A'
       }}>
-        Sugaya...
+        <Spinner percent={percent} size={72} />
       </div>
     );
   }

@@ -716,7 +716,6 @@
     "noChildDesc": "أدخل رقم تسجيل ابنك (مثال: STU-1042) لربطه بهذا الحساب.",
     "addChildPlaceholder": "رقم تسجيل الابن (مثال: STU-1043)",
     "addChildSubmit": "إضافة",
-    "addChildSubmitting": "جارٍ الإضافة...",
     "addChildCancel": "إلغاء",
     "addChildLink": "+ إضافة ابن آخر",
     "addChildNotFound": "لم يتم العثور على رقم التسجيل هذا في المدرسة — يرجى التحقق من الرقم.",
@@ -819,7 +818,6 @@
       "passwordPlaceholder": "••••••••••••",
       "forgotLink": "هل نسيت كلمة المرور؟",
       "submit": "دخول",
-      "submitLoading": "جارٍ التحميل...",
       "or": "أو",
       "switchToStudent": "أنا طالب / ولي أمر"
     },
@@ -835,7 +833,6 @@
       "passwordLabel": "كلمة المرور",
       "passwordPlaceholder": "••••",
       "submit": "دخول",
-      "submitLoading": "جارٍ التحميل...",
       "noAccountLink": "ليس لديك حساب؟ أنشئ حسابًا",
       "or": "أو",
       "switchToStaff": "أنا موظف"
@@ -853,7 +850,6 @@
       "passwordPlaceholder": "••••••••",
       "confirmPasswordLabel": "تأكيد كلمة المرور",
       "submit": "إنشاء حساب",
-      "submitLoading": "جارٍ التحميل...",
       "alreadyHaveAccount": "هل لديك حساب مسبقًا؟ تسجيل الدخول"
     }
   },
@@ -863,7 +859,6 @@
     "emailLabel": "البريد الإلكتروني (G-Mail)",
     "emailPlaceholder": "example@gmail.com",
     "submit": "إرسال رابط إعادة التعيين",
-    "submitLoading": "جارٍ التحميل...",
     "successPrefix": "لقد أرسلنا بريدًا إلكترونيًا إلى",
     "successSuffix": "يحتوي على رابط لإعادة تعيين كلمة المرور. يرجى التحقق من صندوق الوارد (ومجلد الرسائل غير المرغوب فيها).",
     "errors": {

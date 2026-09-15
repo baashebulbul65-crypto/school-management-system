@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { loginStaff, loginStudentOrParent, registerStudentOrParent, getUserProfile } from '../firebase/auth';
 import ForgotPasswordModal from './ForgotPasswordModal';
+import Spinner from './Spinner';
 import './LoginModal.css';
 
 const ERROR_KEYS = {
@@ -172,7 +173,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess, initialEmail = '' }) {
               <button type="button" className="forgot-link" onClick={() => setShowForgotModal(true)}>{t('login.staff.forgotLink')}</button>
 
               <button className="submit-btn" type="submit" disabled={loading}>
-                {loading ? t('login.staff.submitLoading') : t('login.staff.submit')}
+                {loading ? <Spinner size={18} showPercent={false} /> : t('login.staff.submit')}
                 {!loading && (
                   <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 )}
@@ -234,7 +235,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess, initialEmail = '' }) {
               </div>
 
               <button className="submit-btn" type="submit" disabled={loading}>
-                {loading ? t('login.student.submitLoading') : t('login.student.submit')}
+                {loading ? <Spinner size={18} showPercent={false} /> : t('login.student.submit')}
                 {!loading && (
                   <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 )}
@@ -320,7 +321,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess, initialEmail = '' }) {
               </div>
 
               <button className="submit-btn" type="submit" disabled={loading}>
-                {loading ? t('login.register.submitLoading') : t('login.register.submit')}
+                {loading ? <Spinner size={18} showPercent={false} /> : t('login.register.submit')}
                 {!loading && (
                   <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 )}
