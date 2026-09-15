@@ -77,13 +77,20 @@ function Classes() {
 
   // Card-ka fasalka — la soo saaray hal function (Subax/Galab columns audit,
   // 2026-09-14) si aan loo laba-qorin isla JSX-ka gudaha labada qaybood.
+  // Diiwaan-comparison redesign (2026-09-15): icon-box-kii kor ku yiil
+  // (book icon) la saaray — reference-ka Diiwaan gebi ahaanba ma lahayn
+  // (kaliya kebab-menu-ga edit/delete ayaa haray, mid qura oo geeska sare
+  // ku taal). session-ka badge/pill-kiisii waxaa loo beddelay qoraal
+  // cagaaran oo hoos ka socda magaca (ma aha pill). progress bar-kii
+  // (xx/capacity) waxaa loo beddelay icon-qof + tirada ardayda oo qura
+  // (user-ka la weydiiyay, la doortay "sida Diiwaan" — capacity kama
+  // muuqato card-ka, waa xog la keydiyo oo la isticmaali karo meel kale).
   const renderClassCard = (c) => {
     // Tirada ardayda waa in la xisaabiyaa (derived) xogta DHABTA AH ee
     // "students" — ma aha counter kaydsan (c.students), kaas oo mar
     // walba ahaan lahaa 0 (weligiis lama cusboonaysiin, fiiri
     // SchoolDataContext.jsx: addClass).
     const studentCount = students.filter((s) => (s.classId ? s.classId === c.id : s.className === `${c.grade}${c.section}`)).length;
-    const percent = Math.round((studentCount / c.capacity) * 100);
     // Fasallada hore ee la abuuray ka hor field-kan (Classes audit,
     // 2026-08-26) ma laha "session" — waxay noqonayaan "subax" default
     // ahaan ilaa Owner-ku dib u eego oo kaydiyo (fiiri ClassFormModal.jsx:
@@ -91,11 +98,8 @@ function Classes() {
     const session = c.session || 'subax';
     return (
       <div className={`class-card session-${session}`} key={c.id}>
-        <div className="class-card-top">
-          <div className="class-card-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z"/></svg>
-          </div>
-          {isOwner && (
+        {isOwner && (
+          <div className="class-card-top">
             <div className="class-card-actions">
               <button className="row-action-btn" title={t('common.actions.more')} onClick={(e) => { e.stopPropagation(); toggleMenu(c.id); }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
@@ -116,13 +120,11 @@ function Classes() {
                 </>
               )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        <div className="class-card-title-row">
-          <h3>{c.grade} - {c.section}</h3>
-          <span className={`class-session-badge ${session}`}>{t(`classes.session.${session}`)}</span>
-        </div>
+        <h3>{c.grade} - {c.section}</h3>
+        <p className={`class-session-label ${session}`}>{t(`classes.session.${session}`)}</p>
         <p className="class-room">{c.room}</p>
         <p className="class-teacher">
           {teachers.find((tc) => tc.id === c.classTeacherId)?.fullName || c.classTeacher || '—'}
@@ -147,16 +149,14 @@ function Classes() {
           );
         })()}
 
-        <div className="class-progress">
-          <div className="class-progress-bar">
-            <div className="class-progress-fill" style={{ width: `${percent}%` }}></div>
-          </div>
-          <span>{studentCount}/{c.capacity}</span>
+        <div className="class-student-count">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg>
+          <span>{studentCount}</span>
         </div>
 
         <button className="btn-secondary class-open-btn" onClick={() => navigate(`/dashboard/classes/${c.id}`)}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
           {t('classes.openWorkspace')}
-          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
       </div>
     );

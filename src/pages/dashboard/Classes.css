@@ -67,19 +67,15 @@
   box-shadow: 0 20px 40px -20px rgba(11,31,43,0.16);
 }
 
+/* Icon-box-kii kor ku yiil (book icon) la saaray (Diiwaan-comparison
+   redesign, 2026-09-15) — reference-ku ma lahayn, sidaas darteed
+   .class-card-top hadda waxay wataa kaliya kebab-menu-ga (owner-only),
+   flex-end si ay geeska sare uga sii jirto. */
 .class-card-top{
   display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:16px;
+  justify-content:flex-end;
+  margin-bottom:2px;
 }
-.class-card-icon{
-  width:42px; height:42px;
-  border-radius:12px;
-  background: var(--mint-pale);
-  display:flex; align-items:center; justify-content:center;
-}
-.class-card-icon svg{ width:20px; height:20px; stroke: var(--mint-dark); }
 
 .class-card-actions{ position:relative; display:flex; }
 /* Card-actions audit (2026-09-13 → 09-14, Diiwaan reference comparison):
@@ -129,13 +125,6 @@
 .class-card-menu button.danger svg{ stroke: var(--danger); }
 .class-card-menu button.danger:hover{ background: var(--danger-bg); }
 
-.class-card-title-row{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-bottom:4px;
-  min-width:0;
-}
 /* Full-name-on-mobile (2026-09-14): hover-tooltip (title attr) kuma
    shaqeeyo touch/mobile — sidaas darteed halkii hal-xarig+ellipsis,
    magaca waxaa loo ogolaanayaa 2 xarig (line-clamp) si loo arko
@@ -147,7 +136,7 @@
   font-weight:700;
   font-size:17px;
   color: var(--navy);
-  margin-bottom:0;
+  margin-bottom:2px;
   min-width:0;
   display:-webkit-box;
   -webkit-line-clamp:2;
@@ -155,27 +144,18 @@
   overflow:hidden;
 }
 
-/* Galinka (Session) — Subax/Galab, midab gooni ah (blue/purple) oo ka
-   duwan midabaha kale ee kaadhka (mint = maadooyinka, Classes audit,
-   2026-08-26). Card-card design audit (2026-09-13): border-ku hore wuxuu
-   ahaa icon-matched (session color), hadda waa uniform (var(--line)) —
-   session-ka waxaa kaliya muujiya badge-ka iyo icon-ka, ma aha border-ka. */
-.class-session-badge{
-  font-size:11px;
+/* Galinka (Session) — Diiwaan-comparison redesign (2026-09-15): pill/badge-
+   kii (blue/purple, Classes audit 2026-08-26) waxaa loo beddelay qoraal
+   qura oo cagaaran (mint-dark) hoos ka socda magaca, isla qaabka Diiwaan
+   sax ahaan (Diiwaan-ka reference-ka ah wuxuu isticmaalaa cagaaran labada
+   session — subax iyo galab). Subax/Galab kala-soocidda column-level (fiiri
+   .classes-session-heading kore) ayaa weli sii haysata midabka blue/purple. */
+.class-session-label{
+  font-size:12.5px;
   font-weight:700;
-  padding:3px 10px;
-  border-radius:999px;
-  white-space:nowrap;
-  flex-shrink:0;
+  color: var(--mint-dark);
+  margin-bottom:8px;
 }
-.class-session-badge.subax{ background: var(--blue-bg); color: var(--blue); }
-.class-session-badge.galab{ background: var(--purple-bg); color: var(--purple); }
-
-.class-card.session-subax .class-card-icon{ background: var(--blue-bg); }
-.class-card.session-subax .class-card-icon svg{ stroke: var(--blue); }
-
-.class-card.session-galab .class-card-icon{ background: var(--purple-bg); }
-.class-card.session-galab .class-card-icon svg{ stroke: var(--purple); }
 
 .class-room{
   font-size:12.5px;
@@ -195,34 +175,35 @@
   white-space:nowrap;
 }
 
-.class-progress{
+/* Tirada ardayda (2026-09-15, Diiwaan-comparison): progress bar-kii
+   (xx/capacity) waxaa loo beddelay icon-qof + tiro fudud, sida Diiwaan
+   (user-ka la weydiiyay, la doortay). capacity kama muuqato card-ka. */
+.class-student-count{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:6px;
   margin-bottom:18px;
-}
-.class-progress-bar{
-  flex:1;
-  height:6px;
-  background: #F1F4F6;
-  border-radius:999px;
-  overflow:hidden;
-}
-.class-progress-fill{
-  height:100%;
-  background: linear-gradient(90deg, var(--mint), var(--mint-dark));
-  border-radius:999px;
-}
-.class-progress span{
-  font-size:12px;
-  font-weight:600;
   color: var(--grey-text);
-  white-space:nowrap;
 }
+.class-student-count svg{ width:15px; height:15px; stroke: var(--grey-text); }
+.class-student-count span{ font-size:13.5px; font-weight:700; color: var(--navy); }
 
+/* Badhanka "Fur Galaaska" (2026-09-15, Diiwaan-comparison): midab khafiif
+   ah (teal outline) halkii uu ka ahaan lahaa .btn-secondary caadiga ah
+   (guud ahaan cad + navy), isla qaabka Diiwaan "Fur Fasal". Isticmaalaya
+   --teal tokens (global.css) — ma aha --mint, si aanu ula khaldamin
+   midabka cagaaran ee session-label kore. */
 .class-open-btn{
   width:100%;
   justify-content:center;
+  background: var(--teal-bg);
+  color: var(--teal);
+  border-color: var(--teal-border);
+}
+.class-open-btn svg{ stroke: var(--teal); }
+.class-open-btn:hover:not(:disabled){
+  background: var(--teal-border);
+  border-color: var(--teal);
 }
 
 /* Mobile audit (2026-08-16): .classes-grid ma lahayn hal @media — 260px min
@@ -232,21 +213,16 @@
 @media (max-width: 640px){
   .classes-grid{ grid-template-columns: repeat(2, 1fr); gap:10px; }
   .class-card{ padding:12px; border-radius:14px; }
-  .class-card-top{ margin-bottom:8px; }
-  .class-card-icon{ width:30px; height:30px; border-radius:9px; }
-  .class-card-icon svg{ width:14px; height:14px; }
-  .class-card-title-row{ gap:5px; margin-bottom:2px; }
+  .class-card-top{ margin-bottom:0; }
   .class-card h3{ font-size:18px; }
-  .class-session-badge{ font-size:9px; padding:2px 7px; }
+  .class-session-label{ font-size:10.5px; margin-bottom:6px; }
   .class-room{ font-size:10px; margin-bottom:1px; }
   .class-teacher{ font-size:10.5px; margin-bottom:8px; }
   .class-subjects{ gap:4px; margin-bottom:8px; }
   .class-subject-tag{ font-size:9px; padding:2px 7px; }
-  /* Kaadhku wuxuu ahaa mid aad u dheer mobile-ka — .class-progress default
-     margin-bottom (18px) marnaba lama yarayn mobile-block-ka (Classes audit
-     mobile fix, 2026-08-26), waana kii ugu badnaa dhererka kaadhka. */
-  .class-progress{ gap:6px; margin-bottom:10px; }
-  .class-progress span{ font-size:9.5px; }
+  .class-student-count{ gap:5px; margin-bottom:10px; }
+  .class-student-count svg{ width:13px; height:13px; }
+  .class-student-count span{ font-size:11.5px; }
   .class-open-btn{ padding:8px 10px; font-size:11px; gap:4px; }
   .class-open-btn svg{ width:12px; height:12px; }
 }
