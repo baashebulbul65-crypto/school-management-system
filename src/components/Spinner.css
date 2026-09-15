@@ -56,12 +56,12 @@
   display:flex;
   align-items:center;
   justify-content:center;
-  /* 0.9 -> 0.45 (user-request, 2026-09-15): 0.9 aad bay u qarinaysay boga
-     hoosta ka socda — user-ku wuxuu rabaa in bogga laga dhex arki karo
-     marka loading-gu socdo, ma aha mid tar-tar ah oo daboola. backdrop-
-     filter (frosted-glass) waxay sii jideynaysaa akhrinta spinner-ka
-     iyada oo aan lumin see-through-ka background-ka. */
-  background: rgba(11,31,43,0.45);
+  /* 0.45 dib loogu celiyay 0.9 (round 2, user-request 2026-09-15): 0.45
+     midab grey/khafiif ah oo aan khaas ahayn ayuu u muuqday, ma ahayn navy
+     cad oo la aqoonsan karo — 0.9 (qiimihii ugu horreeyay) ayaa dib loo
+     celiyay si background-ku noqdo navy khafiif ah oo muuqata, ma aha
+     mid grey ah. backdrop-filter/text-shadow-ku wax kama beddelin. */
+  background: rgba(11,31,43,0.9);
   -webkit-backdrop-filter: blur(3px);
           backdrop-filter: blur(3px);
   z-index:9999;
