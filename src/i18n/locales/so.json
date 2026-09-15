@@ -563,7 +563,7 @@
     "roster": {
       "title": "Ardayda Fasalka",
       "countBadge": "{{count}} Arday",
-      "table": { "student": "Arday", "id": "ID", "status": "Xaaladda" },
+      "table": { "student": "Arday", "id": "ID" },
       "empty": "Wali arday kuma jiraan fasalkan."
     },
     "attendance": {

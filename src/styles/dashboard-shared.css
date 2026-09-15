@@ -221,7 +221,15 @@
    saaraya dhaxalka nowrap, magacuna si automatic ah u wrap gareeyaa 2+ line
    halkii uu u bixi lahaa — la doortay ellipsis-truncation, sababtoo ah
    magaca ardayga waa aqoonsi muhiim ah, lama gaboobin karo. */
-.cell-name{ font-weight:700; color: var(--navy); flex:1; min-width:0; white-space:normal; word-break:break-word; }
+/* min-width (2026-09-15): boggagga column-yo badan leh (Teachers/Users/
+   Students — id/class/gender/status/fee/actions oo dhammaantood nowrap ah)
+   auto table-layout-ku wuxuu meesha ka dhigi jiray magaca 0-flex, taasoo
+   ka dhigaysay in word-break:break-word ka jarto xaraf-xaraf (column-ku wuxuu
+   noqday ~20px, hal xaraf hal-line). min-width halkan waa dhaqaale ugu yar
+   oo magacu u baahan yahay si uu 2-3 line ugu wrap gareeyo (ma aha xaraf-
+   xaraf) — haddii aanu ku filnayn, .data-table-wrap{overflow-x:auto} kor ku
+   qeexan ayaa scroll siinaysa, halkii magacu u jabi lahaa. */
+.cell-name{ font-weight:700; color: var(--navy); flex:1; min-width:90px; white-space:normal; word-break:break-word; }
 .cell-sub{ font-size:12px; color:#94A3B8; }
 
 /* ===== BADGES ===== */

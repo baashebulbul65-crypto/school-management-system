@@ -222,8 +222,15 @@ function ClassWorkspace() {
             <span className="cw-count-badge">{t('classWorkspace.roster.countBadge', { count: classStudents.length })}</span>
           </div>
           <div className="data-table-wrap">
+            {/* Xaaladda column la tirtiray (2026-09-15, mobile name-wrap
+                fix): sawirka la keydiyay wuxuu muujiyay in status-badge +
+                ID ay ku dhaceen dhererka ballaadhka, magacuna markaa u
+                haray gees cidhiidhi ah oo ka dhigay wrap-kiisu 4-5 line oo
+                hal-eray-hal-line ah — ka duwan Xaadiris tab-ka oo laba
+                column oo qura leh (fiiri roster.table.status oo hadda aan
+                loo baahnayn any-where kale). */}
             <table className="data-table" dir="rtl">
-              <thead><tr><th>{t('classWorkspace.roster.table.student')}</th><th>{t('classWorkspace.roster.table.id')}</th><th>{t('classWorkspace.roster.table.status')}</th></tr></thead>
+              <thead><tr><th>{t('classWorkspace.roster.table.student')}</th><th>{t('classWorkspace.roster.table.id')}</th></tr></thead>
               <tbody>
                 {attendanceRosterStudents.map((s) => (
                   <tr key={s.id}>
@@ -234,15 +241,10 @@ function ClassWorkspace() {
                       </div>
                     </td>
                     <td className="cell-sub">{s.studentId}</td>
-                    <td>
-                      <span className={`badge ${s.status === 'active' ? 'badge-success' : 'badge-neutral'}`}>
-                        {t(`common.status.${s.status}`)}
-                      </span>
-                    </td>
                   </tr>
                 ))}
                 {classStudents.length === 0 && (
-                  <tr><td colSpan="3" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('classWorkspace.roster.empty')}</td></tr>
+                  <tr><td colSpan="2" style={{ textAlign: 'center', color: '#94A3B8', padding: '32px' }}>{t('classWorkspace.roster.empty')}</td></tr>
                 )}
               </tbody>
             </table>

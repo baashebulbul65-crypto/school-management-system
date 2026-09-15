@@ -563,7 +563,7 @@
     "roster": {
       "title": "طلاب الفصل",
       "countBadge": "{{count}} طالب",
-      "table": { "student": "الطالب", "id": "الرقم", "status": "الحالة" },
+      "table": { "student": "الطالب", "id": "الرقم" },
       "empty": "لا يوجد طلاب في هذا الفصل بعد."
     },
     "attendance": {
