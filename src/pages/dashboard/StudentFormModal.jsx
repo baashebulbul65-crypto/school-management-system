@@ -284,7 +284,7 @@ function StudentFormModal({ isOpen, onClose, onSave, student, defaultClassId }) 
                   <label>{t('students.form.fields.feeAmount')}</label>
                   <input
                     type="number"
-                    min="0"
+                    min="1"
                     value={form.feeAmount}
                     onChange={update('feeAmount')}
                     placeholder={t('students.form.placeholders.feeAmount')}

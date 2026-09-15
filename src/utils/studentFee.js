@@ -7,9 +7,23 @@
 // wuxuu ahaa "Bilaash". Sidaas darteed marka feeType maqan yahay waxaan ka
 // soo qaadanaa qiimahaas hore, si aan loo baahnayn in xogta hore la beddelo
 // (backfill) Firestore.
+//
+// "Ghost state" guard (2026-09-15, user-reported): arday feeType='fixed'
+// (ama 'discount') leh laakiin feeAmount=0/maan — sababtu badanaa waa
+// Settings > Qiimaha (fasalka feeAmount-kiisu 0 noqday, fiiri Settings.jsx:
+// handleFeeChange, oo la saxay si aan mar dambe u dhicin) ama arday si
+// gaar ah loo dib-u-eegay oo qiimaha laga tirtiray. Natiijadu waxay ahayd
+// "ghost state": Students.jsx/StudentProfileModal/Finance.jsx waxay ardayga
+// u muujin jireen 'unpaid' (baaqi/culaysyahay), laakiin studentFeeOwed()
+// wuxuu soo celin jiray $0 — ardaygu "ma dhex-maro" xaaladdii la-bixiyay
+// iyo mid aan la bixin toona. Haddii base-fee-gu (feeAmount) 0/hoos yahay
+// ee feeType aanu 'free' ahayn si toos ah, halkan waxaa lagu la dhaqmayaa
+// sidii 'free' — sax ahaan waa la mid, maadaama $0 lacag la rabo aysan ka
+// duwanayn 'Bilaash'.
 export function getFeeType(student) {
-  if (student?.feeType) return student.feeType;
-  return (Number(student?.feeAmount) || 0) === 0 ? 'free' : 'fixed';
+  const feeType = student?.feeType || ((Number(student?.feeAmount) || 0) === 0 ? 'free' : 'fixed');
+  if (feeType !== 'free' && (Number(student?.feeAmount) || 0) <= 0) return 'free';
+  return feeType;
 }
 
 // Lacagta ardaygu bishii uu ku leeyahay (fiiri feePayments) — 'free' waa $0,

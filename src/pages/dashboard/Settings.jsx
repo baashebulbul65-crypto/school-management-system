@@ -118,15 +118,27 @@ function Settings() {
 
   const handleAddGrade = (e) => {
     e.preventDefault();
-    if (!newGradeName.trim() || !newGradeAmount) return;
+    if (!newGradeName.trim() || Number(newGradeAmount) <= 0) return;
     addFeeGrade(newGradeName.trim(), Number(newGradeAmount));
     setNewGradeName('');
     setNewGradeAmount('');
     flashSaved();
   };
 
+  // "Ghost state" root cause (2026-09-15, user-reported): halkan waxaa ku
+  // jiray onChange (hal-hal xaraf) oo si toos ah Firestore ugu kaydin jiray
+  // qiime kasta — haddii owner-ku field-ka nadiifiyo (select-all+delete) ka
+  // hor inta uusan tiro cusub geli, Number('')||0 wuxuu isla markiiba
+  // kaydin jiray $0 fasalkaas oo dhan, arday cusub oo la daro fasalkaas
+  // wuxuu qaadan jiray feeAmount=0 laakiin feeType='fixed' (ma aha 'free')
+  // — sidaas darteed u muuqday 'unpaid' isaga oo aan lahayn baaqi dhab ah
+  // (fiiri studentFee.js: getFeeType, oo hadda leh guard difaac ah). Halkan
+  // waxaa lagu xakameeyay: $0/maran lama kaydiyo, qiimihii hore ayaa sii
+  // muuqda ilaa tiro sax ah (>0) la geliyo.
   const handleFeeChange = (id, value) => {
-    updateFee(id, Number(value) || 0);
+    const amount = Number(value);
+    if (!value || Number.isNaN(amount) || amount <= 0) return;
+    updateFee(id, amount);
   };
 
   const handleLogoPick = () => logoInputRef.current?.click();
