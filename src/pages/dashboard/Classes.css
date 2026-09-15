@@ -192,16 +192,28 @@
    qoraalka waa navy bold (ma aha teal — round 1 waxay khaldantay qoraalka
    oo teal ka dhigtay, Diiwaan-ku qoraalku waa madow/navy, kaliya icon-ka +
    border-ku waa teal), background-ku waa kan ugu khafiifsan (near-white,
-   teal-bg-ka horeba khafiifka ku filan). */
-.class-open-btn{
+   teal-bg-ka horeba khafiifka ku filan).
+   Mobile bug (round 3, 2026-09-15, user-reported): midabada teal-ka kaliya
+   ayaa ka muuqan jiray marka la taabto (:hover simulated on tap), default-
+   state-ku wuxuu ahaa .btn-secondary caadiga ah (cad). Sababtu waa
+   specificity la mid ah (.class-open-btn iyo .btn-secondary labaduba (0,1,0))
+   — kii ka adkaaday wuxuu ku xiran yahay dariiqa Vite ay CSS-ka chunk-yada
+   ugu daabacdo (dashboard-shared.css waxaa import gareeya ~16 bog, chunk-
+   kiisu marna lama hubo inuu Classes.css ka horreeyo bundle-ka la soo
+   saaray), taasoo micnaheedu yahay base-rule-ku wuu ka adkaan karaa mar,
+   hover-ku mar kale — khalad aan la saadaalin karin. "button." element-
+   selector-ka waxaa lagu daray si specificity-gu (0,1,1) uu had iyo jeer
+   ka sarreeyo .btn-secondary (0,1,0), iyada oo aan ku tiirsanayn dariiqa
+   bundle-ku u dhigo. */
+button.class-open-btn{
   width:100%;
   justify-content:center;
   background: var(--teal-bg);
   color: var(--navy);
   border-color: var(--teal-border);
 }
-.class-open-btn svg{ stroke: var(--teal); }
-.class-open-btn:hover:not(:disabled){
+button.class-open-btn svg{ stroke: var(--teal); }
+button.class-open-btn:hover:not(:disabled){
   background: var(--teal-border);
   border-color: var(--teal);
 }
@@ -223,6 +235,6 @@
   .class-student-count{ gap:5px; margin-bottom:10px; }
   .class-student-count svg{ width:13px; height:13px; }
   .class-student-count span{ font-size:11.5px; }
-  .class-open-btn{ padding:8px 10px; font-size:11px; gap:4px; }
-  .class-open-btn svg{ width:12px; height:12px; }
+  button.class-open-btn{ padding:8px 10px; font-size:11px; gap:4px; }
+  button.class-open-btn svg{ width:12px; height:12px; }
 }
