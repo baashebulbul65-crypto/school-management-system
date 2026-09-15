@@ -188,34 +188,27 @@
 .class-student-count svg{ width:15px; height:15px; fill: var(--grey-text); }
 .class-student-count span{ font-size:13.5px; font-weight:700; color: var(--navy); }
 
-/* Badhanka "Fur Galaaska" (2026-09-15, Diiwaan-comparison round 2):
-   qoraalka waa navy bold (ma aha teal — round 1 waxay khaldantay qoraalka
-   oo teal ka dhigtay, Diiwaan-ku qoraalku waa madow/navy, kaliya icon-ka +
-   border-ku waa teal), background-ku waa kan ugu khafiifsan (near-white,
-   teal-bg-ka horeba khafiifka ku filan).
-   Mobile bug (round 3, 2026-09-15, user-reported): midabada teal-ka kaliya
-   ayaa ka muuqan jiray marka la taabto (:hover simulated on tap), default-
-   state-ku wuxuu ahaa .btn-secondary caadiga ah (cad). Sababtu waa
-   specificity la mid ah (.class-open-btn iyo .btn-secondary labaduba (0,1,0))
-   — kii ka adkaaday wuxuu ku xiran yahay dariiqa Vite ay CSS-ka chunk-yada
-   ugu daabacdo (dashboard-shared.css waxaa import gareeya ~16 bog, chunk-
-   kiisu marna lama hubo inuu Classes.css ka horreeyo bundle-ka la soo
-   saaray), taasoo micnaheedu yahay base-rule-ku wuu ka adkaan karaa mar,
-   hover-ku mar kale — khalad aan la saadaalin karin. "button." element-
-   selector-ka waxaa lagu daray si specificity-gu (0,1,1) uu had iyo jeer
-   ka sarreeyo .btn-secondary (0,1,0), iyada oo aan ku tiirsanayn dariiqa
-   bundle-ku u dhigo. */
+/* Badhanka "Fur Fasal" (2026-09-15, Diiwaan-comparison round 3, user-
+   reported khalad midab ah): round 2 waxay isticmaashay --teal (green-ish
+   tint) — reference-ka Diiwaan run ahaantii waa BLUE khafiif ah (--blue
+   tokens, horeba jira global.css, isla midabka session-badge-ka "Subax").
+   icon-ka folder-ku sidoo kale wuxuu ahaa outline/stroke khafiif ah —
+   Diiwaan-ku wuxuu isticmaalaa folder SOLID/filled ah (fill, ma aha
+   stroke), sida icon-ka qofka (.class-student-count) horeba loo beddelay.
+   "button." element-selector-ka waa la sii haystay (specificity fix,
+   round 3 mobile-bug) si midabku had iyo jeer u muuqdo, ma aha kaliya
+   marka la taabto. */
 button.class-open-btn{
   width:100%;
   justify-content:center;
-  background: var(--teal-bg);
+  background: var(--blue-bg);
   color: var(--navy);
-  border-color: var(--teal-border);
+  border-color: var(--blue-border);
 }
-button.class-open-btn svg{ stroke: var(--teal); }
+button.class-open-btn svg{ fill: var(--blue); }
 button.class-open-btn:hover:not(:disabled){
-  background: var(--teal-border);
-  border-color: var(--teal);
+  background: var(--blue-border);
+  border-color: var(--blue);
 }
 
 /* Mobile audit (2026-08-16): .classes-grid ma lahayn hal @media — 260px min
