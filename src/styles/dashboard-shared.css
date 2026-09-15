@@ -212,7 +212,16 @@
    effect ma lahayn — booskiisu horeba wuxuu la simmi jiray qoraalka, meel
    bannaan lama arki karin in la-jiiro. flex:1 ayaa siinaya booska hadhay
    ee .cell-person si loo jiiro dhinaca (Carabi = midig, Latin = bidix). */
-.cell-name{ font-weight:700; color: var(--navy); flex:1; min-width:0; }
+/* Name-overflow fix (2026-09-15): .data-table tbody td{white-space:nowrap}
+   (kor) ayaa dhaxal ku ah .cell-name sidoo kale — magac dheer (gaar ahaan
+   Carabi) wuxuu si muuqata uga baxi jiray sanduuqiisa (flex:1 + min-width:0
+   ma leh overflow/ellipsis), mobile-ka waxaana muuqday sidii xaraf ka go'an/
+   screen-ka ka baxsan (scrollbar lama arki karin sababtoo ah overflow-gu waa
+   "visible", scrollWidth-ga lama koobin). white-space:normal halkan ayaa ka
+   saaraya dhaxalka nowrap, magacuna si automatic ah u wrap gareeyaa 2+ line
+   halkii uu u bixi lahaa — la doortay ellipsis-truncation, sababtoo ah
+   magaca ardayga waa aqoonsi muhiim ah, lama gaboobin karo. */
+.cell-name{ font-weight:700; color: var(--navy); flex:1; min-width:0; white-space:normal; word-break:break-word; }
 .cell-sub{ font-size:12px; color:#94A3B8; }
 
 /* ===== BADGES ===== */
