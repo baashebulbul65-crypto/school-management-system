@@ -211,7 +211,7 @@ button.class-open-btn{
   color: var(--navy);
   border-color: var(--blue-border);
 }
-button.class-open-btn svg{ fill: var(--blue); }
+button.class-open-btn svg{ fill: var(--mint-dark); }
 button.class-open-btn:hover:not(:disabled){
   background: var(--blue-border);
   border-color: var(--blue);
