@@ -123,7 +123,11 @@ function Classes() {
           </div>
         )}
 
-        <h3>{c.grade} - {c.section}</h3>
+        {/* "- {section}" laga saaray (2026-09-15, Diiwaan-comparison
+            round 2, user-request): reference-ku ma muujiyo section-ka
+            card-ka — "section" xogteedu weli waa la kaydiyaa (fiiri
+            ClassFormModal.jsx), kaliya card-ka lagama muujin. */}
+        <h3>{c.grade}</h3>
         <p className={`class-session-label ${session}`}>{t(`classes.session.${session}`)}</p>
         <p className="class-room">{c.room}</p>
         <p className="class-teacher">
@@ -150,7 +154,7 @@ function Classes() {
         })()}
 
         <div className="class-student-count">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zM4 22c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
           <span>{studentCount}</span>
         </div>
 

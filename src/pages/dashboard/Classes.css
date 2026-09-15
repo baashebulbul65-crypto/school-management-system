@@ -185,19 +185,19 @@
   margin-bottom:18px;
   color: var(--grey-text);
 }
-.class-student-count svg{ width:15px; height:15px; stroke: var(--grey-text); }
+.class-student-count svg{ width:15px; height:15px; fill: var(--grey-text); }
 .class-student-count span{ font-size:13.5px; font-weight:700; color: var(--navy); }
 
-/* Badhanka "Fur Galaaska" (2026-09-15, Diiwaan-comparison): midab khafiif
-   ah (teal outline) halkii uu ka ahaan lahaa .btn-secondary caadiga ah
-   (guud ahaan cad + navy), isla qaabka Diiwaan "Fur Fasal". Isticmaalaya
-   --teal tokens (global.css) — ma aha --mint, si aanu ula khaldamin
-   midabka cagaaran ee session-label kore. */
+/* Badhanka "Fur Galaaska" (2026-09-15, Diiwaan-comparison round 2):
+   qoraalka waa navy bold (ma aha teal — round 1 waxay khaldantay qoraalka
+   oo teal ka dhigtay, Diiwaan-ku qoraalku waa madow/navy, kaliya icon-ka +
+   border-ku waa teal), background-ku waa kan ugu khafiifsan (near-white,
+   teal-bg-ka horeba khafiifka ku filan). */
 .class-open-btn{
   width:100%;
   justify-content:center;
   background: var(--teal-bg);
-  color: var(--teal);
+  color: var(--navy);
   border-color: var(--teal-border);
 }
 .class-open-btn svg{ stroke: var(--teal); }
