@@ -54,12 +54,18 @@
   }
 }
 
+/* Elevation (2026-09-15, Diiwaan-comparison): reference-ka Diiwaan
+   card-yadiisu waxay leeyihiin shadow khafiif oo joogto ah (default state,
+   ma aha kaliya :hover) oo ka dhigaya inay meel ka sarreeyaan background-ka
+   (depth) — Kayd-ku hore box-shadow kuma lahayn ilaa la hover/taabto,
+   sidaas darteed card-yadu default ahaan flat u muuqan jireen. */
 .class-card{
   background:#fff;
   border:1.5px dashed var(--line);
   border-radius:16px;
   padding:28px;
   min-width:0;
+  box-shadow: 0 2px 10px -4px rgba(11,31,43,0.10), 0 1px 3px rgba(11,31,43,0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .class-card:hover{
