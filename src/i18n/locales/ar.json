@@ -639,9 +639,9 @@
   },
   "settings": {
     "pageTitle": "الإعدادات",
-    "pageSubtitle": "إدارة بيانات المدرسة والرسوم والسنة الدراسية وحسابك.",
+    "pageSubtitle": "إدارة بيانات المدرسة والسنة الدراسية وحسابك.",
     "savedToast": "تم حفظ التغيير",
-    "tabs": { "school": "بيانات المدرسة", "fees": "الرسوم (Fees)", "academic": "السنة الدراسية", "notifications": "الإشعارات", "account": "حسابي" },
+    "tabs": { "school": "بيانات المدرسة", "academic": "السنة الدراسية", "notifications": "الإشعارات", "account": "حسابي" },
     "school": {
       "sectionTitle": "المعلومات العامة للمدرسة",
       "sectionDesc": "اسم المدرسة هذا سيظهر في الشريط الجانبي لكامل لوحة التحكم.",
@@ -657,14 +657,6 @@
       "systemLanguage": "لغة النظام",
       "currency": "العملة المستخدمة",
       "save": "حفظ التغييرات"
-    },
-    "fees": {
-      "sectionTitle": "رسوم كل صف",
-      "sectionDesc": "غيّر الرسوم الافتراضية لكل صف — هذا التغيير سيؤثر على حسابات الرسوم الجديدة.",
-      "table": { "class": "الصف", "price": "الرسوم" },
-      "newGradeNamePlaceholder": "اسم الصف الجديد (مثال: Form 5)",
-      "newGradeAmountPlaceholder": "الرسوم ($)",
-      "add": "إضافة"
     },
     "academic": {
       "sectionTitle": "السنة الدراسية",

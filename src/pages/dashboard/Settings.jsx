@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useSettings } from '../../context/SettingsContext';
 import { useAuth } from '../../context/AuthContext';
 import { changeStaffPassword } from '../../firebase/auth';
-import { currencySymbol } from '../../utils/currency';
 import BackButton from '../../components/dashboard/BackButton';
 import '../../styles/dashboard-shared.css';
 import './Settings.css';
@@ -37,16 +36,15 @@ function SavedToast({ show, label }) {
 function Settings() {
   const { t } = useTranslation();
   const {
-    settings, updateSchool, updateLanguage, updateCurrency, updateAcademicYear, updateFee,
-    addFeeGrade, removeFeeGrade, updateNotificationPref, uploadLogo, removeLogo, logoUploading, logoError,
+    settings, updateSchool, updateLanguage, updateCurrency, updateAcademicYear,
+    updateNotificationPref, uploadLogo, removeLogo, logoUploading, logoError,
   } = useSettings();
   const { profile } = useAuth();
   // Macallinku wuxuu kaliya arkaa/gaadhaa tab-ka "Akoonkayga" (beddelidda
-  // password-ka) — tabyada kale (dugsiga, lacagta, sanadka waxbarasho,
-  // ogeysiisyada) waa owner-kaliya, la mid ah bogga "Dejinta" ee UI-gu
-  // owner-only ahaan jiray (Teacher Role Scoping audit, 2026-08-02).
+  // password-ka) — tabyada kale (dugsiga, sanadka waxbarasho, ogeysiisyada)
+  // waa owner-kaliya, la mid ah bogga "Dejinta" ee UI-gu owner-only ahaan
+  // jiray (Teacher Role Scoping audit, 2026-08-02).
   const isOwner = profile?.role !== 'teacher';
-  const cur = currencySymbol(settings.currency);
 
   const [activeTab, setActiveTab] = useState(isOwner ? 'school' : 'account');
   const [schoolForm, setSchoolForm] = useState(settings.school);
@@ -70,8 +68,6 @@ function Settings() {
   useEffect(() => {
     if (!schoolFormDirty) setSchoolForm(settings.school);
   }, [settings.school, schoolFormDirty]);
-  const [newGradeName, setNewGradeName] = useState('');
-  const [newGradeAmount, setNewGradeAmount] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const logoInputRef = useRef(null);
 
@@ -84,7 +80,6 @@ function Settings() {
   const TABS = isOwner
     ? [
         { id: 'school', label: t('settings.tabs.school') },
-        { id: 'fees', label: t('settings.tabs.fees') },
         { id: 'academic', label: t('settings.tabs.academic') },
         { id: 'notifications', label: t('settings.tabs.notifications') },
         { id: 'account', label: t('settings.tabs.account') },
@@ -114,31 +109,6 @@ function Settings() {
     updateSchool({ name, phone, address, email });
     setSchoolFormDirty(false);
     flashSaved();
-  };
-
-  const handleAddGrade = (e) => {
-    e.preventDefault();
-    if (!newGradeName.trim() || Number(newGradeAmount) <= 0) return;
-    addFeeGrade(newGradeName.trim(), Number(newGradeAmount));
-    setNewGradeName('');
-    setNewGradeAmount('');
-    flashSaved();
-  };
-
-  // "Ghost state" root cause (2026-09-15, user-reported): halkan waxaa ku
-  // jiray onChange (hal-hal xaraf) oo si toos ah Firestore ugu kaydin jiray
-  // qiime kasta — haddii owner-ku field-ka nadiifiyo (select-all+delete) ka
-  // hor inta uusan tiro cusub geli, Number('')||0 wuxuu isla markiiba
-  // kaydin jiray $0 fasalkaas oo dhan, arday cusub oo la daro fasalkaas
-  // wuxuu qaadan jiray feeAmount=0 laakiin feeType='fixed' (ma aha 'free')
-  // — sidaas darteed u muuqday 'unpaid' isaga oo aan lahayn baaqi dhab ah
-  // (fiiri studentFee.js: getFeeType, oo hadda leh guard difaac ah). Halkan
-  // waxaa lagu xakameeyay: $0/maran lama kaydiyo, qiimihii hore ayaa sii
-  // muuqda ilaa tiro sax ah (>0) la geliyo.
-  const handleFeeChange = (id, value) => {
-    const amount = Number(value);
-    if (!value || Number.isNaN(amount) || amount <= 0) return;
-    updateFee(id, amount);
   };
 
   const handleLogoPick = () => logoInputRef.current?.click();
@@ -310,50 +280,6 @@ function Settings() {
             </div>
 
             <button type="submit" className="btn-primary settings-save-btn">{t('settings.school.save')}</button>
-          </form>
-        </div>
-      )}
-
-      {/* ===== QIIMAHA (FEES) ===== */}
-      {activeTab === 'fees' && (
-        <div className="dash-card settings-card">
-          <h3 className="settings-section-title">{t('settings.fees.sectionTitle')}</h3>
-          <p className="settings-section-desc">{t('settings.fees.sectionDesc')}</p>
-
-          <div className="data-table-wrap">
-            <table className="data-table">
-              <thead><tr><th>{t('settings.fees.table.class')}</th><th>{t('settings.fees.table.price')} ({cur})</th><th></th></tr></thead>
-              <tbody>
-                {settings.feesByGrade.map((f) => (
-                  <tr key={f.id}>
-                    <td className="cell-name">{f.grade}</td>
-                    <td>
-                      <input
-                        type="number"
-                        className="settings-inline-input"
-                        value={f.amount}
-                        onChange={(e) => handleFeeChange(f.id, e.target.value)}
-                        onBlur={flashSaved}
-                      />
-                    </td>
-                    <td>
-                      <button className="row-action-btn danger" title={t('common.actions.delete')} onClick={() => { removeFeeGrade(f.id); flashSaved(); }}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <form className="settings-add-grade-row" onSubmit={handleAddGrade}>
-            <input type="text" placeholder={t('settings.fees.newGradeNamePlaceholder')} value={newGradeName} onChange={(e) => setNewGradeName(e.target.value)} />
-            <input type="number" placeholder={t('settings.fees.newGradeAmountPlaceholder')} value={newGradeAmount} onChange={(e) => setNewGradeAmount(e.target.value)} />
-            <button type="submit" className="btn-primary">
-              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              {t('settings.fees.add')}
-            </button>
           </form>
         </div>
       )}

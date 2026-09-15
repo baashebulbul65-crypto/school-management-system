@@ -639,9 +639,9 @@
   },
   "settings": {
     "pageTitle": "Dejinta",
-    "pageSubtitle": "Maamul xogta dugsiga, qiimaha, sannadka waxbarasho, iyo akoonkaaga.",
+    "pageSubtitle": "Maamul xogta dugsiga, sannadka waxbarasho, iyo akoonkaaga.",
     "savedToast": "Isbeddelka waa la kaydiyay",
-    "tabs": { "school": "Xogta Dugsiga", "fees": "Qiimaha (Fees)", "academic": "Sannadka Waxbarasho", "notifications": "Ogeysiisyada", "account": "Akoonkayga" },
+    "tabs": { "school": "Xogta Dugsiga", "academic": "Sannadka Waxbarasho", "notifications": "Ogeysiisyada", "account": "Akoonkayga" },
     "school": {
       "sectionTitle": "Xogta Guud ee Dugsiga",
       "sectionDesc": "Magaca dugsigan wuxuu ka soo muuqan doonaa Sidebar-ka Dashboard-ka oo dhan.",
@@ -657,14 +657,6 @@
       "systemLanguage": "Luqadda Nidaamka",
       "currency": "Lacagta La Isticmaalo",
       "save": "Kaydi Isbeddelka"
-    },
-    "fees": {
-      "sectionTitle": "Qiimaha Fasal Kasta",
-      "sectionDesc": "Beddel qiimaha caadiga ah ee fasal kasta — isbeddelkani wuxuu saameyn ku yeelan doonaa xisaabaadka lacagta ee cusub.",
-      "table": { "class": "Fasalka", "price": "Qiimaha" },
-      "newGradeNamePlaceholder": "Magaca Fasalka Cusub (tusaale: Form 5)",
-      "newGradeAmountPlaceholder": "Qiimaha ($)",
-      "add": "Ku Dar"
     },
     "academic": {
       "sectionTitle": "Sannadka Waxbarasho",

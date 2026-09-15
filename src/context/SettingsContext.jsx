@@ -22,12 +22,6 @@ const DEFAULT_SETTINGS = {
   currency: 'USD',
   timezone: 'Africa/Mogadishu',
   academicYear: { start: '2026-01-10', end: '2026-12-15' },
-  feesByGrade: [
-    { id: 1, grade: 'Form 1', amount: 120 },
-    { id: 2, grade: 'Form 2', amount: 120 },
-    { id: 3, grade: 'Form 3', amount: 130 },
-    { id: 4, grade: 'Form 4', amount: 150 },
-  ],
   notificationPrefs: {
     feeReminders: true,
     attendanceAlerts: true,
@@ -57,7 +51,7 @@ export function SettingsProvider({ children }) {
   };
 
   // ===== Xogta dugsiga (Firestore doc "schools/{schoolCode}") — magaca,
-  // fees-by-grade, sanadka waxbarasho, notification prefs, iyo logo-ga.
+  // sanadka waxbarasho, notification prefs, iyo logo-ga.
   // 'language' GA MAAHAN halkan (fiiri hoos). =====
   useEffect(() => {
     if (!profile?.schoolCode) return undefined;
@@ -78,7 +72,6 @@ export function SettingsProvider({ children }) {
           currency: school.currency ?? prev.currency,
           timezone: school.timezone ?? prev.timezone,
           academicYear: school.academicYear ?? prev.academicYear,
-          feesByGrade: school.feesByGrade ?? prev.feesByGrade,
           notificationPrefs: school.notificationPrefs ?? prev.notificationPrefs,
         }));
       },
@@ -165,14 +158,14 @@ export function SettingsProvider({ children }) {
     persistSchoolDoc({ timezone });
   };
 
-  // Settings audit MEDIUM, 2026-08-26 — shantan function ee hoose waxay hore
-  // u qaadan jireen qiimaha bilowga ah (academicYear/feesByGrade/
-  // notificationPrefs) `settings` (closure-ka render-ka HADDA jira), ma ahayn
-  // `prev` (functional-update-ka setSettings). Haddii laba wicitaan oo isku-
-  // mid ah (tusaale: laba "tirtir fee-grade" oo degdeg ah) ay dhacaan ka hor
-  // intii React-ku dib u render sameeyo (rare, laakiin macquul ah), mid-ka
-  // labaad wuxuu isticmaali lahaa xog duugoobay — mid-ka hore wuu lumi lahaa
-  // (Firestore-ka lagama badbaadin). Hadda qiimaha cusub waxaa lagu xisaabiyaa
+  // Settings audit MEDIUM, 2026-08-26 — labadan function ee hoose waxay hore
+  // u qaadan jireen qiimaha bilowga ah (academicYear/notificationPrefs)
+  // `settings` (closure-ka render-ka HADDA jira), ma ahayn `prev`
+  // (functional-update-ka setSettings). Haddii laba wicitaan oo isku-
+  // mid ah ay dhacaan ka hor intii React-ku dib u render sameeyo (rare,
+  // laakiin macquul ah), mid-ka labaad wuxuu isticmaali lahaa xog duugoobay
+  // — mid-ka hore wuu lumi lahaa (Firestore-ka lagama badbaadin). Hadda
+  // qiimaha cusub waxaa lagu xisaabiyaa
   // GUDAHA updater-ka (`prev`, had iyo jeer qiimaha ugu dambeeya, xitaa
   // wicitaano isku-xiga oo isku-mar ah), balse `persistSchoolDoc` (Firestore
   // write-ga) waa la wadaa DIBADDA updater-ka — updater-yada setState waa
@@ -186,33 +179,6 @@ export function SettingsProvider({ children }) {
       return { ...prev, academicYear };
     });
     persistSchoolDoc({ academicYear });
-  };
-
-  const updateFee = (id, amount) => {
-    let feesByGrade;
-    setSettings((prev) => {
-      feesByGrade = prev.feesByGrade.map((f) => (f.id === id ? { ...f, amount } : f));
-      return { ...prev, feesByGrade };
-    });
-    persistSchoolDoc({ feesByGrade });
-  };
-
-  const addFeeGrade = (grade, amount) => {
-    let feesByGrade;
-    setSettings((prev) => {
-      feesByGrade = [...prev.feesByGrade, { id: Date.now(), grade, amount }];
-      return { ...prev, feesByGrade };
-    });
-    persistSchoolDoc({ feesByGrade });
-  };
-
-  const removeFeeGrade = (id) => {
-    let feesByGrade;
-    setSettings((prev) => {
-      feesByGrade = prev.feesByGrade.filter((f) => f.id !== id);
-      return { ...prev, feesByGrade };
-    });
-    persistSchoolDoc({ feesByGrade });
   };
 
   const updateNotificationPref = (key, value) => {
@@ -231,9 +197,6 @@ export function SettingsProvider({ children }) {
     updateCurrency,
     updateTimezone,
     updateAcademicYear,
-    updateFee,
-    addFeeGrade,
-    removeFeeGrade,
     updateNotificationPref,
     uploadLogo,
     removeLogo,

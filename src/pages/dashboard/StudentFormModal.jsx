@@ -2,19 +2,8 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClassOptions, classroomName } from '../../hooks/useClassOptions';
 import { useSchoolData } from '../../context/SchoolDataContext';
-import { useSettings } from '../../context/SettingsContext';
 import { getFeeType } from '../../utils/studentFee';
 import './StudentFormModal.css';
-
-// Settings audit MEDIUM, 2026-08-26: "grade" ee fasalka (ClassFormModal) iyo
-// "grade" ee Settings > Qiimaha (feesByGrade) labaduba waa <input type="text">
-// oo aan la xiriirin (ma jiro dropdown/isha xog wadaag ah) — isbarbardhig
-// xarfo-isku-mid ah (===) wuxuu si aamusan ah u fashilmi karaa haddii mid ka
-// mid ah leeyahay booska dambe ("Form 1 ") ama xaraf weyn/yar oo kala duwan
-// ("form 1" vs "Form 1"). normalizeGrade waxay ka saartaa saameynta booska
-// iyo xarafka weyn/yar marka la isbarbardhigayo, si feeAmount-ku aan si
-// aamusan ah u ahaan lahayn madhan sabab la aan ogeyn.
-const normalizeGrade = (g) => (g || '').trim().toLowerCase();
 
 const EMPTY_FORM = {
   fullName: '',
@@ -55,27 +44,18 @@ function nextRollNumberForClass(students, classId) {
 function StudentFormModal({ isOpen, onClose, onSave, student, defaultClassId }) {
   const { t } = useTranslation();
   const { classes, students } = useSchoolData();
-  const { settings } = useSettings();
   const [form, setForm] = useState(EMPTY_FORM);
   const isEditing = !!student;
   const classOptions = useClassOptions(form.classId, { byId: true });
 
-  // Marka arday CUSUB la doorto fasal, feeAmount-ka waxaa si otomaatig ah
-  // loogu buuxinayaa qiimaha feesByGrade ee fasalkaas (Settings > Qiimaha),
-  // haddii la helo — weli waa la beddeli karaa gacan ahaan. Arday jira
-  // lama taabanayo si aan loo tirtirin feeAmount gaar ah oo horeba loo
-  // geliyay (override).
+  // Settings > Qiimaha (fasal-wide default fee) la saaray gebi ahaanba
+  // (2026-09-15, user-request — sababtay "ghost state" arday feeType='fixed'
+  // leh laakiin feeAmount=$0, fiiri studentFee.js) — feeAmount-ka arday
+  // kasta hadda waa in gacan ahaan la geliyaa marka la diiwaan-galinayo,
+  // ma jiro default fasal-wide oo si otomaatig ah loo buuxiyo.
   const handleClassChange = (e) => {
     const classId = e.target.value;
-    setForm((f) => {
-      const next = { ...f, classId, rollNumber: nextRollNumberForClass(students, classId) };
-      if (!isEditing) {
-        const cls = classes.find((c) => c.id === classId);
-        const gradeFee = cls && settings.feesByGrade.find((g) => normalizeGrade(g.grade) === normalizeGrade(cls.grade));
-        if (gradeFee) next.feeAmount = gradeFee.amount;
-      }
-      return next;
-    });
+    setForm((f) => ({ ...f, classId, rollNumber: nextRollNumberForClass(students, classId) }));
   };
 
   useEffect(() => {
@@ -101,21 +81,18 @@ function StudentFormModal({ isOpen, onClose, onSave, student, defaultClassId }) 
       });
     } else if (defaultClassId) {
       // ClassWorkspace waxay ku furtaa form-kan hal fasal oo la joogo — halkaas
-      // fasalka waa la doortaa si otomaatig ah (auto-select), oo feeAmount-ka
-      // sidoo kale waa loo buuxiyaa qiimaha feesByGrade (isla mid ah
-      // handleClassChange), balse weli waa la beddeli karaa gacan ahaan.
-      const cls = classes.find((c) => c.id === defaultClassId);
-      const gradeFee = cls && settings.feesByGrade.find((g) => normalizeGrade(g.grade) === normalizeGrade(cls.grade));
+      // fasalka waa la doortaa si otomaatig ah (auto-select); feeAmount-ku
+      // wuu banaanaanayaa (gacan ahaan ayaa loo geliyaa, fiiri faallada
+      // handleClassChange kore).
       setForm({
         ...EMPTY_FORM,
         classId: defaultClassId,
-        feeAmount: gradeFee ? gradeFee.amount : '',
         rollNumber: nextRollNumberForClass(students, defaultClassId),
       });
     } else {
       setForm(EMPTY_FORM);
     }
-  }, [student, isOpen, defaultClassId, classes, settings.feesByGrade, students]);
+  }, [student, isOpen, defaultClassId, classes, students]);
 
   if (!isOpen) return null;
 

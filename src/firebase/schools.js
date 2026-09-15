@@ -9,7 +9,7 @@
 //   2) aan loo baahnayn query si loo helo doc-ka (getDoc toos ah).
 //
 // Fields: schoolCode, name, code, address, phone, email, logo,
-// currency, timezone, academicYear{start,end}, feesByGrade[], notificationPrefs{...}.
+// currency, timezone, academicYear{start,end}, notificationPrefs{...}.
 // ('language' GA MAAHAN halkan — waa doorasho shakhsi ah oo browser-ka lagu
 // kaydiyo, ma aha xog dugsi-guud ah, fiiri SettingsContext.jsx).
 
