@@ -482,10 +482,26 @@ service cloud.firestore {
     // "update" ma aha "create" (Firestore rules), sidaas darteed labaduba
     // isla hab ayaa loo xaddidayaa si aan meel ka maqnayn.
     match /notifications/{notificationId} {
-      allow read: if
-        (resource.data.type == 'fee'
-          ? isOwnerStaffOf(resource.data.schoolCode)
-          : isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null)))
+      // Owner-ku wuxuu si toos ah u subscribe gareeyaa DHAMMAAN ogeysiisyada
+      // dugsiga (fiiri notifications.js: subscribeToAllNotifications, marka
+      // classTeacherId aanu jirin) — query-gan MA XADDIDNA "type", sidaas
+      // darteed rule-ka LIST-ka (ma aha get-ka hal-doc-ka) waa in loo
+      // hubin karaa run ahaantii isaga oo aan loo baahnayn in la akhriyo
+      // "type" (field aan query-gu xaddidin). Ternary-kii hore ("type=='fee'
+      // ? owner : isMyClassData") wuxuu ku xiran yahay "resource.data.type"
+      // xitaa marka natiijadu owner ahaan mar walba true tahay — Firestore-ku
+      // query LIST kama oggolaan doono field aan la xaddidin haddii rule-ku
+      // isku tiirsan yahay (list-query security-rule provability, ma aha
+      // per-doc evaluation), taasoo sabab u ahayd "Khalad ayaa dhacay markii
+      // ogeysiisyada laga soo akhriyay" oo owner-ka u soo baxaysay mar walba
+      // (2026-09-15, user-reported). Hadda "isOwnerStaffOf(schoolCode)" waa
+      // disjunct kor-u-qaaday oo KELIYA ku tiirsan schoolCode (field-ka
+      // query-gu xaddidayo) — Firestore-ku wuu xaqiijin karaa list-ka owner-ka
+      // isaga oo aan marnaba u baahnayn inuu eego "type". Logic-ku isku mid
+      // buu la yahay (fiiri isMyClassData: waxa ku jira isOwnerStaffOf oo la
+      // mid ah, sidaas darteed teacher/parent-ka wax kuma beddelin).
+      allow read: if isOwnerStaffOf(resource.data.schoolCode)
+        || (resource.data.type != 'fee' && isMyClassData(resource.data.schoolCode, resource.data.get('classTeacherId', null)))
         || isParentOfStudent(resource.data.schoolCode, resource.data.studentId);
 
       allow create: if
