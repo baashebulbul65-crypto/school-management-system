@@ -7,30 +7,65 @@
   padding: 28px 32px 60px;
 }
 
+/* Redesign (2026-09-16, user-supplied target mockup): qaybta sare (back
+   button + laba stat-pill + toolbar-ka print/bil/filter) waxaa lagu duubay
+   hal kaadh oo leh background gradient mint khafiif ah. */
+.cdm-header-card{
+  background: linear-gradient(135deg, #EAFBF3, #F8FFFC);
+  border-radius: 20px;
+  padding: 16px 18px;
+  margin-bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Round 3 (2026-09-16, user-report): "← Noqo" + labada pill waa in ay
+   is-ag yaalaan (dhow) — justify-content:space-between (hore) ayaa u
+   kala fogeynayay dhinaca kale ee kaadhka, gap weyn oo aan la rabin
+   ku abuurtay. Hadda flex-start + gap yar. */
 .cdm-topbar{
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 26px;
+  justify-content: flex-start;
+  gap: 12px;
   flex-wrap: wrap;
 }
+/* Round 3: back button-ka waa loo celiyay midabkiisa asalka ah (pink/red,
+   .btn-back guud ee BackButton.css) — round 2 waxay u beddeshay mint,
+   user-ku wuxuu rabay in la sii ahaado midka asalka ah. */
 
-.cdm-title{
-  flex: 1;
-  text-align: center;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-  color: var(--navy);
+.cdm-header-pills{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
-.cdm-title span{
-  display: block;
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
+.cdm-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 16px;
+  border-radius: 999px;
   font-size: 12.5px;
-  color: var(--grey-text);
-  margin-top: 2px;
+  font-weight: 700;
+  white-space: nowrap;
 }
+.cdm-pill strong{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+}
+.cdm-pill-total{ background: var(--mint-pale); color: var(--mint-dark); border: 1.5px solid var(--mint-border); }
+.cdm-pill-total strong{ background: var(--mint-dark); color: #fff; }
+.cdm-pill-unpaid{ background: var(--danger-bg); color: var(--danger-dark); border: 1.5px solid var(--danger-border); }
+.cdm-pill-unpaid strong{ background: var(--danger-dark); color: #fff; }
 
 .cdm-toolbar-right{
   display: flex;
@@ -55,6 +90,7 @@
   font-weight: 600;
   color: var(--navy);
   white-space: nowrap;
+  background: #fff;
 }
 .cdm-sort{
   padding: 9px 14px;
@@ -66,34 +102,67 @@
   font-family: 'Inter', sans-serif;
   outline: none;
   cursor: pointer;
+  background: #fff;
 }
 
-.cdm-stats-row{
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 18px 10px;
+/* Stats card — background gradient beige/tan, sida sawirka target-ka ah.
+   Round 3 (2026-09-16, user-report): box-yadu aad bay u waaweynaayeen
+   (padding/gap ballaaran) — kaadhka guud iyo box kastaba waa la
+   compact-yeeyay (padding/gap/font yar). */
+.cdm-stats-card{
+  background: linear-gradient(135deg, #F3ECDC, #E9E0C9);
+  border-radius: 18px;
+  padding: 12px;
   margin: 0 auto 30px;
   max-width: 780px;
-}
-.cdm-stat{
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
-  padding: 0 18px;
-  border-right: 1px solid var(--line);
 }
-.cdm-stat:last-child{ border-right: none; }
-.cdm-stat svg{ width: 17px; height: 17px; stroke: var(--grey-text); flex-shrink: 0; }
-.cdm-stat.green svg{ stroke: var(--mint-dark); }
-.cdm-stat.red svg{ stroke: var(--danger-dark); }
-.cdm-stat.blue svg{ fill: var(--blue); stroke: none; }
-.cdm-stat div{ display: flex; flex-direction: column; }
-.cdm-stat strong{ font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 16px; color: var(--navy); }
-.cdm-stat span{ font-size: 10.5px; color: var(--grey-text); font-weight: 600; }
+.cdm-stats-row-top{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.cdm-stats-row-bottom{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.cdm-stat-box{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  text-align: center;
+}
+.cdm-stat-box svg{ width: 15px; height: 15px; flex-shrink: 0; }
+.cdm-stat-box div{ display: flex; flex-direction: column; align-items: center; }
+.cdm-stat-box strong{ font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 14.5px; line-height: 1.2; }
+.cdm-stat-box span{ font-size: 9.5px; font-weight: 600; }
+
+/* Round 2 (2026-09-16, user-report): 4-box-yadan waxay ahaayeen background
+   solid/saturated (mint-dark, danger-dark) — kani MAAHA style-ka la rabay.
+   Waa in ay u ekaadaan sida pill-badge-yada header-ka (background khafiif +
+   qoraal/tiro midab dark/saturated ah, ma aha background madow + qoraal
+   cad). Hadda afartuba waa background khafiif (*-pale/*-bg) + qoraal/icon
+   midabkooda saturated-ka ah (currentColor inheritance). */
+.cdm-stat-box.total{ background: var(--mint-pale); color: var(--mint-dark); }
+.cdm-stat-box.paid{ background: var(--mint-pale); color: var(--mint-dark); }
+.cdm-stat-box.unpaid{ background: var(--danger-bg); color: var(--danger-dark); }
+.cdm-stat-box.free{ background: var(--blue-bg); color: var(--blue); }
+.cdm-stat-box.outline{
+  background: #FDFCF8;
+  border: 1.5px solid var(--line);
+  flex-direction: row;
+  gap: 8px;
+  padding: 9px 10px;
+}
+.cdm-stat-box.outline div{ align-items: flex-start; }
+.cdm-stat-box.outline strong{ font-size: 14px; }
 
 .cdm-table-wrap{
   max-width: 780px;
@@ -103,10 +172,7 @@
   /* Mobile audit (2026-08-03, MEDIUM #3): isla .data-table-wrap guud
      (dashboard-shared.css) — haddii aan tan la darin, table-ku wuxuu ku
      jaraayaa (clip) body{overflow-x:hidden} (global.css) shaashad yar,
-     halkii uu scroll u bixi lahaa. Design polish (2026-08-17): border/radius
-     la siiyay — cdm-page waa fullscreen (ma laha .dash-card fallback ah
-     sida Finance.jsx kale), sidaas darteed shaxdu bannaan bay ahayd
-     iyada oo aan border/box lahayn gebi ahaanba. */
+     halkii uu scroll u bixi lahaa. */
   overflow: hidden;
   overflow-x: auto;
 }
@@ -121,27 +187,54 @@
   font-size: 13px;
   font-weight: 700;
   color: var(--navy);
-  border-bottom: 1px solid var(--line);
+  border-bottom: 2px solid #78828F;
 }
 .cdm-table tbody td{
   padding: 14px 18px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 2px solid #78828F;
   font-size: 13.5px;
+  vertical-align: middle;
 }
+/* Diiwaan-comparison style parity (2026-09-16): isla xariiqaha column-
+   dividers ee bogga Lacagta (.acc-table) iyo Galaaska (.cw-table). 2px
+   labadaba (border-bottom + border-inline-end) si aysan u kala qaybsan
+   goobaha ay is-marayaan (mobile DPR sub-pixel rounding). */
+.cdm-table th,
+.cdm-table tbody td{ border-inline-end: 2px solid #78828F; }
+.cdm-table th:last-child,
+.cdm-table tbody td:last-child{ border-inline-end: none; }
+.cdm-table tbody tr:nth-child(even){ background: #FAFBFC; }
+
+/* Row status backgrounds (2026-09-16, user-supplied target mockup):
+   Bixiyay = gradient mint khafiif + border cagaaran (border-color ka yimid
+   ".cdm-row-paid"/".cdm-row-unpaid" oo horeba lagu daray tr-ka, fiiri round
+   hore); Aan Bixin = cream + border navy/madow. Magaca/idx-ka gudaha safka
+   la bixiyay waxay u beddelmaan cagaaran (currentColor inheritance via
+   .cdm-student-cell{color}). */
+.cdm-table tbody tr.cdm-row-paid{
+  background: linear-gradient(135deg, #EAFBF3, #DCF6E7);
+}
+.cdm-table tbody tr.cdm-row-paid .cdm-student-cell{ color: var(--mint-dark); }
+.cdm-table tbody tr.cdm-row-unpaid{ background: #FDFBF5; }
+
 .cdm-student-cell{
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   color: var(--navy);
   font-weight: 500;
+  min-width: 0;
 }
-.cdm-avatar-dot{
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  background: #EAEDF0;
-  flex-shrink: 0;
+/* Nambarka + magaca (2026-09-16, user-supplied target mockup): gap-ku waa
+   in uu noqdaa mid yar (idx wuxuu ku dhawaan magaca), avatar-dot-kii
+   (dot khafiif ah, sawirka target-ka kuma jiro) waa la saaray. */
+.cdm-idx{ color: inherit; font-weight: 700; font-size: 12px; flex-shrink: 0; }
+.cdm-name{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
-.cdm-idx{ color: var(--grey-text); font-size: 12px; min-width: 14px; }
 
 .cdm-fii-status{
   display: inline-flex;
@@ -149,8 +242,10 @@
   gap: 5px;
   font-size: 13px;
   font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
-.cdm-fii-status svg{ width: 15px; height: 15px; }
+.cdm-fii-status svg{ width: 15px; height: 15px; flex-shrink: 0; }
 .cdm-fii-status.paid{ color: var(--mint-dark); }
 .cdm-fii-status.unpaid{ color: var(--danger-dark); }
 .cdm-fii-status.free{
@@ -164,6 +259,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 .cdm-collect-btn{
   background: var(--navy);
@@ -175,17 +272,108 @@
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .cdm-collect-btn:hover{ background: var(--navy-soft); }
 .cdm-collect-btn:disabled{ opacity: 0.6; cursor: not-allowed; }
 
 @media (max-width: 720px){
-  .cdm-stats-row{ padding: 14px 6px; }
-  .cdm-stat{ padding: 6px 10px; border-right: none; }
-  .cdm-title{ order: 3; width: 100%; text-align: start; margin-top: 8px; }
-
   /* Touch-target audit (Finance audit LOW, 2026-08-26): ~28px (7px 16px
      padding) waa ka yar tilmaanta ugu yar ee taabashada (~40-44px) — kordhin
      ku xaddan mobile-ka, si aan wax uga beddelin desktop-ka (mouse). */
   .cdm-collect-btn{ padding: 11px 16px; font-size: 12.5px; min-height: 40px; }
+}
+
+/* Cidhiidh-fix (2026-09-16): bogga cdm-page (fullscreen overlay-ka
+   per-class Finance view) — padding/toolbar qiyaas desktop ah oo mobile-ka
+   ku cidhiidhsanaa. */
+@media (max-width: 640px){
+  .cdm-page{ padding: 18px 14px 40px; }
+  .cdm-header-card{ padding: 12px; border-radius: 16px; }
+  .cdm-toolbar-right{ width: 100%; }
+  .cdm-month,
+  .cdm-sort{ flex: 1; min-width: 0; }
+
+  /* Round 5 (2026-09-16, user-report): "← Noqo" + 2-da pill lama isu
+     dhinaceen mobile-ka — sababtu ma ahayn gap-ka (12px→8px round 3 waa
+     ku filnaa), waxay ahayd WRAP: saddexdoodu isku mar kuma filmi jirin
+     ballaadhka screen-ka yar (~360px), sidaas darteed .cdm-topbar (flex-
+     wrap:wrap default) ayaa "← Noqo" u dhigay hal line, pills-kana line
+     labaad — booskaas bannaan ee u dhexeeya ayaa u muuqday "gap weyn".
+     Hadda flex-wrap:nowrap + saddexdoodaba (back-button + pills) waa la
+     compact-yeeyay (padding/font) si ay hal-line ugu filmaan. */
+  /* Safety-net: haddii qoraalku (font-size OS-level zoom, iwm) uu weli ka
+     ballaadhnaado 308px-ka caadiga ah (360px phone), overflow-x:auto
+     halkan ayaa siinaysa scroll gudaha safka, halkii uu u jabin lahaa
+     bogga oo dhan (horizontal page-scroll) ama qoraalku is-dul saarto. */
+  .cdm-topbar{ flex-wrap: nowrap; gap: 8px; overflow-x: auto; }
+  .cdm-topbar .btn-back{ padding: 7px 10px; font-size: 11.5px; gap: 4px; }
+  .cdm-topbar .btn-back svg{ width: 13px; height: 13px; }
+  .cdm-header-pills{ gap: 6px; flex-wrap: nowrap; min-width: 0; }
+  .cdm-pill{ padding: 5px 5px 5px 10px; font-size: 11px; gap: 5px; }
+  .cdm-pill strong{ padding: 3px 7px; font-size: 11px; min-width: 18px; }
+
+  /* Round 4 (2026-09-16, user-report): mobile-ka box-yadu way ka
+     waaweynaayeen kuwa laptop-ka — sababtu waxay ahayd in grid-ku isu
+     beddelay 2 column (halkii 4) — box kastaa wuxuu qaatay ~nus ballaadhka
+     safka halkii ay ku ahaan lahayd ~1/4, sidaas darteed way ballaadhnaayeen
+     xitaa iyada oo padding-gu isku mid ahaa. Hadda 4/2 column-ka waa la sii
+     wataa (isku mid sida laptop-ka), kaliya padding/font ayaa la yareeyay
+     dheeraad ah si ay ugu filmaan screen-ka cidhiidhka ah. */
+  .cdm-stat-box{ padding: 8px 4px; gap: 2px; }
+  .cdm-stat-box svg{ width: 13px; height: 13px; }
+  .cdm-stat-box strong{ font-size: 12.5px; }
+  .cdm-stat-box span{ font-size: 8.5px; }
+  .cdm-stat-box.outline{ padding: 8px; }
+  .cdm-stat-box.outline strong{ font-size: 12.5px; }
+
+  /* Full audit (2026-09-16): dhowr isku-day (RTL dir, nowrap+ellipsis,
+     RTL scroll-wrap) way ku guuldareysteen si joogto ah in magaca ardayga
+     BUUXA lagu arko mobile-ka iyada oo aan scroll lagu samayn — sababtu
+     waxay ahayd in miisku weli 2-column horizontal ah yahay (magaca +
+     xaaladda/button dhinac-dhinac), oo mobile-ka ballaadhkiisu aad u yar
+     yahay in labaduba isku mar ku filmaan. Xalka: hoos socda 640px, saf
+     kastaa wuxuu noqdaa "card" toosan (block) — magaca wuxuu qaataa
+     dherer-ka SAFKA OO DHAN (word-wrap fallback, ma aha ellipsis/scroll). */
+  .cdm-table-wrap{ overflow-x: visible; border: none; border-radius: 0; }
+  .cdm-table,
+  .cdm-table tbody,
+  .cdm-table tr,
+  .cdm-table td{ display: block; width: 100%; }
+  .cdm-table thead{ display: none; }
+  .cdm-table tbody tr{
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .cdm-table tbody tr:last-child{ margin-bottom: 0; }
+  /* Status border+background (2026-09-16, user-supplied target mockup):
+     madow (navy) = weli aan la bixin (cream bg), cagaaran (mint-dark,
+     gradient bg) = markii la bixiyo — real-time, isla marka feePayment-ku
+     diiwaan-gasho status-ku wuu isbeddelaa. */
+  .cdm-table tbody tr.cdm-row-unpaid{
+    border-color: var(--navy); border-width: 2px; background: #FDFBF5;
+  }
+  .cdm-table tbody tr.cdm-row-paid{
+    border-color: var(--mint-dark); border-width: 2px;
+    background: linear-gradient(135deg, #EAFBF3, #DCF6E7);
+  }
+  .cdm-table tbody td{
+    border: none;
+    padding: 0;
+    font-size: 13px;
+  }
+  .cdm-student-cell{ margin-bottom: 10px; }
+  .cdm-name{
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    word-break: break-word;
+  }
+  .cdm-unpaid-row{ flex-wrap: wrap; white-space: normal; }
+  .cdm-fii-status{ white-space: normal; }
+  .cdm-collect-btn{ padding: 10px 16px; font-size: 12.5px; min-height: 38px; }
 }

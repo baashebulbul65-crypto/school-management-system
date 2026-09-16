@@ -119,6 +119,7 @@ function Finance() {
     });
     return {
       id: cls.id, name,
+      session: cls.session || 'subax',
       students: classStudents.length,
       // "total" waa WADARTA GUUD (gross, ka hor dhimis) — waa in ay noqoto
       // sidaas si ay accSummary.laUururiyey (wadar - dhimis - baaqi) u sii
@@ -401,6 +402,7 @@ function Finance() {
                       <td className="cell-sub">{i + 1}</td>
                       <td>
                         <div className="cell-name">{r.name}</div>
+                        <div className="cell-session">{t(`classes.session.${r.session}`)}</div>
                       </td>
                       <td>{r.students}</td>
                       <td className="cell-amount">{r.paidCount} ({cur}{r.paidTotal.toFixed(2)})</td>

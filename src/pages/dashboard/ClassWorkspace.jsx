@@ -228,7 +228,7 @@ function ClassWorkspace() {
                 hal-eray-hal-line ah — ka duwan Xaadiris tab-ka oo laba
                 column oo qura leh (fiiri roster.table.status oo hadda aan
                 loo baahnayn any-where kale). */}
-            <table className="data-table" dir="rtl">
+            <table className="data-table cw-table" dir="rtl">
               <thead><tr><th>{t('classWorkspace.roster.table.student')}</th><th>{t('classWorkspace.roster.table.id')}</th></tr></thead>
               <tbody>
                 {attendanceRosterStudents.map((s) => (
@@ -262,7 +262,7 @@ function ClassWorkspace() {
           </div>
 
           <div className="data-table-wrap">
-            <table className="data-table cw-compact-table" dir="rtl">
+            <table className="data-table cw-compact-table cw-table" dir="rtl">
               <thead>
                 <tr>
                   <th>{t('classWorkspace.attendance.table.student')}</th>
@@ -330,7 +330,7 @@ function ClassWorkspace() {
           </div>
 
           <div className="data-table-wrap">
-            <table className="data-table cw-compact-table" dir="rtl">
+            <table className="data-table cw-compact-table cw-table" dir="rtl">
               <thead>
                 <tr>
                   <th>{t('classWorkspace.attendance.table.student')}</th>

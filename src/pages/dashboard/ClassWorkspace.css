@@ -1,3 +1,21 @@
+/* Diiwaan-comparison style parity (2026-09-16): miisaska Galaaska
+   (Ardayda/roster, Xaadiris/attendance, Quraanka Maanta/quranDaily) — isla
+   xariiqaha column-dividers + header dark/bold + No-column culus ee
+   horeba loo sameeyay bogga Lacagta (Finance.css .acc-table). ".cw-table"
+   waa class scoped ah oo lagu daray saddexdaas miis oo qura (ClassWorkspace.
+   jsx) — grades/quranTargets tab-yadu isticmaalaan .data-table caadiga ah
+   ee aan la beddelin, sidaas darteed halkan lagama tabaabin .data-table
+   guud (Students/Teachers/Users iwm way saameyn lahaayeen haddii kale). */
+.cw-table thead th{ color: var(--navy); }
+/* Round 4 (2026-09-16): border-bottom (1px, ka iman jiray .data-table base)
+   iyo border-inline-end (1.5px) iskuma xidhnayn mobile-ka (DPR sub-pixel
+   rounding kala duwan dhumuc-ku) — hadda labaduba waa 2px isku mid ah. */
+.cw-table th,
+.cw-table tbody td{ border-inline-end:2px solid #78828F; border-bottom:2px solid #78828F; }
+.cw-table th:last-child,
+.cw-table tbody td:last-child{ border-inline-end:none; }
+.cw-table tbody td.cell-sub{ color: var(--navy); font-weight:700; }
+
 .cw-not-found{
   text-align: center;
   padding: 48px 24px;
